@@ -1860,6 +1860,13 @@ class PanelHandler(BaseHandler):
                 )
             user_id = bleach.clean(self.get_argument("id", None))
             username = bleach.clean(self.get_argument("username", None).lower())
+            if (
+                username != self.controller.users.get_user_by_id(user_id)["username"]
+                and username in self.controller.users.get_all_usernames()
+            ):
+                self.redirect(
+                    "/panel/error?error=Duplicate User: Useranme already exists."
+                )
             password0 = bleach.clean(self.get_argument("password0", None))
             password1 = bleach.clean(self.get_argument("password1", None))
             email = bleach.clean(self.get_argument("email", "default@example.com"))

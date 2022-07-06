@@ -15,6 +15,7 @@ from app.classes.models.management import HelpersManagement
 from app.classes.models.users import HelperUsers
 from app.classes.controllers.users_controller import UsersController
 from app.classes.shared.console import Console
+from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.main_controller import Controller
 from app.classes.web.tornado_handler import Webserver
@@ -145,6 +146,15 @@ class TasksManager:
             self.controller.servers.stop_all_servers()
         except:
             logger.info("Caught error during shutdown", exc_info=True)
+        try:
+            temp_dir = os.path.join(self.controller.project_root, "temp")
+            FileHelpers.del_dirs(temp_dir)
+        except:
+            logger.info(
+                "Caught error during shutdown - "
+                "unable to delete files from Crafty Temp Dir",
+                exc_info=True,
+            )
 
         logger.info("***** Crafty Shutting Down *****\n\n")
         Console.info("***** Crafty Shutting Down *****\n\n")

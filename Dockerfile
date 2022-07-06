@@ -53,7 +53,7 @@ EXPOSE 25500-25600
 
 # Start Crafty through wrapper
 ENTRYPOINT ["/crafty/docker_launcher.sh"]
-CMD ["-v", "-d", "-i"]
+CMD ["-d", "-i"]
 
 # Add meta labels
 ARG BUILD_DATE

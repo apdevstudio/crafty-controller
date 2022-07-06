@@ -220,7 +220,8 @@
         "superConfirm": "Proceed only if you want this user to have access to EVERYTHING (all user accounts, servers, panel settings, etc.). They can even revoke your superuser rights.",
         "superConfirmTitle": "Enable superuser? Are you sure?",
         "user": "User",
-        "users": "Users"
+        "users": "Users",
+        "match": "Passwords must match"
     },
     "rolesConfig": {
         "config": "Role Config",

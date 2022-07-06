@@ -691,8 +691,10 @@
       data: {
         path: path
       },
+      success: function (data) {
+        window.location.href = "/panel/server_detail?id=" + serverId + "&subpage=files";
+      },
     });
-    window.location.href = "/panel/server_detail?id=" + serverId + "&subpage=files"
   }
 
   function sendFile(file, path, serverId, left, onProgress) {

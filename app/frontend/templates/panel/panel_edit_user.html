@@ -75,29 +75,35 @@
                         <label class="form-label" for="username">{{ translate('userConfig', 'userName', data['lang'])
                           }}<small class="text-muted ml-1"> - {{ translate('userConfig', 'userNameDesc', data['lang'])
                             }}</small> </label>
-                        <input type="text" class="form-control" name="username" id="username"
-                          value="{{ data['user']['username']  }}" placeholder="User Name">
+                        <input type="text" class="form-control" name="username" id="username" autocomplete="off"
+                          data-lpignore="true" value="{{ data['user']['username']  }}" placeholder="User Name">
                       </div>
                       <div class="form-group">
                         <label class="form-label" for="password0">{{ translate('userConfig', 'password', data['lang'])
                           }}<small class="text-muted ml-1"> - {{ translate('userConfig', 'leaveBlank', data['lang']) }}
                           </small> </label>
                         <input type="password" class="form-control" name="password0" id="password0" value=""
-                          placeholder="Password">
+                          autocomplete="new-password" data-lpignore="true" placeholder="Password">
+                        <span class="passwords-match" ,
+                          data-content="{{ translate('panelConfig', 'match', data['lang']) }}" ,
+                          data-placement="right"></span>
                       </div>
                       <div class="form-group">
                         <label class="form-label" for="password1">{{ translate('userConfig', 'repeat', data['lang']) }}
                           <small class="text-muted ml-1"> - {{ translate('userConfig', 'leaveBlank', data['lang'])
                             }}</small> </label>
                         <input type="password" class="form-control" name="password1" id="password1" value=""
-                          placeholder="Repeat Password">
+                          autocomplete="new-password" data-lpignore="true" placeholder="Repeat Password">
+                        <span class="passwords-match" ,
+                          data-content="{{ translate('panelConfig', 'match', data['lang']) }}" ,
+                          data-placement="right"></span>
                       </div>
                       <div class="form-group">
                         <label class="form-label" for="email">{{ translate('userConfig', 'gravEmail', data['lang'])
                           }}<small class="text-muted ml-1"> - {{ translate('userConfig', 'gravDesc', data['lang'])
                             }}</small> </label>
-                        <input type="email" class="form-control" name="email" id="email"
-                          value="{{ data['user']['email'] }}" placeholder="Gravatar Email">
+                        <input type="email" class="form-control" name="email" id="email" autocomplete="off"
+                          data-lpignore="true" value="{{ data['user']['email'] }}" placeholder="Gravatar Email">
                       </div>
                       <div class="form-group">
                         <label class="form-label" for="language">{{ translate('userConfig', 'userLang', data['lang'])
@@ -237,7 +243,7 @@
 
                   </div>
 
-                  <button type="submit" class="btn btn-success mr-2"><i class="fas fa-save"></i> {{
+                  <button class="btn btn-success mr-2" onclick="submit_user(event);"><i class="fas fa-save"></i> {{
                     translate('panelConfig', 'save', data['lang']) }}</button>
                   <button type="reset" onclick="location.href='/panel/panel_config'" class="btn btn-light"><i
                       class="fas fa-undo-alt"></i> {{ translate('panelConfig', 'cancel', data['lang']) }}</button>
@@ -290,12 +296,43 @@
 
 
 </div>
+<style>
+  .popover-body {
+    color: white !important;
+    outline: 1px solid red !important;
+    ;
+  }
+</style>
 <!-- content-wrapper ends -->
 
 {% end %}
 
 {% block js %}
 <script>
+  function submit_user(event) {
+    if (!validateForm()) {
+      event.preventDefault();
+    } else {
+      $('#userForm').submit();
+    }
+  }
+  function validateForm() {
+    let password0 = document.getElementById("password0").value
+    let password1 = document.getElementById("password1").value
+    if (password0 != password1) {
+      $('.passwords-match').popover('show');
+      $('.popover-body').click(function () {
+        $('.passwords-match').popover("hide");
+      });
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+      $("#password0").css("outline", "1px solid red");
+      $("#password1").css("outline", "1px solid red");
+      return false;
+    } else {
+      return true;
+    }
+  }
   const userId = new URLSearchParams(document.location.search).get('id')
 
   $(".delete-user").click(function () {

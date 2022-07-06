@@ -156,6 +156,9 @@ class ServerHandler(BaseHandler):
             page_data["js_server_types"] = json.dumps(
                 self.controller.server_jars.get_serverjar_data()
             )
+            if page_data["server_types"] is None:
+                page_data["server_types"] = []
+                page_data["js_server_types"] = []
             template = "server/wizard.html"
 
         if page == "bedrock_step1":

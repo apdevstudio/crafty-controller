@@ -101,7 +101,7 @@ class FileHelpers:
                 ziproot = path_to_zip
                 for file in files:
                     try:
-                        logger.info(f"backing up: {os.path.join(root, file)}")
+                        logger.info(f"packaging: {os.path.join(root, file)}")
                         if os.name == "nt":
                             zip_file.write(
                                 os.path.join(root, file),
@@ -115,7 +115,7 @@ class FileHelpers:
 
                     except Exception as e:
                         logger.warning(
-                            f"Error backing up: {os.path.join(root, file)}!"
+                            f"Error packaging: {os.path.join(root, file)}!"
                             f" - Error was: {e}"
                         )
 

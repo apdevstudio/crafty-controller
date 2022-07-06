@@ -66,6 +66,7 @@
         "cannotSeeOnMobile": "Sehen Sie nicht alles auf dem Handy?",
         "cannotSeeOnMobile2": "Versuchen Sie, die Tabelle seitlich zu verschieben.",
         "clone": "Klonen",
+        "cloneConfirm": "Sind Sie sich sicher, dass Sie den Server klonen wollen? Diese Aufgabe kann eine Weile dauern.",
         "cpuCores": "CPU Kerne",
         "cpuCurFreq": "Momentaner CPU-Takt",
         "cpuMaxFreq": "Maximaler CPU-Takt",

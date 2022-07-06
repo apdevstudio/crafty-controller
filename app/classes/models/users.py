@@ -100,6 +100,14 @@ class HelperUsers:
         return query
 
     @staticmethod
+    def get_all_usernames():
+        usernames = []
+        query = Users.select().where(Users.username != "system")
+        for user in query:
+            usernames.append(user.username)
+        return usernames
+
+    @staticmethod
     def get_all_user_ids() -> t.List[int]:
         return [
             user.user_id

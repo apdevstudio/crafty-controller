@@ -4,7 +4,6 @@ from pathlib import Path
 import shutil
 import time
 import logging
-import tempfile
 from peewee import DoesNotExist
 
 # TZLocal is set as a hidden import on win pipeline
@@ -85,27 +84,38 @@ class Controller:
         self.users.set_prepare(exec_user["user_id"])
         logger.info("Checking for previous support logs.")
         if exec_user["support_logs"] != "":
-            logger.info(
-                f"Found previous support log request at {exec_user['support_logs']}"
-            )
-            if self.helper.validate_traversal(
-                tempfile.gettempdir(), exec_user["support_logs"]
-            ):
-                logger.debug("No transversal detected. Going for the delete.")
-                self.del_support_file(exec_user["support_logs"])
+            if os.path.exists(exec_user["support_logs"]):
+                logger.info(
+                    f"Found previous support log request at {exec_user['support_logs']}"
+                )
+                if self.helper.validate_traversal(
+                    os.path.join(self.project_root, "temp"), exec_user["support_logs"]
+                ):
+                    logger.debug("No transversal detected. Going for the delete.")
+                    self.del_support_file(exec_user["support_logs"])
         # pausing so on screen notifications can run for user
         time.sleep(7)
         self.helper.websocket_helper.broadcast_user(
             exec_user["user_id"], "notification", "Preparing your support logs"
         )
-        temp_dir = tempfile.mkdtemp()
-        temp_zip_storage = tempfile.mkdtemp()
-        full_temp = os.path.join(temp_dir, "support_logs")
-        os.mkdir(full_temp)
+        self.helper.ensure_dir_exists(
+            os.path.join(self.project_root, "temp", str(exec_user["user_id"]))
+        )
+        temp_dir = os.path.join(
+            self.project_root, "temp", str(exec_user["user_id"]), "support_logs"
+        )
+
+        self.helper.ensure_dir_exists(
+            os.path.join(self.project_root, "temp", str(exec_user["user_id"]), "zip")
+        )
+        temp_zip_storage = os.path.join(
+            self.project_root, "temp", str(exec_user["user_id"]), "zip"
+        )
+        os.mkdir(temp_dir)
         temp_zip_storage = os.path.join(temp_zip_storage, "support_logs")
-        crafty_path = os.path.join(full_temp, "crafty")
+        crafty_path = os.path.join(temp_dir, "crafty")
         os.mkdir(crafty_path)
-        server_path = os.path.join(full_temp, "server")
+        server_path = os.path.join(temp_dir, "server")
         os.mkdir(server_path)
         if exec_user["superuser"]:
             defined_servers = self.servers.list_defined_servers()
@@ -160,15 +170,14 @@ class Controller:
             "interval",
             seconds=1,
             id="logs_" + str(exec_user["user_id"]),
-            args=[full_temp, temp_zip_storage + ".zip", exec_user],
+            args=[temp_dir, temp_zip_storage + ".zip", exec_user],
         )
-        FileHelpers.make_archive(temp_zip_storage, temp_dir)
-
+        FileHelpers.make_compressed_archive(temp_zip_storage, temp_dir)
         if len(self.helper.websocket_helper.clients) > 0:
             self.helper.websocket_helper.broadcast_user(
                 exec_user["user_id"],
                 "support_status_update",
-                Helpers.calc_percent(full_temp, temp_zip_storage + ".zip"),
+                Helpers.calc_percent(temp_dir, temp_zip_storage + ".zip"),
             )
 
         temp_zip_storage += ".zip"
@@ -783,26 +792,21 @@ class Controller:
 
     def rename_backup_dir(self, old_server_id, new_server_id, new_uuid):
         server_data = self.servers.get_server_data_by_id(old_server_id)
+        server_obj = self.servers.get_server_obj(new_server_id)
         old_bu_path = server_data["backup_path"]
         ServerPermsController.backup_role_swap(old_server_id, new_server_id)
-        if not Helpers.is_os_windows():
-            backup_path = Helpers.validate_traversal(
-                self.helper.backup_path, old_bu_path
-            )
-        if Helpers.is_os_windows():
-            backup_path = Helpers.validate_traversal(
-                Helpers.wtol_path(self.helper.backup_path),
-                Helpers.wtol_path(old_bu_path),
-            )
-            backup_path = Helpers.wtol_path(str(backup_path))
-            backup_path.replace(" ", "^ ")
-            backup_path = Path(backup_path)
+        backup_path = old_bu_path
+        backup_path = Path(backup_path)
         backup_path_components = list(backup_path.parts)
         backup_path_components[-1] = new_uuid
         new_bu_path = pathlib.PurePath(os.path.join(*backup_path_components))
-        if os.path.isdir(new_bu_path):
-            if Helpers.validate_traversal(self.helper.backup_path, new_bu_path):
-                os.rmdir(new_bu_path)
+        server_obj.backup_path = new_bu_path
+        default_backup_dir = os.path.join(self.helper.backup_path, new_uuid)
+        try:
+            os.rmdir(default_backup_dir)
+        except:
+            logger.error("Could not delete default backup dir")
+        self.servers.update_server(server_obj)
         backup_path.rename(new_bu_path)
 
     def register_server(

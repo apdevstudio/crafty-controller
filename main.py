@@ -226,6 +226,12 @@ if __name__ == "__main__":
 
         Console.info("Crafty has fully started and is now ready for use!")
         crafty_prompt.prompt = f"Crafty Controller v{helper.get_version_string()} > "
+        try:
+            logger.info("Removing old temp dirs")
+            FileHelpers.del_dirs(os.path.join(controller.project_root, "temp"))
+        except:
+            logger.info("Did not find old temp dir.")
+        os.mkdir(os.path.join(controller.project_root, "temp"))
 
         if not args.daemon:
             # Put the prompt under the cursor

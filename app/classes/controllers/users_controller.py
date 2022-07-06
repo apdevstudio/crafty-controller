@@ -101,6 +101,10 @@ class UsersController:
         return HelperUsers.get_all_user_ids()
 
     @staticmethod
+    def get_all_usernames():
+        return HelperUsers.get_all_usernames()
+
+    @staticmethod
     def get_id_by_name(username):
         return HelperUsers.get_user_id_by_name(username)
 
