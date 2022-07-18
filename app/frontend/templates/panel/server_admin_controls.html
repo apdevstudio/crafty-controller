@@ -73,7 +73,7 @@
               </style>
               <h2>{{ translate('serverPlayerManagement', 'players', data['lang']) }}:</h2>
               <ul style="list-style: none;padding: 0px;margin: 0px; margin-bottom: 1rem;gap: 1rem;">
-                {% for player in data['get_players']() %}
+                {% for player in data['get_players'] %}
                 <li class="playerItem">
                   <h3>{{ player }}</h3>
                   <div class="buttons">

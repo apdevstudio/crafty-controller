@@ -21,6 +21,18 @@
     display: block;
 }
 
+.toggle-handle {
+    background-color: white !important;
+}
+
+.toggle-on {
+    color: black !important;
+}
+
+.toggle {
+    height: 0px !important;
+}
+
 .sidebar>.nav>.nav-item:not(.nav-profile)>.nav-link:before {
     content: none;
     position: absolute;

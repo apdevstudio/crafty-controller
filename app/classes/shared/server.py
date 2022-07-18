@@ -1244,7 +1244,6 @@ class ServerInstance:
         # process stats
         p_stats = Stats._try_get_process_stats(self.process, self.check_running())
 
-        # TODO: search server properties file for possible override of 127.0.0.1
         internal_ip = server["server_ip"]
         server_port = server["server_port"]
         server_name = server.get("server_name", f"ID#{server_id}")
@@ -1253,7 +1252,10 @@ class ServerInstance:
         if HelperServers.get_server_type_by_id(server_id) == "minecraft-bedrock":
             int_mc_ping = ping_bedrock(internal_ip, int(server_port))
         else:
-            int_mc_ping = ping(internal_ip, int(server_port))
+            try:
+                int_mc_ping = ping(internal_ip, int(server_port))
+            except:
+                int_mc_ping = False
 
         int_data = False
         ping_data = {}
@@ -1315,11 +1317,6 @@ class ServerInstance:
 
         logger.info(f"Getting players for server {server}")
 
-        # get our settings and data dictionaries
-        # server_settings = server.get('server_settings', {})
-        # server_data = server.get('server_data_obj', {})
-
-        # TODO: search server properties file for possible override of 127.0.0.1
         internal_ip = server["server_ip"]
         server_port = server["server_port"]
 
@@ -1377,9 +1374,6 @@ class ServerInstance:
         # process stats
         p_stats = Stats._try_get_process_stats(self.process, self.check_running())
 
-        # TODO: search server properties file for possible override of 127.0.0.1
-        # internal_ip =   server['server_ip']
-        # server_port = server['server_port']
         internal_ip = server_dt["server_ip"]
         server_port = server_dt["server_port"]
 

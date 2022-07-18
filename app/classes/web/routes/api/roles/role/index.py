@@ -28,11 +28,8 @@ modify_role_schema = {
             },
         },
     },
-    "anyOf": [
-        {"required": ["name"]},
-        {"required": ["servers"]},
-    ],
     "additionalProperties": False,
+    "minProperties": 1,
 }
 
 

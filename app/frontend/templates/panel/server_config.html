@@ -176,24 +176,35 @@
                   <div class="form-check-flat">
                     <label for="auto_start" class="form-check-label ml-4 mb-4">
                       {% if data['server_stats']['server_id']['auto_start'] %}
-                      <input type="checkbox" class="form-check-input" id="auto_start" name="auto_start" checked=""
-                        value="1">{{ translate('serverConfig', 'serverAutoStart', data['lang']) }}
+                      <input type="checkbox" class="form-check-input" id="auto_start" name="auto_start" checked="" data-toggle="toggle"
+                        value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'serverAutoStart', data['lang']) }}
                       {% else %}
-                      <input type="checkbox" class="form-check-input" id="auto_start" name="auto_start" value="1">{{
+                      <input type="checkbox" class="form-check-input" id="auto_start" name="auto_start" value="1" data-toggle="toggle">&nbsp;&nbsp;{{
                       translate('serverConfig', 'serverAutoStart', data['lang']) }}
                       {% end %}
                     </label>
 
                     <label for="crash_detection" class="form-check-label ml-4 mb-4">
                       {% if data['server_stats']['server_id']['crash_detection'] %}
-                      <input type="checkbox" class="form-check-input" id="crash_detection" name="crash_detection"
-                        checked="" value="1">{{ translate('serverConfig', 'serverCrashDetection', data['lang']) }}
+                      <input type="checkbox" class="form-check-input" id="crash_detection" name="crash_detection" data-toggle="toggle"
+                        checked="" value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'serverCrashDetection', data['lang']) }}
                       {% else %}
-                      <input type="checkbox" class="form-check-input" id="crash_detection" name="crash_detection"
-                        value="1">{{ translate('serverConfig', 'serverCrashDetection', data['lang']) }}
+                      <input type="checkbox" class="form-check-input" id="crash_detection" name="crash_detection" data-toggle="toggle"
+                        value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'serverCrashDetection', data['lang']) }}
                       {% end %}
                     </label>
 
+                  {% if data['super_user'] %}
+                  <label for="show_status" class="form-check-label ml-4 mb-4">
+                    {% if data['server_stats']['server_id']['show_status'] %}
+                    <input type="checkbox" class="form-check-input" id="show_status" name="show_status" data-toggle="toggle"
+                      checked="" value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'showStatus', data['lang']) }}
+                    {% else %}
+                    <input type="checkbox" class="form-check-input" id="show_status" name="show_status" data-toggle="toggle"
+                      value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'showStatus', data['lang']) }}
+                    {% end %}
+                  </label>
+                  {% end %}
                   </div>
 
                   <button type="submit" class="btn btn-success mr-2"><i class="fas fa-save"></i> {{
@@ -243,13 +254,33 @@
 
 
 </div>
+<style>
+.toggle-handle {
+    background-color: white !important;
+}
+
+.toggle-on {
+    color: black !important;
+    background-color: blueviolet !important;
+}
+
+.toggle {
+    height: 0px !important;
+    background-color: grey !important;
+}
+</style>
 <!-- content-wrapper ends -->
 
 {% end %}
 
 {% block js %}
 <script>
-
+    $(function() {
+    $('.form-check-input').bootstrapToggle({
+      on: '',
+      off: ''
+    });
+  })
   const serverId = new URLSearchParams(document.location.search).get('id')
 
 

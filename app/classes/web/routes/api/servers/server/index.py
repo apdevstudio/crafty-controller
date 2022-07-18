@@ -28,28 +28,8 @@ server_patch_schema = {
         "logs_delete_after": {"type": "integer"},
         "type": {"type": "string", "minLength": 1},
     },
-    "anyOf": [
-        # Require at least one property
-        {"required": [name]}
-        for name in [
-            "server_name",
-            "path",
-            "backup_path",
-            "executable",
-            "log_path",
-            "execution_command",
-            "auto_start",
-            "auto_start_delay",
-            "crash_detection",
-            "stop_command",
-            "executable_update_url",
-            "server_ip",
-            "server_port",
-            "logs_delete_after",
-            "type",
-        ]
-    ],
     "additionalProperties": False,
+    "minProperties": 1,
 }
 
 

@@ -112,22 +112,8 @@ class ApiUsersUserIndexHandler(BaseApiHandler):
             "properties": {
                 **self.controller.users.user_jsonschema_props,
             },
-            "anyOf": [
-                # Require at least one property
-                {"required": [name]}
-                for name in [
-                    "username",
-                    "password",
-                    "email",
-                    "enabled",
-                    "lang",
-                    "superuser",
-                    "permissions",
-                    "roles",
-                    "hints",
-                ]
-            ],
             "additionalProperties": False,
+            "minProperties": 1,
         }
         auth_data = self.authenticate_user()
         if not auth_data:

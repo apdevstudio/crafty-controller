@@ -288,11 +288,13 @@ class TasksManager:
             job_data["parent"],
             job_data["delay"],
         )
+
         # Checks to make sure some doofus didn't actually make the newly
         # created task a child of itself.
         if str(job_data["parent"]) == str(sch_id):
             HelpersManagement.update_scheduled_task(sch_id, {"parent": None})
-            # Check to see if it's enabled and is not a chain reaction.
+
+        # Check to see if it's enabled and is not a chain reaction.
         if job_data["enabled"] and job_data["interval_type"] != "reaction":
             if job_data["cron_string"] != "":
                 try:
@@ -389,11 +391,21 @@ class TasksManager:
             )
 
     def update_job(self, sch_id, job_data):
-        HelpersManagement.update_scheduled_task(sch_id, job_data)
         # Checks to make sure some doofus didn't actually make the newly
         # created task a child of itself.
-        if str(job_data["parent"]) == str(sch_id):
-            HelpersManagement.update_scheduled_task(sch_id, {"parent": None})
+        if str(job_data.get("parent")) == str(sch_id):
+            job_data["parent"] = None
+
+        HelpersManagement.update_scheduled_task(sch_id, job_data)
+
+        if not (
+            "interval" in job_data
+            and "enabled" in job_data
+            and "cron_string" in job_data
+            and "interval_type" in job_data
+        ):
+            return
+
         try:
             if job_data["interval"] != "reaction":
                 self.scheduler.remove_job(str(sch_id))
@@ -403,71 +415,70 @@ class TasksManager:
                 "Assuming it was previously disabled. Starting new job."
             )
 
-        if job_data["enabled"]:
-            if job_data["interval"] != "reaction":
-                if job_data["cron_string"] != "":
-                    try:
-                        self.scheduler.add_job(
-                            HelpersManagement.add_command,
-                            CronTrigger.from_crontab(
-                                job_data["cron_string"], timezone=str(self.tz)
-                            ),
-                            id=str(sch_id),
-                            args=[
-                                job_data["server_id"],
-                                self.users_controller.get_id_by_name("system"),
-                                "127.0.0.1",
-                                job_data["command"],
-                            ],
-                        )
-                    except Exception as e:
-                        Console.error(f"Failed to schedule task with error: {e}.")
-                        Console.info("Removing failed task from DB.")
-                        self.controller.management_helper.delete_scheduled_task(sch_id)
-                else:
-                    if job_data["interval_type"] == "hours":
-                        self.scheduler.add_job(
-                            HelpersManagement.add_command,
-                            "cron",
-                            minute=0,
-                            hour="*/" + str(job_data["interval"]),
-                            id=str(sch_id),
-                            args=[
-                                job_data["server_id"],
-                                self.users_controller.get_id_by_name("system"),
-                                "127.0.0.1",
-                                job_data["command"],
-                            ],
-                        )
-                    elif job_data["interval_type"] == "minutes":
-                        self.scheduler.add_job(
-                            HelpersManagement.add_command,
-                            "cron",
-                            minute="*/" + str(job_data["interval"]),
-                            id=str(sch_id),
-                            args=[
-                                job_data["server_id"],
-                                self.users_controller.get_id_by_name("system"),
-                                "127.0.0.1",
-                                job_data["command"],
-                            ],
-                        )
-                    elif job_data["interval_type"] == "days":
-                        curr_time = job_data["start_time"].split(":")
-                        self.scheduler.add_job(
-                            HelpersManagement.add_command,
-                            "cron",
-                            day="*/" + str(job_data["interval"]),
-                            hour=curr_time[0],
-                            minute=curr_time[1],
-                            id=str(sch_id),
-                            args=[
-                                job_data["server_id"],
-                                self.users_controller.get_id_by_name("system"),
-                                "127.0.0.1",
-                                job_data["command"],
-                            ],
-                        )
+        if job_data["enabled"] and job_data["interval"] != "reaction":
+            if job_data["cron_string"] != "":
+                try:
+                    self.scheduler.add_job(
+                        HelpersManagement.add_command,
+                        CronTrigger.from_crontab(
+                            job_data["cron_string"], timezone=str(self.tz)
+                        ),
+                        id=str(sch_id),
+                        args=[
+                            job_data["server_id"],
+                            self.users_controller.get_id_by_name("system"),
+                            "127.0.0.1",
+                            job_data["command"],
+                        ],
+                    )
+                except Exception as e:
+                    Console.error(f"Failed to schedule task with error: {e}.")
+                    Console.info("Removing failed task from DB.")
+                    self.controller.management_helper.delete_scheduled_task(sch_id)
+            else:
+                if job_data["interval_type"] == "hours":
+                    self.scheduler.add_job(
+                        HelpersManagement.add_command,
+                        "cron",
+                        minute=0,
+                        hour="*/" + str(job_data["interval"]),
+                        id=str(sch_id),
+                        args=[
+                            job_data["server_id"],
+                            self.users_controller.get_id_by_name("system"),
+                            "127.0.0.1",
+                            job_data["command"],
+                        ],
+                    )
+                elif job_data["interval_type"] == "minutes":
+                    self.scheduler.add_job(
+                        HelpersManagement.add_command,
+                        "cron",
+                        minute="*/" + str(job_data["interval"]),
+                        id=str(sch_id),
+                        args=[
+                            job_data["server_id"],
+                            self.users_controller.get_id_by_name("system"),
+                            "127.0.0.1",
+                            job_data["command"],
+                        ],
+                    )
+                elif job_data["interval_type"] == "days":
+                    curr_time = job_data["start_time"].split(":")
+                    self.scheduler.add_job(
+                        HelpersManagement.add_command,
+                        "cron",
+                        day="*/" + str(job_data["interval"]),
+                        hour=curr_time[0],
+                        minute=curr_time[1],
+                        id=str(sch_id),
+                        args=[
+                            job_data["server_id"],
+                            self.users_controller.get_id_by_name("system"),
+                            "127.0.0.1",
+                            job_data["command"],
+                        ],
+                    )
         else:
             try:
                 self.scheduler.get_job(str(sch_id))

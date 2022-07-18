@@ -5,6 +5,7 @@ from app.classes.web.routes.api.roles.role.index import modify_role_schema
 from app.classes.web.routes.api.roles.index import create_role_schema
 from app.classes.web.routes.api.servers.server.index import server_patch_schema
 from app.classes.web.routes.api.servers.index import new_server_schema
+from app.classes.web.routes.api.servers.server.tasks.task.index import task_patch_schema
 
 SCHEMA_LIST: t.Final = [
     "login",
@@ -14,6 +15,7 @@ SCHEMA_LIST: t.Final = [
     "new_server",
     "user_patch",
     "new_user",
+    "task_patch",
 ]
 
 
@@ -59,22 +61,8 @@ class ApiJsonSchemaHandler(BaseApiHandler):
                         "properties": {
                             **self.controller.users.user_jsonschema_props,
                         },
-                        "anyOf": [
-                            # Require at least one property
-                            {"required": [name]}
-                            for name in [
-                                "username",
-                                "password",
-                                "email",
-                                "enabled",
-                                "lang",
-                                "superuser",
-                                "permissions",
-                                "roles",
-                                "hints",
-                            ]
-                        ],
                         "additionalProperties": False,
+                        "minProperties": 1,
                     },
                 },
             )
@@ -92,6 +80,11 @@ class ApiJsonSchemaHandler(BaseApiHandler):
                         "additionalProperties": False,
                     },
                 },
+            )
+        elif schema_name == "task_patch":
+            self.finish_json(
+                200,
+                {"status": "ok", "data": task_patch_schema},
             )
         else:
             self.finish_json(

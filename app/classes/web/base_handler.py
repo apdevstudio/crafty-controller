@@ -10,6 +10,7 @@ from app.classes.models.users import ApiKeys
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.main_controller import Controller
 from app.classes.shared.translation import Translation
+from app.classes.models.management import DatabaseShortcuts
 
 logger = logging.getLogger(__name__)
 
@@ -204,6 +205,10 @@ class BaseHandler(tornado.web.RequestHandler):
                 authorized_servers = self.controller.servers.get_authorized_servers(
                     user["user_id"]  # TODO: API key authorized servers?
                 )
+                authorized_servers = [
+                    DatabaseShortcuts.get_data_obj(x.server_object)
+                    for x in authorized_servers
+                ]
 
             logger.debug("Checking results")
             if user:

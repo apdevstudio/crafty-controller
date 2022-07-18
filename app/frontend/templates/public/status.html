@@ -27,6 +27,7 @@
           <span id="sync" style="margin-left: 5px;"><i class="fas fa-sync fa-spin"></i></span></h4>
           {% end %}
           {% for server in data['servers'] %}
+          {% if server['server_data']['show_status'] %}
           <tr>
             <td id="server_name_{{ server['stats']['server_id']['server_id'] }}">
               <i class="fas fa-server"></i>
@@ -70,6 +71,7 @@
               {% end %}
             </td>
           </tr>
+          {% end %}
           {% end %}
         </tbody>
       </table>
@@ -125,7 +127,7 @@
               <div class="media-body">
                 {% if server['stats']['desc'] != 'False' %}
                 <div id="m_server_motd_{{ server['stats']['server_id']['server_id'] }}">
-                  <span id="input_motd_{{ server['stats']['server_id']['server_id'] }}" class="input_motd">{{
+                  <span id="m_input_motd_{{ server['stats']['server_id']['server_id'] }}" class="input_motd">{{
                     server['stats']['desc'] }}</span> <br />
                 </div>
                 {% end %}
@@ -143,6 +145,7 @@
                 <div id="m_server_motd_{{ server['stats']['server_id']['server_id'] }}">
                   <span class="text-warning"><i class="fas fa-exclamation-triangle"></i> Crafty can't get infos from this Server </span>
                 </div>
+                <div id="m_server_version_{{ server['stats']['server_id']['server_id'] }}"></div>
               </div>
             </div>
             {% end %}
@@ -200,7 +203,7 @@
         }
 
         motd = motd + `<span id="input_motd_` + server.id + `" class="input_motd">` + server.desc + `</span> <br />`;
-        m_motd = m_motd + `<div class="media-body"><span id="input_motd_` + server.id + `" class="input_motd">` + server.desc + `</span></div>`;
+        m_motd = m_motd + `<div class="media-body"><span id="m_input_motd_` + server.id + `" class="input_motd">` + server.desc + `</span></div>`;
         server_motd.innerHTML = motd;
         m_server_motd.innerHTML = m_motd;
       }

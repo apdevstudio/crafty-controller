@@ -62,12 +62,31 @@ class ServerHandler(BaseHandler):
                 exec_user_role.add(role["role_name"])
                 list_roles.append(self.controller.roles.get_role(role["role_id"]))
 
+        user_order = self.controller.users.get_user_by_id(exec_user["user_id"])
+        user_order = user_order["server_order"].split(",")
         page_servers = []
+        server_ids = []
+
+        for server_id in user_order[:]:
+            for server in defined_servers[:]:
+                if str(server.server_id) == str(server_id):
+                    page_servers.append(
+                        DatabaseShortcuts.get_data_obj(server.server_object)
+                    )
+                    user_order.remove(server_id)
+                    defined_servers.remove(server)
+
         for server in defined_servers:
+            server_ids.append(str(server.server_id))
             if server not in page_servers:
                 page_servers.append(
                     DatabaseShortcuts.get_data_obj(server.server_object)
                 )
+
+        for server_id in user_order[:]:
+            # remove IDs in list that user no longer has access to
+            if str(server_id) not in server_ids:
+                user_order.remove(server_id)
         defined_servers = page_servers
 
         template = "public/404.html"
@@ -92,7 +111,7 @@ class ServerHandler(BaseHandler):
                 ),
             },
             "hosts_data": self.controller.management.get_latest_hosts_stats(),
-            "menu_servers": defined_servers,
+            "menu_servers": page_servers,
             "show_contribute": self.helper.get_setting("show_contribute_link", True),
             "lang": self.controller.users.get_user_lang_by_id(exec_user["user_id"]),
             "lang_page": Helpers.get_lang_page(

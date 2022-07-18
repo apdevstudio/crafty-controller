@@ -23,6 +23,15 @@ from app.classes.web.routes.api.servers.server.public import (
 )
 from app.classes.web.routes.api.servers.server.stats import ApiServersServerStatsHandler
 from app.classes.web.routes.api.servers.server.stdin import ApiServersServerStdinHandler
+from app.classes.web.routes.api.servers.server.tasks.index import (
+    ApiServersServerTasksIndexHandler,
+)
+from app.classes.web.routes.api.servers.server.tasks.task.children import (
+    ApiServersServerTasksTaskChildrenHandler,
+)
+from app.classes.web.routes.api.servers.server.tasks.task.index import (
+    ApiServersServerTasksTaskIndexHandler,
+)
 from app.classes.web.routes.api.servers.server.users import ApiServersServerUsersHandler
 from app.classes.web.routes.api.users.index import ApiUsersIndexHandler
 from app.classes.web.routes.api.users.user.index import ApiUsersUserIndexHandler
@@ -101,6 +110,21 @@ def api_handlers(handler_args):
         (
             r"/api/v2/servers/([0-9]+)/?",
             ApiServersServerIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/servers/([0-9]+)/tasks/?",
+            ApiServersServerTasksIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/servers/([0-9]+)/tasks/([0-9]+)/?",
+            ApiServersServerTasksTaskIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/servers/([0-9]+)/tasks/([0-9]+)/children/?",
+            ApiServersServerTasksTaskChildrenHandler,
             handler_args,
         ),
         (

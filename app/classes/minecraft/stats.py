@@ -6,10 +6,10 @@ import datetime
 import base64
 import typing as t
 
-from app.classes.shared.null_writer import NullWriter
 from app.classes.minecraft.mc_ping import ping
 from app.classes.models.management import HostStats
 from app.classes.models.servers import HelperServers
+from app.classes.shared.null_writer import NullWriter
 from app.classes.shared.helpers import Helpers
 
 with redirect_stderr(NullWriter()):
@@ -87,7 +87,9 @@ class Stats:
         try:
             cpu_freq = psutil.cpu_freq()
         except NotImplementedError:
-            cpu_freq = psutil._common.scpufreq(current=0, min=0, max=0)
+            cpu_freq = None
+        if cpu_freq is None:
+            cpu_freq = psutil._common.scpufreq(current=-1, min=-1, max=-1)
         memory = psutil.virtual_memory()
         try:
             node_stats: NodeStatsDict = {
@@ -224,11 +226,6 @@ class Stats:
 
         logger.info(f"Getting players for server {server}")
 
-        # get our settings and data dictionaries
-        # server_settings = server.get('server_settings', {})
-        # server_data = server.get('server_data_obj', {})
-
-        # TODO: search server properties file for possible override of 127.0.0.1
         internal_ip = server["server_ip"]
         server_port = server["server_port"]
 

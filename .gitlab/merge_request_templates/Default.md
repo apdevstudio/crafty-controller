@@ -27,4 +27,3 @@ This checklist encourages us to confirm any changes have been analyzed to reduce
 * [ ] Have you resolved any lint issues?
 * [ ] Have you assigned a reviewer?
 * [ ] Have you applied correct labels?
-* [ ] Have you updated CHANGELOG.md?

@@ -1,6 +1,7 @@
 import os
 import pathlib
 from pathlib import Path
+import platform
 import shutil
 import time
 import logging
@@ -159,7 +160,10 @@ class Controller:
                 final_path += "_" + server["server_uuid"]
                 os.mkdir(final_path)
             try:
-                FileHelpers.copy_file(server["log_path"], final_path)
+                FileHelpers.copy_file(
+                    pathlib.Path(server["path"], server["log_path"]),
+                    final_path,
+                )
             except Exception as e:
                 logger.warning(f"Failed to copy file with error: {e}")
         # Copy crafty logs to archive dir
@@ -172,6 +176,19 @@ class Controller:
             id="logs_" + str(exec_user["user_id"]),
             args=[temp_dir, temp_zip_storage + ".zip", exec_user],
         )
+        # Make version file .txt when we download it for support
+        # Most people have a default editor for .txt also more mobile friendly...
+        FileHelpers.copy_file(
+            os.path.join(self.project_root, "app", "config", "version.json"),
+            os.path.join(temp_dir, "crafty_sys_info.txt"),
+        )
+        with open(
+            os.path.join(temp_dir, "crafty_sys_info.txt"), "a", encoding="utf-8"
+        ) as f:
+            f.write("\n")
+            f.write("OS Info:\n")
+            f.write("OS: " + str(platform.system()) + "\n")
+            f.write("Version: " + str(platform.release()))
         FileHelpers.make_compressed_archive(temp_zip_storage, temp_dir)
         if len(self.helper.websocket_helper.clients) > 0:
             self.helper.websocket_helper.broadcast_user(

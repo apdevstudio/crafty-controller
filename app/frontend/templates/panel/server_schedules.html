@@ -24,7 +24,7 @@
   </div>
   <!-- Page Title Header Ends-->
 
-  {% include "parts/details_stats.html %}
+  {% include "parts/details_stats.html" %}
 
   <div class="row">
 
@@ -33,10 +33,10 @@
         <div class="card-body  pt-0">
 
           <span class="d-none d-sm-block">
-            {% include "parts/server_controls_list.html %}
+            {% include "parts/server_controls_list.html" %}
           </span>
           <span class="d-block d-sm-none">
-            {% include "parts/m_server_controls_list.html %}
+            {% include "parts/m_server_controls_list.html" %}
           </span>
 
           <div class="row">
@@ -94,15 +94,7 @@
                           <p>{{schedule.start_time}}</p>
                         </td>
                         <td id="{{schedule.enabled}}" class="action">
-                          {% if schedule.enabled %}
-                          <span class="text-success">
-                            <i class="fas fa-check-square"></i> Yes
-                          </span>
-                          {% else %}
-                          <span class="text-danger">
-                            <i class="far fa-times-square"></i> No
-                          </span>
-                          {% end %}
+                            <input style="width: 10px !important;" type="checkbox" class="schedule-enabled-toggle" data-schedule-id="{{schedule.schedule_id}}" data-schedule-enabled="{{ 'true' if schedule.enabled else 'false' }}">
                         </td>
                         <td id="{{schedule.action}}" class="action">
                           <button onclick="window.location.href='/panel/edit_schedule?id={{ data['server_stats']['server_id']['server_id'] }}&sch_id={{schedule.schedule_id}}'" class="btn btn-info">
@@ -189,15 +181,8 @@
                                   <p>{{schedule.start_time}}</p>
                                 </li>
                                 <li id="{{schedule.enabled}}" class="action" style="border-top: .1em solid gray; border-bottom: .1em solid gray">
-                                  {% if schedule.enabled %}
-                                  <h4>Enabled</h4> <span class="text-success">
-                                    <i class="fas fa-check-square"></i> Yes
-                                  </span>
-                                  {% else %}
-                                  <h4>Enabled</h4> <span class="text-danger">
-                                    <i class="far fa-times-square"></i> No
-                                  </span>
-                                  {% end %}
+                                  <h4>Enabled</h4>
+                                  <input type="checkbox" class="schedule-enabled-toggle" data-schedule-id="{{schedule.schedule_id}}" data-schedule-enabled="{{ 'true' if schedule.enabled else 'false' }}">
                                 </li>
                               </ul>
                             </div>
@@ -230,6 +215,15 @@
       color: white !important;
       ;
     }
+    .toggle-handle {
+      background-color: white !important;
+    }
+    .toggle-on {
+      color: black !important;
+    }
+    .toggle {
+      height: 0px !important;
+    }
   </style>
 
 
@@ -255,6 +249,39 @@
 
 {% block js %}
 <script>
+
+  function debounce(func, timeout = 300){
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+  }
+
+  $(() => {
+    $('.schedule-enabled-toggle').bootstrapToggle({
+      on: 'Yes',
+      off: 'No',
+      onstyle: 'success',
+      offstyle: 'danger',
+    })
+    $('.schedule-enabled-toggle').each(function() {
+      const enabled = JSON.parse(this.getAttribute('data-schedule-enabled'));
+      $(this).bootstrapToggle(enabled ? 'on' : 'off')
+    })
+    $('.schedule-enabled-toggle').change(function() {
+      const id = this.getAttribute('data-schedule-id');
+      const enabled = this.checked;
+
+      fetch(`/api/v2/servers/{{data['server_id']}}/tasks/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({enabled}),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    });
+  })
 
   const serverId = new URLSearchParams(document.location.search).get('id')
 
