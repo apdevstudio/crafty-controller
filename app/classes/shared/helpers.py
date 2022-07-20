@@ -20,7 +20,7 @@ import itertools
 from datetime import datetime
 from socket import gethostname
 from contextlib import redirect_stderr, suppress
-from packaging import version
+from packaging import version as pkg_version
 
 from app.classes.shared.null_writer import NullWriter
 from app.classes.shared.console import Console
@@ -94,10 +94,10 @@ class Helpers:
                 "https://gitlab.com/api/v4/projects/20430749/repository/tags"
             )
             if response.status_code == 200:
-                remote_version = version.parse(json.loads(response.text)[0]["name"])
+                remote_version = pkg_version.parse(json.loads(response.text)[0]["name"])
 
             # Get local version data from the file and parse the semver
-            local_version = version.parse(self.get_version_string())
+            local_version = pkg_version.parse(self.get_version_string())
 
             if remote_version > local_version:
                 return remote_version
@@ -124,14 +124,14 @@ class Helpers:
                         winreg.HKEY_LOCAL_MACHINE, jdk_key_path
                     ) as kjdk:
                         for i in itertools.count():
-                            ver = winreg.EnumKey(kjdk, i)
+                            version = winreg.EnumKey(kjdk, i)
                             kjdk_current = winreg.OpenKey(
                                 winreg.HKEY_LOCAL_MACHINE,
                                 jdk_key_path,
                             )
                             kjdk_current = winreg.OpenKey(
                                 winreg.HKEY_LOCAL_MACHINE,
-                                jdk_key_path + "\\" + ver,
+                                jdk_key_path + "\\" + version,
                             )
                             kjdk_current_values = dict(  # pylint: disable=consider-using-dict-comprehension
                                 [
@@ -411,8 +411,8 @@ class Helpers:
         meta = version_data.get("meta", "?")
 
         # set some defaults if we don't get version_data from our helper
-        semver = f"{major}.{minor}.{sub}-{meta}"
-        return str(semver)
+        version = f"{major}.{minor}.{sub}-{meta}"
+        return str(version)
 
     def encode_pass(self, password):
         return self.passhasher.hash(password)
