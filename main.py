@@ -7,8 +7,9 @@ import argparse
 import logging.config
 import signal
 import peewee
-from app.classes.shared.file_helpers import FileHelpers
+from packaging import version
 
+from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.import3 import Import3
 from app.classes.shared.console import Console
 from app.classes.shared.helpers import Helpers
@@ -39,11 +40,11 @@ except ModuleNotFoundError as err:
 def do_intro():
     logger.info("***** Crafty Controller Started *****")
 
-    version = helper.get_version_string()
+    ver = helper.get_version_string()
 
     intro = f"""
     {'/' * 75}
-    #{("Welcome to Crafty Controller - v." + version).center(73, " ")}#
+    #{("Welcome to Crafty Controller - v." + ver).center(73, " ")}#
     {'/' * 75}
     #{"Server Manager / Web Portal for your Minecraft server".center(73, " ")}#
     #{"Homepage: www.craftycontrol.com".center(73, " ")}#
@@ -225,6 +226,19 @@ if __name__ == "__main__":
         controller_setup_thread.join()
 
         Console.info("Crafty has fully started and is now ready for use!")
+
+        # Check if new version available
+        remote_ver = helper.check_remote_version()
+        if remote_ver:
+            notice = f"""
+                A new version of Crafty is available!
+                {'/' * 37}
+                New version available: {remote_ver}
+                Current version: {version.parse(helper.get_version_string())}
+                {'/' * 37}
+                """
+            Console.yellow(notice)
+
         crafty_prompt.prompt = f"Crafty Controller v{helper.get_version_string()} > "
         try:
             logger.info("Removing old temp dirs")
