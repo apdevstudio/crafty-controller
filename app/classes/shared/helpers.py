@@ -20,6 +20,7 @@ import itertools
 from datetime import datetime
 from socket import gethostname
 from contextlib import redirect_stderr, suppress
+from packaging import version
 
 from app.classes.shared.null_writer import NullWriter
 from app.classes.shared.console import Console
@@ -82,6 +83,29 @@ class Helpers:
         print(f"Import Error: Unable to load {ex.name} module")
         installer.do_install()
 
+    def check_remote_version(self):
+        """
+        Check if the remote version is newer than the local version
+        Returning remote version if it is newer, otherwise False.
+        """
+        try:
+            # Get tags from Gitlab, select the latest and parse the semver
+            response = get(
+                "https://gitlab.com/api/v4/projects/20430749/repository/tags"
+            )
+            if response.status_code == 200:
+                remote_version = version.parse(json.loads(response.text)[0]["name"])
+
+            # Get local version data from the file and parse the semver
+            local_version = version.parse(self.get_version_string())
+
+            if remote_version > local_version:
+                return remote_version
+
+        except Exception as e:
+            logger.error(f"Unable to check for new crafty version! \n{e}")
+        return False
+
     @staticmethod
     def find_java_installs():
         # If we're windows return oracle java versions,
@@ -100,14 +124,14 @@ class Helpers:
                         winreg.HKEY_LOCAL_MACHINE, jdk_key_path
                     ) as kjdk:
                         for i in itertools.count():
-                            version = winreg.EnumKey(kjdk, i)
+                            ver = winreg.EnumKey(kjdk, i)
                             kjdk_current = winreg.OpenKey(
                                 winreg.HKEY_LOCAL_MACHINE,
                                 jdk_key_path,
                             )
                             kjdk_current = winreg.OpenKey(
                                 winreg.HKEY_LOCAL_MACHINE,
-                                jdk_key_path + "\\" + version,
+                                jdk_key_path + "\\" + ver,
                             )
                             kjdk_current_values = dict(  # pylint: disable=consider-using-dict-comprehension
                                 [
@@ -387,8 +411,8 @@ class Helpers:
         meta = version_data.get("meta", "?")
 
         # set some defaults if we don't get version_data from our helper
-        version = f"{major}.{minor}.{sub}-{meta}"
-        return str(version)
+        semver = f"{major}.{minor}.{sub}-{meta}"
+        return str(semver)
 
     def encode_pass(self, password):
         return self.passhasher.hash(password)
