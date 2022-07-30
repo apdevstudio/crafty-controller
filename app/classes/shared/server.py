@@ -247,11 +247,20 @@ class ServerInstance:
                     "Oracle Java detected. Changing start command to avoid re-exec."
                 )
                 which_java_raw = self.helper.which_java()
-                java_path = which_java_raw + "\\bin\\java"
+                try:
+                    java_path = which_java_raw + "\\bin\\java"
+                except TypeError:
+                    logger.warning(
+                        "Could not find java in the registry even though"
+                        " Oracle java is installed. Re-exec expected, but we have no"
+                        " other options. CPU stats will not work for process."
+                    )
+                    java_path = ""
                 if str(which_java_raw) != str(self.helper.get_servers_root_dir) or str(
                     self.helper.get_servers_root_dir
                 ) in str(which_java_raw):
-                    self.server_command[0] = java_path
+                    if java_path != "":
+                        self.server_command[0] = java_path
                 else:
                     logger.critcal(
                         "Possible attack detected. User attempted to exec "
