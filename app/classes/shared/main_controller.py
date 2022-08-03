@@ -422,6 +422,7 @@ class Controller:
 
     def create_jar_server(
         self,
+        jar: str,
         server: str,
         version: str,
         name: str,
@@ -493,7 +494,7 @@ class Controller:
 
         # download the jar
         self.server_jars.download_jar(
-            server, version, os.path.join(server_dir, server_file), new_id
+            jar, server, version, os.path.join(server_dir, server_file), new_id
         )
 
         return new_id
