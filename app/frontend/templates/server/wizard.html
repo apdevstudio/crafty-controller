@@ -35,6 +35,7 @@
                     <label for="server_jar">{{ translate('serverWizard', 'serverType', data['lang']) }}</label>
                     <select required class="form-control form-control-lg select-css" id="server_jar" name="server_jar"
                       onchange="serverJarChange(this)">
+                      <option value="None">{{ translate('serverWizard', 'selectType', data['lang']) }}</option>
                       {% for s in data['server_types'] %}
                       <option value="{{ s }}">{{ s.capitalize() }}</option>
                       {% end %}
@@ -44,10 +45,10 @@
 
                 <div class="col-sm-12">
                   <div class="form-group">
-                    <label for="server_type">{{ translate('serverWizard', 'serverType', data['lang']) }}</label>
+                    <label for="server_type">{{ translate('serverWizard', 'serverSelect', data['lang']) }}</label>
                     <select required class="form-control form-control-lg select-css" id="server_type" name="server_type"
                       onchange="serverTypeChange(this)">
-                      <option value="">{{ translate('serverWizard', 'selectType', data['lang']) }}</option>
+                      <option value="">{{ translate('serverWizard', 'selectServer', data['lang']) }}</option>
                     </select>
                   </div>
                 </div>
@@ -693,7 +694,15 @@
       // get the index of the selected option
       var idx = document.getElementById('server_type').selectedIndex;
       // get the value of the selected option
-      var which = document.getElementById('server_type').options[idx].value;
+      var cSelect = document.getElementById("server");
+      try {
+        var which = document.getElementById('server_type').options[idx].value;
+      } catch {
+        while (cSelect.options.length > 0) {
+          cSelect.remove(0);
+        }
+        return;
+      }
       let server_type = which.split('|')[0];
       let server = which.split('|')[1];
       // use the selected option value to retrieve the list of items from the serverTypesLists array
@@ -722,6 +731,17 @@
     }
 
     function serverJarChange(selectObj) {
+      let type_select = document.getElementById('server_jar')
+      let tidx = type_select.selectedIndex;
+      let val = type_select.options[tidx].value;
+      if (val == 'None') {
+        var jcSelect = document.getElementById("server_type");
+        while (jcSelect.options.length > 0) {
+          jcSelect.remove(0);
+        }
+        serverTypeChange(selectObj);
+        return;
+      }
       // get the index of the selected option
       var jidx = selectObj.selectedIndex;
       // get the value of the selected option
