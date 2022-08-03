@@ -70,6 +70,39 @@ class ServerJars:
         logger.error("unable to contact serverjars.com api")
         return False
 
+    def manual_refresh_cache(self):
+        cache_file = self.helper.serverjar_cache
+
+        # debug override
+        # cache_old = True
+
+        # if the API is down... we bomb out
+        if not self._check_api_alive():
+            return False
+
+        logger.info("Manual Refresh requested.")
+        now = datetime.now()
+        data = {
+            "last_refreshed": now.strftime("%m/%d/%Y, %H:%M:%S"),
+            "types": {},
+        }
+
+        jar_types = self._get_server_type_list()
+        data["types"].update(jar_types)
+        for s in data["types"]:
+            data["types"].update({s: dict.fromkeys(data["types"].get(s), {})})
+            for j in data["types"].get(s):
+                versions = self._get_jar_details(j, s)
+                data["types"][s].update({j: versions})
+        # save our cache
+        try:
+            with open(cache_file, "w", encoding="utf-8") as f:
+                f.write(json.dumps(data, indent=4))
+                logger.info("Cache file refreshed")
+
+        except Exception as e:
+            logger.error(f"Unable to update serverjars.com cache file: {e}")
+
     def refresh_cache(self):
 
         cache_file = self.helper.serverjar_cache

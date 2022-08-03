@@ -96,6 +96,7 @@ class ServerHandler(BaseHandler):
             "user_data": exec_user,
             "user_role": exec_user_role,
             "roles": list_roles,
+            "super_user": exec_user["superuser"],
             "user_crafty_permissions": exec_user_crafty_permissions,
             "crafty_permissions": {
                 "Server_Creation": EnumPermissionsCrafty.SERVER_CREATION,

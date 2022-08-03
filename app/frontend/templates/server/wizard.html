@@ -32,14 +32,23 @@
               <div class="row">
                 <div class="col-sm-12">
                   <div class="form-group">
-                    <label for="server_jar">{{ translate('serverWizard', 'serverType', data['lang']) }}</label>
-                    <select required class="form-control form-control-lg select-css" id="server_jar" name="server_jar"
-                      onchange="serverJarChange(this)">
-                      <option value="None">{{ translate('serverWizard', 'selectType', data['lang']) }}</option>
-                      {% for s in data['server_types'] %}
-                      <option value="{{ s }}">{{ s.capitalize() }}</option>
+                    <label for="server_jar">{{ translate('serverWizard', 'serverType', data['lang'])
+                      }}</label>
+                    {% if data['super_user'] %}
+                    <select style="width: 90%;" required class="form-control form-control-lg select-css" id="server_jar"
+                      name="server_jar" onchange="serverJarChange(this)">
+                      {% else %}
+                      <select required class="form-control form-control-lg select-css" id="server_jar" name="server_jar"
+                        onchange="serverJarChange(this)">
+                        {% end %}
+                        <option value="None">{{ translate('serverWizard', 'selectType', data['lang']) }}</option>
+                        {% for s in data['server_types'] %}
+                        <option value="{{ s }}">{{ s.capitalize() }}</option>
+                        {% end %}
+                      </select>
+                      {% if data['super_user'] %}
+                      &nbsp;&nbsp;<i onclick="refreshCache()" id="refresh-cache" class="refresh-class fas fa-sync"></i>
                       {% end %}
-                    </select>
                   </div>
                 </div>
 
@@ -424,6 +433,10 @@
     </div>
   </div>
   <style>
+    .refresh-class:hover {
+      cursor: grab;
+    }
+
     .scroll {
       max-height: 12em;
       overflow-y: auto;
@@ -680,6 +693,25 @@
           show_file_tree();
 
         }, 5000);
+      });
+    }
+
+    function refreshCache() {
+      var token = getCookie("_xsrf")
+      document.getElementById("refresh-cache").classList.add("fa-spin")
+      $.ajax({
+        type: "POST",
+        headers: { 'X-XSRFToken': token },
+        url: '/ajax/jar_cache',
+        success: function () {
+          document.getElementById("refresh-cache").classList.remove("fa-sync");
+          document.getElementById("refresh-cache").classList.remove("fa-spin");
+          document.getElementById("refresh-cache").classList.add("fa-check");
+
+          setTimeout(function () {
+            location.reload();
+          }, 2000);
+        },
       });
     }
 
