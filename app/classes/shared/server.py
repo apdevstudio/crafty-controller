@@ -654,14 +654,13 @@ class ServerInstance:
                 " backup shutdown enabled and server is currently backing up."
             )
             return
+        # if not already running, let's just start
+        if not self.check_running():
+            self.run_threaded_server(user_id)
         else:
-            # if not already running, let's just start
-            if not self.check_running():
-                self.run_threaded_server(user_id)
-            else:
-                self.stop_threaded_server()
-                time.sleep(2)
-                self.run_threaded_server(user_id)
+            self.stop_threaded_server()
+            time.sleep(2)
+            self.run_threaded_server(user_id)
 
     def cleanup_server_object(self):
         self.start_time = None
