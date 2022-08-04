@@ -5,6 +5,7 @@
 TBD
 ### Bug fixes
 - Fix SU status not sticking on user creation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/410))
+- Handle Missing Java From Win Registry ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/413))
 ### Tweaks
 TBD
 ### Lang
