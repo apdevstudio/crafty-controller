@@ -1,0 +1,16 @@
+{
+    "background_color": "purple",
+    "description": "Server management control.",
+    "display": "fullscreen",
+    "icons": [
+        {
+            "src": "../static/assets/images/Crafty_4-0.png",
+            "sizes": "192x192",
+            "type": "icon/png"
+        }
+    ],
+    "scope": "/",
+    "name": "Crafty 4",
+    "short_name": "Crafty",
+    "start_url": "/panel/dashboard"
+}
