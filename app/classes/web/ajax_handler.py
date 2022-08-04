@@ -454,6 +454,14 @@ class AjaxHandler(BaseHandler):
             self.helper.backup_select(path, exec_user["user_id"])
             return
 
+        elif page == "jar_cache":
+            if not superuser:
+                self.redirect("/panel/error?error=Not a super user")
+                return
+
+            self.controller.server_jars.manual_refresh_cache()
+            return
+
     @tornado.web.authenticated
     def delete(self, page):
         api_key, _, exec_user = self.current_user
