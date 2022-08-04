@@ -656,6 +656,13 @@ class ServerInstance:
             self.helper.websocket_helper.broadcast_user(user, "send_start_reload", {})
 
     def restart_threaded_server(self, user_id):
+        bu_conf = HelpersManagement.get_backup_config(self.server_id)
+        if self.is_backingup and bu_conf["shutdown"]:
+            logger.info(
+                "Restart command detected. Supressing - server has"
+                " backup shutdown enabled and server is currently backing up."
+            )
+            return
         # if not already running, let's just start
         if not self.check_running():
             self.run_threaded_server(user_id)
