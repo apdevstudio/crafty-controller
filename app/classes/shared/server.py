@@ -865,7 +865,7 @@ class ServerInstance:
                     "notify", "backupStarted", HelperUsers.get_user_lang_by_id(user)
                 ).format(self.name),
             )
-        time.sleep(60)
+        time.sleep(3)
         conf = HelpersManagement.get_backup_config(self.server_id)
         if conf["shutdown"]:
             logger.info(
