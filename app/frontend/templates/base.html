@@ -15,9 +15,14 @@
   <link rel="stylesheet" href="/static/assets/vendors/typicons/typicons.css">
   <link rel="stylesheet" href="/static/assets/vendors/fontawesome5/css/all.css">
   <link rel="stylesheet" type="text/css"
-        href="https://cdn.datatables.net/v/bs4/dt-1.10.22/fh-3.1.7/r-2.2.6/sc-2.0.3/sp-1.2.2/datatables.min.css" />
+    href="https://cdn.datatables.net/v/bs4/dt-1.10.22/fh-3.1.7/r-2.2.6/sc-2.0.3/sp-1.2.2/datatables.min.css" />
   <link rel="stylesheet" href="/static/assets/vendors/css/vendor.bundle.base.css">
   <link rel="stylesheet" href="/static/assets/css/crafty.css">
+  <link rel="manifest" href="crafty.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" sizes="192x192" href="../static/assets/images/Crafty_4-0.png">
+  <link rel="apple-touch-icon" href="../static/assets/images/Crafty_4-0.png">
+
 
   <!-- endinject -->
 
@@ -72,7 +77,7 @@
         {% include notify.html %}
 
         <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
-                data-toggle="offcanvas">
+          data-toggle="offcanvas">
           <span class="mdi mdi-menu"></span>
         </button>
       </div>
@@ -163,7 +168,7 @@
   <script src="/static/assets/js/shared/hoverable-collapse.js"></script>
   <script src="/static/assets/js/shared/misc.js"></script>
   <script type="text/javascript"
-          src="https://cdn.datatables.net/v/bs4/dt-1.10.22/fh-3.1.7/r-2.2.6/sc-2.0.3/sp-1.2.2/datatables.min.js"></script>
+    src="https://cdn.datatables.net/v/bs4/dt-1.10.22/fh-3.1.7/r-2.2.6/sc-2.0.3/sp-1.2.2/datatables.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>
   <script type="text/javascript" src="/static/assets/js/motd.js"></script>
 
@@ -191,7 +196,7 @@
 
     $.extend($.fn.dataTable.defaults, {
       // {{ '\nlanguage:' }} {% raw translate('datatables', 'i18n', data['lang']) %}
-      })
+    })
 
     //used to get cookies from browser - this is part of tornados xsrf protection - it's for extra security
     function getCookie(name) {
