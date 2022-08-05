@@ -342,7 +342,11 @@
                 <td class="pb-0">
                   <div class="row">
                     {% for language in data['translations'][person] %}
-                    <span class="btn btn-sm btn-inverse-success mr-2" style="margin-bottom: 12px;">{{ language }}</span>
+                      {% if language['status'] %}
+                        <span class="btn btn-sm btn-inverse-success mr-2" style="margin-bottom: 12px;">{{ language['name'] }}</span>
+                      {% else %}
+                        <span class="btn btn-sm btn-inverse-secondary mr-2" style="margin-bottom: 12px;">{{ language['name'] }}</span>
+                      {% end %}
                     {% end %}
                   </div>
                 </td>
