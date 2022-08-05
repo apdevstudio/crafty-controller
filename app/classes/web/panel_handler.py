@@ -901,6 +901,7 @@ class PanelHandler(BaseHandler):
             page_data["new_schedule"] = True
             page_data["schedule"] = {}
             page_data["schedule"]["children"] = []
+            page_data["schedule"]["name"] = ""
             page_data["schedule"]["server_id"] = server_id
             page_data["schedule"]["schedule_id"] = ""
             page_data["schedule"]["action"] = ""
