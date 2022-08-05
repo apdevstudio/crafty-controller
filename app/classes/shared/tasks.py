@@ -277,18 +277,18 @@ class TasksManager:
                                 schedule.command,
                             ],
                         )
-            if new_job != "error":
-                task = self.controller.management.get_scheduled_task_model(
-                    int(new_job.id)
-                )
-                self.controller.management.update_scheduled_task(
-                    task.schedule_id,
-                    {
-                        "next_run": str(
-                            new_job.next_run_time.strftime("%m/%d/%Y, %H:%M:%S")
-                        )
-                    },
-                )
+                if new_job != "error":
+                    task = self.controller.management.get_scheduled_task_model(
+                        int(new_job.id)
+                    )
+                    self.controller.management.update_scheduled_task(
+                        task.schedule_id,
+                        {
+                            "next_run": str(
+                                new_job.next_run_time.strftime("%m/%d/%Y, %H:%M:%S")
+                            )
+                        },
+                    )
         jobs = self.scheduler.get_jobs()
         logger.info("Loaded schedules. Current enabled schedules: ")
         for item in jobs:
