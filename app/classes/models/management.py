@@ -115,6 +115,7 @@ class Schedules(BaseModel):
     cron_string = CharField(default="")
     parent = IntegerField(null=True)
     delay = IntegerField(default=0)
+    next_run = CharField(default="")
 
     class Meta:
         table_name = "schedules"
@@ -285,6 +286,7 @@ class HelpersManagement:
                 Schedules.cron_string: cron_string,
                 Schedules.parent: parent,
                 Schedules.delay: delay,
+                Schedules.next_run: "",
             }
         ).execute()
         return sch_id

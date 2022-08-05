@@ -92,10 +92,12 @@ class ServerHandler(BaseHandler):
         template = "public/404.html"
 
         page_data = {
+            "update_available": self.helper.update_available,
             "version_data": self.helper.get_version_string(),
             "user_data": exec_user,
             "user_role": exec_user_role,
             "roles": list_roles,
+            "super_user": exec_user["superuser"],
             "user_crafty_permissions": exec_user_crafty_permissions,
             "crafty_permissions": {
                 "Server_Creation": EnumPermissionsCrafty.SERVER_CREATION,
@@ -386,14 +388,20 @@ class ServerHandler(BaseHandler):
                 # deletes temp dir
                 FileHelpers.del_dirs(zip_path)
             else:
-                if len(server_parts) != 2:
+                if len(server_parts) != 3:
                     self.redirect("/panel/error?error=Invalid server data")
                     return
-                server_type, server_version = server_parts
+                jar_type, server_type, server_version = server_parts
                 # TODO: add server type check here and call the correct server
                 # add functions if not a jar
                 new_server_id = self.controller.create_jar_server(
-                    server_type, server_version, server_name, min_mem, max_mem, port
+                    jar_type,
+                    server_type,
+                    server_version,
+                    server_name,
+                    min_mem,
+                    max_mem,
+                    port,
                 )
                 self.controller.management.add_to_audit_log(
                     exec_user["user_id"],

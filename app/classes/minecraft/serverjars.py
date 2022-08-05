@@ -51,7 +51,7 @@ class ServerJars:
 
     def get_serverjar_data(self):
         data = self._read_cache()
-        return data.get("servers")
+        return data.get("types")
 
     def _check_api_alive(self):
         logger.info("Checking serverjars.com API status")
@@ -69,6 +69,39 @@ class ServerJars:
 
         logger.error("unable to contact serverjars.com api")
         return False
+
+    def manual_refresh_cache(self):
+        cache_file = self.helper.serverjar_cache
+
+        # debug override
+        # cache_old = True
+
+        # if the API is down... we bomb out
+        if not self._check_api_alive():
+            return False
+
+        logger.info("Manual Refresh requested.")
+        now = datetime.now()
+        data = {
+            "last_refreshed": now.strftime("%m/%d/%Y, %H:%M:%S"),
+            "types": {},
+        }
+
+        jar_types = self._get_server_type_list()
+        data["types"].update(jar_types)
+        for s in data["types"]:
+            data["types"].update({s: dict.fromkeys(data["types"].get(s), {})})
+            for j in data["types"].get(s):
+                versions = self._get_jar_details(j, s)
+                data["types"][s].update({j: versions})
+        # save our cache
+        try:
+            with open(cache_file, "w", encoding="utf-8") as f:
+                f.write(json.dumps(data, indent=4))
+                logger.info("Cache file refreshed")
+
+        except Exception as e:
+            logger.error(f"Unable to update serverjars.com cache file: {e}")
 
     def refresh_cache(self):
 
@@ -88,22 +121,18 @@ class ServerJars:
         if cache_old:
             logger.info("Cache file is over 1 day old, refreshing")
             now = datetime.now()
-            data = {"last_refreshed": now.strftime("%m/%d/%Y, %H:%M:%S"), "servers": {}}
+            data = {
+                "last_refreshed": now.strftime("%m/%d/%Y, %H:%M:%S"),
+                "types": {},
+            }
 
             jar_types = self._get_server_type_list()
-
-            # for each jar type
-            for j in jar_types:
-
-                # for each server
-                for s in jar_types.get(j):
-                    # jar versions for this server
-                    versions = self._get_jar_details(s)
-
-                    # add these versions (a list) to the dict with
-                    # a key of the server type
-                    data["servers"].update({s: versions})
-
+            data["types"].update(jar_types)
+            for s in data["types"]:
+                data["types"].update({s: dict.fromkeys(data["types"].get(s), {})})
+                for j in data["types"].get(s):
+                    versions = self._get_jar_details(j, s)
+                    data["types"][s].update({j: versions})
             # save our cache
             try:
                 with open(cache_file, "w", encoding="utf-8") as f:
@@ -113,8 +142,8 @@ class ServerJars:
             except Exception as e:
                 logger.error(f"Unable to update serverjars.com cache file: {e}")
 
-    def _get_jar_details(self, jar_type="servers"):
-        url = f"/api/fetchAll/{jar_type}"
+    def _get_jar_details(self, server_type, jar_type="servers"):
+        url = f"/api/fetchAll/{jar_type}/{server_type}"
         response = self._get_api_result(url)
         temp = []
         for v in response:
@@ -127,19 +156,19 @@ class ServerJars:
         response = self._get_api_result(url)
         return response
 
-    def download_jar(self, server, version, path, server_id):
+    def download_jar(self, jar, server, version, path, server_id):
         update_thread = threading.Thread(
             name=f"server_download-{server_id}-{server}-{version}",
             target=self.a_download_jar,
             daemon=True,
-            args=(server, version, path, server_id),
+            args=(jar, server, version, path, server_id),
         )
         update_thread.start()
 
-    def a_download_jar(self, server, version, path, server_id):
+    def a_download_jar(self, jar, server, version, path, server_id):
         # delaying download for server register to finish
         time.sleep(3)
-        fetch_url = f"{self.base_url}/api/fetchJar/{server}/{version}"
+        fetch_url = f"{self.base_url}/api/fetchJar/{jar}/{server}/{version}"
         server_users = PermissionsServers.get_server_user_list(server_id)
 
         # We need to make sure the server is registered before
