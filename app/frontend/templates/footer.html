@@ -4,7 +4,7 @@
       <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">{{ translate('footer', 'copyright', data['lang']) }} © 2021 - <span x-data x-text="new Date().getFullYear()"></span> <a href="https://craftycontrol.com/" target="_blank">Crafty Controller</a>. {{ translate('footer', 'allRightsReserved', data['lang']) }}.</span>
       <span class="float-none float-sm-right d-block mt-1 mt-sm-0">&nbsp;&nbsp;{{ translate('footer', 'version', data['lang']) }}: {{ data['version_data'] }}</span>
       {% if data['update_available'] %}
-        <span class="float-none float-sm-right d-block mt-1 mt-sm-0"><a class="blink-text" href="https://gitlab.com/crafty-controller/crafty-4/-/releases">Update Available!</a></span>
+        <span class="float-none float-sm-right d-block mt-1 mt-sm-0"><a target="_blank" class="blink-text" href="https://gitlab.com/crafty-controller/crafty-4/-/releases">Update Available!</a></span>
       {% end %}
     </div>
     <style>
