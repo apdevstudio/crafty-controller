@@ -208,6 +208,7 @@ class TasksManager:
         # load schedules from DB
         for schedule in schedules:
             if schedule.interval != "reaction":
+                new_job = "error"
                 if schedule.cron_string != "":
                     try:
                         new_job = self.scheduler.add_job(
