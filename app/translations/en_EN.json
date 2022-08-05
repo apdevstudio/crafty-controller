@@ -480,7 +480,8 @@
         "save": "Save",
         "selectRole": "Select Role(s)",
         "selectRoot": "Select Archive Root Dir",
-        "selectType": "Select a Type",
+        "selectType": "Server Type (Vanilla, Servers, Modded, etc.)",
+        "selectServer": "Select a Server",
         "selectVersion": "Select a Version",
         "selectZipDir": "Select the directory in the archive you want us to unzip files from",
         "serverJar": "Server Executable File",
@@ -488,6 +489,7 @@
         "serverPath": "Server Path",
         "serverPort": "Server Port",
         "serverType": "Server Type",
+        "serverSelect": "Server Select",
         "serverVersion": "Server Version",
         "sizeInGB": "Size in GB",
         "zipPath": "Server Path"

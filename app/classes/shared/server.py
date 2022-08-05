@@ -247,11 +247,20 @@ class ServerInstance:
                     "Oracle Java detected. Changing start command to avoid re-exec."
                 )
                 which_java_raw = self.helper.which_java()
-                java_path = which_java_raw + "\\bin\\java"
+                try:
+                    java_path = which_java_raw + "\\bin\\java"
+                except TypeError:
+                    logger.warning(
+                        "Could not find java in the registry even though"
+                        " Oracle java is installed. Re-exec expected, but we have no"
+                        " other options. CPU stats will not work for process."
+                    )
+                    java_path = ""
                 if str(which_java_raw) != str(self.helper.get_servers_root_dir) or str(
                     self.helper.get_servers_root_dir
                 ) in str(which_java_raw):
-                    self.server_command[0] = java_path
+                    if java_path != "":
+                        self.server_command[0] = java_path
                 else:
                     logger.critcal(
                         "Possible attack detected. User attempted to exec "
@@ -647,6 +656,13 @@ class ServerInstance:
             self.helper.websocket_helper.broadcast_user(user, "send_start_reload", {})
 
     def restart_threaded_server(self, user_id):
+        bu_conf = HelpersManagement.get_backup_config(self.server_id)
+        if self.is_backingup and bu_conf["shutdown"]:
+            logger.info(
+                "Restart command detected. Supressing - server has"
+                " backup shutdown enabled and server is currently backing up."
+            )
+            return
         # if not already running, let's just start
         if not self.check_running():
             self.run_threaded_server(user_id)

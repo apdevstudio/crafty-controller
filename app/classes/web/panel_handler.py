@@ -1878,15 +1878,12 @@ class PanelHandler(BaseHandler):
                 # We don't want that. Automatically make them stay super user
                 # since we know they are.
                 if str(exec_user["user_id"]) != str(user_id):
-                    superuser = bleach.clean(self.get_argument("superuser", "0"))
+                    superuser = int(bleach.clean(self.get_argument("superuser", "0")))
                 else:
-                    superuser = "1"
+                    superuser = 1
             else:
-                superuser = "0"
-            if superuser == "1":
-                superuser = True
-            else:
-                superuser = False
+                superuser = 0
+
             if not exec_user["superuser"]:
                 if username is None or username == "":
                     self.redirect("/panel/error?error=Invalid username")
@@ -2062,13 +2059,9 @@ class PanelHandler(BaseHandler):
             )
             # We don't want a non-super user to be able to create a super user.
             if superuser:
-                new_superuser = bleach.clean(self.get_argument("superuser", "0"))
+                new_superuser = int(bleach.clean(self.get_argument("superuser", "0")))
             else:
-                new_superuser = "0"
-            if superuser == "1":
-                new_superuser = True
-            else:
-                new_superuser = False
+                new_superuser = 0
 
             if EnumPermissionsCrafty.USER_CONFIG not in exec_user_crafty_permissions:
                 self.redirect(

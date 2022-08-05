@@ -192,6 +192,7 @@ class TasksManager:
     def scheduler_thread(self):
         schedules = HelpersManagement.get_schedules_enabled()
         self.scheduler.add_listener(self.schedule_watcher, mask=EVENT_JOB_EXECUTED)
+        self.scheduler.start()
         # self.scheduler.add_job(
         #    self.scheduler.print_jobs, "interval", seconds=10, id="-1"
         # )
@@ -201,7 +202,7 @@ class TasksManager:
             if schedule.interval != "reaction":
                 if schedule.cron_string != "":
                     try:
-                        self.scheduler.add_job(
+                        new_job = self.scheduler.add_job(
                             HelpersManagement.add_command,
                             CronTrigger.from_crontab(
                                 schedule.cron_string, timezone=str(self.tz)
@@ -215,6 +216,7 @@ class TasksManager:
                             ],
                         )
                     except Exception as e:
+                        new_job = "error"
                         Console.error(f"Failed to schedule task with error: {e}.")
                         Console.warning("Removing failed task from DB.")
                         logger.error(f"Failed to schedule task with error: {e}.")
@@ -225,7 +227,7 @@ class TasksManager:
                         )
                 else:
                     if schedule.interval_type == "hours":
-                        self.scheduler.add_job(
+                        new_job = self.scheduler.add_job(
                             HelpersManagement.add_command,
                             "cron",
                             minute=0,
@@ -239,7 +241,7 @@ class TasksManager:
                             ],
                         )
                     elif schedule.interval_type == "minutes":
-                        self.scheduler.add_job(
+                        new_job = self.scheduler.add_job(
                             HelpersManagement.add_command,
                             "cron",
                             minute="*/" + str(schedule.interval),
@@ -253,7 +255,7 @@ class TasksManager:
                         )
                     elif schedule.interval_type == "days":
                         curr_time = schedule.start_time.split(":")
-                        self.scheduler.add_job(
+                        new_job = self.scheduler.add_job(
                             HelpersManagement.add_command,
                             "cron",
                             day="*/" + str(schedule.interval),
@@ -267,7 +269,18 @@ class TasksManager:
                                 schedule.command,
                             ],
                         )
-        self.scheduler.start()
+            if new_job != "error":
+                task = self.controller.management.get_scheduled_task_model(
+                    int(new_job.id)
+                )
+                self.controller.management.update_scheduled_task(
+                    task.schedule_id,
+                    {
+                        "next_run": str(
+                            new_job.next_run_time.strftime("%m/%d/%Y, %H:%M:%S")
+                        )
+                    },
+                )
         jobs = self.scheduler.get_jobs()
         logger.info("Loaded schedules. Current enabled schedules: ")
         for item in jobs:
@@ -298,7 +311,7 @@ class TasksManager:
         if job_data["enabled"] and job_data["interval_type"] != "reaction":
             if job_data["cron_string"] != "":
                 try:
-                    self.scheduler.add_job(
+                    new_job = self.scheduler.add_job(
                         HelpersManagement.add_command,
                         CronTrigger.from_crontab(
                             job_data["cron_string"], timezone=str(self.tz)
@@ -312,6 +325,7 @@ class TasksManager:
                         ],
                     )
                 except Exception as e:
+                    new_job = "error"
                     Console.error(f"Failed to schedule task with error: {e}.")
                     Console.warning("Removing failed task from DB.")
                     logger.error(f"Failed to schedule task with error: {e}.")
@@ -320,7 +334,7 @@ class TasksManager:
                     self.controller.management_helper.delete_scheduled_task(sch_id)
             else:
                 if job_data["interval_type"] == "hours":
-                    self.scheduler.add_job(
+                    new_job = self.scheduler.add_job(
                         HelpersManagement.add_command,
                         "cron",
                         minute=0,
@@ -334,7 +348,7 @@ class TasksManager:
                         ],
                     )
                 elif job_data["interval_type"] == "minutes":
-                    self.scheduler.add_job(
+                    new_job = self.scheduler.add_job(
                         HelpersManagement.add_command,
                         "cron",
                         minute="*/" + str(job_data["interval"]),
@@ -348,7 +362,7 @@ class TasksManager:
                     )
                 elif job_data["interval_type"] == "days":
                     curr_time = job_data["start_time"].split(":")
-                    self.scheduler.add_job(
+                    new_job = self.scheduler.add_job(
                         HelpersManagement.add_command,
                         "cron",
                         day="*/" + str(job_data["interval"]),
@@ -364,6 +378,14 @@ class TasksManager:
                     )
             logger.info("Added job. Current enabled schedules: ")
             jobs = self.scheduler.get_jobs()
+            if new_job != "error":
+                task = self.controller.management.get_scheduled_task_model(
+                    int(new_job.id)
+                )
+                self.controller.management.update_scheduled_task(
+                    task.schedule_id,
+                    {"next_run": new_job.next_run_time.strftime("%m/%d/%Y, %H:%M:%S")},
+                )
             for item in jobs:
                 logger.info(f"JOB: {item}")
 
@@ -418,7 +440,7 @@ class TasksManager:
         if job_data["enabled"] and job_data["interval"] != "reaction":
             if job_data["cron_string"] != "":
                 try:
-                    self.scheduler.add_job(
+                    new_job = self.scheduler.add_job(
                         HelpersManagement.add_command,
                         CronTrigger.from_crontab(
                             job_data["cron_string"], timezone=str(self.tz)
@@ -432,12 +454,13 @@ class TasksManager:
                         ],
                     )
                 except Exception as e:
+                    new_job = "error"
                     Console.error(f"Failed to schedule task with error: {e}.")
                     Console.info("Removing failed task from DB.")
                     self.controller.management_helper.delete_scheduled_task(sch_id)
             else:
                 if job_data["interval_type"] == "hours":
-                    self.scheduler.add_job(
+                    new_job = self.scheduler.add_job(
                         HelpersManagement.add_command,
                         "cron",
                         minute=0,
@@ -451,7 +474,7 @@ class TasksManager:
                         ],
                     )
                 elif job_data["interval_type"] == "minutes":
-                    self.scheduler.add_job(
+                    new_job = self.scheduler.add_job(
                         HelpersManagement.add_command,
                         "cron",
                         minute="*/" + str(job_data["interval"]),
@@ -465,7 +488,7 @@ class TasksManager:
                     )
                 elif job_data["interval_type"] == "days":
                     curr_time = job_data["start_time"].split(":")
-                    self.scheduler.add_job(
+                    new_job = self.scheduler.add_job(
                         HelpersManagement.add_command,
                         "cron",
                         day="*/" + str(job_data["interval"]),
@@ -479,6 +502,14 @@ class TasksManager:
                             job_data["command"],
                         ],
                     )
+            if new_job != "error":
+                task = self.controller.management.get_scheduled_task_model(
+                    int(new_job.id)
+                )
+                self.controller.management.update_scheduled_task(
+                    task.schedule_id,
+                    {"next_run": new_job.next_run_time.strftime("%m/%d/%Y, %H:%M:%S")},
+                )
         else:
             try:
                 self.scheduler.get_job(str(sch_id))
@@ -506,6 +537,15 @@ class TasksManager:
                 if task.one_time:
                     self.remove_job(task.schedule_id)
                     logger.info("one time task detected. Deleting...")
+                else:
+                    self.controller.management.update_scheduled_task(
+                        task.schedule_id,
+                        {
+                            "next_run": self.scheduler.get_job(
+                                event.job_id
+                            ).next_run_time.strftime("%m/%d/%Y, %H:%M:%S")
+                        },
+                    )
                 # check for any child tasks for this. It's kind of backward,
                 # but this makes DB management a lot easier. One to one
                 # instead of one to many.
