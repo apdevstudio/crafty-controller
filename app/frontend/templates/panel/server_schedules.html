@@ -44,7 +44,8 @@
             <div class="col-md-12 col-sm-12" style="overflow-x:auto;">
               <div class="card">
                 <div class="card-header header-sm d-flex justify-content-between align-items-center">
-                  <h4 class="card-title"><i class="fas fa-calendar"></i> Scheduled Tasks</h4>
+                  <h4 class="card-title"><i class="fas fa-calendar"></i> {{ translate('serverSchedules',
+                    'scheduledTasks', data['lang']) }} </h4>
                   {% if data['user_data']['hints'] %}
                   <span class="too_small" title="{{ translate('serverSchedules', 'cannotSee', data['lang']) }}" ,
                     data-content="{{ translate('serverSchedules', 'cannotSeeOnMobile', data['lang']) }}" ,
@@ -52,20 +53,28 @@
                   {% end %}
                   <div><button
                       onclick="location.href=`/panel/add_schedule?id={{ data['server_stats']['server_id']['server_id'] }}`"
-                      class="btn btn-info">Create New Schedule <i class="fas fa-pencil-alt"></i></button></div>
+                      class="btn btn-info">{{ translate('serverSchedules', 'create', data['lang']) }}<i
+                        class="fas fa-pencil-alt"></i></button></div>
                 </div>
                 <div class="card-body">
                   <table class="table table-hover d-none d-lg-block responsive-table" id="schedule_table" width="100%"
                     style="table-layout:fixed;">
                     <thead>
                       <tr class="rounded">
-                        <th style="width: 2%; min-width: 10px;">ID</th>
-                        <th style="width: 23%; min-width: 50px;">Action</th>
-                        <th style="width: 40%; min-width: 50px;">Command</th>
-                        <th style="width: 10%; min-width: 50px;">Interval</th>
-                        <th style="width: 10%; min-width: 50px;">Next Run</th>
-                        <th style="width: 10%; min-width: 50px;">Enabled</th>
-                        <th style="width: 10%; min-width: 50px;">Edit</th>
+                        <th style="width: 2%; min-width: 10px;">{{ translate('serverSchedules', 'name', data['lang']) }}
+                        </th>
+                        <th style="width: 23%; min-width: 50px;">{{ translate('serverSchedules', 'action', data['lang'])
+                          }}</th>
+                        <th style="width: 40%; min-width: 50px;">{{ translate('serverSchedules', 'command',
+                          data['lang']) }}</th>
+                        <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'interval',
+                          data['lang']) }}</th>
+                        <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'nextRun',
+                          data['lang']) }}</th>
+                        <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'enabled',
+                          data['lang']) }}</th>
+                        <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'edit', data['lang'])
+                          }}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -82,7 +91,7 @@
                         </td>
                         <td id="{{schedule.interval}}" class="action">
                           {% if schedule.interval != '' %}
-                          <p>Every</p>
+                          <p>{{ translate('serverSchedules', 'every', data['lang']) }}</p>
                           <p>{{schedule.interval}} {{schedule.interval_type}}</p>
                           {% elif schedule.interval_type == 'reaction' %}
                           <p>{{schedule.interval_type}}<br><br>child of ID: {{ schedule.parent }}</p>
@@ -120,9 +129,12 @@
                     style="table-layout:fixed;">
                     <thead>
                       <tr class="rounded">
-                        <th style="width: 25%; min-width: 50px;">Action</th>
-                        <th style="max-width: 40%; min-width: 50px;">Command</th>
-                        <th style="width: 10%; min-width: 50px;">Enabled</th>
+                        <th style="width: 25%; min-width: 50px;">{{ translate('serverSchedules', 'action', data['lang'])
+                          }}</th>
+                        <th style="max-width: 40%; min-width: 50px;">{{ translate('serverSchedules', 'command',
+                          data['lang']) }}</th>
+                        <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'enabled',
+                          data['lang']) }}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -137,11 +149,11 @@
                         <td id="{{schedule.enabled}}" class="action">
                           {% if schedule.enabled %}
                           <span class="text-success">
-                            <i class="fas fa-check-square"></i> Yes
+                            <i class="fas fa-check-square"></i> {{ translate('serverSchedules', 'yes', data['lang']) }}
                           </span>
                           {% else %}
                           <span class="text-danger">
-                            <i class="far fa-times-square"></i> No
+                            <i class="far fa-times-square"></i> {{ translate('serverSchedules', 'no', data['lang']) }}
                           </span>
                           {% end %}
                         </td>
@@ -152,7 +164,8 @@
                         <div class="modal-dialog" role="document">
                           <div class="modal-content">
                             <div class="modal-header">
-                              <h5 class="modal-title" id="exampleModalLabel">Task Details</h5>
+                              <h5 class="modal-title" id="exampleModalLabel">{{ translate('serverSchedules', 'details',
+                                data['lang']) }}</h5>
                               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                               </button>
@@ -160,36 +173,39 @@
                             <div class="modal-body">
                               <ul style="list-style: none;">
                                 <li id="{{schedule.schedule_id}}" class="id" style="border-top: .1em solid gray;">
-                                  <h4>ID</h4>
+                                  <h4>{{ translate('serverSchedules', 'name', data['lang']) }}</h4>
                                   <p>{{schedule.schedule_id}}</p>
                                 </li>
                                 <li id="{{schedule.action}}" class="action" style="border-top: .1em solid gray;">
-                                  <h4>Action</h4>
+                                  <h4>{{ translate('serverSchedules', 'action', data['lang']) }}</h4>
                                   <p>{{schedule.action}}</p>
                                 </li>
                                 <li id="{{schedule.command}}" class="action" style="border-top: .1em solid gray;">
-                                  <h4>Command</h4>
+                                  <h4>{{ translate('serverSchedules', 'command', data['lang']) }}</h4>
                                   <p>{{schedule.command}}</p>
                                 </li>
                                 <li id="{{schedule.interval}}" class="action" style="border-top: .1em solid gray;">
                                   {% if schedule.interval != '' %}
-                                  <h4>Interval</h4>
-                                  <p>Every {{schedule.interval}} {{schedule.interval_type}}</p>
+                                  <h4>{{ translate('serverSchedules', 'interval', data['lang']) }}</h4>
+                                  <p>{{ translate('serverSchedules', 'every', data['lang']) }} {{schedule.interval}}
+                                    {{schedule.interval_type}}</p>
                                   {% elif schedule.interval_type == 'reaction' %}
-                                  <h4>Interval</h4>
-                                  <p>{{schedule.interval_type}}<br><br>child of ID: {{ schedule.parent }}</p>
+                                  <h4>{{ translate('serverSchedules', 'interval', data['lang']) }}</h4>
+                                  <p>{{schedule.interval_type}}<br><br>{{ translate('serverSchedules', 'child',
+                                    data['lang']) }}: {{ schedule.parent }}</p>
                                   {% else %}
-                                  <h4>Interval</h4>
-                                  <p>Cron String: {{schedule.cron_string}}</p>
+                                  <h4>{{ translate('serverSchedules', 'interval', data['lang']) }}</h4>
+                                  <p>{{ translate('serverSchedules', 'cron', data['lang']) }}: {{schedule.cron_string}}
+                                  </p>
                                   {% end %}
                                 </li>
                                 <li id="{{schedule.start_time}}" class="action" style="border-top: .1em solid gray;">
-                                  <h4>Next Run</h4>
+                                  <h4>{{ translate('serverSchedules', 'nextRun', data['lang']) }}</h4>
                                   <p>{{schedule.next_run}}</p>
                                 </li>
                                 <li id="{{schedule.enabled}}" class="action"
                                   style="border-top: .1em solid gray; border-bottom: .1em solid gray">
-                                  <h4>Enabled</h4>
+                                  <h4>{{ translate('serverSchedules', 'enabled', data['lang']) }}</h4>
                                   <input type="checkbox" class="schedule-enabled-toggle"
                                     data-schedule-id="{{schedule.schedule_id}}"
                                     data-schedule-enabled="{{ 'true' if schedule.enabled else 'false' }}">
@@ -200,12 +216,15 @@
                               <button
                                 onclick="window.location.href='/panel/edit_schedule?id={{ data['server_stats']['server_id']['server_id'] }}&sch_id={{schedule.schedule_id}}'"
                                 class="btn btn-info">
-                                <i class="fas fa-pencil-alt"></i> Edit
+                                <i class="fas fa-pencil-alt"></i> {{ translate('serverSchedules', 'edit', data['lang'])
+                                }}
                               </button>
                               <button data-sch={{ schedule.schedule_id }} class="btn btn-danger del_button">
-                                <i class="fas fa-trash" aria-hidden="true"></i> Delete
+                                <i class="fas fa-trash" aria-hidden="true"></i> {{ translate('serverSchedules',
+                                'delete', data['lang']) }}
                               </button>
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">{{
+                                translate('serverSchedules', 'close', data['lang']) }}</button>
                             </div>
                           </div>
                         </div>
