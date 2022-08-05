@@ -81,7 +81,7 @@
                       {% for schedule in data['schedules'] %}
                       <tr>
                         <td id="{{schedule.schedule_id}}" class="id">
-                          <p>{{schedule.schedule_id}}</p>
+                          <p>{{schedule.name}}</p>
                         </td>
                         <td id="{{schedule.action}}" class="action">
                           <p>{{schedule.action}}</p>
@@ -94,7 +94,8 @@
                           <p>{{ translate('serverSchedules', 'every', data['lang']) }}</p>
                           <p>{{schedule.interval}} {{schedule.interval_type}}</p>
                           {% elif schedule.interval_type == 'reaction' %}
-                          <p>{{schedule.interval_type}}<br><br>child of ID: {{ schedule.parent }}</p>
+                          <p>{{schedule.interval_type}}<br><br>{{ translate('serverSchedules', 'child', data['lang'])}}:
+                            {{ schedule.parent }}</p>
                           {% else %}
                           <p>Cron String:</p>
                           <p>{{schedule.cron_string}}</p>
@@ -201,7 +202,11 @@
                                 </li>
                                 <li id="{{schedule.start_time}}" class="action" style="border-top: .1em solid gray;">
                                   <h4>{{ translate('serverSchedules', 'nextRun', data['lang']) }}</h4>
+                                  {% if schedule.next_run %}
                                   <p>{{schedule.next_run}}</p>
+                                  {% else %}
+                                  <p>zzzzzzz</p>
+                                  {% end %}
                                 </li>
                                 <li id="{{schedule.enabled}}" class="action"
                                   style="border-top: .1em solid gray; border-bottom: .1em solid gray">
@@ -322,7 +327,7 @@
   $(document).ready(function () {
     console.log('ready for JS!')
     $('#schedule_table').DataTable({
-      'order': [4, 'desc']
+      'order': [4, 'asc'],
     }
     );
 
@@ -330,7 +335,7 @@
   $(document).ready(function () {
     console.log('ready for JS!')
     $('#mini_schedule_table').DataTable({
-      'order': [2, 'desc']
+      'order': [2, 'asc']
     }
     );
     document.getElementById('mini_schedule_table_wrapper').hidden = true;

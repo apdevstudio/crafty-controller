@@ -76,7 +76,7 @@ class ManagementController:
         interval_type,
         start_time,
         command,
-        comment=None,
+        name,
         enabled=True,
     ):
         return HelpersManagement.create_scheduled_task(
@@ -86,7 +86,7 @@ class ManagementController:
             interval_type,
             start_time,
             command,
-            comment,
+            name,
             enabled,
         )
 

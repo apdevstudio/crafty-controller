@@ -433,7 +433,7 @@
         "no": "No",
         "cron": "Crong String",
         "details": "Schedule Details",
-        "child": "Child of schedule named: ",
+        "child": "Child of schedule named ",
         "areYouSure": "Delete Scheduled Task?",
         "close": "Close",
         "delete": "Delete",

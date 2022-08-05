@@ -48,6 +48,12 @@
                   <input type="hidden" name="subpage" value="config">
 
                   <div class="form-group">
+                    <label for="name">{{ translate('serverSchedules', 'name' , data['lang']) }}</label>
+                    <input type="input" class="form-control" name="name" id="name_input"
+                      value="{{ data['schedule']['name']}}" maxlength="30" placeholder="Name" required>
+                  </div>
+
+                  <div class="form-group">
                     <label for="difficulty">{{ translate('serverScheduleConfig', 'select' , data['lang']) }}<small
                         class="text-muted ml-1"></small> </label><br>
                     <select id="difficulty" name="difficulty" onchange="basicAdvanced(this);"
@@ -141,12 +147,12 @@
                         {% for schedule in data['schedules'] %}
                         {% if schedule.schedule_id != data['schedule']['schedule_id'] %}
                         {% if schedule.interval != '' %}
-                        <option id="{{schedule.schedule_id}}" value="{{schedule.schedule_id}}">ID:
-                          {{schedule.schedule_id}} | {{schedule.command}} | {{schedule.interval}} {{
+                        <option id="{{schedule.schedule_id}}" value="{{schedule.schedule_id}}">
+                          {{schedule.name}} | {{schedule.command}} | {{schedule.interval}} {{
                           schedule.interval_type}}</option>
                         {% else %}
-                        <option id="{{schedule.schedule_id}}" value="{{schedule.schedule_id}}">ID:
-                          {{schedule.schedule_id}} {{schedule.command}} {{schedule.cron_string}}</option>
+                        <option id="{{schedule.schedule_id}}" value="{{schedule.schedule_id}}">
+                          {{schedule.name}} | {{schedule.command}} | {{schedule.cron_string}}</option>
                         {% end %}
                         {% end %}
                         {% end %}
@@ -181,8 +187,8 @@
               <ul>
                 {% for schedule in data['schedule']['children'] %}
                 <li style="overflow: auto;"><a
-                    href="/panel/edit_schedule?id={{schedule.server_id}}&sch_id={{schedule.schedule_id}}">{{schedule.schedule_id}}
-                    | {{schedule.command}}</a></li>
+                    href="/panel/edit_schedule?id={{schedule.server_id}}&sch_id={{schedule.schedule_id}}">{{schedule.name}}
+                    | {{schedule.schedule_id}}</a></li>
                 {% end %}
               </ul>
             </div>
