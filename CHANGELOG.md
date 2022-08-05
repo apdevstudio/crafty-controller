@@ -4,11 +4,12 @@
 ### New features
 TBD
 ### Bug fixes
-TBD
+- Fix Schedules Traceback Bug ([Merge Request |](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/419) [Commit |](https://gitlab.com/crafty-controller/crafty-4/-/commit/f69d79b7023d6c26fccb5caeae9e47b40ebe5af2) [Commit](https://gitlab.com/crafty-controller/crafty-4/-/commit/ad318296dc93beb5533fcd13066440df9f9e799a))
 ### Tweaks
 - credits-v2| Translator status ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/421))
+- Use Names in Schedules ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/419))
 ### Lang
-TBD
+- Make Schedules panel translatable ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/419))
 <br><br>
 
 ## --- [4.0.8] - 2022/08/05
