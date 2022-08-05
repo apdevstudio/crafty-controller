@@ -92,6 +92,7 @@ class ServerHandler(BaseHandler):
         template = "public/404.html"
 
         page_data = {
+            "update_available": self.helper.update_available,
             "version_data": self.helper.get_version_string(),
             "user_data": exec_user,
             "user_role": exec_user_role,
