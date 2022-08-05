@@ -655,7 +655,14 @@ class TasksManager:
             time.sleep(1)
 
     def check_for_updates(self):
+        logger.info("Checking for Crafty updates...")
         self.helper.update_available = self.helper.check_remote_version()
+        if self.helper.update_available:
+            logger.info(f"Found new version {self.helper.update_available}")
+        else:
+            logger.info(
+                "No updates found! You are on the most up to date Crafty version."
+            )
 
     def log_watcher(self):
         self.controller.servers.check_for_old_logs()
