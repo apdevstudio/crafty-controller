@@ -1,12 +1,12 @@
 # Changelog
 
-## --- [4.0.9] - 2022/TBD
+## --- [4.0.9] - 2022/08/06
 ### New features
 TBD
 ### Bug fixes
 TBD
 ### Tweaks
-TBD
+- credits-v2| Translator status ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/421))
 ### Lang
 TBD
 <br><br>
