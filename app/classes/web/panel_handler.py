@@ -368,7 +368,7 @@ class PanelHandler(BaseHandler):
             ) as credits_default_local:
                 try:
                     remote = requests.get(
-                        "https://craftycontrol.com/credits", allow_redirects=True
+                        "https://craftycontrol.com/credits-v2", allow_redirects=True
                     )
                     credits_dict: dict = remote.json()
                     if not credits_dict["staff"]:
