@@ -287,6 +287,7 @@ class PanelHandler(BaseHandler):
             "update_available": self.helper.update_available,
             "serverTZ": tz,
             "version_data": self.helper.get_version_string(),
+            "failed_servers": self.controller.servers.failed_servers,
             "user_data": exec_user,
             "user_role": exec_user_role,
             "user_crafty_permissions": exec_user_crafty_permissions,

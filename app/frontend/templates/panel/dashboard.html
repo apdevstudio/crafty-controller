@@ -60,12 +60,12 @@
                 </div>
                 <div class="wrapper my-auto ml-auto ml-lg-4">
                   <p id="cpu_data" class="mb-0 text-success" data-toggle="tooltip" data-placement="top" data-html="true"
-                     title="{% raw translate('dashboard', 'cpuCores', data['lang']) %}: {{ data.get('hosts_data').get('cpu_cores') }} <br /> {% raw translate('dashboard', 'cpuCurFreq', data['lang']) %}: {{ data.get('hosts_data').get('cpu_cur_freq') }} <br /> {% raw translate('dashboard', 'cpuMaxFreq', data['lang']) %}: {{ data.get('hosts_data').get('cpu_max_freq') }}">
+                    title="{% raw translate('dashboard', 'cpuCores', data['lang']) %}: {{ data.get('hosts_data').get('cpu_cores') }} <br /> {% raw translate('dashboard', 'cpuCurFreq', data['lang']) %}: {{ data.get('hosts_data').get('cpu_cur_freq') }} <br /> {% raw translate('dashboard', 'cpuMaxFreq', data['lang']) %}: {{ data.get('hosts_data').get('cpu_max_freq') }}">
                     {{ translate('dashboard', 'cpuUsage', data['lang']) }}: <span id="cpu_usage">{{
                       data.get('hosts_data').get('cpu_usage') }}</span>
                   </p>
                   <p id="mem_usage" class="mb-0 text-danger" data-toggle="tooltip" data-placement="top"
-                     title="{{ translate('dashboard', 'memUsage', data['lang']) }}: {{ data.get('hosts_data').get('mem_usage') }}">
+                    title="{{ translate('dashboard', 'memUsage', data['lang']) }}: {{ data.get('hosts_data').get('mem_usage') }}">
                     {{ translate('dashboard', 'memUsage', data['lang']) }}: <span id="mem_percent">{{
                       data.get('hosts_data').get('mem_percent') }}%</span>
                   </p>
@@ -116,8 +116,8 @@
           {% if len(data['servers']) > 0 %}
           {% if data['user_data']['hints'] %}
           <span class="too_small" title="{{ translate('dashboard', 'cannotSeeOnMobile', data['lang']) }}" ,
-                data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
-                data-placement="top"></span>
+            data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
+            data-placement="top"></span>
           {% end %}
           {% end %}
           <div><a class="nav-link" href="/server/step1"><i class="fas fa-plus-circle"></i> &nbsp; {{
@@ -125,7 +125,7 @@
         </div>
         <div class="card-body">
 
-          {% if len(data['servers']) == 0%}
+          {% if len(data['servers']) == 0 and len(data['failed_servers']) == 0 %}
           <div style="text-align: center; color: grey;">
             <h1>{{ translate('dashboard', 'welcome', data['lang']) }}</h1>
             <br>
@@ -134,7 +134,7 @@
           </div>
 
           {% end %}
-          {% if len(data['servers']) > 0 %}
+          {% if len(data['servers']) > 0 or len(data['failed_servers']) > 0 %}
           <!-- View for Large screen -->
           <div class="table-responsive d-none d-sm-block">
             <table id="servers_table" class="table table-hover">
@@ -156,7 +156,7 @@
                     <i class="fas fa-server"></i>
                     {% if server['alert'] %}
                     <a style="color: red !important;" draggable="false"
-                       href="/panel/server_detail?id={{server['server_data']['server_id']}}">
+                      href="/panel/server_detail?id={{server['server_data']['server_id']}}">
                       {{ server['server_data']['server_name'] }}&nbsp; <i class="fas fa-exclamation-triangle"></i>
                     </a>
                     {% else %}
@@ -170,17 +170,17 @@
                     {% if server['user_command_permission'] %}
                     {% if server['stats']['running'] %}
                     <a data-id="{{server['server_data']['server_id']}}" class="stop_button" data-toggle="tooltip"
-                       title="{{ translate('dashboard', 'stop' , data['lang']) }}">
+                      title="{{ translate('dashboard', 'stop' , data['lang']) }}">
                       <i class="fas fa-stop"></i>
                     </a> &nbsp;
 
                     <a data-id="{{server['server_data']['server_id']}}" class="restart_button" data-toggle="tooltip"
-                       title="{{ translate('dashboard', 'restart' , data['lang']) }}">
+                      title="{{ translate('dashboard', 'restart' , data['lang']) }}">
                       <i class="fas fa-sync"></i>
                     </a> &nbsp;
 
                     <a data-id="{{server['server_data']['server_id']}}" class="kill_button" data-toggle="tooltip"
-                       title="{{ translate('dashboard', 'kill' , data['lang']) }}">
+                      title="{{ translate('dashboard', 'kill' , data['lang']) }}">
                       <i class="fas fa-skull"></i>
                     </a> &nbsp;
 
@@ -199,15 +199,15 @@
                       data['lang']) }}</a>
                     {% else %}
                     <a data-id="{{server['server_data']['server_id']}}" class="play_button" data-toggle="tooltip"
-                       title="{{ translate('dashboard', 'start' , data['lang']) }}">
+                      title="{{ translate('dashboard', 'start' , data['lang']) }}">
                       <i class="fas fa-play"></i>
                     </a> &nbsp;
                     <a data-id="{{server['server_data']['server_id']}}" class="clone_button" data-toggle="tooltip"
-                       title="{{ translate('dashboard', 'clone' , data['lang']) }}">
+                      title="{{ translate('dashboard', 'clone' , data['lang']) }}">
                       <i class="fas fa-clone"></i>
                     </a> &nbsp;
                     <a data-id="{{server['server_data']['server_id']}}" class="kill_button" data-toggle="tooltip"
-                       title="{{ translate('dashboard', 'kill' , data['lang']) }}">
+                      title="{{ translate('dashboard', 'kill' , data['lang']) }}">
                       <i class="fas fa-skull"></i>
                     </a> &nbsp;
                     {% end %}
@@ -216,7 +216,7 @@
 
                   <td draggable="false" id="server_cpu_{{server['server_data']['server_id']}}">
                     <div class="progress mb-1" data-toggle="tooltip" data-placement="top"
-                         title="{{server['stats']['cpu']}}">
+                      title="{{server['stats']['cpu']}}">
                       <div class="progress-bar
                       {% if server['stats']['cpu'] <= 33 %}
                       bg-success
@@ -226,14 +226,14 @@
                       bg-danger
                       {% end %}
                       " role="progressbar" style="width: {{server['stats']['cpu']}}%" aria-valuenow="0"
-                           aria-valuemin="0" aria-valuemax="100"></div>
+                        aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                     {{server['stats']['cpu']}}%
                   </td>
 
                   <td draggable="false" id="server_mem_{{server['server_data']['server_id']}}">
                     <div class="progress mb-1" data-toggle="tooltip" data-placement="top"
-                         title="{{server['stats']['mem']}}">
+                      title="{{server['stats']['mem']}}">
                       <div class="progress-bar
                       {% if server['stats']['mem_percent'] <= 33 %}
                       bg-success
@@ -243,7 +243,7 @@
                       bg-danger
                       {% end %}
                       " role="progressbar" style="width: {{server['stats']['mem_percent']}}%" aria-valuenow="0"
-                           aria-valuemin="0" aria-valuemax="100"></div>
+                        aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                     {{server['stats']['mem_percent']}}% -
 
@@ -263,7 +263,7 @@
 
                     {% if server['stats']['desc'] != 'False' %}
                     <div id="desc_id"
-                         style="overflow-wrap: break-word !important; max-width: 85px !important; overflow: scroll;">{{
+                      style="overflow-wrap: break-word !important; max-width: 85px !important; overflow: scroll;">{{
                       server['stats']['desc'] }}</div> <br />
                     {% end %}
 
@@ -287,7 +287,20 @@
                     {% end %}
                   </td>
                   <span class="server-player-totals" id="server_players_{{server['server_data']['server_id']}}"
-                        data-players="{{ server['stats']['online']}}" data-max="{{ server['stats']['max'] }}"></span>
+                    data-players="{{ server['stats']['online']}}" data-max="{{ server['stats']['max'] }}"></span>
+                </tr>
+                {% end %}
+                {% for server in data['failed_servers'] %}
+                <tr id="{{server['server_id']}}" draggable="false">
+                  <td class="text-warning"><i class="fas fa-server"></i>&nbsp;<a class="text-warning"
+                      href="/panel/server_detail?id={{server['server_id']}}&subpage=config">{{server['server_name']}}</a>
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td><i class="fas fa-cloud"></i>&nbsp;Unloaded</td>
                 </tr>
                 {% end %}
               </tbody>
@@ -306,27 +319,27 @@
                       <div class="col-10 col-lg-3 mx-0 px-0">
                         {% if server['alert'] %}
                         <a style="color: red !important" class="btn btn-link d-flex justify-content-start" type="button"
-                           href="/panel/server_detail?id={{server['server_data']['server_id']}}">
+                          href="/panel/server_detail?id={{server['server_data']['server_id']}}">
                           <i class="fas fa-server"></i> {{ server['server_data']['server_name'] }}&nbsp; <i
-                             class="fas fa-exclamation-triangle"></i>
+                            class="fas fa-exclamation-triangle"></i>
                         </a>
                         {% else %}
                         <a class="btn btn-link d-flex justify-content-start" type="button"
-                           href="/panel/server_detail?id={{server['server_data']['server_id']}}">
+                          href="/panel/server_detail?id={{server['server_data']['server_id']}}">
                           <i class="fas fa-server"></i> {{ server['server_data']['server_name'] }}
                         </a>
                         {% end %}
                       </div>
                       <div class="col-2 col-lg-3 mx-0 px-0">
                         <a class="btn btn-link d-flex justify-content-center" type="button" data-toggle="collapse"
-                           data-target="#collapse-{{server['server_data']['server_id']}}" aria-expanded="false"
-                           aria-controls="collapse-{{server['server_data']['server_id']}}">
+                          data-target="#collapse-{{server['server_data']['server_id']}}" aria-expanded="false"
+                          aria-controls="collapse-{{server['server_data']['server_id']}}">
                           <i class="fas fa-chart-bar"></i>
                         </a>
                       </div>
                       <div class="col-4 col-lg-3 mx-0 px-0">
                         <a id="m_server_running_status_{{server['server_data']['server_id']}}"
-                           class="btn btn-link d-flex justify-content-start" type="button">
+                          class="btn btn-link d-flex justify-content-start" type="button">
                           {% if server['stats']['running'] %}
                           <span class="text-success"><i class="fas fa-signal"></i> {{ translate('dashboard', 'online',
                             data['lang']) }}</span>
@@ -348,22 +361,22 @@
                           <div class="row">
                             <div class="col-4 px-0">
                               <a data-id="{{server['server_data']['server_id']}}"
-                                 class="btn btn-link stop_button actions_serveritem" data-toggle="tooltip"
-                                 title="{{ translate('dashboard', 'stop' , data['lang']) }}">
+                                class="btn btn-link stop_button actions_serveritem" data-toggle="tooltip"
+                                title="{{ translate('dashboard', 'stop' , data['lang']) }}">
                                 <i class="fas fa-stop"></i>
                               </a>
                             </div>
                             <div class="col-4 px-0">
                               <a data-id="{{server['server_data']['server_id']}}"
-                                 class="btn btn-link restart_button actions_serveritem" data-toggle="tooltip"
-                                 title="{{ translate('dashboard', 'restart' , data['lang']) }}">
+                                class="btn btn-link restart_button actions_serveritem" data-toggle="tooltip"
+                                title="{{ translate('dashboard', 'restart' , data['lang']) }}">
                                 <i class="fas fa-sync"></i>
                               </a>
                             </div>
                             <div class="col-4 px-0">
                               <a data-id="{{server['server_data']['server_id']}}"
-                                 class="btn btn-link kill_button actions_serveritem" data-toggle="tooltip"
-                                 title="{{ translate('dashboard', 'kill' , data['lang']) }}">
+                                class="btn btn-link kill_button actions_serveritem" data-toggle="tooltip"
+                                title="{{ translate('dashboard', 'kill' , data['lang']) }}">
                                 <i class="fas fa-skull"></i>
                               </a>
                             </div>
@@ -390,7 +403,7 @@
                           <div class="row">
                             <div class="col-12 px-0">
                               <a data-id="{{server['server_data']['server_id']}}" class="btn btn-link"><i
-                                   class="fa fa-spinner fa-spin"></i>
+                                  class="fa fa-spinner fa-spin"></i>
                                 {{ translate('serverTerm', 'downloading', data['lang']) }}</a>
                             </div>
                           </div>
@@ -398,22 +411,22 @@
                           <div class="row">
                             <div class="col-4 px-0">
                               <a data-id="{{server['server_data']['server_id']}}"
-                                 class="btn play_button actions_serveritem" data-toggle="tooltip"
-                                 title="{{ translate('dashboard', 'start' , data['lang']) }}">
+                                class="btn play_button actions_serveritem" data-toggle="tooltip"
+                                title="{{ translate('dashboard', 'start' , data['lang']) }}">
                                 <i class="fas fa-play"></i>
                               </a>
                             </div>
                             <div class="col-4 px-0">
                               <a data-id="{{server['server_data']['server_id']}}"
-                                 class="btn clone_button actions_serveritem" data-toggle="tooltip"
-                                 title="{{ translate('dashboard', 'clone' , data['lang']) }}">
+                                class="btn clone_button actions_serveritem" data-toggle="tooltip"
+                                title="{{ translate('dashboard', 'clone' , data['lang']) }}">
                                 <i class="fas fa-clone"></i>
                               </a>
                             </div>
                             <div class="col-4 px-0">
                               <a data-id="{{server['server_data']['server_id']}}"
-                                 class="btn kill_button actions_serveritem" data-toggle="tooltip"
-                                 title="{{ translate('dashboard', 'kill' , data['lang']) }}">
+                                class="btn kill_button actions_serveritem" data-toggle="tooltip"
+                                title="{{ translate('dashboard', 'kill' , data['lang']) }}">
                                 <i class="fas fa-skull"></i></a>
                             </div>
                           </div>
@@ -426,14 +439,14 @@
                 </div>
 
                 <div id="collapse-{{server['server_data']['server_id']}}" class="collapse"
-                     aria-labelledby="heading-{{server['server_data']['server_id']}}" data-parent="#accordionServers">
+                  aria-labelledby="heading-{{server['server_data']['server_id']}}" data-parent="#accordionServers">
                   <div class="card-body">
                     <div class="row">
                       <div class="col-6">
                         <h6>{{ translate('dashboard', 'cpuUsage', data['lang']) }}</h6>
                         <div id="m_server_cpu_{{server['server_data']['server_id']}}">
                           <div class="progress mb-1" data-toggle="tooltip" data-placement="top"
-                               title="{{server['stats']['cpu']}}">
+                            title="{{server['stats']['cpu']}}">
                             <div class="progress-bar
                     {% if server['stats']['cpu'] <= 33 %}
                     bg-success
@@ -443,7 +456,7 @@
                     bg-danger
                     {% end %}
                     " role="progressbar" style="width: {{server['stats']['cpu']}}%" aria-valuenow="0" aria-valuemin="0"
-                                 aria-valuemax="100"></div>
+                              aria-valuemax="100"></div>
                           </div>
                           {{server['stats']['cpu']}}%
                         </div>
@@ -452,7 +465,7 @@
                         <h6>{{ translate('dashboard', 'memUsage', data['lang']) }}</h6>
                         <div draggable="false" id="m_server_mem_{{server['server_data']['server_id']}}">
                           <div class="progress mb-1" data-toggle="tooltip" data-placement="top"
-                               title="{{server['stats']['mem']}}">
+                            title="{{server['stats']['mem']}}">
                             <div class="progress-bar
                     {% if server['stats']['mem_percent'] <= 33 %}
                     bg-success
@@ -462,7 +475,7 @@
                     bg-danger
                     {% end %}
                     " role="progressbar" style="width: {{server['stats']['mem_percent']}}%" aria-valuenow="0"
-                                 aria-valuemin="0" aria-valuemax="100"></div>
+                              aria-valuemin="0" aria-valuemax="100"></div>
                           </div>
                           {{server['stats']['mem_percent']}}% -
 
@@ -492,7 +505,7 @@
 
                           {% if server['stats']['desc'] != 'False' %}
                           <div id="desc_id"
-                               style="overflow-wrap: break-word !important; max-width: 85px !important; overflow: scroll;">
+                            style="overflow-wrap: break-word !important; max-width: 85px !important; overflow: scroll;">
                             {{ server['stats']['desc'] }}</div> <br />
                           {% end %}
 
