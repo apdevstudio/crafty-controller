@@ -3,7 +3,7 @@ import time
 import logging
 import threading
 import asyncio
-import datetime
+from datetime import datetime
 
 from tzlocal import get_localzone
 from tzlocal.utils import ZoneInfoNotFoundError
@@ -193,6 +193,14 @@ class TasksManager:
         schedules = HelpersManagement.get_schedules_enabled()
         self.scheduler.add_listener(self.schedule_watcher, mask=EVENT_JOB_EXECUTED)
         self.scheduler.start()
+        self.check_for_updates()
+        self.scheduler.add_job(
+            self.check_for_updates,
+            "interval",
+            hours=12,
+            id="update_watcher",
+            start_date=datetime.now(),
+        )
         # self.scheduler.add_job(
         #    self.scheduler.print_jobs, "interval", seconds=10, id="-1"
         # )
@@ -645,6 +653,16 @@ class TasksManager:
                         },
                     )
             time.sleep(1)
+
+    def check_for_updates(self):
+        logger.info("Checking for Crafty updates...")
+        self.helper.update_available = self.helper.check_remote_version()
+        if self.helper.update_available:
+            logger.info(f"Found new version {self.helper.update_available}")
+        else:
+            logger.info(
+                "No updates found! You are on the most up to date Crafty version."
+            )
 
     def log_watcher(self):
         self.controller.servers.check_for_old_logs()

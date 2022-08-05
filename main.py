@@ -7,8 +7,9 @@ import argparse
 import logging.config
 import signal
 import peewee
-from app.classes.shared.file_helpers import FileHelpers
+from packaging import version as pkg_version
 
+from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.import3 import Import3
 from app.classes.shared.console import Console
 from app.classes.shared.helpers import Helpers
@@ -225,6 +226,19 @@ if __name__ == "__main__":
         controller_setup_thread.join()
 
         Console.info("Crafty has fully started and is now ready for use!")
+
+        # Check if new version available
+        remote_ver = helper.check_remote_version()
+        if remote_ver:
+            notice = f"""
+                A new version of Crafty is available!
+                {'/' * 37}
+                New version available: {remote_ver}
+                Current version: {pkg_version.parse(helper.get_version_string())}
+                {'/' * 37}
+                """
+            Console.yellow(notice)
+
         crafty_prompt.prompt = f"Crafty Controller v{helper.get_version_string()} > "
         try:
             logger.info("Removing old temp dirs")
