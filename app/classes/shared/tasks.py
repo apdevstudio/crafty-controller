@@ -656,7 +656,6 @@ class TasksManager:
 
     def check_for_updates(self):
         self.helper.update_available = self.helper.check_remote_version()
-        print(self.helper.update_available)
 
     def log_watcher(self):
         self.controller.servers.check_for_old_logs()
