@@ -76,6 +76,7 @@ class Helpers:
 
         self.websocket_helper = WebSocketHelper(self)
         self.translation = Translation(self)
+        self.update_available = False
 
     @staticmethod
     def auto_installer_fix(ex):
