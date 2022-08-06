@@ -1,5 +1,17 @@
 # Changelog
 
+## --- [4.0.9] - 2022/08/06
+### Bug fixes
+- Fix Schedules Traceback Bug ([Merge Request |](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/419) [Commit |](https://gitlab.com/crafty-controller/crafty-4/-/commit/f69d79b7023d6c26fccb5caeae9e47b40ebe5af2) [Commit](https://gitlab.com/crafty-controller/crafty-4/-/commit/ad318296dc93beb5533fcd13066440df9f9e799a))
+- Fix handling of missing servers ([Merge Request🎉](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/420))
+- Fix offline credits panel stack ([Commit](https://gitlab.com/crafty-controller/crafty-4/-/commit/247678e6c6af5e7d5dbfcf3bfdcec49fc5980e55))
+### Tweaks
+- credits-v2| Translator status ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/421))
+- Use Names in Schedules ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/419))
+### Lang
+- Make Schedules panel translatable ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/419))
+<br><br>
+
 ## --- [4.0.8] - 2022/08/05
 ### New features
 - Add Crafty Version Check and notification ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/411))

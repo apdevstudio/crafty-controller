@@ -103,6 +103,11 @@ class ServersController(metaclass=Singleton):
         return ret
 
     @staticmethod
+    def update_unloaded_server(server_obj):
+        ret = HelperServers.update_server(server_obj)
+        return ret
+
+    @staticmethod
     def set_download(server_id):
         srv = ServersController().get_server_instance_by_id(server_id)
         return srv.stats_helper.set_download()
@@ -146,6 +151,7 @@ class ServersController(metaclass=Singleton):
     def init_all_servers(self):
 
         servers = self.get_all_defined_servers()
+        self.failed_servers = []
 
         for server in servers:
             server_id = server.get("server_id")
@@ -169,6 +175,8 @@ class ServersController(metaclass=Singleton):
                     f"{server['server_name']} at path {server['path']}. "
                     f"Skipping this server"
                 )
+                if server not in self.failed_servers:
+                    self.failed_servers.append(server)
                 continue
 
             temp_server_dict = {

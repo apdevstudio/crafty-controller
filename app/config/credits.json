@@ -1,139 +1,238 @@
 {
 	"staff": {
-	  "development": [
-		{
-		  "name":  "Pita Bread",
-		  "title": "CEO",
-		  "loc":   "Midwest, USA",
-		  "tags": [ "Staff", [ "Developer", "https://gitlab.com/craftbreadth" ], "Crafty Leadership" ],
-		  "blurb": "Baked goods enthusiast who dabbles in Linux and sets up networks for fun. Can be found writing long-winded emails, debugging strange wifi issues, or taking care of his extensive houseplant collection.",
-		  "pic":   "/static/assets/images/credits/pita.png"
-		},
-		{
-		  "name":  "Xithical",
-		  "title": "CFO/COO",
-		  "loc":   "Midwest, USA",
-		  "tags": [ "Staff", [ "Developer", "https://gitlab.com/xithical" ], "Crafty Leadership" ],
-		  "blurb": "Having sold his soul to the IT administration gods many eons ago, you can usually find him working, going home to do work, or continuing to work in the support Discord.",
-		  "pic":   "/static/assets/images/credits/xithical.png"
-		},
-		{
-		  "name":  "Phil Tarrant",
-		  "title": "Creator",
-		  "loc": "Southeast, USA",
-		  "tags": [	"Staff", [ "Developer", "https://gitlab.com/Ptarrant1" ], "Crafty Advisor" ],
-		  "blurb": "For best results, apply a thin layer of Phillip to code, cyber security, and parenthood for maximum effectiveness. Phillip often spends too much time with his chickens.",
-		  "pic":   "/static/assets/images/credits/ptarrant.png"
-		},
-		{
-		  "name":  "macgeek",
-		  "title": "Lead Software Engineer",
-		  "loc":   "Midwest, USA",
-		  "tags": [ "Staff", [ "Developer", "https://gitlab.com/computergeek125" ], "Crafty Advisor" ],
-		  "blurb": "Sysadmin for work and sysadmin for fun (avid homelabber). He enjoys a good tech tangent and gaming.",
-		  "pic":   "/static/assets/images/credits/macgeek.png"
-		},
-		{
-		  "name":  "parzivaldewey",
-		  "title": "Support Manager",
-		  "loc":   "East Coast, USA",
-		  "tags": [ "Staff", [ "Developer", "https://gitlab.com/amcmanu3" ], "Support Manager" ],
-		  "blurb": "His interests include Linux, gaming, and helping others. When he's able to unplug he enjoys biking, hiking, and playing soccer.",
-		  "pic":   "/static/assets/images/credits/parzivaldewey.png"
-		},
-		{
-		  "name": "Silversthorn",
-		  "title": "Software Engineer",
-		  "loc": "Provence, FR",
-		  "tags": [ "Staff", [ "Developer", "https://gitlab.com/Silversthorn" ], null ],
-		  "blurb": "Developer at work and at home, testing his own code is a pain, so his coding precept is \"Testing is Doubting\"",
-		  "pic": "/static/assets/images/credits/silversthorn.png"
-		},
-		{
-		  "name": "ThatOneLukas",
-		  "title": "Software Engineer",
-		  "loc": "Helsinki, FI",
-		  "tags": [ "Staff", [ "Developer", "https://gitlab.com/LukasDoesDev" ], null ],
-		  "blurb": "Arch Linux enthusiast who likes 80s/90s music, Rust (The programming language) and light distros like Arch Linux btw. Dislikes C, C++, Go, and Microsoft. Also doesn't like Finnish weather that freezes molten snow to (deadly) ice.",
-		  "pic": "/static/assets/images/credits/lukas.png"
-		},
-		{
-		  "name": "Zedifus",
-		  "title": "DevOps Engineer",
-		  "loc": "Scotland, UK",
-		  "tags": [ "Staff", [ "Developer", "https://gitlab.com/Zedifus" ], "DevOps" ],
-		  "blurb": "A Streamer, who is currently working in the insurance industry, self-teaching software development & DevOps, with the hopes of a career change! Enjoys playing games and has a sassy cat called Eve.",
-		  "pic": "/static/assets/images/credits/zedifus.jpg"
-		}
-	  ],
-	  "support": [
-		{
-		  "name": "iSilverfyre",
-		  "title": "Community Manager",
-		  "loc": "South Central, US",
-		  "tags": [ "Staff", null, "Wiki" ],
-		  "blurb": "Silver enjoys helping others with their computer needs, writing documentation, and loving her cat.",
-		  "pic": "/static/assets/images/credits/isilverfyre.png"
-		},
-		{
-		  "name": "Quentin",
-		  "title": "Document Curator",
-		  "loc": null,
-		  "tags": [ "Staff", [ "Developer", "https://gitlab.com/qub3d" ], "Wiki" ],
-		  "blurb": "Hosts Minecraft servers for his weird friends, works for an IoT company as his dayjob. The 's' in IoT stands for 'secure'.",
-		  "pic": "/static/assets/images/credits/qub3d.png"
-		},
-		{
-		  "name": "DarthLeo",
-		  "title": "Support Engineer",
-		  "loc": "East Coast, US",
-		  "tags": [ "Staff", null, "Discord" ],
-		  "blurb": "Just a simple gamer.",
-		  "pic": "/static/assets/images/credits/darthLeo.png"
-		}
-	  ],
-	  "retired": [
-		{
-		  "name": "Kev Dagoat",
-		  "title": "Head of Development",
-		  "loc": "East Coast, AU",
-		  "tags": [ "Staff", [ "Developer", "https://gitlab.com/kevdagoat" ], "HOD" ],
-		  "blurb": "His interests include Linux, programming, and goats of course. He enjoys building APIs, K8s, and geeking over video cards.",
-		  "pic": "/static/assets/images/credits/kevdagoat.jpeg"
-		},
-		{
-		  "name": "Manu",
-		  "title": null,
-		  "loc": "Eastern, CA",
-		  "tags": [ "Staff", "Developer", "Project Manager" ],
-		  "blurb": "His interests include learning, Linux, and programming. He enjoys speaking French, doing 6 things at once, and testing software.",
-		  "pic": "/static/assets/images/credits/manu.png"
-		},
-		{
-		  "name": "UltraBlack",
-		  "title": null,
-		  "loc": "Bavaria, DE",
-		  "tags": [ "Staff", null, "Idea Manager" ],
-		  "blurb": "Hi, my name is Tim, and I'm a huge fan of linux. I'm often gaming and occasionally coding.",
-		  "pic": "/static/assets/images/credits/ultrablack.png"
-		},
-		{
-		  "name":  "MC Gaming",
-		  "title": null,
-		  "loc":   "Central, UK",
-		  "tags": [ "Staff", [ "Developer", "https://gitlab.com/MCgamin1738" ], null ],
-		  "blurb": "His interests include learning, Linux, and programming. He loves pentesting apps and gaming.",
-		  "pic":   "/static/assets/images/credits/mcgaming.png"
-		}
-	  ]
+		"development": [
+			{
+				"name": "Pita Bread",
+				"title": "CEO",
+				"loc": "Midwest, USA",
+				"tags": [
+					"Staff",
+					[
+						"Developer",
+						"https://gitlab.com/craftbreadth"
+					],
+					"Crafty Leadership"
+				],
+				"blurb": "Baked goods enthusiast who dabbles in Linux and sets up networks for fun. Can be found writing long-winded emails, debugging strange wifi issues, or taking care of his extensive houseplant collection.",
+				"pic": "/static/assets/images/credits/pita.png"
+			},
+			{
+				"name": "Xithical",
+				"title": "CFO/COO",
+				"loc": "Midwest, USA",
+				"tags": [
+					"Staff",
+					[
+						"Developer",
+						"https://gitlab.com/xithical"
+					],
+					"Crafty Leadership"
+				],
+				"blurb": "Having sold his soul to the IT administration gods many eons ago, you can usually find him working, going home to do work, or continuing to work in the support Discord.",
+				"pic": "/static/assets/images/credits/xithical.png"
+			},
+			{
+				"name": "Phil Tarrant",
+				"title": "Creator",
+				"loc": "Southeast, USA",
+				"tags": [
+					"Staff",
+					[
+						"Developer",
+						"https://gitlab.com/Ptarrant1"
+					],
+					"Crafty Advisor"
+				],
+				"blurb": "For best results, apply a thin layer of Phillip to code, cyber security, and parenthood for maximum effectiveness. Phillip often spends too much time with his chickens.",
+				"pic": "/static/assets/images/credits/ptarrant.png"
+			},
+			{
+				"name": "macgeek",
+				"title": "Lead Software Engineer",
+				"loc": "Midwest, USA",
+				"tags": [
+					"Staff",
+					[
+						"Developer",
+						"https://gitlab.com/computergeek125"
+					],
+					"Crafty Advisor"
+				],
+				"blurb": "Sysadmin for work and sysadmin for fun (avid homelabber). He enjoys a good tech tangent and gaming.",
+				"pic": "/static/assets/images/credits/macgeek.png"
+			},
+			{
+				"name": "pretzeldewey 🥨",
+				"title": "Support Manager & Software Engineer",
+				"loc": "East Coast, USA",
+				"tags": [
+					"Staff",
+					[
+						"Developer",
+						"https://gitlab.com/amcmanu3"
+					],
+					"Crafty Advisor"
+				],
+				"blurb": "His interests include Linux, gaming, and helping others. When he's able to unplug he enjoys biking, hiking, and playing soccer.",
+				"pic": "/static/assets/images/credits/parzivaldewey.png"
+			},
+			{
+				"name": "Zedifus",
+				"title": "DevOps Manager",
+				"loc": "Scotland, UK",
+				"tags": [
+					"Staff",
+					[
+						"Developer",
+						"https://gitlab.com/Zedifus"
+					],
+					"Crafty Advisor"
+				],
+				"blurb": "A Streamer, who is currently working in the insurance industry, self-teaching software development & DevOps, with the hopes of a career change! Enjoys playing games and has a sassy cat called Eve.",
+				"pic": "/static/assets/images/credits/zedifus.jpg"
+			},
+			{
+				"name": "Silversthorn",
+				"title": "Software Engineer",
+				"loc": "Provence, FR",
+				"tags": [
+					"Staff",
+					[
+						"Developer",
+						"https://gitlab.com/Silversthorn"
+					],
+					null
+				],
+				"blurb": "Developer at work and at home, testing his own code is a pain, so his coding precept is \"Testing is Doubting\"",
+				"pic": "/static/assets/images/credits/silversthorn.png"
+			},
+			{
+				"name": "ThatOneLukas",
+				"title": "Software Engineer",
+				"loc": "Helsinki, FI",
+				"tags": [
+					"Staff",
+					[
+						"Developer",
+						"https://gitlab.com/LukasDoesDev"
+					],
+					null
+				],
+				"blurb": "Arch Linux enthusiast who likes 80s/90s music, Rust (The programming language) and light distros like Arch Linux btw. Dislikes C, C++, Go, and Microsoft. Also doesn't like Finnish weather that freezes molten snow to (deadly) ice.",
+				"pic": "/static/assets/images/credits/lukas.png"
+			}
+		],
+		"support": [
+			{
+				"name": "iSilverfyre",
+				"title": "Community Manager",
+				"loc": "South Central, US",
+				"tags": [
+					"Staff",
+					null,
+					"Wiki"
+				],
+				"blurb": "Silver enjoys helping others with their computer needs, writing documentation, and loving her cat.",
+				"pic": "/static/assets/images/credits/isilverfyre.png"
+			},
+			{
+				"name": "Quentin",
+				"title": "Document Curator",
+				"loc": null,
+				"tags": [
+					"Staff",
+					[
+						"Developer",
+						"https://gitlab.com/qub3d"
+					],
+					"Wiki"
+				],
+				"blurb": "Hosts Minecraft servers for his weird friends, works for an IoT company as his dayjob. The 's' in IoT stands for 'secure'.",
+				"pic": "/static/assets/images/credits/qub3d.png"
+			},
+			{
+				"name": "Kornster",
+				"title": null,
+				"loc": "Victoria, Australia",
+				"tags": [
+					"Discord Mod",
+					null,
+					null
+				],
+				"blurb": "Day to day I am a Network Administrator, dealing with a range of vendors and products. Outside of work my hobbies are handyman things, such as carpentry and motor mechanics having grown up around them. My home-lab consists of Linux distros ranging from Debian, Ubuntu & Centos having self taught myself Linux for the last 12+ years.",
+				"pic": null
+			}
+		],
+		"retired": [
+			{
+				"name": "Kev Dagoat",
+				"title": "Head of Development",
+				"loc": "East Coast, AU",
+				"tags": [
+					"Staff",
+					[
+						"Developer",
+						"https://gitlab.com/kevdagoat"
+					],
+					"HOD"
+				],
+				"blurb": "His interests include Linux, programming, and goats of course. He enjoys building APIs, K8s, and geeking over video cards.",
+				"pic": "/static/assets/images/credits/kevdagoat.jpeg"
+			},
+			{
+				"name": "Manu",
+				"title": null,
+				"loc": "Eastern, CA",
+				"tags": [
+					"Staff",
+					"Developer",
+					"Project Manager"
+				],
+				"blurb": "His interests include learning, Linux, and programming. He enjoys speaking French, doing 6 things at once, and testing software.",
+				"pic": "/static/assets/images/credits/manu.png"
+			},
+			{
+				"name": "UltraBlack",
+				"title": null,
+				"loc": "Bavaria, DE",
+				"tags": [
+					"Staff",
+					null,
+					"Idea Manager"
+				],
+				"blurb": "Hi, my name is Tim, and I'm a huge fan of linux. I'm often gaming and occasionally coding.",
+				"pic": "/static/assets/images/credits/ultrablack.png"
+			},
+			{
+				"name": "MC Gaming",
+				"title": null,
+				"loc": "Central, UK",
+				"tags": [
+					"Staff",
+					[
+						"Developer",
+						"https://gitlab.com/MCgamin1738"
+					],
+					null
+				],
+				"blurb": "His interests include learning, Linux, and programming. He loves pentesting apps and gaming.",
+				"pic": "/static/assets/images/credits/mcgaming.png"
+			}
+		]
 	},
 	"translations": {
-		"Data Unavailable": ["🌎🪣🔗👎😭"]
+		"Data Unavailable": [
+			{
+				"name": "🌎🪣🔗👎😭",
+				"status": false
+			}
+		]
 	},
 	"patrons": [
 		{
 			"name": "Data Unavailable 🌎🪣🔗👎😭",
-			"level": ""
+			"level": "",
+			"source": ""
 		}
 	],
 	"lastUpdate": 0

@@ -32,12 +32,14 @@
     <div class="col-sm-12 grid-margin">
       <div class="card">
         <div class="card-body  pt-0">
+          {% if not data['failed'] %}
           <span class="d-none d-sm-block">
             {% include "parts/server_controls_list.html %}
           </span>
           <span class="d-block d-sm-none">
             {% include "parts/m_server_controls_list.html %}
           </span>
+          {% end %}
 
           <div class="row">
             <div class="col-md-6 col-sm-12">
@@ -117,7 +119,6 @@
                   </div>
                   <br>
                   {% end %}
-
                   <div class="form-group">
                     <label for="stop_command">{{ translate('serverConfig', 'serverStopCommand', data['lang']) }} <small
                         class="text-muted ml-1"> - {{ translate('serverConfig', 'serverStopCommandDesc', data['lang'])
@@ -176,35 +177,41 @@
                   <div class="form-check-flat">
                     <label for="auto_start" class="form-check-label ml-4 mb-4">
                       {% if data['server_stats']['server_id']['auto_start'] %}
-                      <input type="checkbox" class="form-check-input" id="auto_start" name="auto_start" checked="" data-toggle="toggle"
-                        value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'serverAutoStart', data['lang']) }}
+                      <input type="checkbox" class="form-check-input" id="auto_start" name="auto_start" checked=""
+                        data-toggle="toggle" value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'serverAutoStart',
+                      data['lang']) }}
                       {% else %}
-                      <input type="checkbox" class="form-check-input" id="auto_start" name="auto_start" value="1" data-toggle="toggle">&nbsp;&nbsp;{{
+                      <input type="checkbox" class="form-check-input" id="auto_start" name="auto_start" value="1"
+                        data-toggle="toggle">&nbsp;&nbsp;{{
                       translate('serverConfig', 'serverAutoStart', data['lang']) }}
                       {% end %}
                     </label>
 
                     <label for="crash_detection" class="form-check-label ml-4 mb-4">
                       {% if data['server_stats']['server_id']['crash_detection'] %}
-                      <input type="checkbox" class="form-check-input" id="crash_detection" name="crash_detection" data-toggle="toggle"
-                        checked="" value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'serverCrashDetection', data['lang']) }}
+                      <input type="checkbox" class="form-check-input" id="crash_detection" name="crash_detection"
+                        data-toggle="toggle" checked="" value="1">&nbsp;&nbsp;{{ translate('serverConfig',
+                      'serverCrashDetection', data['lang']) }}
                       {% else %}
-                      <input type="checkbox" class="form-check-input" id="crash_detection" name="crash_detection" data-toggle="toggle"
-                        value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'serverCrashDetection', data['lang']) }}
+                      <input type="checkbox" class="form-check-input" id="crash_detection" name="crash_detection"
+                        data-toggle="toggle" value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'serverCrashDetection',
+                      data['lang']) }}
                       {% end %}
                     </label>
 
-                  {% if data['super_user'] %}
-                  <label for="show_status" class="form-check-label ml-4 mb-4">
-                    {% if data['server_stats']['server_id']['show_status'] %}
-                    <input type="checkbox" class="form-check-input" id="show_status" name="show_status" data-toggle="toggle"
-                      checked="" value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'showStatus', data['lang']) }}
-                    {% else %}
-                    <input type="checkbox" class="form-check-input" id="show_status" name="show_status" data-toggle="toggle"
-                      value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'showStatus', data['lang']) }}
+                    {% if data['super_user'] %}
+                    <label for="show_status" class="form-check-label ml-4 mb-4">
+                      {% if data['server_stats']['server_id']['show_status'] %}
+                      <input type="checkbox" class="form-check-input" id="show_status" name="show_status"
+                        data-toggle="toggle" checked="" value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'showStatus',
+                      data['lang']) }}
+                      {% else %}
+                      <input type="checkbox" class="form-check-input" id="show_status" name="show_status"
+                        data-toggle="toggle" value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'showStatus',
+                      data['lang']) }}
+                      {% end %}
+                    </label>
                     {% end %}
-                  </label>
-                  {% end %}
                   </div>
 
                   <button type="submit" class="btn btn-success mr-2"><i class="fas fa-save"></i> {{
@@ -235,11 +242,18 @@
                   }}</a><br />
                 <small>{{ translate('serverConfig', 'stopBeforeDeleting', data['lang']) }}</small>
                 {% else %}
+                {% if not data['failed'] %}
                 <button onclick="send_command(serverId, 'update_executable');" id="update_executable"
                   style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1">{{ translate('serverConfig',
                   'update', data['lang']) }}</button>
+                {% end %}
+                {% if not data['failed'] %}
                 <button onclick="deleteConfirm()" class="btn btn-sm btn-danger">{{ translate('serverConfig',
                   'deleteServer', data['lang']) }}</button>
+                {% else %}
+                <button onclick="deleteUnloadedConfirm()" class="btn btn-sm btn-danger">{{ translate('serverConfig',
+                  'deleteServer', data['lang']) }}</button>
+                {% end %}
                 {% end %}
 
               </div>
@@ -255,19 +269,19 @@
 
 </div>
 <style>
-.toggle-handle {
+  .toggle-handle {
     background-color: white !important;
-}
+  }
 
-.toggle-on {
+  .toggle-on {
     color: black !important;
     background-color: blueviolet !important;
-}
+  }
 
-.toggle {
+  .toggle {
     height: 0px !important;
     background-color: grey !important;
-}
+  }
 </style>
 <!-- content-wrapper ends -->
 
@@ -275,7 +289,7 @@
 
 {% block js %}
 <script>
-    $(function() {
+  $(function () {
     $('.form-check-input').bootstrapToggle({
       on: '',
       off: ''
@@ -425,6 +439,54 @@
         }
         else {
           deleteServer();
+        }
+
+      }
+    });
+  }
+  function deleteUnloadedConfirm() {
+    path = "{{data['server_stats']['server_id']['path']}}";
+    name = "{{data['server_stats']['server_id']['server_name']}}";
+    bootbox.confirm({
+      size: "",
+      title: "{% raw translate('serverConfig', 'deleteServerQuestion', data['lang']) %}",
+      closeButton: false,
+      message: "{% raw translate('serverConfig', 'deleteServerQuestionMessage', data['lang']) %}",
+      buttons: {
+        confirm: {
+          label: "{{ translate('serverConfig', 'yesDelete', data['lang']) }}",
+          className: 'btn-danger',
+        },
+        cancel: {
+          label: "{{ translate('serverConfig', 'noDelete', data['lang']) }}",
+          className: 'btn-link',
+        }
+      },
+      callback: function (result) {
+        if (!result) {
+          return;
+          return;
+        }
+        else {
+          var token = getCookie("_xsrf")
+          setTimeout(function () { window.location = '/panel/dashboard'; }, 5000);
+          bootbox.dialog({
+            backdrop: true,
+            title: '{% raw translate("serverConfig", "sendingDelete", data['lang']) %}',
+            message: '<div align="center"><i class="fas fa-spin fa-spinner"></i> &nbsp; {% raw translate("serverConfig", "bePatientDelete", data['lang']) %} </div>',
+            closeButton: false
+          })
+          $.ajax({
+            type: "DELETE",
+            headers: { 'X-XSRFToken': token },
+            url: '/ajax/delete_unloaded_server?id=' + serverId,
+            data: {
+            },
+            success: function (data) {
+              console.log("got response:");
+              console.log(data);
+            },
+          });
         }
 
       }

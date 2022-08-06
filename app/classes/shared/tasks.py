@@ -208,6 +208,7 @@ class TasksManager:
         # load schedules from DB
         for schedule in schedules:
             if schedule.interval != "reaction":
+                new_job = "error"
                 if schedule.cron_string != "":
                     try:
                         new_job = self.scheduler.add_job(
@@ -302,7 +303,7 @@ class TasksManager:
             job_data["interval_type"],
             job_data["start_time"],
             job_data["command"],
-            "None",
+            job_data["name"],
             job_data["enabled"],
             job_data["one_time"],
             job_data["cron_string"],
@@ -317,6 +318,7 @@ class TasksManager:
 
         # Check to see if it's enabled and is not a chain reaction.
         if job_data["enabled"] and job_data["interval_type"] != "reaction":
+            new_job = "error"
             if job_data["cron_string"] != "":
                 try:
                     new_job = self.scheduler.add_job(
@@ -446,6 +448,7 @@ class TasksManager:
             )
 
         if job_data["enabled"] and job_data["interval"] != "reaction":
+            new_job = "error"
             if job_data["cron_string"] != "":
                 try:
                     new_job = self.scheduler.add_job(
