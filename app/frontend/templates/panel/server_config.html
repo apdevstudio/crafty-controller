@@ -242,9 +242,11 @@
                   }}</a><br />
                 <small>{{ translate('serverConfig', 'stopBeforeDeleting', data['lang']) }}</small>
                 {% else %}
+                {% if not data['failed'] %}
                 <button onclick="send_command(serverId, 'update_executable');" id="update_executable"
                   style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1">{{ translate('serverConfig',
                   'update', data['lang']) }}</button>
+                {% end %}
                 {% if not data['failed'] %}
                 <button onclick="deleteConfirm()" class="btn btn-sm btn-danger">{{ translate('serverConfig',
                   'deleteServer', data['lang']) }}</button>

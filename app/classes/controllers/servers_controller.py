@@ -175,7 +175,8 @@ class ServersController(metaclass=Singleton):
                     f"{server['server_name']} at path {server['path']}. "
                     f"Skipping this server"
                 )
-                self.failed_servers.append(server)
+                if server not in self.failed_servers:
+                    self.failed_servers.append(server)
                 continue
 
             temp_server_dict = {
