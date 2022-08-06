@@ -573,8 +573,38 @@ class AjaxHandler(BaseHandler):
                 self.get_remote_ip(),
             )
 
+            for server in self.controller.servers.failed_servers:
+                if server["server_id"] == int(server_id):
+                    return
             self.tasks_manager.remove_all_server_tasks(server_id)
             self.controller.remove_server(server_id, True)
+
+        elif page == "delete_unloaded_server":
+            if not permissions["Config"] in user_perms:
+                if not superuser:
+                    self.redirect("/panel/error?error=Unauthorized access to Config")
+                    return
+            server_id = self.get_argument("id", None)
+            logger.info(
+                f"Removing server and all associated files for server: "
+                f"{self.controller.servers.get_server_friendly_name(server_id)}"
+            )
+
+            server_data = self.controller.servers.get_server_data_by_id(server_id)
+            server_name = server_data["server_name"]
+
+            self.controller.management.add_to_audit_log(
+                exec_user["user_id"],
+                f"Deleted server {server_id} named {server_name}",
+                server_id,
+                self.get_remote_ip(),
+            )
+
+            self.tasks_manager.remove_all_server_tasks(server_id)
+            for item in self.controller.servers.failed_servers[:]:
+                if item["server_id"] == int(server_id):
+                    self.controller.servers.failed_servers.remove(item)
+            self.controller.remove_unloaded_server(server_id)
 
     def check_server_id(self, server_id, page_name):
         if server_id is None:

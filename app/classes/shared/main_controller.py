@@ -934,6 +934,14 @@ class Controller:
 
             counter += 1
 
+    def remove_unloaded_server(self, server_id):
+        try:
+            HelpersManagement.delete_scheduled_task_by_server(server_id)
+        except DoesNotExist:
+            logger.info("No scheduled jobs exist. Continuing.")
+        # remove the server from the DB
+        self.servers.remove_server(server_id)
+
     @staticmethod
     def clear_unexecuted_commands():
         HelpersManagement.clear_unexecuted_commands()

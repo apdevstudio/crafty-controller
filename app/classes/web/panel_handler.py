@@ -157,6 +157,10 @@ class PanelHandler(BaseHandler):
         if server_id is None:
             self.redirect("/panel/error?error=Invalid Server ID")
             return None
+        for server in self.controller.servers.failed_servers:
+            if int(server_id) == server["server_id"]:
+                self.failed_server = True
+                return server_id
         # Does this server exist?
         if not self.controller.servers.server_id_exists(server_id):
             self.redirect("/panel/error?error=Invalid Server ID")
@@ -207,6 +211,7 @@ class PanelHandler(BaseHandler):
 
     @tornado.web.authenticated
     async def get(self, page):
+        self.failed_server = False
         error = self.get_argument("error", "WTF Error!")
 
         template = "panel/denied.html"
@@ -504,9 +509,11 @@ class PanelHandler(BaseHandler):
             server_id = self.check_server_id()
             if server_id is None:
                 return
-
-            server_obj = self.controller.servers.get_server_instance_by_id(server_id)
-            page_data["backup_failed"] = server_obj.last_backup_status()
+            if not self.failed_server:
+                server_obj = self.controller.servers.get_server_instance_by_id(
+                    server_id
+                )
+                page_data["backup_failed"] = server_obj.last_backup_status()
             server_obj = None
 
             valid_subpages = [
@@ -518,18 +525,57 @@ class PanelHandler(BaseHandler):
                 "admin_controls",
                 "schedules",
             ]
-
-            server = self.controller.servers.get_server_instance_by_id(server_id)
+            if not self.failed_server:
+                server = self.controller.servers.get_server_instance_by_id(server_id)
             # server_data isn't needed since the server_stats also pulls server data
             page_data["server_data"] = self.controller.servers.get_server_data_by_id(
                 server_id
             )
-            page_data["server_stats"] = self.controller.servers.get_server_stats_by_id(
-                server_id
-            )
-            page_data["downloading"] = self.controller.servers.get_download_status(
-                server_id
-            )
+            if not self.failed_server:
+                page_data[
+                    "server_stats"
+                ] = self.controller.servers.get_server_stats_by_id(server_id)
+            else:
+                server_temp_obj = self.controller.servers.get_server_data_by_id(
+                    server_id
+                )
+                page_data["server_stats"] = {
+                    "server_id": {
+                        "server_id": server_id,
+                        "server_name": server_temp_obj["server_name"],
+                        "server_uuid": server_temp_obj["server_uuid"],
+                        "path": server_temp_obj["path"],
+                        "log_path": server_temp_obj["log_path"],
+                        "executable": server_temp_obj["executable"],
+                        "execution_command": server_temp_obj["execution_command"],
+                        "stop_command": server_temp_obj["stop_command"],
+                        "executable_update_url": server_temp_obj[
+                            "executable_update_url"
+                        ],
+                        "auto_start_delay": server_temp_obj["auto_start_delay"],
+                        "server_ip": server_temp_obj["server_ip"],
+                        "server_port": server_temp_obj["server_port"],
+                        "logs_delete_after": server_temp_obj["logs_delete_after"],
+                        "auto_start": server_temp_obj["auto_start"],
+                        "crash_detection": server_temp_obj["crash_detection"],
+                        "show_status": server_temp_obj["show_status"],
+                    },
+                    "running": False,
+                    "crashed": False,
+                    "server_type": "N/A",
+                    "cpu": "N/A",
+                    "mem": "N/A",
+                    "int_ping_results": [],
+                    "version": "N/A",
+                    "desc": "N/A",
+                    "started": "False",
+                }
+            if not self.failed_server:
+                page_data["downloading"] = self.controller.servers.get_download_status(
+                    server_id
+                )
+            else:
+                page_data["downloading"] = False
             page_data["server_id"] = server_id
             try:
                 page_data["waiting_start"] = self.controller.servers.get_waiting_start(
@@ -538,7 +584,10 @@ class PanelHandler(BaseHandler):
             except Exception as e:
                 logger.error(f"Failed to get server waiting to start: {e}")
                 page_data["waiting_start"] = False
-            page_data["get_players"] = server.get_server_players()
+            if not self.failed_server:
+                page_data["get_players"] = server.get_server_players()
+            else:
+                page_data["get_players"] = []
             page_data["active_link"] = subpage
             page_data["permissions"] = {
                 "Commands": EnumPermissionsServer.COMMANDS,
@@ -555,12 +604,14 @@ class PanelHandler(BaseHandler):
             ] = self.controller.server_perms.get_user_id_permissions_list(
                 exec_user["user_id"], server_id
             )
-            page_data["server_stats"]["crashed"] = self.controller.servers.is_crashed(
-                server_id
-            )
-            page_data["server_stats"][
-                "server_type"
-            ] = self.controller.servers.get_server_type_by_id(server_id)
+            if not self.failed_server:
+                page_data["server_stats"][
+                    "crashed"
+                ] = self.controller.servers.is_crashed(server_id)
+            if not self.failed_server:
+                page_data["server_stats"][
+                    "server_type"
+                ] = self.controller.servers.get_server_type_by_id(server_id)
             if subpage not in valid_subpages:
                 logger.debug("not a valid subpage")
             if not subpage:
@@ -640,6 +691,7 @@ class PanelHandler(BaseHandler):
                         return
                 page_data["java_versions"] = Helpers.find_java_installs()
                 server_obj: Servers = self.controller.servers.get_server_obj(server_id)
+                page_data["failed"] = self.failed_server
                 page_java = []
                 page_data["java_versions"].append("java")
                 for version in page_data["java_versions"]:
@@ -1467,7 +1519,15 @@ class PanelHandler(BaseHandler):
             server_obj.auto_start = auto_start
             server_obj.crash_detection = crash_detection
             server_obj.logs_delete_after = logs_delete_after
-            self.controller.servers.update_server(server_obj)
+            failed = False
+            for servers in self.controller.servers.failed_servers:
+                if servers["server_id"] == int(server_id):
+                    failed = True
+            if not failed:
+                self.controller.servers.update_server(server_obj)
+            else:
+                self.controller.servers.update_unloaded_server(server_obj)
+                self.controller.servers.init_all_servers()
             self.controller.servers.crash_detection(server_obj)
 
             self.controller.servers.refresh_server_settings(server_id)
