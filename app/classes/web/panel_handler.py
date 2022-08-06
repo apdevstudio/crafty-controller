@@ -374,7 +374,7 @@ class PanelHandler(BaseHandler):
             ) as credits_default_local:
                 try:
                     remote = requests.get(
-                        "https://craftycontrol.com/credits", allow_redirects=True
+                        "https://craftycontrol.com/credits-v2", allow_redirects=True
                     )
                     credits_dict: dict = remote.json()
                     if not credits_dict["staff"]:
@@ -954,6 +954,7 @@ class PanelHandler(BaseHandler):
             page_data["new_schedule"] = True
             page_data["schedule"] = {}
             page_data["schedule"]["children"] = []
+            page_data["schedule"]["name"] = ""
             page_data["schedule"]["server_id"] = server_id
             page_data["schedule"]["schedule_id"] = ""
             page_data["schedule"]["action"] = ""
@@ -1021,6 +1022,10 @@ class PanelHandler(BaseHandler):
             page_data["schedule"]["server_id"] = server_id
             page_data["schedule"]["schedule_id"] = schedule.schedule_id
             page_data["schedule"]["action"] = schedule.action
+            if schedule.name:
+                page_data["schedule"]["name"] = schedule.name
+            else:
+                page_data["schedule"]["name"] = ""
             page_data["schedule"][
                 "children"
             ] = self.controller.management.get_child_schedules(sch_id)
@@ -1618,6 +1623,7 @@ class PanelHandler(BaseHandler):
             difficulty = bleach.clean(self.get_argument("difficulty", None))
             server_obj = self.controller.servers.get_server_obj(server_id)
             enabled = bleach.clean(self.get_argument("enabled", "0"))
+            name = bleach.clean(self.get_argument("name", ""))
             if difficulty == "basic":
                 action = bleach.clean(self.get_argument("action", None))
                 interval = bleach.clean(self.get_argument("interval", None))
@@ -1682,6 +1688,7 @@ class PanelHandler(BaseHandler):
 
             if interval_type == "days":
                 job_data = {
+                    "name": name,
                     "server_id": server_id,
                     "action": action,
                     "interval_type": interval_type,
@@ -1696,6 +1703,7 @@ class PanelHandler(BaseHandler):
                 }
             elif difficulty == "reaction":
                 job_data = {
+                    "name": name,
                     "server_id": server_id,
                     "action": action,
                     "interval_type": interval_type,
@@ -1711,6 +1719,7 @@ class PanelHandler(BaseHandler):
                 }
             elif difficulty == "advanced":
                 job_data = {
+                    "name": name,
                     "server_id": server_id,
                     "action": action,
                     "interval_type": "",
@@ -1726,6 +1735,7 @@ class PanelHandler(BaseHandler):
                 }
             else:
                 job_data = {
+                    "name": name,
                     "server_id": server_id,
                     "action": action,
                     "interval_type": interval_type,
@@ -1775,6 +1785,7 @@ class PanelHandler(BaseHandler):
             difficulty = bleach.clean(self.get_argument("difficulty", None))
             server_obj = self.controller.servers.get_server_obj(server_id)
             enabled = bleach.clean(self.get_argument("enabled", "0"))
+            name = bleach.clean(self.get_argument("name", ""))
             if difficulty == "basic":
                 action = bleach.clean(self.get_argument("action", None))
                 interval = bleach.clean(self.get_argument("interval", None))
@@ -1838,6 +1849,7 @@ class PanelHandler(BaseHandler):
 
             if interval_type == "days":
                 job_data = {
+                    "name": name,
                     "server_id": server_id,
                     "action": action,
                     "interval_type": interval_type,
@@ -1852,6 +1864,7 @@ class PanelHandler(BaseHandler):
                 }
             elif difficulty == "advanced":
                 job_data = {
+                    "name": name,
                     "server_id": server_id,
                     "action": action,
                     "interval_type": "",
@@ -1867,6 +1880,7 @@ class PanelHandler(BaseHandler):
                 }
             elif difficulty == "reaction":
                 job_data = {
+                    "name": name,
                     "server_id": server_id,
                     "action": action,
                     "interval_type": interval_type,
@@ -1882,6 +1896,7 @@ class PanelHandler(BaseHandler):
                 }
             else:
                 job_data = {
+                    "name": name,
                     "server_id": server_id,
                     "action": action,
                     "interval_type": interval_type,
