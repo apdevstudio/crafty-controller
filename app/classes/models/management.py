@@ -110,11 +110,12 @@ class Schedules(BaseModel):
     interval_type = CharField()
     start_time = CharField(null=True)
     command = CharField(null=True)
-    comment = CharField()
+    name = CharField()
     one_time = BooleanField(default=False)
     cron_string = CharField(default="")
     parent = IntegerField(null=True)
     delay = IntegerField(default=0)
+    next_run = CharField(default="")
 
     class Meta:
         table_name = "schedules"
@@ -264,7 +265,7 @@ class HelpersManagement:
         interval_type,
         start_time,
         command,
-        comment=None,
+        name,
         enabled=True,
         one_time=False,
         cron_string="* * * * *",
@@ -280,11 +281,12 @@ class HelpersManagement:
                 Schedules.interval_type: interval_type,
                 Schedules.start_time: start_time,
                 Schedules.command: command,
-                Schedules.comment: comment,
+                Schedules.name: name,
                 Schedules.one_time: one_time,
                 Schedules.cron_string: cron_string,
                 Schedules.parent: parent,
                 Schedules.delay: delay,
+                Schedules.next_run: "",
             }
         ).execute()
         return sch_id

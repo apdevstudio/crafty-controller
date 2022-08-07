@@ -1,14 +1,38 @@
 # Changelog
-
-## --- [4.0.8] - 2022/TBD
+## --- [4.0.10] - 2022/TBD
 ### New features
 TBD
+### Bug fixes
+TBD
+### Tweaks
+TBD
+### Lang
+TBD
+<br><br>
+
+## --- [4.0.9] - 2022/08/06
+### Bug fixes
+- Fix Schedules Traceback Bug ([Merge Request |](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/419) [Commit |](https://gitlab.com/crafty-controller/crafty-4/-/commit/f69d79b7023d6c26fccb5caeae9e47b40ebe5af2) [Commit](https://gitlab.com/crafty-controller/crafty-4/-/commit/ad318296dc93beb5533fcd13066440df9f9e799a))
+- Fix handling of missing servers ([Merge Request🎉](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/420))
+- Fix offline credits panel stack ([Commit](https://gitlab.com/crafty-controller/crafty-4/-/commit/247678e6c6af5e7d5dbfcf3bfdcec49fc5980e55))
+### Tweaks
+- credits-v2| Translator status ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/421))
+- Use Names in Schedules ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/419))
+### Lang
+- Make Schedules panel translatable ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/419))
+<br><br>
+
+## --- [4.0.8] - 2022/08/05
+### New features
+- Add Crafty Version Check and notification ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/411))
 ### Bug fixes
 - Fix SU status not sticking on user creation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/410))
 - Handle Missing Java From Win Registry ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/413))
 - Disable restart while server is backing up ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/414))
+- Fix server creation with serverjars API ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/415))
+- Fix API Key delete confirmations ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/416))
 ### Tweaks
-TBD
+- Add next run to schedule info ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/417))
 ### Lang
 - Updated `es_ES` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/412))
 - Added `pl_PL` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/412))

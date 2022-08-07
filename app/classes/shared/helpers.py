@@ -20,6 +20,7 @@ import itertools
 from datetime import datetime
 from socket import gethostname
 from contextlib import redirect_stderr, suppress
+from packaging import version as pkg_version
 
 from app.classes.shared.null_writer import NullWriter
 from app.classes.shared.console import Console
@@ -75,12 +76,36 @@ class Helpers:
 
         self.websocket_helper = WebSocketHelper(self)
         self.translation = Translation(self)
+        self.update_available = False
 
     @staticmethod
     def auto_installer_fix(ex):
         logger.critical(f"Import Error: Unable to load {ex.name} module", exc_info=True)
         print(f"Import Error: Unable to load {ex.name} module")
         installer.do_install()
+
+    def check_remote_version(self):
+        """
+        Check if the remote version is newer than the local version
+        Returning remote version if it is newer, otherwise False.
+        """
+        try:
+            # Get tags from Gitlab, select the latest and parse the semver
+            response = get(
+                "https://gitlab.com/api/v4/projects/20430749/repository/tags"
+            )
+            if response.status_code == 200:
+                remote_version = pkg_version.parse(json.loads(response.text)[0]["name"])
+
+            # Get local version data from the file and parse the semver
+            local_version = pkg_version.parse(self.get_version_string())
+
+            if remote_version > local_version:
+                return remote_version
+
+        except Exception as e:
+            logger.error(f"Unable to check for new crafty version! \n{e}")
+        return False
 
     @staticmethod
     def find_java_installs():
