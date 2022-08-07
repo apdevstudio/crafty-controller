@@ -136,7 +136,8 @@
                       <label for="delay">{{ translate('serverScheduleConfig', 'offset' , data['lang']) }} <small
                           class="text-muted ml-1"> - {{ translate('serverScheduleConfig', 'offset-explain' ,
                           data['lang']) }}</small> </label>
-                      <input type="number" class="form-control" name="delay" id="delay" value="0">
+                      <input type="number" class="form-control" name="delay" id="delay"
+                        value="{{ data['schedule']['delay']}}">
                       <br>
                       <br>
                       <label for="parent">{{ translate('serverScheduleConfig', 'parent' , data['lang']) }} <small
