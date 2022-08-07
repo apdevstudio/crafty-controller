@@ -30,9 +30,11 @@ class DatabaseBuilder:
 
     def is_fresh_install(self):
         try:
-            user = self.users_helper.get_by_id(1)
-            if user:
+            usern = self.users_helper.get_all_usernames()
+            if len(usern) > 0:
                 return False
+            else:
+                return True
         except:
             return True
 
