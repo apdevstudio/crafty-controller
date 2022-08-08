@@ -4,7 +4,7 @@
     "name": "Crafty Controller 4",
     "icons": [
         {
-            "src": "../static/images/Crafty_4-0.png",
+            "src": "../static/assets/images/Crafty_4-0.png",
             "type": "image/png",
             "sizes": "192x192"
         }
@@ -22,7 +22,7 @@
             "url": "/panel/dashboard",
             "icons": [
                 {
-                    "src": "../static/images/Crafty_4-0.png",
+                    "src": "../static/assets/images/Crafty_4-0.png",
                     "sizes": "192x192"
                 }
             ]
