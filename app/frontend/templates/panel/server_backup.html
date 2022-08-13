@@ -294,6 +294,7 @@
       headers: { 'X-XSRFToken': token },
       url: '/ajax/backup_now?id=' + server_id,
       success: function (data) {
+        location.reload();
       },
     });
   }
@@ -503,11 +504,6 @@
         document.getElementById('backup_progress_bar').style.width = backup.percent + '%';
         document.getElementById('total_files').innerHTML = backup.total_files;
       }
-    });
-  }
-  if (webSocket) {
-    webSocket.on('backup_reload', function (backup) {
-      location.reload()
     });
   }
 
