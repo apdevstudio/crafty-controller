@@ -1,4 +1,15 @@
 # Changelog
+## --- [4.0.11] - 2022/TBD
+### New features
+TBD
+### Bug fixes
+TBD
+### Tweaks
+TBD
+### Lang
+TBD
+<br><br>
+
 ## --- [4.0.10] - 2022/08/14
 ### Bug fixes
 - Fix reaction tasks not firing ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/423))
