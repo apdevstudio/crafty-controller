@@ -962,6 +962,7 @@ class PanelHandler(BaseHandler):
             page_data["schedule"]["command"] = ""
             page_data["schedule"]["one_time"] = False
             page_data["schedule"]["cron_string"] = ""
+            page_data["schedule"]["delay"] = 0
             page_data["schedule"]["time"] = ""
             page_data["schedule"]["interval"] = ""
             # we don't need to check difficulty here.
@@ -1041,6 +1042,7 @@ class PanelHandler(BaseHandler):
                 page_data["schedule"]["command"] = schedule.command
             else:
                 page_data["schedule"]["command"] = ""
+            page_data["schedule"]["delay"] = schedule.delay
             page_data["schedule"]["enabled"] = schedule.enabled
             page_data["schedule"]["one_time"] = schedule.one_time
             page_data["schedule"]["cron_string"] = schedule.cron_string
