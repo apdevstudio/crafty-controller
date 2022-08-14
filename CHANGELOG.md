@@ -1,4 +1,16 @@
 # Changelog
+## --- [4.0.10] - 2022/08/14
+### Bug fixes
+- Fix reaction tasks not firing ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/423))
+- QOL task delay offset not following over on task edit ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/423))
+- Fix Fresh Install Detection Logic issues ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/425))
+- Fix reload issue on backup panel - on certain browsers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/431))
+- Fix '&' in backup paths ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/431))
+### Tweaks
+- Session Handling | Logout on browser close ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/424))
+- Backups Panel | Only display zips ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/426))
+- User creation | Fix page browser title ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/427))
+<br><br>
 
 ## --- [4.0.9] - 2022/08/06
 ### Bug fixes

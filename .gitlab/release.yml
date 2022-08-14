@@ -11,13 +11,15 @@ release:
   script:
     - echo "Build Job $JOB_ID"
     - echo "Running release job for tag $CI_COMMIT_TAG"
-  release:
-    name: Crafty $CI_COMMIT_TAG
-    tag_name: $CI_COMMIT_TAG
-    description: ./CHANGELOG.md
-    ref: $CI_COMMIT_TAG
-    assets:
-      links:
-        - name: Windows Package
-          url: "$CI_PROJECT_URL/-/jobs/$JOB_ID/artifacts/download"
-          link_type: package
+    - |
+      full_changelog=$(cat CHANGELOG.md)
+      trimmed_changelog="${full_changelog%%<br><br>*}"
+      echo "$trimmed_changelog"
+    - release-cli create
+      --name "Crafty $CI_COMMIT_TAG"
+      --description "$trimmed_changelog"
+      --tag-name "$CI_COMMIT_TAG"
+      --ref "$CI_COMMIT_TAG"
+      --assets-link "{\"url\":\"$CI_PROJECT_URL/-/jobs/$JOB_ID/artifacts/download\",\"name\":\"Windows Package\",\"link_type\":\"package\"}"
+# Having to use raw release-cli instead of yaml syntax because variables are not expanding
+# https://gitlab.com/gitlab-org/gitlab/-/issues/237893#note_403465700

@@ -108,6 +108,12 @@ class HelperUsers:
         return usernames
 
     @staticmethod
+    def get_user_total():
+        count = Users.select().where(Users.username != "system").count()
+        print(count)
+        return count
+
+    @staticmethod
     def get_all_user_ids() -> t.List[int]:
         return [
             user.user_id
