@@ -3,9 +3,10 @@
 ### New features
 TBD
 ### Bug fixes
-TBD
+- Fix reaction tasks not firing ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/423))
+- QOL task delay offset not following over on task edit ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/423))
 ### Tweaks
-TBD
+- Session Handling | Logout on browser close ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/424))
 ### Lang
 TBD
 <br><br>
