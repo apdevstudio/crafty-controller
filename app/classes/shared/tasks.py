@@ -3,7 +3,7 @@ import time
 import logging
 import threading
 import asyncio
-from datetime import datetime
+import datetime
 
 from tzlocal import get_localzone
 from tzlocal.utils import ZoneInfoNotFoundError
@@ -199,7 +199,7 @@ class TasksManager:
             "interval",
             hours=12,
             id="update_watcher",
-            start_date=datetime.now(),
+            start_date=datetime.datetime.now(),
         )
         # self.scheduler.add_job(
         #    self.scheduler.print_jobs, "interval", seconds=10, id="-1"

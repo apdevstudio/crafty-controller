@@ -1023,6 +1023,7 @@ class ServerInstance:
                 "size": f["size"],
             }
             for f in files
+            if f["path"].endswith(".zip")
         ]
 
     def jar_update(self):
