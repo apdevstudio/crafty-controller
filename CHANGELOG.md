@@ -9,6 +9,7 @@ TBD
 ### Tweaks
 - Session Handling | Logout on browser close ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/424))
 - Backups Panel | Only display zips ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/426))
+- User creation | Fix page browser title ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/427))
 ### Lang
 TBD
 <br><br>
