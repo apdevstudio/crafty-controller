@@ -385,8 +385,6 @@ class ServerHandler(BaseHandler):
                     new_server_id,
                     self.get_remote_ip(),
                 )
-                # deletes temp dir
-                FileHelpers.del_dirs(zip_path)
             else:
                 if len(server_parts) != 3:
                     self.redirect("/panel/error?error=Invalid server data")
@@ -516,8 +514,6 @@ class ServerHandler(BaseHandler):
                     new_server_id,
                     self.get_remote_ip(),
                 )
-                # deletes temp dir
-                FileHelpers.del_dirs(zip_path)
             else:
                 if len(server_parts) != 2:
                     self.redirect("/panel/error?error=Invalid server data")

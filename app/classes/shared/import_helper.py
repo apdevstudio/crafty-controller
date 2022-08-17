@@ -1,7 +1,6 @@
-from genericpath import isdir
-import shutil
 import os
 import time
+import shutil
 import logging
 import threading
 
@@ -71,7 +70,7 @@ class ImportHelpers:
             target=self.import_threaded_java_zip_server,
             daemon=True,
             args=(temp_dir, new_server_dir, port, new_id),
-            name=f"{new_id}_import",
+            name=f"{new_id}_java_zip_import",
         )
         import_thread.start()
 
@@ -109,3 +108,109 @@ class ImportHelpers:
         ServersController.finish_import(new_id)
         for user in server_users:
             self.helper.websocket_helper.broadcast_user(user, "send_start_reload", {})
+        # deletes temp dir
+        FileHelpers.del_dirs(temp_dir)
+
+    def import_bedrock_server(
+        self, server_path, new_server_dir, port, full_jar_path, new_id
+    ):
+        import_thread = threading.Thread(
+            target=self.import_threaded_java_zip_server,
+            daemon=True,
+            args=(server_path, new_server_dir, port, new_id),
+            name=f"{new_id}_bedrock_import",
+        )
+        import_thread.start()
+
+    def import_threaded_bedrock_server(
+        self, server_path, new_server_dir, port, full_jar_path, new_id
+    ):
+        for item in os.listdir(server_path):
+            if not item == "db_stats":
+                try:
+                    if os.path.isdir(os.path.join(server_path, item)):
+                        FileHelpers.copy_dir(
+                            os.path.join(server_path, item),
+                            os.path.join(new_server_dir, item),
+                        )
+                    else:
+                        FileHelpers.copy_file(
+                            os.path.join(server_path, item),
+                            os.path.join(new_server_dir, item),
+                        )
+                except shutil.Error as ex:
+                    logger.error(f"Server import failed with error: {ex}")
+
+        has_properties = False
+        for item in os.listdir(new_server_dir):
+            if str(item) == "server.properties":
+                has_properties = True
+        if not has_properties:
+            logger.info(
+                f"No server.properties found on zip file import. "
+                f"Creating one with port selection of {str(port)}"
+            )
+            with open(
+                os.path.join(new_server_dir, "server.properties"), "w", encoding="utf-8"
+            ) as file:
+                file.write(f"server-port={port}")
+                file.close()
+        if os.name != "nt":
+            if Helpers.check_file_exists(full_jar_path):
+                os.chmod(full_jar_path, 0o2760)
+        ServersController.finish_import(new_id)
+        server_users = PermissionsServers.get_server_user_list(new_id)
+        for user in server_users:
+            self.helper.websocket_helper.broadcast_user(user, "send_start_reload", {})
+
+    def import_bedrock_zip_server(
+        self, temp_dir, new_server_dir, full_jar_path, port, new_id
+    ):
+        import_thread = threading.Thread(
+            target=self.import_threaded_bedrock_zip_server,
+            daemon=True,
+            args=(temp_dir, new_server_dir, full_jar_path, port, new_id),
+            name=f"{new_id}_bedrock_import",
+        )
+        import_thread.start()
+
+    def import_threaded_bedrock_zip_server(
+        self, temp_dir, new_server_dir, full_jar_path, port, new_id
+    ):
+        has_properties = False
+        # extracts archive to temp directory
+        for item in os.listdir(temp_dir):
+            if str(item) == "server.properties":
+                has_properties = True
+            try:
+                if not os.path.isdir(os.path.join(temp_dir, item)):
+                    FileHelpers.move_file(
+                        os.path.join(temp_dir, item), os.path.join(new_server_dir, item)
+                    )
+                else:
+                    if item != "db_stats":
+                        FileHelpers.move_dir(
+                            os.path.join(temp_dir, item),
+                            os.path.join(new_server_dir, item),
+                        )
+            except Exception as ex:
+                logger.error(f"ERROR IN ZIP IMPORT: {ex}")
+        if not has_properties:
+            logger.info(
+                f"No server.properties found on zip file import. "
+                f"Creating one with port selection of {str(port)}"
+            )
+            with open(
+                os.path.join(new_server_dir, "server.properties"), "w", encoding="utf-8"
+            ) as file:
+                file.write(f"server-port={port}")
+                file.close()
+        ServersController.finish_import(new_id)
+        server_users = PermissionsServers.get_server_user_list(new_id)
+        for user in server_users:
+            self.helper.websocket_helper.broadcast_user(user, "send_start_reload", {})
+        if os.name != "nt":
+            if Helpers.check_file_exists(full_jar_path):
+                os.chmod(full_jar_path, 0o2760)
+        # deletes temp dir
+        FileHelpers.del_dirs(temp_dir)
