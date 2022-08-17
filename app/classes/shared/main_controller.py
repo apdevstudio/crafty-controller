@@ -30,15 +30,17 @@ from app.classes.shared.authentication import Authentication
 from app.classes.shared.console import Console
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.file_helpers import FileHelpers
+from app.classes.shared.import_helper import ImportHelpers
 from app.classes.minecraft.serverjars import ServerJars
 
 logger = logging.getLogger(__name__)
 
 
 class Controller:
-    def __init__(self, database, helper, file_helper):
+    def __init__(self, database, helper, file_helper, import_helper):
         self.helper: Helpers = helper
         self.file_helper: FileHelpers = file_helper
+        self.import_helper: ImportHelpers = import_helper
         self.server_jars: ServerJars = ServerJars(helper)
         self.users_helper: HelperUsers = HelperUsers(database, self.helper)
         self.roles_helper: HelperRoles = HelperRoles(database)
@@ -569,40 +571,9 @@ class Controller:
             port,
             server_type="minecraft-java",
         )
-        import_thread = threading.Thread(
-            name=f"server_import-{server_id}",
-            target=self.import_threaded_jar_server,
-            daemon=True,
-            args=(server_path, new_server_dir, port, new_id),
-        )
-        self.servers.set_import(new_id)
-        import_thread.start()
+        ServersController.set_import(new_id)
+        self.import_helper.import_jar_server(server_path, new_server_dir, port, new_id)
         return new_id
-
-    def import_threaded_jar_server(self, server_path, new_server_dir, port, new_id):
-        try:
-            FileHelpers.copy_dir(server_path, new_server_dir, True)
-        except shutil.Error as ex:
-            logger.error(f"Server import failed with error: {ex}")
-
-        has_properties = False
-        for item in os.listdir(new_server_dir):
-            if str(item) == "server.properties":
-                has_properties = True
-        if not has_properties:
-            logger.info(
-                f"No server.properties found on zip file import. "
-                f"Creating one with port selection of {str(port)}"
-            )
-            with open(
-                os.path.join(new_server_dir, "server.properties"), "w", encoding="utf-8"
-            ) as file:
-                file.write(f"server-port={port}")
-                file.close()
-        self.servers.finish_import(new_id)
-        server_users = PermissionsServers.get_server_user_list(new_id)
-        for user in server_users:
-            self.helper.websocket_helper.broadcast_user(user, "send_start_reload", {})
 
     def import_zip_server(
         self,
