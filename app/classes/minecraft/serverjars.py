@@ -175,7 +175,7 @@ class ServerJars:
         # we submit a db update for it's stats.
         while True:
             try:
-                ServersController.set_download(server_id)
+                ServersController.set_import(server_id)
                 for user in server_users:
                     self.helper.websocket_helper.broadcast_user(
                         user, "send_start_reload", {}

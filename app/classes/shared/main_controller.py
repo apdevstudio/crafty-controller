@@ -5,6 +5,7 @@ import platform
 import shutil
 import time
 import logging
+import threading
 from peewee import DoesNotExist
 
 # TZLocal is set as a hidden import on win pipeline
@@ -16,6 +17,7 @@ from app.classes.models.server_permissions import EnumPermissionsServer
 from app.classes.shared.main_models import DatabaseShortcuts
 from app.classes.models.users import HelperUsers
 from app.classes.models.roles import HelperRoles
+from app.classes.models.server_permissions import PermissionsServers
 from app.classes.models.management import HelpersManagement
 from app.classes.models.servers import HelperServers
 from app.classes.controllers.crafty_perms_controller import CraftyPermsController
@@ -537,25 +539,6 @@ class Controller:
         Helpers.ensure_dir_exists(new_server_dir)
         Helpers.ensure_dir_exists(backup_path)
         server_path = Helpers.get_os_understandable_path(server_path)
-        try:
-            FileHelpers.copy_dir(server_path, new_server_dir, True)
-        except shutil.Error as ex:
-            logger.error(f"Server import failed with error: {ex}")
-
-        has_properties = False
-        for item in os.listdir(new_server_dir):
-            if str(item) == "server.properties":
-                has_properties = True
-        if not has_properties:
-            logger.info(
-                f"No server.properties found on zip file import. "
-                f"Creating one with port selection of {str(port)}"
-            )
-            with open(
-                os.path.join(new_server_dir, "server.properties"), "w", encoding="utf-8"
-            ) as file:
-                file.write(f"server-port={port}")
-                file.close()
 
         full_jar_path = os.path.join(new_server_dir, server_jar)
 
@@ -586,7 +569,40 @@ class Controller:
             port,
             server_type="minecraft-java",
         )
+        import_thread = threading.Thread(
+            name=f"server_import-{server_id}",
+            target=self.import_threaded_jar_server,
+            daemon=True,
+            args=(server_path, new_server_dir, port, new_id),
+        )
+        self.servers.set_import(new_id)
+        import_thread.start()
         return new_id
+
+    def import_threaded_jar_server(self, server_path, new_server_dir, port, new_id):
+        try:
+            FileHelpers.copy_dir(server_path, new_server_dir, True)
+        except shutil.Error as ex:
+            logger.error(f"Server import failed with error: {ex}")
+
+        has_properties = False
+        for item in os.listdir(new_server_dir):
+            if str(item) == "server.properties":
+                has_properties = True
+        if not has_properties:
+            logger.info(
+                f"No server.properties found on zip file import. "
+                f"Creating one with port selection of {str(port)}"
+            )
+            with open(
+                os.path.join(new_server_dir, "server.properties"), "w", encoding="utf-8"
+            ) as file:
+                file.write(f"server-port={port}")
+                file.close()
+        self.servers.finish_import(new_id)
+        server_users = PermissionsServers.get_server_user_list(new_id)
+        for user in server_users:
+            self.helper.websocket_helper.broadcast_user(user, "send_start_reload", {})
 
     def import_zip_server(
         self,

@@ -453,8 +453,8 @@ class PanelHandler(BaseHandler):
                 for server in un_used_servers[:]:
                     if flag == 0:
                         server["stats"][
-                            "downloading"
-                        ] = self.controller.servers.get_download_status(
+                            "importing"
+                        ] = self.controller.servers.get_import_status(
                             str(server["stats"]["server_id"]["server_id"])
                         )
                         server["stats"]["crashed"] = self.controller.servers.is_crashed(
@@ -571,11 +571,11 @@ class PanelHandler(BaseHandler):
                     "started": "False",
                 }
             if not self.failed_server:
-                page_data["downloading"] = self.controller.servers.get_download_status(
+                page_data["importing"] = self.controller.servers.get_import_status(
                     server_id
                 )
             else:
-                page_data["downloading"] = False
+                page_data["importing"] = False
             page_data["server_id"] = server_id
             try:
                 page_data["waiting_start"] = self.controller.servers.get_waiting_start(
