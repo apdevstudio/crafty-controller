@@ -106,5 +106,6 @@ class ImportHelpers:
                 file.close()
 
         server_users = PermissionsServers.get_server_user_list(new_id)
+        ServersController.finish_import(new_id)
         for user in server_users:
             self.helper.websocket_helper.broadcast_user(user, "send_start_reload", {})

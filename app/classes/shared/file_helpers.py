@@ -31,9 +31,11 @@ class FileHelpers:
                     sub.unlink()
                 except:
                     logger.error(f"Unable to delete file {sub}")
-
-        # This removes the top-level folder:
-        path.rmdir()
+        try:
+            # This removes the top-level folder:
+            path.rmdir()
+        except:
+            logger.error("Unable to remove top level")
         return True
 
     @staticmethod

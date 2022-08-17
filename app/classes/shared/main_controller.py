@@ -627,6 +627,7 @@ class Controller:
             port,
             server_type="minecraft-java",
         )
+        ServersController.set_import(new_id)
         self.import_helper.import_java_zip_server(
             temp_dir, new_server_dir, port, new_id
         )
