@@ -27,7 +27,10 @@ class FileHelpers:
                 FileHelpers.del_dirs(sub)
             else:
                 # Delete file if it is a file:
-                sub.unlink()
+                try:
+                    sub.unlink()
+                except:
+                    logger.error(f"Unable to delete file {sub}")
 
         # This removes the top-level folder:
         path.rmdir()

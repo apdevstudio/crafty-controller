@@ -596,32 +596,6 @@ class Controller:
         temp_dir = Helpers.get_os_understandable_path(zip_path)
         Helpers.ensure_dir_exists(new_server_dir)
         Helpers.ensure_dir_exists(backup_path)
-        has_properties = False
-        # extracts archive to temp directory
-        for item in os.listdir(temp_dir):
-            if str(item) == "server.properties":
-                has_properties = True
-            try:
-                if not os.path.isdir(os.path.join(temp_dir, item)):
-                    FileHelpers.move_file(
-                        os.path.join(temp_dir, item), os.path.join(new_server_dir, item)
-                    )
-                else:
-                    FileHelpers.move_dir(
-                        os.path.join(temp_dir, item), os.path.join(new_server_dir, item)
-                    )
-            except Exception as ex:
-                logger.error(f"ERROR IN ZIP IMPORT: {ex}")
-        if not has_properties:
-            logger.info(
-                f"No server.properties found on zip file import. "
-                f"Creating one with port selection of {str(port)}"
-            )
-            with open(
-                os.path.join(new_server_dir, "server.properties"), "w", encoding="utf-8"
-            ) as file:
-                file.write(f"server-port={port}")
-                file.close()
 
         full_jar_path = os.path.join(new_server_dir, server_jar)
 
@@ -652,6 +626,9 @@ class Controller:
             server_stop,
             port,
             server_type="minecraft-java",
+        )
+        self.import_helper.import_java_zip_server(
+            temp_dir, new_server_dir, port, new_id
         )
         return new_id
 
