@@ -556,6 +556,8 @@
         "userRoles": "User Roles",
         "userRolesDesc": "Roles this user is a member of.",
         "userSettings": "User Settings",
-        "uses": "Number of uses allowed (-1==No Limit)"
+        "uses": "Number of uses allowed (-1==No Limit)",
+        "manager": "Manager",
+        "selectManager": "Select Manager for User"
     }
 }

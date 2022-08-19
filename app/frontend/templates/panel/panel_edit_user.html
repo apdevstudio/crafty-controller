@@ -123,7 +123,8 @@ data['lang']) }}{% end %}
                       </div>
                       {% if data['superuser'] %}
                       <div class="form-group">
-                        <label class="form-label" for="manager">Select The User's Manager
+                        <label class="form-label" for="manager">{{ translate('userConfig', 'selectManager',
+                          data['lang']) }}
                         </label>
                         <select class="form-select form-control form-control-lg select-css" id="manager" name="manager"
                           form="user_form">
@@ -288,6 +289,8 @@ data['lang']) }}{% end %}
                       <br />
                       {{ translate('userConfig', 'lastIP', data['lang']) }} {{ data['user']['last_ip'] }}
                       <br />
+                      {{ translate('userConfig', 'manager', data['lang'])}}: {{data['manager']['username'] }}
+                      <br />
                     </p>
                   </blockquote>
                 </div>
@@ -305,10 +308,6 @@ data['lang']) }}{% end %}
                 <button class="btn btn-sm btn-danger delete-user"><i class="fas fa-trash"></i> {{
                   translate('userConfig', 'deleteUserB', data['lang']) }}</a>
                   {% end %}</button>
-
-                <br>
-                <br>
-                <h4>Manager: {{data['manager']['username'] }}</h4>
 
               </div>
             </div>
