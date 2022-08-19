@@ -87,6 +87,38 @@
                           <td><a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a></td>
                         </tr>
                         {% end %}
+                        {% for user in data['managed_users'] %}
+                        <tr>
+                          <td><i class="fas fa-user"></i> {{ user.username }}</td>
+                          <td>
+                            {% if user.enabled %}
+                            <span class="text-success">
+                              <i class="fas fa-check-square"></i> Yes
+                            </span>
+                            {% else %}
+                            <span class="text-danger">
+                              <i class="far fa-times-square"></i> No
+                            </span>
+
+                            {% end %}
+                          </td>
+                          <td id="server_list_{{user.user_id}}">
+                            <ul id="{{user.user_id}}">
+                              {% for item in data['auth-servers'][user.user_id] %}
+                              <li>{{item}}</li>
+                              {% end %}
+                            </ul>
+                          </td>
+                          <td id="role_list_{{user.user_id}}">
+                            <ul>
+                              {% for item in data['user-roles'][user.user_id] %}
+                              <li data-toggle="tooltip" title="{{ item }}">{{item}}</li>
+                              {% end %}
+                            </ul>
+                          </td>
+                          <td><a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a></td>
+                        </tr>
+                        {% end %}
                       </tbody>
                     </table>
                   </div>

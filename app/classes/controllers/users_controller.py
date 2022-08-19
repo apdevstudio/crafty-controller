@@ -132,6 +132,10 @@ class UsersController:
     def set_support_path(user_id, support_path):
         HelperUsers.set_support_path(user_id, support_path)
 
+    @staticmethod
+    def get_managed_users(exec_user_id):
+        return HelperUsers.get_managed_users(exec_user_id)
+
     def update_user(self, user_id: str, user_data=None, user_crafty_data=None):
         if user_crafty_data is None:
             user_crafty_data = {}
@@ -206,6 +210,7 @@ class UsersController:
     def add_user(
         self,
         username,
+        manager,
         password,
         email="default@example.com",
         enabled: bool = True,
@@ -213,6 +218,7 @@ class UsersController:
     ):
         return self.users_helper.add_user(
             username,
+            manager,
             password=password,
             email=email,
             enabled=enabled,
@@ -236,6 +242,8 @@ class UsersController:
         )
 
     def remove_user(self, user_id):
+        for user in self.get_managed_users(user_id):
+            self.update_user(user.user_id, {"manager": None})
         return self.users_helper.remove_user(user_id)
 
     @staticmethod

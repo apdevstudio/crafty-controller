@@ -860,6 +860,11 @@ class PanelHandler(BaseHandler):
                         page_data["users"] = self.controller.users.get_all_users()
                         page_data["roles"] = self.controller.roles.get_all_roles()
                         page_data["auth-servers"][user.user_id] = super_auth_servers
+                        page_data["managed_users"] = []
+            else:
+                page_data["managed_users"] = self.controller.users.get_managed_users(
+                    exec_user["user_id"]
+                )
 
             template = "panel/panel_config.html"
 
@@ -904,8 +909,14 @@ class PanelHandler(BaseHandler):
             )
             if superuser:
                 page_data["super-disabled"] = ""
+                page_data["users"] = self.controller.users.get_all_users()
             else:
                 page_data["super-disabled"] = "disabled"
+
+            page_data["manager"] = {
+                "user_id": -100,
+                "username": "None",
+            }
             for file in sorted(
                 os.listdir(os.path.join(self.helper.root_dir, "app", "translations"))
             ):
@@ -1077,6 +1088,17 @@ class PanelHandler(BaseHandler):
             page_data["roles_all"] = self.controller.roles.get_all_roles()
             page_data["servers_all"] = self.controller.servers.get_all_defined_servers()
             page_data["superuser"] = superuser
+            if page_data["user"]["manager"] is not None:
+                page_data["manager"] = self.controller.users.get_user_by_id(
+                    page_data["user"]["manager"]
+                )
+            else:
+                page_data["manager"] = {
+                    "user_id": -100,
+                    "username": "None",
+                }
+            if exec_user["superuser"]:
+                page_data["users"] = self.controller.users.get_all_users()
             page_data[
                 "permissions_all"
             ] = self.controller.crafty_perms.list_defined_crafty_permissions()
@@ -1115,6 +1137,13 @@ class PanelHandler(BaseHandler):
                         "/panel/error?error=Unauthorized access: not a user editor"
                     )
                     return
+            if (
+                self.controller.users.get_user_by_id(user_id)["manager"]
+                != exec_user["user_id"]
+            ) and not exec_user["superuser"]:
+                self.redirect(
+                    "/panel/error?error=Unauthorized access: you cannot edit this user"
+                )
 
                 page_data["servers"] = []
                 page_data["role-servers"] = []
@@ -1962,6 +1991,13 @@ class PanelHandler(BaseHandler):
             else:
                 superuser = 0
 
+            if exec_user["superuser"]:
+                manager = self.get_argument("manager")
+                if manager == "":
+                    manager = None
+                else:
+                    manager = int(manager)
+
             if not exec_user["superuser"]:
                 if username is None or username == "":
                     self.redirect("/panel/error?error=Invalid username")
@@ -2013,6 +2049,7 @@ class PanelHandler(BaseHandler):
 
                 user_data = {
                     "username": username,
+                    "manager": manager,
                     "password": password0,
                     "email": email,
                     "enabled": enabled,
@@ -2158,6 +2195,15 @@ class PanelHandler(BaseHandler):
             if username is None or username == "":
                 self.redirect("/panel/error?error=Invalid username")
                 return
+
+            if exec_user["superuser"]:
+                manager = self.get_argument("manager")
+                if manager == "":
+                    manager = None
+                else:
+                    manager = int(manager)
+            else:
+                manager = int(exec_user["user_id"])
             # does this user id exist?
             if self.controller.users.get_id_by_name(username) is not None:
                 self.redirect("/panel/error?error=User exists")
@@ -2172,6 +2218,7 @@ class PanelHandler(BaseHandler):
 
             user_id = self.controller.users.add_user(
                 username,
+                manager=manager,
                 password=password0,
                 email=email,
                 enabled=enabled,
