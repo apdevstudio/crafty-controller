@@ -1138,9 +1138,13 @@ class PanelHandler(BaseHandler):
                     )
                     return
             if (
-                self.controller.users.get_user_by_id(user_id)["manager"]
-                != exec_user["user_id"]
-            ) and not exec_user["superuser"]:
+                (
+                    self.controller.users.get_user_by_id(user_id)["manager"]
+                    != exec_user["user_id"]
+                )
+                and not exec_user["superuser"]
+                and str(exec_user["user_id"]) != str(user_id)
+            ):
                 self.redirect(
                     "/panel/error?error=Unauthorized access: you cannot edit this user"
                 )
