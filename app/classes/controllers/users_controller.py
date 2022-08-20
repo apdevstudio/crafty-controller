@@ -2,6 +2,7 @@ import logging
 import typing as t
 
 from app.classes.models.users import HelperUsers
+from app.classes.models.roles import HelperRoles
 from app.classes.models.crafty_permissions import (
     PermissionsCrafty,
     EnumPermissionsCrafty,
@@ -244,6 +245,8 @@ class UsersController:
     def remove_user(self, user_id):
         for user in self.get_managed_users(user_id):
             self.update_user(user.user_id, {"manager": None})
+        for role in HelperRoles.get_managed_roles(user_id):
+            HelperRoles.update_role(role.role_id, {"manager": None})
         return self.users_helper.remove_user(user_id)
 
     @staticmethod
