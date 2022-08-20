@@ -394,6 +394,7 @@ class AjaxHandler(BaseHandler):
                         "1",
                         "2",
                         server_data["server_port"],
+                        server_data["created_by"],
                     )
                     new_server_id = new_server
                     new_server = self.controller.servers.get_server_data(new_server)
@@ -416,6 +417,7 @@ class AjaxHandler(BaseHandler):
                         temp_dir,
                         server_data["executable"],
                         server_data["server_port"],
+                        server_data["created_by"],
                     )
                     new_server_id = new_server
                     new_server = self.controller.servers.get_server_data(new_server)

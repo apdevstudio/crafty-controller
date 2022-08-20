@@ -265,6 +265,7 @@ class ServerHandler(BaseHandler):
                     backup_path = os.path.join(self.helper.backup_path, new_server_uuid)
                     server_port = server_data.get("server_port")
                     server_type = server_data.get("type")
+                    created_by = exec_user["user_id"]
 
                     new_server_id = self.controller.servers.create_server(
                         new_server_name,
@@ -276,6 +277,7 @@ class ServerHandler(BaseHandler):
                         new_server_log_file,
                         stop_command,
                         server_type,
+                        created_by,
                         server_port,
                     )
                     if not exec_user["superuser"]:
@@ -291,9 +293,6 @@ class ServerHandler(BaseHandler):
                         )
                         self.controller.users.add_role_to_user(
                             exec_user["user_id"], role_id
-                        )
-                        self.controller.crafty_perms.add_server_creation(
-                            exec_user["user_id"]
                         )
 
                     self.controller.servers.init_all_servers()
@@ -354,6 +353,7 @@ class ServerHandler(BaseHandler):
                     min_mem,
                     max_mem,
                     port,
+                    exec_user["user_id"],
                 )
                 self.controller.management.add_to_audit_log(
                     exec_user["user_id"],
@@ -370,7 +370,13 @@ class ServerHandler(BaseHandler):
                     return
 
                 new_server_id = self.controller.import_zip_server(
-                    server_name, zip_path, import_server_jar, min_mem, max_mem, port
+                    server_name,
+                    zip_path,
+                    import_server_jar,
+                    min_mem,
+                    max_mem,
+                    port,
+                    exec_user["user_id"],
                 )
                 if new_server_id == "false":
                     self.redirect(
@@ -403,6 +409,7 @@ class ServerHandler(BaseHandler):
                     min_mem,
                     max_mem,
                     port,
+                    exec_user["user_id"],
                 )
                 self.controller.management.add_to_audit_log(
                     exec_user["user_id"],
@@ -429,9 +436,6 @@ class ServerHandler(BaseHandler):
                     )
                     self.controller.users.add_role_to_user(
                         exec_user["user_id"], role_id
-                    )
-                    self.controller.crafty_perms.add_server_creation(
-                        exec_user["user_id"]
                     )
 
             else:
@@ -485,7 +489,11 @@ class ServerHandler(BaseHandler):
                     return
 
                 new_server_id = self.controller.import_bedrock_server(
-                    server_name, import_server_path, import_server_exe, port
+                    server_name,
+                    import_server_path,
+                    import_server_exe,
+                    port,
+                    exec_user["user_id"],
                 )
                 self.controller.management.add_to_audit_log(
                     exec_user["user_id"],
@@ -502,7 +510,11 @@ class ServerHandler(BaseHandler):
                     return
 
                 new_server_id = self.controller.import_bedrock_zip_server(
-                    server_name, zip_path, import_server_exe, port
+                    server_name,
+                    zip_path,
+                    import_server_exe,
+                    port,
+                    exec_user["user_id"],
                 )
                 if new_server_id == "false":
                     self.redirect(
@@ -528,7 +540,13 @@ class ServerHandler(BaseHandler):
                 # TODO: add server type check here and call the correct server
                 # add functions if not a jar
                 new_server_id = self.controller.create_jar_server(
-                    server_type, server_version, server_name, min_mem, max_mem, port
+                    server_type,
+                    server_version,
+                    server_name,
+                    min_mem,
+                    max_mem,
+                    port,
+                    exec_user["user_id"],
                 )
                 self.controller.management.add_to_audit_log(
                     exec_user["user_id"],
@@ -555,9 +573,6 @@ class ServerHandler(BaseHandler):
                     )
                     self.controller.users.add_role_to_user(
                         exec_user["user_id"], role_id
-                    )
-                    self.controller.crafty_perms.add_server_creation(
-                        exec_user["user_id"]
                     )
 
             else:

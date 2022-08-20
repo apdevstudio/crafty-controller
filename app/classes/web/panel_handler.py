@@ -869,7 +869,7 @@ class PanelHandler(BaseHandler):
                 for item in page_data["roles"]:
                     page_data["assigned_roles"].append(item.role_id)
 
-                page_data["managed_roles"] = self.controller.roles.get_managed_roles(
+                page_data["managed_roles"] = self.controller.users.get_managed_roles(
                     exec_user["user_id"]
                 )
 
@@ -2282,7 +2282,6 @@ class PanelHandler(BaseHandler):
                 server_id=0,
                 source_ip=self.get_remote_ip(),
             )
-            self.controller.crafty_perms.add_user_creation(exec_user["user_id"])
             self.redirect("/panel/panel_config")
 
         elif page == "edit_role":
@@ -2359,7 +2358,6 @@ class PanelHandler(BaseHandler):
                 server_id=0,
                 source_ip=self.get_remote_ip(),
             )
-            self.controller.crafty_perms.add_role_creation(exec_user["user_id"])
             self.redirect("/panel/panel_config")
 
         else:

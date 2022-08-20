@@ -244,7 +244,7 @@ class Controller:
         except:
             return {"percent": 0, "total_files": 0}
 
-    def create_api_server(self, data: dict):
+    def create_api_server(self, data: dict, user_id):
         server_fs_uuid = Helpers.create_uuid()
         new_server_path = os.path.join(self.helper.servers_dir, server_fs_uuid)
         backup_path = os.path.join(self.helper.backup_path, server_fs_uuid)
@@ -307,7 +307,9 @@ class Controller:
                 # TODO: Copy files from the zip file to the new server directory
                 server_file = create_data["jarfile"]
                 raise Exception("Not yet implemented")
-            _create_server_properties_if_needed(create_data["server_properties_port"])
+            _create_server_properties_if_needed(
+                create_data["server_properties_port"],
+            )
 
             min_mem = create_data["mem_min"]
             max_mem = create_data["mem_max"]
@@ -403,6 +405,7 @@ class Controller:
             server_log_file=log_location,
             server_stop=stop_command,
             server_port=monitoring_port,
+            created_by=user_id,
             server_host=monitoring_host,
             server_type=monitoring_type,
         )
@@ -429,6 +432,7 @@ class Controller:
         min_mem: int,
         max_mem: int,
         port: int,
+        user_id: int,
     ):
         server_id = Helpers.create_uuid()
         server_dir = os.path.join(self.helper.servers_dir, server_id)
@@ -489,6 +493,7 @@ class Controller:
             server_log_file,
             server_stop,
             port,
+            user_id,
             server_type="minecraft-java",
         )
 
@@ -524,6 +529,7 @@ class Controller:
         min_mem: int,
         max_mem: int,
         port: int,
+        user_id: int,
     ):
         server_id = Helpers.create_uuid()
         new_server_dir = os.path.join(self.helper.servers_dir, server_id)
@@ -584,6 +590,7 @@ class Controller:
             server_log_file,
             server_stop,
             port,
+            user_id,
             server_type="minecraft-java",
         )
         return new_id
@@ -596,6 +603,7 @@ class Controller:
         min_mem: int,
         max_mem: int,
         port: int,
+        user_id: int,
     ):
         server_id = Helpers.create_uuid()
         new_server_dir = os.path.join(self.helper.servers_dir, server_id)
@@ -664,6 +672,7 @@ class Controller:
             server_log_file,
             server_stop,
             port,
+            user_id,
             server_type="minecraft-java",
         )
         return new_id
@@ -673,7 +682,12 @@ class Controller:
     # **********************************************************************************
 
     def import_bedrock_server(
-        self, server_name: str, server_path: str, server_exe: str, port: int
+        self,
+        server_name: str,
+        server_path: str,
+        server_exe: str,
+        port: int,
+        user_id: int,
     ):
         server_id = Helpers.create_uuid()
         new_server_dir = os.path.join(self.helper.servers_dir, server_id)
@@ -727,6 +741,7 @@ class Controller:
             server_log_file,
             server_stop,
             port,
+            user_id,
             server_type="minecraft-bedrock",
         )
         if os.name != "nt":
@@ -735,7 +750,12 @@ class Controller:
         return new_id
 
     def import_bedrock_zip_server(
-        self, server_name: str, zip_path: str, server_exe: str, port: int
+        self,
+        server_name: str,
+        zip_path: str,
+        server_exe: str,
+        port: int,
+        user_id: int,
     ):
         server_id = Helpers.create_uuid()
         new_server_dir = os.path.join(self.helper.servers_dir, server_id)
@@ -796,6 +816,7 @@ class Controller:
             server_log_file,
             server_stop,
             port,
+            user_id,
             server_type="minecraft-bedrock",
         )
         if os.name != "nt":
@@ -838,6 +859,7 @@ class Controller:
         server_log_file: str,
         server_stop: str,
         server_port: int,
+        created_by: int,
         server_type: str,
         server_host: str = "127.0.0.1",
     ):
@@ -852,6 +874,7 @@ class Controller:
             server_log_file,
             server_stop,
             server_type,
+            created_by,
             server_port,
             server_host,
         )
