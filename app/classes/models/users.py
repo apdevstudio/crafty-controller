@@ -146,6 +146,11 @@ class HelperUsers:
         return user_query
 
     @staticmethod
+    def get_managed_roles(exec_user_id):
+        roles_query = Roles.select().where(Roles.manager == exec_user_id)
+        return roles_query
+
+    @staticmethod
     def get_user(user_id):
         if user_id == 0:
             return {

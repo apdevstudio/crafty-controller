@@ -41,10 +41,6 @@ class HelperRoles:
         return Roles.select()
 
     @staticmethod
-    def get_managed_roles(exec_user_id):
-        return Roles.select().where(Roles.manager == exec_user_id)
-
-    @staticmethod
     def get_all_role_ids() -> t.List[int]:
         return [role.role_id for role in Roles.select(Roles.role_id).execute()]
 
