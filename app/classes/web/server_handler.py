@@ -224,6 +224,17 @@ class ServerHandler(BaseHandler):
 
             if server_id is not None:
                 if command == "clone_server":
+                    if (
+                        not superuser
+                        and not self.controller.crafty_perms.can_create_server(
+                            exec_user["user_id"]
+                        )
+                    ):
+                        self.redirect(
+                            "/panel/error?error=Unauthorized access: "
+                            "not a server creator or server limit reached"
+                        )
+                        return
 
                     def is_name_used(name):
                         for server in self.controller.servers.get_all_defined_servers():
@@ -231,6 +242,7 @@ class ServerHandler(BaseHandler):
                                 return True
                         return
 
+                    template = "/panel/dashboard"
                     server_data = self.controller.servers.get_server_data_by_id(
                         server_id
                     )
