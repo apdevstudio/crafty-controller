@@ -96,6 +96,7 @@ class RolesController:
     def add_role_advanced(
         name: str,
         servers: t.Iterable[RoleServerJsonType],
+        manager: int,
     ) -> int:
         """Add a role with a name and a list of servers
 
@@ -106,7 +107,7 @@ class RolesController:
         Returns:
             int: The new role's ID
         """
-        role_id: t.Final[int] = HelperRoles.add_role(name)
+        role_id: t.Final[int] = HelperRoles.add_role(name, manager)
         for server in servers:
             PermissionsServers.get_or_create(
                 role_id, server["server_id"], server["permissions"]

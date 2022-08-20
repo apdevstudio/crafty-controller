@@ -1321,8 +1321,15 @@ class PanelHandler(BaseHandler):
         elif page == "remove_role":
             role_id = bleach.clean(self.get_argument("id", None))
 
-            if not superuser:
-                self.redirect("/panel/error?error=Unauthorized access: not superuser")
+            if (
+                not superuser
+                and self.controller.roles.get_role(role_id)["manager"]
+                != exec_user["user_id"]
+            ):
+                self.redirect(
+                    "/panel/error?error=Unauthorized access: not superuser not"
+                    " role manager"
+                )
                 return
             if role_id is None:
                 self.redirect("/panel/error?error=Invalid Role ID")
@@ -2330,9 +2337,16 @@ class PanelHandler(BaseHandler):
                 self.redirect("/panel/error?error=Role exists")
                 return
 
+            manager = None
+
+            if not exec_user["superuser"]:
+                manager = exec_user["user_id"]
+
             servers = self.get_role_servers()
 
-            role_id = self.controller.roles.add_role_advanced(role_name, servers)
+            role_id = self.controller.roles.add_role_advanced(
+                role_name, servers, manager
+            )
 
             self.controller.management.add_to_audit_log(
                 exec_user["user_id"],

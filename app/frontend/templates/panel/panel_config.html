@@ -177,6 +177,8 @@
                           <td><a href="/panel/edit_role?id={{role.role_id}}"><i class="fas fa-pencil-alt"></i></a></td>
                         </tr>
                         {% end %}
+
+                        {% if not data['superuser'] %}
                         {% for role in data['managed_roles'] %}
                         {% if role.role_id not in data['assigned_roles'] %}
                         <tr>
@@ -201,7 +203,8 @@
                           </td>
                           <td><a href="/panel/edit_role?id={{role.role_id}}"><i class="fas fa-pencil-alt"></i></a></td>
                         </tr>
-                        {& end %}
+                        {% end %}
+                        {% end %}
                         {% end %}
                       </tbody>
                     </table>
