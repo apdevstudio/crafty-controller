@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import time
 import tornado.web
 import tornado.escape
 import bleach
@@ -230,9 +231,15 @@ class ServerHandler(BaseHandler):
                             exec_user["user_id"]
                         )
                     ):
-                        self.redirect(
-                            "/panel/error?error=Unauthorized access: "
-                            "not a server creator or server limit reached"
+                        time.sleep(3)
+                        self.helper.websocket_helper.broadcast_user(
+                            exec_user["user_id"],
+                            "send_start_error",
+                            {
+                                "error": "<i class='fas fa-exclamation-triangle'"
+                                " style='font-size:48px;color:red'>"
+                                "</i> Not a server creator or server limit reached."
+                            },
                         )
                         return
 

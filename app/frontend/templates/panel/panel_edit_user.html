@@ -162,21 +162,29 @@ data['lang']) }}{% end %}
                               </tr>
                             </thead>
                             <tbody>
-                              {% for role in data['roles_all'] %}
+                              {% for role in data['roles'] %}
                               <tr>
+                                {% if data['superuser'] or role.role_id in data['user']['roles'] or role.manager == data['exec_user'] %}
                                 <td>{{ role.role_name }}</td>
                                 <td>
                                   {% if role.role_id in data['user']['roles'] %}
+                                  {% if role.manager == data['exec_user'] or data['superuser'] %}
                                   <input type="checkbox" class="form-check-input"
                                     id="role_{{ role.role_id }}_membership" name="role_{{ role.role_id }}_membership"
                                     checked="" value="1">
                                   {% else %}
                                   <input type="checkbox" class="form-check-input"
                                     id="role_{{ role.role_id }}_membership" name="role_{{ role.role_id }}_membership"
+                                    checked="" value="1" disabled>
+                                  {% end %}
+                                  {% elif data['superuser'] or role.manager == data['exec_user'] %}
+                                  <input type="checkbox" class="form-check-input"
+                                    id="role_{{ role.role_id }}_membership" name="role_{{ role.role_id }}_membership"
                                     value="1">
                                   {% end %}
 
                                 </td>
+                                {% end %}
                               </tr>
                               {% end %}
                             </tbody>
