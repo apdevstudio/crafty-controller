@@ -49,7 +49,7 @@
           </ul>
           <div class="">
             <div class="">
-              <form class="forms-sample" method="post" action="{{ '/panel/add_role' if data['new_role'] else '/panel/edit_role' }}">
+              <form id="role_form" class="forms-sample" method="post" action="{{ '/panel/add_role' if data['new_role'] else '/panel/edit_role' }}">
                 {% raw xsrf_form_html() %}
                 <input type="hidden" name="id" value="{{ data['role']['role_id'] }}">
                 <input type="hidden" name="subpage" value="config">
@@ -63,6 +63,29 @@
                       <label for="role_name">{{ translate('rolesConfig', 'roleName', data['lang']) }} <small class="text-muted ml-1"> - {{ translate('rolesConfig', 'roleDesc', data['lang']) }}</small> </label>
                       <input type="text" class="form-control" name="role_name" id="role_name" value="{{ data['role']['role_name']  }}" placeholder="Role Name" >
                     </div>
+
+                    <br />
+                    {% if data['superuser'] %}
+                    <div class="form-group">
+                      <label class="form-label" for="manager">{{ translate('rolesConfig', 'selectManager',
+                        data['lang']) }}
+                      </label>
+                      <select class="form-select form-control form-control-lg select-css" id="manager" name="manager"
+                        form="role_form">
+                        {% if data["role_manager"]["username"] != "None" %}
+                        <option value='{{data["role_manager"]["user_id"]}}'>{{ data["role_manager"]["username"]
+                          }}</option>
+                        {% end %}
+                        <option value="">None</option>
+                        {% for user in data['users'] %}
+                        {% if user.user_id != data['role_manager']['user_id']
+                        %}
+                        <option value="{{user.user_id}}">{{user.username}}</option>
+                        {% end %}
+                        {% end %}
+                      </select>
+                    </div>
+                    {% end %}
                   </div>
                 </div>
 
@@ -252,7 +275,7 @@
                         <br />
                         {{ translate('rolesConfig', 'configUpdate', data['lang']) }} {{ str(data['role']['last_update']) }}
                         <br />
-                        Manager: {{ data['role_manager']['username'] }}
+                        {{ translate('userConfig', 'manager', data['lang']) }}: {{ data['role_manager']['username'] }}
                         <br />
                     </p>
                   </blockquote>

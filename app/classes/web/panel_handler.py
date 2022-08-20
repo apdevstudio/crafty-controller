@@ -1277,10 +1277,14 @@ class PanelHandler(BaseHandler):
             page_data["role"] = self.controller.roles.get_role_with_servers(role_id)
             if exec_user["superuser"]:
                 defined_servers = self.controller.servers.list_defined_servers()
+                manager = self.get_argument("manager", None)
+                if manager == "":
+                    manager = None
             else:
                 defined_servers = self.controller.servers.get_authorized_servers(
                     exec_user["user_id"]
                 )
+                manager = exec_user["user_id"]
             page_servers = []
             for server in defined_servers:
                 if server not in page_servers:
@@ -2315,6 +2319,12 @@ class PanelHandler(BaseHandler):
 
         elif page == "add_role":
             role_name = bleach.clean(self.get_argument("role_name", None))
+            if exec_user["superuser"]:
+                manager = self.get_argument("manager", None)
+                if manager == "":
+                    manager = None
+            else:
+                manager = exec_user["user_id"]
 
             if EnumPermissionsCrafty.ROLES_CONFIG not in exec_user_crafty_permissions:
                 self.redirect(
@@ -2336,11 +2346,6 @@ class PanelHandler(BaseHandler):
             if self.controller.roles.get_roleid_by_name(role_name) is not None:
                 self.redirect("/panel/error?error=Role exists")
                 return
-
-            manager = None
-
-            if not exec_user["superuser"]:
-                manager = exec_user["user_id"]
 
             servers = self.get_role_servers()
 
