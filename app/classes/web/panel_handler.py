@@ -865,6 +865,13 @@ class PanelHandler(BaseHandler):
                 page_data["managed_users"] = self.controller.users.get_managed_users(
                     exec_user["user_id"]
                 )
+                page_data["assigned_roles"] = []
+                for item in page_data["roles"]:
+                    page_data["assigned_roles"].append(item.role_id)
+
+                page_data["managed_roles"] = self.controller.roles.get_managed_roles(
+                    exec_user["user_id"]
+                )
 
             template = "panel/panel_config.html"
 
@@ -1245,6 +1252,11 @@ class PanelHandler(BaseHandler):
                 defined_servers = self.controller.servers.get_authorized_servers(
                     exec_user["user_id"]
                 )
+
+            page_data["role_manager"] = {
+                "user_id": -100,
+                "username": "None",
+            }
             page_servers = []
             for server in defined_servers:
                 if server not in page_servers:
@@ -1284,6 +1296,16 @@ class PanelHandler(BaseHandler):
             ] = self.controller.server_perms.get_role_permissions_dict(role_id)
             page_data["user-roles"] = user_roles
             page_data["users"] = self.controller.users.get_all_users()
+
+            if page_data["role"]["manager"] is not None:
+                page_data["role_manager"] = self.controller.users.get_user_by_id(
+                    page_data["role"]["manager"]
+                )
+            else:
+                page_data["role_manager"] = {
+                    "user_id": -100,
+                    "username": "None",
+                }
 
             if EnumPermissionsCrafty.ROLES_CONFIG not in exec_user_crafty_permissions:
                 self.redirect(

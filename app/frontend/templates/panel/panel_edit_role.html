@@ -9,22 +9,22 @@
 
 <div class="content-wrapper">
 
-    <!-- Page Title Header Starts-->
+  <!-- Page Title Header Starts-->
   <div class="row page-title-header">
     <div class="col-12">
       <div class="page-header">
         {% if data['new_role'] %}
-          <h4 class="page-title">
-            {{ translate('rolesConfig', 'pageTitleNew', data['lang']) }}
-              <br />
-              <small>RID: N/A</small>
-          </h4>
+        <h4 class="page-title">
+          {{ translate('rolesConfig', 'pageTitleNew', data['lang']) }}
+          <br />
+          <small>RID: N/A</small>
+        </h4>
         {% else %}
-          <h4 class="page-title">
-            {{ translate('rolesConfig', 'pageTitle', data['lang']) }} - {{ data['role']['role_name'] }}
-              <br />
-              <small>RID: {{ data['role']['role_id'] }}</small>
-          </h4>
+        <h4 class="page-title">
+          {{ translate('rolesConfig', 'pageTitle', data['lang']) }} - {{ data['role']['role_name'] }}
+          <br />
+          <small>RID: {{ data['role']['role_id'] }}</small>
+        </h4>
         {% end %}
       </div>
     </div>
@@ -39,7 +39,8 @@
         <div class="card-body  pt-0">
           <ul class="nav nav-tabs col-md-12 tab-simple-styled " role="tablist">
             <li class="nav-item">
-              <a class="nav-link active" href="/panel/edit_role?id={{ data['role']['role_id'] }}&subpage=config" role="tab" aria-selected="true">
+              <a class="nav-link active" href="/panel/edit_role?id={{ data['role']['role_id'] }}&subpage=config"
+                role="tab" aria-selected="true">
                 <i class="fas fa-cogs"></i>{{ translate('rolesConfig', 'config', data['lang']) }}</a>
             </li>
             <!-- <li class="nav-item">
@@ -49,26 +50,33 @@
           </ul>
           <div class="">
             <div class="">
-              <form class="forms-sample" method="post" action="{{ '/panel/add_role' if data['new_role'] else '/panel/edit_role' }}">
+              <form class="forms-sample" method="post"
+                action="{{ '/panel/add_role' if data['new_role'] else '/panel/edit_role' }}">
                 {% raw xsrf_form_html() %}
                 <input type="hidden" name="id" value="{{ data['role']['role_id'] }}">
                 <input type="hidden" name="subpage" value="config">
 
                 <div class="card">
                   <div class="card-header header-sm d-flex justify-content-between align-items-center">
-                    <h4 class="card-title"><i class="fas fa-user-tag"></i> {{ translate('rolesConfig', 'roleTitle', data['lang']) }}</h4>
+                    <h4 class="card-title"><i class="fas fa-user-tag"></i> {{ translate('rolesConfig', 'roleTitle',
+                      data['lang']) }}</h4>
                   </div>
                   <div class="card-body">
                     <div class="form-group">
-                      <label for="role_name">{{ translate('rolesConfig', 'roleName', data['lang']) }} <small class="text-muted ml-1"> - {{ translate('rolesConfig', 'roleDesc', data['lang']) }}</small> </label>
-                      <input type="text" class="form-control" name="role_name" id="role_name" value="{{ data['role']['role_name']  }}" placeholder="Role Name" >
+                      <label for="role_name">{{ translate('rolesConfig', 'roleName', data['lang']) }} <small
+                          class="text-muted ml-1"> - {{ translate('rolesConfig', 'roleDesc', data['lang']) }}</small>
+                      </label>
+                      <input type="text" class="form-control" name="role_name" id="role_name"
+                        value="{{ data['role']['role_name']  }}" placeholder="Role Name">
                     </div>
                   </div>
                 </div>
 
                 <div class="card">
                   <div class="card-header header-sm d-flex justify-content-between align-items-center">
-                    <h4 class="card-title"><i class="fas fa-server"></i> {{ translate('rolesConfig', 'roleServers', data['lang']) }}  <small class="text-muted ml-1"> {{ translate('rolesConfig', 'serversDesc', data['lang']) }}</small> </h4>
+                    <h4 class="card-title"><i class="fas fa-server"></i> {{ translate('rolesConfig', 'roleServers',
+                      data['lang']) }} <small class="text-muted ml-1"> {{ translate('rolesConfig', 'serversDesc',
+                        data['lang']) }}</small> </h4>
                   </div>
                   <div class="card-body">
                     <div class="form-group">
@@ -86,13 +94,14 @@
                                 --table-border-width: 1px;
                                 border-collapse: collapse;
                               }
+
                               th.rotate-column-header {
                                 /* Something you can count on */
                                 height: 140px;
                                 white-space: nowrap;
                               }
 
-                              th.rotate-column-header > div {
+                              th.rotate-column-header>div {
                                 transform:
                                   /* Magic Numbers */
                                   translate(0px, 51px)
@@ -100,15 +109,18 @@
                                   rotate(315deg);
                                 width: 30px;
                               }
-                              th.rotate-column-header > div > span {
+
+                              th.rotate-column-header>div>span {
                                 border-bottom: 1px solid #ccc;
                                 padding: 5px 10px;
                               }
+
                               th.rotate {
                                 white-space: nowrap;
                                 position: relative;
                               }
-                              th.rotate > div {
+
+                              th.rotate>div {
                                 /* place div at bottom left of the th parent */
                                 position: absolute;
                                 bottom: 0;
@@ -118,13 +130,13 @@
                                 /* Move the top left corner of the span's bottom-border to line up with the top left corner of the td's border-right border so that the border corners are matched
                                   * Rotate 315 (-45) degrees about matched border corners */
                                 transform:
-                                  translate(calc(100% - var(--table-border-width) / 2), var(--table-border-width))
-                                  rotate(-45deg);
+                                  translate(calc(100% - var(--table-border-width) / 2), var(--table-border-width)) rotate(-45deg);
                                 transform-origin: 0% calc(100% - var(--table-border-width));
                                 transition: transform 500ms;
                                 width: 100%;
                               }
-                              th.rotate > div > span {
+
+                              th.rotate>div>span {
                                 /* make sure the bottom of the span is matched up with the bottom of the parent div */
                                 position: absolute;
                                 bottom: 0;
@@ -134,7 +146,8 @@
                                 padding-bottom: 5px;
                                 user-select: none;
                               }
-                              table.rotate-table > tbody td {
+
+                              table.rotate-table>tbody td {
                                 border-right: var(--table-border-width) solid #383e5d;
                                 /* make sure this is at least as wide as sqrt(2) * height of the tallest letter in your font or the headers will overlap each other*/
                                 min-width: 30px;
@@ -144,53 +157,57 @@
                               }
 
                               @media screen and (min-width: 1650px) {
-                                th.rotate > div {
+                                th.rotate>div {
                                   transform: translate(15px, 0px) rotate(0deg);
                                 }
-                                th.rotate > div > span {
+
+                                th.rotate>div>span {
                                   border-bottom-color: transparent;
                                 }
                               }
                             </style>
                             <tr class="rounded">
                               <th>{{ translate('rolesConfig', 'serverName', data['lang']) }}</th>
-                              <th class="rotate"><div><span>{{ translate('rolesConfig', 'serverAccess', data['lang']) }}</span></div></th>
+                              <th class="rotate">
+                                <div><span>{{ translate('rolesConfig', 'serverAccess', data['lang']) }}</span></div>
+                              </th>
                               {% for permission in data['permissions_all'] %}
-                                <th class="rotate"><div><span>{{ permission.name }}</span></div></th>
+                              <th class="rotate">
+                                <div><span>{{ permission.name }}</span></div>
+                              </th>
                               {% end %}
                             </tr>
                           </thead>
                           <tbody>
-                          {% for server in data['servers_all'] %}
+                            {% for server in data['servers_all'] %}
                             <tr>
                               <td>{{ server['server_name'] }}</td>
                               <td>
-                                <input type="checkbox" class="" onclick="enable_disable(event)" data-id="{{server['server_id']}}"
-                                id="server_{{ server['server_id'] }}_access"
-                                name="server_{{ server['server_id'] }}_access"
-                                {{ 'checked' if server['server_id'] in data['role']['servers'] else '' }}
-                                autocomplete="off" value="1">
+                                <input type="checkbox" class="" onclick="enable_disable(event)"
+                                  data-id="{{server['server_id']}}" id="server_{{ server['server_id'] }}_access"
+                                  name="server_{{ server['server_id'] }}_access" {{ 'checked' if server['server_id'] in
+                                  data['role']['servers'] else '' }} autocomplete="off" value="1">
                               </td>
                               {% for permission in data['permissions_all'] %}
                               {% if server['server_id'] in data['role']['servers'] %}
-                                <td>
-                                  <input type="checkbox" class="{{server['server_id']}}_perms"
+                              <td>
+                                <input type="checkbox" class="{{server['server_id']}}_perms"
                                   id="permission_{{ server['server_id'] }}_{{ permission.name }}"
-                                  name="permission_{{ server['server_id'] }}_{{ permission.name }}"
-                                  {{ 'checked' if permission in data['permissions_dict'].get(server['server_id'], []) else '' }}
+                                  name="permission_{{ server['server_id'] }}_{{ permission.name }}" {{ 'checked' if
+                                  permission in data['permissions_dict'].get(server['server_id'], []) else '' }}
                                   autocomplete="off" value="1">
-                                </td>
+                              </td>
                               {% else %}
                               <td>
                                 <input type="checkbox" class="{{server['server_id']}}_perms"
-                                id="permission_{{ server['server_id'] }}_{{ permission.name }}"
-                                name="permission_{{ server['server_id'] }}_{{ permission.name }}"
-                                autocomplete="off" value="1" disabled>
+                                  id="permission_{{ server['server_id'] }}_{{ permission.name }}"
+                                  name="permission_{{ server['server_id'] }}_{{ permission.name }}" autocomplete="off"
+                                  value="1" disabled>
                               </td>
                               {% end %}
                               {% end %}
                             </tr>
-                          {% end %}
+                            {% end %}
 
                           </tbody>
                         </table>
@@ -201,18 +218,22 @@
 
                 <div class="card">
                   <div class="card-header header-sm d-flex justify-content-between align-items-center">
-                    <h4 class="card-title"><i class="fas fa-settings"></i> {{ translate('panelConfig', 'save', data['lang']) }}</h4>
+                    <h4 class="card-title"><i class="fas fa-settings"></i> {{ translate('panelConfig', 'save',
+                      data['lang']) }}</h4>
                   </div>
                   <div class="card-body">
-                    <button type="submit" class="btn btn-success mr-2"><i class="fas fa-save"></i> {{ translate('panelConfig', 'save', data['lang']) }}</button>
-                    <button type="reset" onclick="location.href='/panel/panel_config'" class="btn btn-light"><i class="fas fa-undo-alt"></i> {{ translate('panelConfig', 'cancel', data['lang']) }}</button>
+                    <button type="submit" class="btn btn-success mr-2"><i class="fas fa-save"></i> {{
+                      translate('panelConfig', 'save', data['lang']) }}</button>
+                    <button type="reset" onclick="location.href='/panel/panel_config'" class="btn btn-light"><i
+                        class="fas fa-undo-alt"></i> {{ translate('panelConfig', 'cancel', data['lang']) }}</button>
                   </div>
                 </div>
               </form>
 
               <div class="card">
                 <div class="card-header header-sm d-flex justify-content-between align-items-center">
-                  <h4 class="card-title"><i class="fas fa-users"></i> {{ translate('rolesConfig', 'roleUsers', data['lang']) }}</h4>
+                  <h4 class="card-title"><i class="fas fa-users"></i> {{ translate('rolesConfig', 'roleUsers',
+                    data['lang']) }}</h4>
                 </div>
                 <div class="card-body">
                   <div class="table-responsive">
@@ -224,18 +245,18 @@
                         </tr>
                       </thead>
                       <tbody>
-                      {% for user in data['users'] %}
+                        {% for user in data['users'] %}
                         {% for ruser in data['user-roles'][user.user_id] %}
-                          {% if ruser == data['role']['role_name'] %}
-                            <tr>
-                              <td>{{ user.username }}</td>
-                              <td>
-                                <a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-user-edit"></i></a>
-                              </td>
-                            </tr>
-                          {% end %}
+                        {% if ruser == data['role']['role_name'] %}
+                        <tr>
+                          <td>{{ user.username }}</td>
+                          <td>
+                            <a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-user-edit"></i></a>
+                          </td>
+                        </tr>
                         {% end %}
-                      {% end %}
+                        {% end %}
+                        {% end %}
                       </tbody>
                     </table>
                   </div>
@@ -249,18 +270,24 @@
                   <blockquote class="blockquote">
                     <p class="mb-0">
                       {{ translate('rolesConfig', 'created', data['lang']) }} {{ str(data['role']['created']) }}
-                        <br />
-                        {{ translate('rolesConfig', 'configUpdate', data['lang']) }} {{ str(data['role']['last_update']) }}
-                        <br />
+                      <br />
+                      {{ translate('rolesConfig', 'configUpdate', data['lang']) }} {{ str(data['role']['last_update'])
+                      }}
+                      <br />
+                      Manager: {{ data['role_manager']['username'] }}
+                      <br />
                     </p>
                   </blockquote>
                   <div class="text-center">
                     {% if data['new_role'] %}
-                      <a class="btn btn-sm btn-danger disabled"><i class="fas fa-trash"></i>{{ translate('rolesConfig', 'delRole', data['lang']) }}</a><br />
-                      <small>{{ translate('rolesConfig', 'doesNotExist', data['lang']) }}</small>
+                    <a class="btn btn-sm btn-danger disabled"><i class="fas fa-trash"></i>{{ translate('rolesConfig',
+                      'delRole', data['lang']) }}</a><br />
+                    <small>{{ translate('rolesConfig', 'doesNotExist', data['lang']) }}</small>
                     {% else %}
-                      <a href="/panel/remove_role?id={{ data['role']['role_id'] }}" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i>{{ translate('rolesConfig', 'delRole', data['lang']) }}</a>
+                    <a href="/panel/remove_role?id={{ data['role']['role_id'] }}" class="btn btn-sm btn-danger"><i
+                        class="fas fa-trash"></i>{{ translate('rolesConfig', 'delRole', data['lang']) }}</a>
                     {% end %}
+                  </div>
                 </div>
               </div>
             </div>
@@ -269,38 +296,37 @@
       </div>
     </div>
   </div>
-</div>
-<!-- content-wrapper ends -->
+  <!-- content-wrapper ends -->
 
-{% end %}
+  {% end %}
 
-{% block js %}
-<script>
+  {% block js %}
+  <script>
 
-  function enable_disable(event) {
+    function enable_disable(event) {
       let server_id = event.target.getAttribute('data-id');
       console.log(server_id);
       if (document.getElementById("server_" + server_id + "_access").checked) {
-        $('.'+server_id+'_perms').attr('disabled', false);
-          $('.'+server_id+'_perms').attr('enabled', true);
-      }else{
-          $('.'+server_id+'_perms').prop('checked', false);
-          $('.'+server_id+'_perms').attr('disabled', true);
-          $('.'+server_id+'_perms').attr('enabled', false);
+        $('.' + server_id + '_perms').attr('disabled', false);
+        $('.' + server_id + '_perms').attr('enabled', true);
+      } else {
+        $('.' + server_id + '_perms').prop('checked', false);
+        $('.' + server_id + '_perms').attr('disabled', true);
+        $('.' + server_id + '_perms').attr('enabled', false);
       }
 
     }
     //used to get cookies from browser - this is part of tornados xsrf protection - it's for extra security
     function getCookie(name) {
-        var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
-        return r ? r[1] : undefined;
+      var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+      return r ? r[1] : undefined;
     }
 
-    $( document ).ready(function() {
-        console.log( "ready!" );
+    $(document).ready(function () {
+      console.log("ready!");
     });
 
 
-</script>
+  </script>
 
-{% end %}
+  {% end %}

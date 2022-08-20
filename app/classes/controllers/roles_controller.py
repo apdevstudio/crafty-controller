@@ -64,8 +64,12 @@ class RolesController:
             HelperRoles.update_role(role_id, up_data)
 
     @staticmethod
-    def add_role(role_name):
-        return HelperRoles.add_role(role_name)
+    def add_role(role_name, manager):
+        return HelperRoles.add_role(role_name, manager)
+
+    @staticmethod
+    def get_managed_roles(exec_user_id):
+        return HelperRoles.get_managed_roles(exec_user_id)
 
     class RoleServerJsonType(t.TypedDict):
         server_id: t.Union[str, int]

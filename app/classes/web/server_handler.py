@@ -283,7 +283,8 @@ class ServerHandler(BaseHandler):
                             new_server_id
                         ).get("server_uuid")
                         role_id = self.controller.roles.add_role(
-                            f"Creator of Server with uuid={new_server_uuid}"
+                            f"Creator of Server with uuid={new_server_uuid}",
+                            exec_user["user_id"],
                         )
                         self.controller.server_perms.add_role_server(
                             new_server_id, role_id, "11111111"
@@ -420,7 +421,8 @@ class ServerHandler(BaseHandler):
                         new_server_id
                     ).get("server_uuid")
                     role_id = self.controller.roles.add_role(
-                        f"Creator of Server with uuid={new_server_uuid}"
+                        f"Creator of Server with uuid={new_server_uuid}",
+                        exec_user["user_id"],
                     )
                     self.controller.server_perms.add_role_server(
                         new_server_id, role_id, "11111111"
@@ -545,7 +547,8 @@ class ServerHandler(BaseHandler):
                         new_server_id
                     ).get("server_uuid")
                     role_id = self.controller.roles.add_role(
-                        f"Creator of Server with uuid={new_server_uuid}"
+                        f"Creator of Server with uuid={new_server_uuid}",
+                        exec_user["user_id"],
                     )
                     self.controller.server_perms.add_role_server(
                         new_server_id, role_id, "11111111"
