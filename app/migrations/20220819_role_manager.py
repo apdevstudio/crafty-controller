@@ -3,14 +3,14 @@ import peewee
 
 
 def migrate(migrator, database, **kwargs):
-    migrator.add_columns("roles", role_manager=peewee.IntegerField(null=True))
+    migrator.add_columns("roles", manager=peewee.IntegerField(null=True))
     """
     Write your migrations here.
     """
 
 
 def rollback(migrator, database, **kwargs):
-    migrator.drop_columns("roles", ["role_manager"])
+    migrator.drop_columns("roles", ["manager"])
     """
     Write your rollback migrations here.
     """
