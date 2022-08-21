@@ -1313,7 +1313,7 @@ class PanelHandler(BaseHandler):
 
             if (
                 EnumPermissionsCrafty.ROLES_CONFIG not in exec_user_crafty_permissions
-                and exec_user["user_id"] != role["manager"]
+                or exec_user["user_id"] != role["manager"]
                 and not exec_user["superuser"]
             ):
                 self.redirect(
@@ -2042,7 +2042,10 @@ class PanelHandler(BaseHandler):
             else:
                 manager = user["manager"]
 
-            if not exec_user["superuser"] and exec_user["user_id"] != user["user_id"]:
+            if (
+                not exec_user["superuser"]
+                and int(exec_user["user_id"]) != user["manager"]
+            ):
                 if username is None or username == "":
                     self.redirect("/panel/error?error=Invalid username")
                     return
@@ -2110,13 +2113,13 @@ class PanelHandler(BaseHandler):
                     user_id, user_data=user_data, user_crafty_data=user_crafty_data
                 )
 
-            self.controller.management.add_to_audit_log(
-                exec_user["user_id"],
-                f"Edited user {username} (UID:{user_id}) with roles {roles} "
-                f"and permissions {permissions_mask}",
-                server_id=0,
-                source_ip=self.get_remote_ip(),
-            )
+                self.controller.management.add_to_audit_log(
+                    exec_user["user_id"],
+                    f"Edited user {username} (UID:{user_id}) with roles {roles} "
+                    f"and permissions {permissions_mask}",
+                    server_id=0,
+                    source_ip=self.get_remote_ip(),
+                )
             self.redirect("/panel/panel_config")
 
         elif page == "edit_user_apikeys":
