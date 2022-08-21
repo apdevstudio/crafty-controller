@@ -38,6 +38,7 @@ class Servers(BaseModel):
     logs_delete_after = IntegerField(default=0)
     type = CharField(default="minecraft-java")
     show_status = BooleanField(default=1)
+    shutdown_timeout = IntegerField(default=60)
 
     class Meta:
         table_name = "servers"

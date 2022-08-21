@@ -612,12 +612,15 @@ class ServerInstance:
         # caching the name and pid number
         server_name = self.name
         server_pid = self.process.pid
+        self.shutdown_timeout = self.settings["shutdown_timeout"]
 
         while running:
             i += 1
+            ttk = int(self.shutdown_timeout - (i * 2))
             logstr = (
                 f"Server {server_name} is still running "
-                f"- waiting 2s to see if it stops ({int(60-(i*2))} "
+                "- waiting 2s to see if it stops"
+                f"({ttk} "
                 f"seconds until force close)"
             )
             logger.info(logstr)
@@ -626,7 +629,7 @@ class ServerInstance:
             time.sleep(2)
 
             # if we haven't closed in 60 seconds, let's just slam down on the PID
-            if i >= 30:
+            if i >= round(self.shutdown_timeout / 2, 0):
                 logger.info(
                     f"Server {server_name} is still running - Forcing the process down"
                 )
