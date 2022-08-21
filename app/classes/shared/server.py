@@ -617,14 +617,15 @@ class ServerInstance:
         while running:
             i += 1
             ttk = int(self.shutdown_timeout - (i * 2))
-            logstr = (
-                f"Server {server_name} is still running "
-                "- waiting 2s to see if it stops"
-                f"({ttk} "
-                f"seconds until force close)"
-            )
-            logger.info(logstr)
-            Console.info(logstr)
+            if i <= self.shutdown_timeout / 2:
+                logstr = (
+                    f"Server {server_name} is still running "
+                    "- waiting 2s to see if it stops"
+                    f"({ttk} "
+                    f"seconds until force close)"
+                )
+                logger.info(logstr)
+                Console.info(logstr)
             running = self.check_running()
             time.sleep(2)
 
