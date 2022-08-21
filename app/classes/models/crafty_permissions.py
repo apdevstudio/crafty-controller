@@ -155,7 +155,7 @@ class PermissionsCrafty:
     @staticmethod
     def get_created_quantity_list(user_id):
         quantity_list = {
-            EnumPermissionsCrafty.SERVER_CREATION.name: HelperServers.get_total_owned_servers(
+            EnumPermissionsCrafty.SERVER_CREATION.name: HelperServers.get_total_owned_servers(  # pylint: disable=line-too-long
                 user_id
             ),
             EnumPermissionsCrafty.USER_CONFIG.name: HelperUsers.get_managed_users(
