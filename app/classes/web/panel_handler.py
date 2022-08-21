@@ -524,6 +524,7 @@ class PanelHandler(BaseHandler):
                 "files",
                 "admin_controls",
                 "schedules",
+                "metrics",
             ]
             if not self.failed_server:
                 server = self.controller.servers.get_server_instance_by_id(server_id)
@@ -753,6 +754,11 @@ class PanelHandler(BaseHandler):
                 except:
                     page_data["backup_list"] = []
                 page_data["backup_path"] = Helpers.wtol_path(server_info["backup_path"])
+
+            if subpage == "metrics":
+                page_data["history_stats"] = self.controller.servers.get_history_stats(
+                    server_id
+                )
 
             def get_banned_players_html():
                 banned_players = self.controller.servers.get_banned_players(server_id)

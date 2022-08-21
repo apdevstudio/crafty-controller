@@ -1,0 +1,179 @@
+{% extends ../base.html %}
+
+{% block meta %}
+{% end %}
+
+{% block title %}Crafty Controller - {{ translate('serverDetails', 'serverDetails', data['lang']) }}{% end %}
+
+{% block content %}
+
+<div class="content-wrapper">
+
+  <!-- Page Title Header Starts-->
+  <div class="row page-title-header">
+    <div class="col-12">
+      <div class="page-header">
+        <h4 class="page-title">
+          {{ translate('serverDetails', 'serverDetails', data['lang']) }} - {{
+          data['server_stats']['server_id']['server_name'] }}
+          <br />
+          <small>UUID: {{ data['server_stats']['server_id']['server_uuid'] }}</small>
+        </h4>
+      </div>
+    </div>
+
+  </div>
+  <!-- Page Title Header Ends-->
+
+  {% include "parts/details_stats.html %}
+
+  <div class="row">
+
+    <div class="col-sm-12 grid-margin">
+      <div class="card">
+        <div class="card-body  pt-0">
+          <span class="d-none d-sm-block">
+            {% include "parts/server_controls_list.html %}
+          </span>
+          <span class="d-block d-sm-none">
+            {% include "parts/m_server_controls_list.html %}
+          </span>
+
+
+          <canvas id="lineChart"></canvas>
+          <div class="text-center">
+            <button class="btn btn-outline-info" onclick="toggle_players()">PLAYERS</button>&nbsp;
+            <button class="btn btn-outline-primary" onclick="toggle_mem()">MEM</button>&nbsp;
+            <button class="btn btn-outline-warning" onclick="toggle_cpu()">CPU</button>&nbsp;
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+</div>
+<script type="text/javascript">
+  //line
+  var ctxL = document.getElementById("lineChart").getContext('2d');
+  const players = []
+  const dates = []
+  const ram = []
+  const cpu = []
+  {% for item in data['history_stats'] %}
+  players.push("{{ item.online }}");
+  dates.push("{{ item.created }}");
+  ram.push("{{ item.mem_percent }}")
+  cpu.push("{{ item.cpu }}")
+  {% end %}
+  max_nums = [Math.max.apply(this, players), Math.max.apply(this, ram), Math.max.apply(this, cpu)]
+  var hist_chart = new Chart(ctxL, {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [{
+        label: "Players",
+        data: players,
+        borderColor: [
+          'rgba(136, 98, 224, .5)',
+        ],
+        borderWidth: 2
+      },
+      {
+        label: "MEM",
+        data: ram,
+        borderColor: [
+          'rgba(33, 150, 243, .5)',
+        ],
+        borderWidth: 2
+      },
+      {
+        label: "CPU",
+        data: cpu,
+        borderColor: [
+          'rgba(255, 175, 0, .5)',
+        ],
+        borderWidth: 2
+      },
+      ]
+    },
+    options: {
+      fill: false,
+      lineTension: 5,
+      responsive: true,
+      scales: {
+        yAxes: [{
+          ticks: {
+            min: 0,
+            max: Math.max.apply(this, max_nums) + 5
+          }
+        }]
+      }
+    }
+  });
+
+  var mem_hidden = false;
+  var cpu_hidden = false;
+  var players_hidden = false;
+
+  function toggle_mem() {
+    if (!mem_hidden) {
+      hist_chart.data.datasets = hist_chart.data.datasets.filter(function (obj) { return obj.label != "MEM" });
+      mem_hidden = true;
+      // Repaint
+    } else {
+      hist_chart.data.datasets.splice(1, 0, {
+        label: "MEM",
+        data: ram,
+        borderColor: [
+          'rgba(33, 150, 243, .5)',
+        ],
+        borderWidth: 2
+      });
+      mem_hidden = false;
+    }
+    hist_chart.update();
+
+  }
+  function toggle_cpu() {
+    if (!cpu_hidden) {
+      hist_chart.data.datasets = hist_chart.data.datasets.filter(function (obj) { return obj.label != "CPU" });
+      cpu_hidden = true;
+      // Repaint
+    } else {
+      hist_chart.data.datasets.push({
+        label: "CPU",
+        data: cpu,
+        borderColor: [
+          'rgba(255, 175, 0, .5)',
+        ],
+        borderWidth: 2
+      });
+      cpu_hidden = false;
+    }
+    hist_chart.update();
+
+  }
+  function toggle_players() {
+    if (!players_hidden) {
+      hist_chart.data.datasets = hist_chart.data.datasets.filter(function (obj) { return obj.label != "Players" });
+      players_hidden = true;
+      // Repaint
+    } else {
+      hist_chart.data.datasets.splice(0, 0, {
+        label: "Players",
+        data: players,
+        borderColor: [
+          'rgba(136, 98, 224, .5)',
+        ],
+        borderWidth: 2
+      });
+      players_hidden = false;
+    }
+    hist_chart.update();
+
+  }
+</script>
+
+{% end %}
