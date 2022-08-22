@@ -41,11 +41,7 @@
 
 
           <canvas id="lineChart"></canvas>
-          <div class="text-center">
-            <button class="btn btn-outline-info" onclick="toggle_players()">PLAYERS</button>&nbsp;
-            <button class="btn btn-outline-primary" onclick="toggle_mem()">MEM</button>&nbsp;
-            <button class="btn btn-outline-warning" onclick="toggle_cpu()">CPU</button>&nbsp;
-          </div>
+
         </div>
       </div>
     </div>
@@ -80,7 +76,8 @@
         borderColor: [
           'rgba(136, 98, 224, .5)',
         ],
-        borderWidth: 2
+        borderWidth: 2,
+        tension: 0
       },
       {
         label: "MEM",
@@ -88,7 +85,8 @@
         borderColor: [
           'rgba(33, 150, 243, .5)',
         ],
-        borderWidth: 2
+        borderWidth: 2,
+        tension: 0
       },
       {
         label: "CPU",
@@ -96,86 +94,55 @@
         borderColor: [
           'rgba(255, 175, 0, .5)',
         ],
-        borderWidth: 2
+        borderWidth: 2,
+        tension: 0
       },
       ]
     },
     options: {
+      plugins: {
+        zoom: {
+          zoom: {
+            wheel: {
+              enabled: true,
+            },
+            drag: {
+              enabled: true,
+              modifierKey: "shift"
+            },
+            pinch: {
+              enabled: true
+            },
+            mode: 'x',
+            modifierKey: 'shift',
+          },
+        },
+        pan: {
+          enabled: true,
+          mode: "xy",
+          threshhold: 1,
+          pan: {
+            enabled: true,
+            mode: "xy",
+            threshhold: 1,
+          }
+
+        }
+      },
       fill: false,
       lineTension: 5,
       responsive: true,
       scales: {
-        yAxes: [{
-          ticks: {
-            min: 0,
-            max: Math.max.apply(this, max_nums) + 5
-          }
-        }]
+        y: {
+          min: 0,
+        },
+        x: {
+          position: 'right',
+          min: -500,
+        }
       }
     }
   });
-
-  var mem_hidden = false;
-  var cpu_hidden = false;
-  var players_hidden = false;
-
-  function toggle_mem() {
-    if (!mem_hidden) {
-      hist_chart.data.datasets = hist_chart.data.datasets.filter(function (obj) { return obj.label != "MEM" });
-      mem_hidden = true;
-      // Repaint
-    } else {
-      hist_chart.data.datasets.splice(1, 0, {
-        label: "MEM",
-        data: ram,
-        borderColor: [
-          'rgba(33, 150, 243, .5)',
-        ],
-        borderWidth: 2
-      });
-      mem_hidden = false;
-    }
-    hist_chart.update();
-
-  }
-  function toggle_cpu() {
-    if (!cpu_hidden) {
-      hist_chart.data.datasets = hist_chart.data.datasets.filter(function (obj) { return obj.label != "CPU" });
-      cpu_hidden = true;
-      // Repaint
-    } else {
-      hist_chart.data.datasets.push({
-        label: "CPU",
-        data: cpu,
-        borderColor: [
-          'rgba(255, 175, 0, .5)',
-        ],
-        borderWidth: 2
-      });
-      cpu_hidden = false;
-    }
-    hist_chart.update();
-
-  }
-  function toggle_players() {
-    if (!players_hidden) {
-      hist_chart.data.datasets = hist_chart.data.datasets.filter(function (obj) { return obj.label != "Players" });
-      players_hidden = true;
-      // Repaint
-    } else {
-      hist_chart.data.datasets.splice(0, 0, {
-        label: "Players",
-        data: players,
-        borderColor: [
-          'rgba(136, 98, 224, .5)',
-        ],
-        borderWidth: 2
-      });
-      players_hidden = false;
-    }
-    hist_chart.update();
-
-  }
 </script>
 
 {% end %}
