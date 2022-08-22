@@ -62,7 +62,9 @@
   const ram = []
   const cpu = []
   {% for item in data['history_stats'] %}
+  {% if 'minecraft-java' in data['server_stats']['server_type'] %}
   players.push("{{ item.online }}");
+  {% end %}
   dates.push("{{ item.created }}");
   ram.push("{{ item.mem_percent }}")
   cpu.push("{{ item.cpu }}")
@@ -109,7 +111,11 @@
             max: Math.max.apply(this, max_nums) + 5
           }
         }]
-      }
+      },
+      zoom: {
+        enabled: true,
+        mode: 'y'
+      },
     }
   });
 
