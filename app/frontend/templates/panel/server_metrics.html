@@ -42,11 +42,13 @@
             id="reset-button"><i class="fas fa-undo"></i>&nbsp;{{ translate('serverMetrics', 'resetZoom', data['lang'])
             }}</button>
           {% if data['user_data']['hints'] %}
-          <span data-html="true" class="hints text-center" title="<i class='fa fa-info-circle'></i> " , data-content="{{
-            translate('serverMetrics', 'zoomHint1' , data['lang'])}} <br> <br> {{ translate('serverMetrics', 'zoomHint2', data['lang'])}}", 
-            data-placement="top"></span>
+          <span data-html="true" class="hints text-center" title="<i class='fa fa-info-circle'></i> " ,
+            data-content="{{
+            translate('serverMetrics', 'zoomHint1' , data['lang'])}} <br> <br> {{ translate('serverMetrics', 'zoomHint2', data['lang'])}}" , data-placement="top"></span>
           {% end %}
-          <canvas id="lineChart"></canvas>
+          <div class="chart-wrapper">
+            <canvas id="lineChart"></canvas>
+          </div>
 
         </div>
       </div>
@@ -57,6 +59,10 @@
 
 </div>
 <style>
+  .chart-wrapper {
+    height: 65vh;
+  }
+
   .popover-body {
     color: white !important;
     ;
@@ -112,6 +118,7 @@
       ]
     },
     options: {
+      maintainAspectRatio: false,
       plugins: {
         zoom: {
           zoom: {
