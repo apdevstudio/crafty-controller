@@ -42,8 +42,8 @@
             id="reset-button"><i class="fas fa-undo"></i>&nbsp;{{ translate('serverMetrics', 'resetZoom', data['lang'])
             }}</button>
           {% if data['user_data']['hints'] %}
-          <span data-html="true" class="hints text-center" title="Did you know?" , data-content="To zoom on the schedule hold your shift key then use your scroll wheel to zoom.<br><br>
-            Alternatively hold the shift key then click and drag the area you'd like to zoom in on." ,
+          <span data-html="true" class="hints text-center" title="<i class='fa fa-info-circle'></i> " , data-content="{{
+            translate('serverMetrics', 'zoomHint1' , data['lang'])}} <br> <br> {{ translate('serverMetrics', 'zoomHint2', data['lang'])}}", 
             data-placement="top"></span>
           {% end %}
           <canvas id="lineChart"></canvas>
