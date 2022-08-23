@@ -351,7 +351,8 @@
         "playerControls": "Player Management",
         "schedule": "Schedule",
         "serverDetails": "Server Details",
-        "terminal": "Terminal"
+        "terminal": "Terminal",
+        "metrics": "Metrics"
     },
     "serverFiles": {
         "clickUpload": "Click here to select your files",
@@ -471,6 +472,9 @@
         "stop": "Stop",
         "stopScroll": "Stop Auto Scrolling",
         "updating": "Updating..."
+    },
+    "serverMetrics": {
+        "resetZoom": "Reset Zoom"
     },
     "serverWizard": {
         "absoluteServerPath": "Absolute path to your server",

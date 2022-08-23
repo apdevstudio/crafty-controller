@@ -1223,6 +1223,7 @@ class ServerInstance:
                     "version": raw_ping_result.get("version"),
                     "icon": raw_ping_result.get("icon"),
                     "crashed": self.is_crashed,
+                    "created": datetime.datetime.now().strftime("%Y/%m/%d, %H:%M:%S"),
                 },
             )
         total_players += int(raw_ping_result.get("online"))

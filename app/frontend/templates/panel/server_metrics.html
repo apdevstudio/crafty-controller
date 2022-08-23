@@ -38,8 +38,14 @@
           <span class="d-block d-sm-none">
             {% include "parts/m_server_controls_list.html %}
           </span>
-
-
+          <button style="float: right; visibility: hidden;" class="btn btn-outline-success reset-button"
+            id="reset-button"><i class="fas fa-undo"></i>&nbsp;{{ translate('serverMetrics', 'resetZoom', data['lang'])
+            }}</button>
+          {% if data['user_data']['hints'] %}
+          <span data-html="true" class="hints text-center" title="Did you know?" , data-content="To zoom on the schedule hold your shift key then use your scroll wheel to zoom.<br><br>
+            Alternatively hold the shift key then click and drag the area you'd like to zoom in on." ,
+            data-placement="top"></span>
+          {% end %}
           <canvas id="lineChart"></canvas>
 
         </div>
@@ -50,7 +56,14 @@
 
 
 </div>
+<style>
+  .popover-body {
+    color: white !important;
+    ;
+  }
+</style>
 <script type="text/javascript">
+  var zoomed = false;
   //line
   var ctxL = document.getElementById("lineChart").getContext('2d');
   const players = []
@@ -61,11 +74,10 @@
   {% if 'minecraft-java' in data['server_stats']['server_type'] %}
   players.push("{{ item.online }}");
   {% end %}
-  dates.push("{{ item.created }}");
+  dates.push("{{ item.created.strftime('%Y/%m/%d, %H:%M:%S') }}");
   ram.push("{{ item.mem_percent }}")
   cpu.push("{{ item.cpu }}")
   {% end %}
-  max_nums = [Math.max.apply(this, players), Math.max.apply(this, ram), Math.max.apply(this, cpu)]
   var hist_chart = new Chart(ctxL, {
     type: 'line',
     data: {
@@ -77,7 +89,7 @@
           'rgba(136, 98, 224, .5)',
         ],
         borderWidth: 2,
-        tension: 0
+        lineTension: 0,
       },
       {
         label: "MEM",
@@ -86,7 +98,7 @@
           'rgba(33, 150, 243, .5)',
         ],
         borderWidth: 2,
-        tension: 0
+        lineTension: 0,
       },
       {
         label: "CPU",
@@ -95,7 +107,7 @@
           'rgba(255, 175, 0, .5)',
         ],
         borderWidth: 2,
-        tension: 0
+        lineTension: 0,
       },
       ]
     },
@@ -103,8 +115,14 @@
       plugins: {
         zoom: {
           zoom: {
+            onZoom({ hist_chart }) {
+              console.log("zooming");
+              document.getElementById("reset-button").style.visibility = "visible";
+              zoomed = true;
+            },
             wheel: {
               enabled: true,
+              modifierKey: 'shift',
             },
             drag: {
               enabled: true,
@@ -114,20 +132,13 @@
               enabled: true
             },
             mode: 'x',
-            modifierKey: 'shift',
           },
-        },
-        pan: {
-          enabled: true,
-          mode: "xy",
-          threshhold: 1,
           pan: {
             enabled: true,
-            mode: "xy",
+            mode: "x",
             threshhold: 1,
           }
-
-        }
+        },
       },
       fill: false,
       lineTension: 5,
@@ -138,10 +149,69 @@
         },
         x: {
           position: 'right',
-          min: -500,
+          min: dates.length - 200,
         }
       }
     }
+  });
+  $(window).ready(function () {
+    $('body').click(function () {
+      $('.hints').popover("hide");
+    });
+  });
+  $(document).ready(function () {
+    if ($(window).width() > 1000) {
+      $('[data-toggle="popover"]').popover();
+      $('.hints').popover("show");
+    }
+    webSocket.on('update_server_details', function (data) {
+      dates.push(data.created);
+      players.push(data.online);
+      cpu.push(data.cpu)
+      ram.push(data.mem_percent)
+      data = {
+        labels: dates,
+        datasets: [{
+          label: "Players",
+          data: players,
+          borderColor: [
+            'rgba(136, 98, 224, .5)',
+          ],
+          borderWidth: 2,
+          lineTension: 0,
+        },
+        {
+          label: "MEM",
+          data: ram,
+          borderColor: [
+            'rgba(33, 150, 243, .5)',
+          ],
+          borderWidth: 2,
+          lineTension: 0,
+        },
+        {
+          label: "CPU",
+          data: cpu,
+          borderColor: [
+            'rgba(255, 175, 0, .5)',
+          ],
+          borderWidth: 2,
+          lineTension: 0,
+        },
+        ]
+      }
+      if (!zoomed) {
+        hist_chart.options.scales.x.min = dates.length - 200;
+      }
+      hist_chart.update(data)
+    });
+
+    $(".reset-button").click(function () {
+      console.log("resetting zoom");
+      zoomed = false;
+      hist_chart.resetZoom();
+      document.getElementById("reset-button").style.visibility = "hidden";
+    });
   });
 </script>
 
