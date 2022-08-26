@@ -1,6 +1,7 @@
 import os
 import pathlib
 from pathlib import Path
+from datetime import datetime
 import platform
 import shutil
 import time
@@ -181,9 +182,11 @@ class Controller:
         sys_info_string = (
             f"Crafty v{self.helper.get_version_string()} Support Logs\n"
             f"\n"
-            f"OS Info: \n"
+            f"OS Info:- \n"
             f"OS: {str(platform.system())}\n"
             f"Version: {str(platform.release())}"
+            f"\n \n"
+            f"Log archive created on: {datetime.now()}"
         )
         with open(
             os.path.join(temp_dir, "crafty_sys_info.txt"), "a", encoding="utf-8"
