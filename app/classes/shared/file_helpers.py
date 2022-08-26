@@ -93,10 +93,13 @@ class FileHelpers:
         return True
 
     @staticmethod
-    def make_compressed_archive(path_to_destination, path_to_zip):
+    def make_compressed_archive(path_to_destination, path_to_zip, comment=""):
         # create a ZipFile object
         path_to_destination += ".zip"
         with ZipFile(path_to_destination, "w", ZIP_DEFLATED) as zip_file:
+            zip_file.comment = bytes(
+                comment, "utf-8"
+            )  # comments over 65535 bytes will be truncated
             for root, _dirs, files in os.walk(path_to_zip, topdown=True):
                 ziproot = path_to_zip
                 for file in files:
