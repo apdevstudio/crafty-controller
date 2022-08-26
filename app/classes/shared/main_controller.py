@@ -178,18 +178,18 @@ class Controller:
         )
         # Make version file .txt when we download it for support
         # Most people have a default editor for .txt also more mobile friendly...
-        FileHelpers.copy_file(
-            os.path.join(self.project_root, "app", "config", "version.json"),
-            os.path.join(temp_dir, "crafty_sys_info.txt"),
+        sys_info_string = (
+            f"Crafty v{self.helper.get_version_string()} Support Logs\n"
+            f"\n"
+            f"OS Info: \n"
+            f"OS: {str(platform.system())}\n"
+            f"Version: {str(platform.release())}"
         )
         with open(
             os.path.join(temp_dir, "crafty_sys_info.txt"), "a", encoding="utf-8"
         ) as f:
-            f.write("\n")
-            f.write("OS Info:\n")
-            f.write("OS: " + str(platform.system()) + "\n")
-            f.write("Version: " + str(platform.release()))
-        FileHelpers.make_compressed_archive(temp_zip_storage, temp_dir)
+            f.write(sys_info_string)
+        FileHelpers.make_compressed_archive(temp_zip_storage, temp_dir, sys_info_string)
         if len(self.helper.websocket_helper.clients) > 0:
             self.helper.websocket_helper.broadcast_user(
                 exec_user["user_id"],
