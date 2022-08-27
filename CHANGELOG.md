@@ -1,5 +1,5 @@
 # Changelog
-## --- [4.0.11] - 2022/TBD
+## --- [4.0.11] - 2022/08/28
 ### New features
 - Add server import status indicators ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/433))
 - Users can now be assigned as manager of other users/roles ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/434))
@@ -12,8 +12,6 @@
 - Make imports threaded ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/433))
 - Add 'Created By' Field to servers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/434))
 - Add Zip comments to support archives ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/438))
-### Lang
-TBD
 <br><br>
 
 ## --- [4.0.10] - 2022/08/14
