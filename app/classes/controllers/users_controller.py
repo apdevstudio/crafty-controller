@@ -1,7 +1,9 @@
 import logging
 import typing as t
+from app.classes.models.servers import HelperServers
 
 from app.classes.models.users import HelperUsers
+from app.classes.models.roles import HelperRoles
 from app.classes.models.crafty_permissions import (
     PermissionsCrafty,
     EnumPermissionsCrafty,
@@ -132,6 +134,18 @@ class UsersController:
     def set_support_path(user_id, support_path):
         HelperUsers.set_support_path(user_id, support_path)
 
+    @staticmethod
+    def get_managed_users(exec_user_id):
+        return HelperUsers.get_managed_users(exec_user_id)
+
+    @staticmethod
+    def get_managed_roles(exec_user_id):
+        return HelperUsers.get_managed_roles(exec_user_id)
+
+    @staticmethod
+    def get_created_servers(exec_user_id):
+        return HelperServers.get_total_owned_servers(exec_user_id)
+
     def update_user(self, user_id: str, user_data=None, user_crafty_data=None):
         if user_crafty_data is None:
             user_crafty_data = {}
@@ -206,6 +220,7 @@ class UsersController:
     def add_user(
         self,
         username,
+        manager,
         password,
         email="default@example.com",
         enabled: bool = True,
@@ -213,6 +228,7 @@ class UsersController:
     ):
         return self.users_helper.add_user(
             username,
+            manager,
             password=password,
             email=email,
             enabled=enabled,
@@ -236,6 +252,10 @@ class UsersController:
         )
 
     def remove_user(self, user_id):
+        for user in self.get_managed_users(user_id):
+            self.update_user(user.user_id, {"manager": None})
+        for role in HelperUsers.get_managed_roles(user_id):
+            HelperRoles.update_role(role.role_id, {"manager": None})
         return self.users_helper.remove_user(user_id)
 
     @staticmethod

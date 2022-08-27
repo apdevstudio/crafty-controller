@@ -6,6 +6,7 @@ from peewee import (
     DoesNotExist,
     AutoField,
     DateTimeField,
+    IntegerField,
 )
 from playhouse.shortcuts import model_to_dict
 
@@ -22,6 +23,7 @@ class Roles(BaseModel):
     created = DateTimeField(default=datetime.datetime.now)
     last_update = DateTimeField(default=datetime.datetime.now)
     role_name = CharField(default="", unique=True, index=True)
+    manager = IntegerField(null=True)
 
     class Meta:
         table_name = "roles"
@@ -71,11 +73,12 @@ class HelperRoles:
         )
 
     @staticmethod
-    def add_role(role_name):
+    def add_role(role_name, manager):
         role_id = Roles.insert(
             {
                 Roles.role_name: role_name.lower(),
                 Roles.created: Helpers.get_time_as_string(),
+                Roles.manager: manager,
             }
         ).execute()
         return role_id

@@ -38,6 +38,7 @@ class Servers(BaseModel):
     logs_delete_after = IntegerField(default=0)
     type = CharField(default="minecraft-java")
     show_status = BooleanField(default=1)
+    created_by = IntegerField(default=-100)
     shutdown_timeout = IntegerField(default=60)
 
     class Meta:
@@ -65,6 +66,7 @@ class HelperServers:
         server_log_file: str,
         server_stop: str,
         server_type: str,
+        created_by: int,
         server_port: int = 25565,
         server_host: str = "127.0.0.1",
     ) -> int:
@@ -106,12 +108,17 @@ class HelperServers:
                 Servers.stop_command: server_stop,
                 Servers.backup_path: backup_path,
                 Servers.type: server_type,
+                Servers.created_by: created_by,
             }
         ).execute()
 
     @staticmethod
     def get_server_obj(server_id):
         return Servers.get_by_id(server_id)
+
+    @staticmethod
+    def get_total_owned_servers(user_id):
+        return Servers.select().where(Servers.created_by == user_id).count()
 
     @staticmethod
     def get_server_type_by_id(server_id):

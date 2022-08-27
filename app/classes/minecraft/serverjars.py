@@ -175,7 +175,7 @@ class ServerJars:
         # we submit a db update for it's stats.
         while True:
             try:
-                ServersController.set_download(server_id)
+                ServersController.set_import(server_id)
                 for user in server_users:
                     self.helper.websocket_helper.broadcast_user(
                         user, "send_start_reload", {}
@@ -190,7 +190,7 @@ class ServerJars:
             try:
                 with open(path, "wb") as output:
                     shutil.copyfileobj(r.raw, output)
-                    ServersController.finish_download(server_id)
+                    ServersController.finish_import(server_id)
 
                     for user in server_users:
                         self.helper.websocket_helper.broadcast_user(
@@ -203,7 +203,7 @@ class ServerJars:
                     return True
             except Exception as e:
                 logger.error(f"Unable to save jar to {path} due to error:{e}")
-                ServersController.finish_download(server_id)
+                ServersController.finish_import(server_id)
                 server_users = PermissionsServers.get_server_user_list(server_id)
                 for user in server_users:
                     self.helper.websocket_helper.broadcast_user(

@@ -9,6 +9,7 @@ from peewee import (
 )
 
 from app.classes.models.base_model import BaseModel
+from app.classes.models.servers import HelperServers
 from app.classes.models.users import Users, ApiKeys, HelperUsers
 from app.classes.shared.permission_helper import PermissionHelper
 
@@ -23,9 +24,6 @@ class UserCrafty(BaseModel):
     limit_server_creation = IntegerField(default=-1)
     limit_user_creation = IntegerField(default=0)
     limit_role_creation = IntegerField(default=0)
-    created_server = IntegerField(default=0)
-    created_user = IntegerField(default=0)
-    created_role = IntegerField(default=0)
 
     class Meta:
         table_name = "user_crafty"
@@ -107,9 +105,6 @@ class PermissionsCrafty:
                     UserCrafty.limit_server_creation: 0,
                     UserCrafty.limit_user_creation: 0,
                     UserCrafty.limit_role_creation: 0,
-                    UserCrafty.created_server: 0,
-                    UserCrafty.created_user: 0,
-                    UserCrafty.created_role: 0,
                 }
             ).execute()
             user_crafty = PermissionsCrafty.get_user_crafty(user_id)
@@ -159,11 +154,16 @@ class PermissionsCrafty:
 
     @staticmethod
     def get_created_quantity_list(user_id):
-        user_crafty = PermissionsCrafty.get_user_crafty(user_id)
         quantity_list = {
-            EnumPermissionsCrafty.SERVER_CREATION.name: user_crafty.created_server,
-            EnumPermissionsCrafty.USER_CONFIG.name: user_crafty.created_user,
-            EnumPermissionsCrafty.ROLES_CONFIG.name: user_crafty.created_role,
+            EnumPermissionsCrafty.SERVER_CREATION.name: HelperServers.get_total_owned_servers(  # pylint: disable=line-too-long
+                user_id
+            ),
+            EnumPermissionsCrafty.USER_CONFIG.name: HelperUsers.get_managed_users(
+                user_id
+            ).count(),
+            EnumPermissionsCrafty.ROLES_CONFIG.name: HelperUsers.get_managed_roles(
+                user_id
+            ).count(),
         }
         return quantity_list
 
@@ -182,31 +182,6 @@ class PermissionsCrafty:
             (quantity_list[permission.name] < limit_list[permission.name])
             or limit_list[permission.name] == -1
         )
-
-    @staticmethod
-    def add_server_creation(user_id: int):
-        """Increase the "Server Creation" counter for this user
-
-        Args:
-            user_id (int): The modifiable user's ID
-        """
-        UserCrafty.update(created_server=UserCrafty.created_server + 1).where(
-            UserCrafty.user_id == user_id
-        ).execute()
-
-    @staticmethod
-    def add_user_creation(user_id):
-        user_crafty = PermissionsCrafty.get_user_crafty(user_id)
-        user_crafty.created_user += 1
-        UserCrafty.save(user_crafty)
-        return user_crafty.created_user
-
-    @staticmethod
-    def add_role_creation(user_id):
-        user_crafty = PermissionsCrafty.get_user_crafty(user_id)
-        user_crafty.created_role += 1
-        UserCrafty.save(user_crafty)
-        return user_crafty.created_role
 
     @staticmethod
     def get_api_key_permissions_list(key: ApiKeys):

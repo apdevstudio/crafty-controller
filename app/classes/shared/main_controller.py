@@ -28,15 +28,17 @@ from app.classes.shared.authentication import Authentication
 from app.classes.shared.console import Console
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.file_helpers import FileHelpers
+from app.classes.shared.import_helper import ImportHelpers
 from app.classes.minecraft.serverjars import ServerJars
 
 logger = logging.getLogger(__name__)
 
 
 class Controller:
-    def __init__(self, database, helper, file_helper):
+    def __init__(self, database, helper, file_helper, import_helper):
         self.helper: Helpers = helper
         self.file_helper: FileHelpers = file_helper
+        self.import_helper: ImportHelpers = import_helper
         self.server_jars: ServerJars = ServerJars(helper)
         self.users_helper: HelperUsers = HelperUsers(database, self.helper)
         self.roles_helper: HelperRoles = HelperRoles(database)
@@ -244,7 +246,7 @@ class Controller:
         except:
             return {"percent": 0, "total_files": 0}
 
-    def create_api_server(self, data: dict):
+    def create_api_server(self, data: dict, user_id):
         server_fs_uuid = Helpers.create_uuid()
         new_server_path = os.path.join(self.helper.servers_dir, server_fs_uuid)
         backup_path = os.path.join(self.helper.backup_path, server_fs_uuid)
@@ -307,7 +309,9 @@ class Controller:
                 # TODO: Copy files from the zip file to the new server directory
                 server_file = create_data["jarfile"]
                 raise Exception("Not yet implemented")
-            _create_server_properties_if_needed(create_data["server_properties_port"])
+            _create_server_properties_if_needed(
+                create_data["server_properties_port"],
+            )
 
             min_mem = create_data["mem_min"]
             max_mem = create_data["mem_max"]
@@ -403,6 +407,7 @@ class Controller:
             server_log_file=log_location,
             server_stop=stop_command,
             server_port=monitoring_port,
+            created_by=user_id,
             server_host=monitoring_host,
             server_type=monitoring_type,
         )
@@ -429,6 +434,7 @@ class Controller:
         min_mem: int,
         max_mem: int,
         port: int,
+        user_id: int,
     ):
         server_id = Helpers.create_uuid()
         server_dir = os.path.join(self.helper.servers_dir, server_id)
@@ -489,6 +495,7 @@ class Controller:
             server_log_file,
             server_stop,
             port,
+            user_id,
             server_type="minecraft-java",
         )
 
@@ -524,6 +531,7 @@ class Controller:
         min_mem: int,
         max_mem: int,
         port: int,
+        user_id: int,
     ):
         server_id = Helpers.create_uuid()
         new_server_dir = os.path.join(self.helper.servers_dir, server_id)
@@ -537,25 +545,6 @@ class Controller:
         Helpers.ensure_dir_exists(new_server_dir)
         Helpers.ensure_dir_exists(backup_path)
         server_path = Helpers.get_os_understandable_path(server_path)
-        try:
-            FileHelpers.copy_dir(server_path, new_server_dir, True)
-        except shutil.Error as ex:
-            logger.error(f"Server import failed with error: {ex}")
-
-        has_properties = False
-        for item in os.listdir(new_server_dir):
-            if str(item) == "server.properties":
-                has_properties = True
-        if not has_properties:
-            logger.info(
-                f"No server.properties found on zip file import. "
-                f"Creating one with port selection of {str(port)}"
-            )
-            with open(
-                os.path.join(new_server_dir, "server.properties"), "w", encoding="utf-8"
-            ) as file:
-                file.write(f"server-port={port}")
-                file.close()
 
         full_jar_path = os.path.join(new_server_dir, server_jar)
 
@@ -584,8 +573,11 @@ class Controller:
             server_log_file,
             server_stop,
             port,
+            user_id,
             server_type="minecraft-java",
         )
+        ServersController.set_import(new_id)
+        self.import_helper.import_jar_server(server_path, new_server_dir, port, new_id)
         return new_id
 
     def import_zip_server(
@@ -596,6 +588,7 @@ class Controller:
         min_mem: int,
         max_mem: int,
         port: int,
+        user_id: int,
     ):
         server_id = Helpers.create_uuid()
         new_server_dir = os.path.join(self.helper.servers_dir, server_id)
@@ -609,32 +602,6 @@ class Controller:
         temp_dir = Helpers.get_os_understandable_path(zip_path)
         Helpers.ensure_dir_exists(new_server_dir)
         Helpers.ensure_dir_exists(backup_path)
-        has_properties = False
-        # extracts archive to temp directory
-        for item in os.listdir(temp_dir):
-            if str(item) == "server.properties":
-                has_properties = True
-            try:
-                if not os.path.isdir(os.path.join(temp_dir, item)):
-                    FileHelpers.move_file(
-                        os.path.join(temp_dir, item), os.path.join(new_server_dir, item)
-                    )
-                else:
-                    FileHelpers.move_dir(
-                        os.path.join(temp_dir, item), os.path.join(new_server_dir, item)
-                    )
-            except Exception as ex:
-                logger.error(f"ERROR IN ZIP IMPORT: {ex}")
-        if not has_properties:
-            logger.info(
-                f"No server.properties found on zip file import. "
-                f"Creating one with port selection of {str(port)}"
-            )
-            with open(
-                os.path.join(new_server_dir, "server.properties"), "w", encoding="utf-8"
-            ) as file:
-                file.write(f"server-port={port}")
-                file.close()
 
         full_jar_path = os.path.join(new_server_dir, server_jar)
 
@@ -664,7 +631,12 @@ class Controller:
             server_log_file,
             server_stop,
             port,
+            user_id,
             server_type="minecraft-java",
+        )
+        ServersController.set_import(new_id)
+        self.import_helper.import_java_zip_server(
+            temp_dir, new_server_dir, port, new_id
         )
         return new_id
 
@@ -673,7 +645,12 @@ class Controller:
     # **********************************************************************************
 
     def import_bedrock_server(
-        self, server_name: str, server_path: str, server_exe: str, port: int
+        self,
+        server_name: str,
+        server_path: str,
+        server_exe: str,
+        port: int,
+        user_id: int,
     ):
         server_id = Helpers.create_uuid()
         new_server_dir = os.path.join(self.helper.servers_dir, server_id)
@@ -687,25 +664,6 @@ class Controller:
         Helpers.ensure_dir_exists(new_server_dir)
         Helpers.ensure_dir_exists(backup_path)
         server_path = Helpers.get_os_understandable_path(server_path)
-        try:
-            FileHelpers.copy_dir(server_path, new_server_dir, True)
-        except shutil.Error as ex:
-            logger.error(f"Server import failed with error: {ex}")
-
-        has_properties = False
-        for item in os.listdir(new_server_dir):
-            if str(item) == "server.properties":
-                has_properties = True
-        if not has_properties:
-            logger.info(
-                f"No server.properties found on zip file import. "
-                f"Creating one with port selection of {str(port)}"
-            )
-            with open(
-                os.path.join(new_server_dir, "server.properties"), "w", encoding="utf-8"
-            ) as file:
-                file.write(f"server-port={port}")
-                file.close()
 
         full_jar_path = os.path.join(new_server_dir, server_exe)
 
@@ -727,15 +685,22 @@ class Controller:
             server_log_file,
             server_stop,
             port,
+            user_id,
             server_type="minecraft-bedrock",
         )
-        if os.name != "nt":
-            if Helpers.check_file_exists(full_jar_path):
-                os.chmod(full_jar_path, 0o2760)
+        ServersController.set_import(new_id)
+        self.import_helper.import_bedrock_server(
+            server_path, new_server_dir, port, full_jar_path, new_id
+        )
         return new_id
 
     def import_bedrock_zip_server(
-        self, server_name: str, zip_path: str, server_exe: str, port: int
+        self,
+        server_name: str,
+        zip_path: str,
+        server_exe: str,
+        port: int,
+        user_id: int,
     ):
         server_id = Helpers.create_uuid()
         new_server_dir = os.path.join(self.helper.servers_dir, server_id)
@@ -749,32 +714,6 @@ class Controller:
         temp_dir = Helpers.get_os_understandable_path(zip_path)
         Helpers.ensure_dir_exists(new_server_dir)
         Helpers.ensure_dir_exists(backup_path)
-        has_properties = False
-        # extracts archive to temp directory
-        for item in os.listdir(temp_dir):
-            if str(item) == "server.properties":
-                has_properties = True
-            try:
-                if not os.path.isdir(os.path.join(temp_dir, item)):
-                    FileHelpers.move_file(
-                        os.path.join(temp_dir, item), os.path.join(new_server_dir, item)
-                    )
-                else:
-                    FileHelpers.move_dir(
-                        os.path.join(temp_dir, item), os.path.join(new_server_dir, item)
-                    )
-            except Exception as ex:
-                logger.error(f"ERROR IN ZIP IMPORT: {ex}")
-        if not has_properties:
-            logger.info(
-                f"No server.properties found on zip file import. "
-                f"Creating one with port selection of {str(port)}"
-            )
-            with open(
-                os.path.join(new_server_dir, "server.properties"), "w", encoding="utf-8"
-            ) as file:
-                file.write(f"server-port={port}")
-                file.close()
 
         full_jar_path = os.path.join(new_server_dir, server_exe)
 
@@ -796,7 +735,11 @@ class Controller:
             server_log_file,
             server_stop,
             port,
+            user_id,
             server_type="minecraft-bedrock",
+        )
+        self.import_helper.import_bedrock_zip_server(
+            temp_dir, new_server_dir, full_jar_path, port, new_id
         )
         if os.name != "nt":
             if Helpers.check_file_exists(full_jar_path):
@@ -838,6 +781,7 @@ class Controller:
         server_log_file: str,
         server_stop: str,
         server_port: int,
+        created_by: int,
         server_type: str,
         server_host: str = "127.0.0.1",
     ):
@@ -852,6 +796,7 @@ class Controller:
             server_log_file,
             server_stop,
             server_type,
+            created_by,
             server_port,
             server_host,
         )
