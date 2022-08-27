@@ -1488,6 +1488,7 @@ class PanelHandler(BaseHandler):
                     return
             server_name = self.get_argument("server_name", None)
             server_obj = self.controller.servers.get_server_obj(server_id)
+            shutdown_timeout = self.get_argument("shutdown_timeout", 60)
             if superuser:
                 server_path = self.get_argument("server_path", None)
                 if Helpers.is_os_windows():
@@ -1568,6 +1569,7 @@ class PanelHandler(BaseHandler):
                 )
 
             server_obj.server_name = server_name
+            server_obj.shutdown_timeout = shutdown_timeout
             if superuser:
                 if Helpers.validate_traversal(
                     self.helper.get_servers_root_dir(), server_path

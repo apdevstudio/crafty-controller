@@ -39,6 +39,7 @@ class Servers(BaseModel):
     type = CharField(default="minecraft-java")
     show_status = BooleanField(default=1)
     created_by = IntegerField(default=-100)
+    shutdown_timeout = IntegerField(default=60)
 
     class Meta:
         table_name = "servers"
