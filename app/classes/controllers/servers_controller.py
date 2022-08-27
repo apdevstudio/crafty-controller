@@ -4,6 +4,7 @@ import time
 import json
 import pathlib
 import typing as t
+import datetime
 
 from app.classes.controllers.roles_controller import RolesController
 from app.classes.shared.file_helpers import FileHelpers
@@ -51,6 +52,7 @@ class ServersController(metaclass=Singleton):
         server_log_file: str,
         server_stop: str,
         server_type: str,
+        created_by: int,
         server_port: int = 25565,
         server_host: str = "127.0.0.1",
     ) -> int:
@@ -85,6 +87,7 @@ class ServersController(metaclass=Singleton):
             server_log_file,
             server_stop,
             server_type,
+            created_by,
             server_port,
             server_host,
         )
@@ -102,25 +105,32 @@ class ServersController(metaclass=Singleton):
         server_instance.update_server_instance()
         return ret
 
+    def get_history_stats(self, server_id):
+        max_age = self.helper.get_setting("history_max_age")
+        now = datetime.datetime.now()
+        minimum_to_exist = now - datetime.timedelta(days=max_age)
+        srv = ServersController().get_server_instance_by_id(server_id)
+        return srv.stats_helper.get_history_stats(server_id, minimum_to_exist)
+
     @staticmethod
     def update_unloaded_server(server_obj):
         ret = HelperServers.update_server(server_obj)
         return ret
 
     @staticmethod
-    def set_download(server_id):
+    def set_import(server_id):
         srv = ServersController().get_server_instance_by_id(server_id)
-        return srv.stats_helper.set_download()
+        return srv.stats_helper.set_import()
 
     @staticmethod
-    def finish_download(server_id):
+    def finish_import(server_id):
         srv = ServersController().get_server_instance_by_id(server_id)
-        return srv.stats_helper.finish_download()
+        return srv.stats_helper.finish_import()
 
     @staticmethod
-    def get_download_status(server_id):
+    def get_import_status(server_id):
         server = ServersController().get_server_instance_by_id(server_id)
-        return server.stats_helper.get_download_status()
+        return server.stats_helper.get_import_status()
 
     def remove_server(self, server_id):
         roles_list = PermissionsServers.get_roles_from_server(server_id)

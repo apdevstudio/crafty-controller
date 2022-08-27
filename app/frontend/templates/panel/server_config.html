@@ -166,6 +166,18 @@
                   {% end %}
 
                   <div class="form-group">
+                    <label for="shutdown_timeout">{{ translate('serverConfig', 'shutdownTimeout', data['lang']) }}
+                      <small class="text-muted ml-1"> - {{ translate('serverConfig', 'timeoutExplain1', data['lang'])
+                        }}&nbsp;
+                        {{ data['server_stats']['server_id']['stop_command'] }}&nbsp;{{ translate('serverConfig',
+                        'timeoutExplain2', data['lang']) }}
+                      </small> </label>
+                    <input type="number" class="form-control" name="shutdown_timeout" id="shutdown_timeout"
+                      value="{{ data['server_stats']['server_id']['shutdown_timeout']  }}" step="2" max="300" min="60"
+                      required>
+                  </div>
+
+                  <div class="form-group">
                     <label for="logs_delete_after">{{ translate('serverConfig', 'removeOldLogsAfter', data['lang']) }}
                       <small class="text-muted ml-1"> - {{ translate('serverConfig', 'removeOldLogsAfterDesc',
                         data['lang']) }}</small> </label>

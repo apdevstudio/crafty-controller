@@ -61,25 +61,5 @@ class CraftyPermsController:
         return permissions_list
 
     @staticmethod
-    def add_server_creation(user_id):
-        """Increase the "Server Creation" counter for this user
-
-        Args:
-            user_id (int): The modifiable user's ID
-
-        Returns:
-            int: The new count of servers created by this user
-        """
-        return PermissionsCrafty.add_server_creation(user_id)
-
-    @staticmethod
-    def add_user_creation(user_id):
-        return PermissionsCrafty.add_user_creation(user_id)
-
-    @staticmethod
-    def add_role_creation(user_id):
-        return PermissionsCrafty.add_role_creation(user_id)
-
-    @staticmethod
     def get_api_key_permissions_list(key: ApiKeys):
         return PermissionsCrafty.get_api_key_permissions_list(key)

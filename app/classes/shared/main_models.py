@@ -26,6 +26,7 @@ class DatabaseBuilder:
             password=password,
             email="default@example.com",
             superuser=True,
+            manager=None,
         )
 
     def is_fresh_install(self):
