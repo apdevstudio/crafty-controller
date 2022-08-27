@@ -340,10 +340,11 @@ class CreateUser(ApiHandler):
 
         new_username = self.get_argument("username").lower()
         new_pass = self.get_argument("password")
+        manager = int(user_obj["user_id"])
 
         if new_username:
             self.controller.users.add_user(
-                new_username, new_pass, "default@example.com", True, False
+                new_username, manager, new_pass, "default@example.com", True, False
             )
 
             self.return_response(

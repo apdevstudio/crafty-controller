@@ -6,6 +6,7 @@ from peewee import (
     ForeignKeyField,
     CharField,
     AutoField,
+    IntegerField,
     DateTimeField,
     BooleanField,
     CompositeKey,
@@ -40,6 +41,7 @@ class Users(BaseModel):
     server_order = CharField(default="")
     preparing = BooleanField(default=False)
     hints = BooleanField(default=True)
+    manager = IntegerField(default=None, null=True)
 
     class Meta:
         table_name = "users"
@@ -139,6 +141,16 @@ class HelperUsers:
         return user_query
 
     @staticmethod
+    def get_managed_users(exec_user_id):
+        user_query = Users.select().where(Users.manager == exec_user_id)
+        return user_query
+
+    @staticmethod
+    def get_managed_roles(exec_user_id):
+        roles_query = Roles.select().where(Roles.manager == exec_user_id)
+        return roles_query
+
+    @staticmethod
     def get_user(user_id):
         if user_id == 0:
             return {
@@ -192,6 +204,7 @@ class HelperUsers:
     def add_user(
         self,
         username: str,
+        manager: str,
         password: str = None,
         email: t.Optional[str] = None,
         enabled: bool = True,
@@ -209,6 +222,7 @@ class HelperUsers:
                 Users.enabled: enabled,
                 Users.superuser: superuser,
                 Users.created: Helpers.get_time_as_string(),
+                Users.manager: manager,
             }
         ).execute()
         return user_id
@@ -229,6 +243,7 @@ class HelperUsers:
                 Users.enabled: enabled,
                 Users.superuser: superuser,
                 Users.created: Helpers.get_time_as_string(),
+                Users.manager: None,
             }
         ).execute()
         return user_id

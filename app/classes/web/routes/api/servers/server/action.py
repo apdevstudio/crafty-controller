@@ -84,6 +84,7 @@ class ApiServersServerActionHandler(BaseApiHandler):
             new_server_log_file,
             server_data.get("stop_command"),
             server_data.get("type"),
+            user_id,
             server_data.get("server_port"),
         )
 
