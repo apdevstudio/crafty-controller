@@ -230,7 +230,6 @@ class HelperUsers:
     @staticmethod
     def add_rawpass_user(
         username: str,
-        manager: str,
         password: str = "",
         email: t.Optional[str] = "default@example.com",
         enabled: bool = True,
@@ -244,7 +243,7 @@ class HelperUsers:
                 Users.enabled: enabled,
                 Users.superuser: superuser,
                 Users.created: Helpers.get_time_as_string(),
-                Users.manager: manager,
+                Users.manager: None,
             }
         ).execute()
         return user_id
