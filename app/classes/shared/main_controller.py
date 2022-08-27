@@ -5,7 +5,6 @@ import platform
 import shutil
 import time
 import logging
-import threading
 from peewee import DoesNotExist
 
 # TZLocal is set as a hidden import on win pipeline
@@ -17,7 +16,6 @@ from app.classes.models.server_permissions import EnumPermissionsServer
 from app.classes.shared.main_models import DatabaseShortcuts
 from app.classes.models.users import HelperUsers
 from app.classes.models.roles import HelperRoles
-from app.classes.models.server_permissions import PermissionsServers
 from app.classes.models.management import HelpersManagement
 from app.classes.models.servers import HelperServers
 from app.classes.controllers.crafty_perms_controller import CraftyPermsController

@@ -115,9 +115,9 @@ class ImportHelpers:
         self, server_path, new_server_dir, port, full_jar_path, new_id
     ):
         import_thread = threading.Thread(
-            target=self.import_threaded_java_zip_server,
+            target=self.import_threaded_bedrock_server,
             daemon=True,
-            args=(server_path, new_server_dir, port, new_id),
+            args=(server_path, new_server_dir, port, full_jar_path, new_id),
             name=f"{new_id}_bedrock_import",
         )
         import_thread.start()
