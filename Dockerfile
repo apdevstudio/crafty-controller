@@ -15,6 +15,7 @@ RUN apt-get update \
     && apt-get -y --no-install-recommends install \
         sudo \
         gcc \
+        libcurl4 \
         python3 \
         python3-dev \
         python3-pip \
