@@ -293,7 +293,7 @@ class ServerInstance:
         else:
             user_lang = HelperUsers.get_user_lang_by_id(user_id)
 
-        if self.stats_helper.get_download_status():
+        if self.stats_helper.get_import_status():
             if user_id:
                 self.helper.websocket_helper.broadcast_user(
                     user_id,
@@ -612,21 +612,25 @@ class ServerInstance:
         # caching the name and pid number
         server_name = self.name
         server_pid = self.process.pid
+        self.shutdown_timeout = self.settings["shutdown_timeout"]
 
         while running:
             i += 1
-            logstr = (
-                f"Server {server_name} is still running "
-                f"- waiting 2s to see if it stops ({int(60-(i*2))} "
-                f"seconds until force close)"
-            )
-            logger.info(logstr)
-            Console.info(logstr)
+            ttk = int(self.shutdown_timeout - (i * 2))
+            if i <= self.shutdown_timeout / 2:
+                logstr = (
+                    f"Server {server_name} is still running "
+                    "- waiting 2s to see if it stops"
+                    f"({ttk} "
+                    f"seconds until force close)"
+                )
+                logger.info(logstr)
+                Console.info(logstr)
             running = self.check_running()
             time.sleep(2)
 
             # if we haven't closed in 60 seconds, let's just slam down on the PID
-            if i >= 30:
+            if i >= round(self.shutdown_timeout / 2, 0):
                 logger.info(
                     f"Server {server_name} is still running - Forcing the process down"
                 )

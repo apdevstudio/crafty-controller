@@ -665,10 +665,9 @@ class ApiServersIndexHandler(BaseApiHandler):
                 },
             )
 
-        new_server_id, new_server_uuid = self.controller.create_api_server(data)
-
-        # Increase the server creation counter
-        self.controller.crafty_perms.add_server_creation(user["user_id"])
+        new_server_id, new_server_uuid = self.controller.create_api_server(
+            data, user["user_id"]
+        )
 
         self.controller.servers.stats.record_stats()
 

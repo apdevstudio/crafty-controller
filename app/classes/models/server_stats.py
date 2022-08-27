@@ -53,7 +53,7 @@ class ServerStats(Model):
     waiting_start = BooleanField(default=False)
     first_run = BooleanField(default=True)
     crashed = BooleanField(default=False)
-    downloading = BooleanField(default=False)
+    importing = BooleanField(default=False)
 
     class Meta:
         table_name = "server_stats"
@@ -215,26 +215,26 @@ class HelperServerStats:
             ServerStats.server_id == self.server_id
         ).execute(self.database)
 
-    def set_download(self):
+    def set_import(self):
         # self.select_database(self.server_id)
-        ServerStats.update(downloading=True).where(
+        ServerStats.update(importing=True).where(
             ServerStats.server_id == self.server_id
         ).execute(self.database)
 
-    def finish_download(self):
+    def finish_import(self):
         # self.select_database(self.server_id)
-        ServerStats.update(downloading=False).where(
+        ServerStats.update(importing=False).where(
             ServerStats.server_id == self.server_id
         ).execute(self.database)
 
-    def get_download_status(self):
+    def get_import_status(self):
         # self.select_database(self.server_id)
-        download_status = (
+        import_status = (
             ServerStats.select()
             .where(ServerStats.server_id == self.server_id)
             .get(self.database)
         )
-        return download_status.downloading
+        return import_status.importing
 
     def server_crash_reset(self):
         if self.server_id is None:
@@ -257,7 +257,6 @@ class HelperServerStats:
     def set_update(self, value):
         if self.server_id is None:
             return
-
         # self.select_database(self.server_id)
         try:
             # Checks if server even exists

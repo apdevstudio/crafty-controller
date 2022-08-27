@@ -65,9 +65,9 @@
               <button onclick="" id="restart-btn" style="max-width: 7rem;" class="btn btn-outline-primary m-1 flex-grow-1 disabled">{% raw translate('serverTerm', 'restart', data['lang']) %}</button>
               <button onclick="" id="stop-btn" style="max-width: 7rem;" class="btn btn-danger m-1 flex-grow-1 disabled">{{ translate('serverTerm', 'stop', data['lang']) }}</button>
             </div>
-            {% elif data['downloading'] %}
+            {% elif data['importing'] %}
             <div id="control_buttons" class="mt-4 flex-wrap d-flex justify-content-between justify-content-md-center align-items-center px-5 px-md-0" style="visibility: visible">
-              <button onclick="" id="start-btn" style="max-width: 12rem; white-space: nowrap;" class="btn btn-secondary m-1 flex-grow-1 disabled"><i class="fa fa-spinner fa-spin"></i> {{ translate('serverTerm', 'downloading',
+              <button onclick="" id="start-btn" style="max-width: 12rem; white-space: nowrap;" class="btn btn-secondary m-1 flex-grow-1 disabled"><i class="fa fa-spinner fa-spin"></i> {{ translate('serverTerm', 'importing',
                 data['lang']) }}</button>
               <button onclick="" id="restart-btn" style="max-width: 7rem;" class="btn btn-outline-primary m-1 flex-grow-1 disabled">{% raw translate('serverTerm', 'restart', data['lang']) %}</button>
               <button onclick="" id="stop-btn" style="max-width: 7rem;" class="btn btn-danger m-1 flex-grow-1 disabled">{{ translate('serverTerm', 'stop', data['lang']) }}</button>

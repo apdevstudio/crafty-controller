@@ -245,7 +245,8 @@
         "roleUsers": "Role Users: ",
         "serverAccess": "Access?",
         "serverName": "Server Name",
-        "serversDesc": "servers this role is allowed to access"
+        "serversDesc": "servers this role is allowed to access",
+        "selectManager": "Select a manager for this Role"
     },
     "serverBackups": {
         "backupAtMidnight": "Auto-backup at midnight?",
@@ -324,7 +325,10 @@
         "stopBeforeDeleting": "Please stop the server before deleting it",
         "update": "Update Executable",
         "yesDelete": "Yes, delete",
-        "yesDeleteFiles": "Yes, delete files"
+        "yesDeleteFiles": "Yes, delete files",
+        "shutdownTimeout": "Shutdown Timeout",
+        "timeoutExplain1": "How long Crafty will wait for your server to shutdown after executing the",
+        "timeoutExplain2": "command before it forces the process down."
     },
     "serverConfigHelp": {
         "desc": "Here is where you can change the configuration of your server",
@@ -464,7 +468,7 @@
     "serverTerm": {
         "commandInput": "Enter your command",
         "delay-explained": "The service/agent has recently started and is delaying the start of the minecraft server instance",
-        "downloading": "Downloading...",
+        "importing": "Importing...",
         "restart": "Restart",
         "sendCommand": "Send command",
         "start": "Start",
@@ -562,6 +566,8 @@
         "userRoles": "User Roles",
         "userRolesDesc": "Roles this user is a member of.",
         "userSettings": "User Settings",
-        "uses": "Number of uses allowed (-1==No Limit)"
+        "uses": "Number of uses allowed (-1==No Limit)",
+        "manager": "Manager",
+        "selectManager": "Select Manager for User"
     }
 }
