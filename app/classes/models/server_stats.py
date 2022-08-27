@@ -137,6 +137,14 @@ class HelperServerStats:
             )
         return server_data
 
+    def get_history_stats(self, server_id, max_age):
+        return (
+            ServerStats.select()
+            .where(ServerStats.created > max_age)
+            .where(ServerStats.server_id == server_id)
+            .execute(self.database)
+        )
+
     def insert_server_stats(self, server_stats):
         server_id = server_stats.get("id", 0)
 

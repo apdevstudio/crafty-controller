@@ -355,7 +355,8 @@
         "playerControls": "Player Management",
         "schedule": "Schedule",
         "serverDetails": "Server Details",
-        "terminal": "Terminal"
+        "terminal": "Terminal",
+        "metrics": "Metrics"
     },
     "serverFiles": {
         "clickUpload": "Click here to select your files",
@@ -475,6 +476,11 @@
         "stop": "Stop",
         "stopScroll": "Stop Auto Scrolling",
         "updating": "Updating..."
+    },
+    "serverMetrics": {
+        "resetZoom": "Reset Zoom",
+        "zoomHint1": "To zoom on the graph hold your shift key then use your scroll wheel.",
+        "zoomHint2": "Alternatively hold the shift key then click and drag the area you'd like to zoom in on."
     },
     "serverWizard": {
         "absoluteServerPath": "Absolute path to your server",
