@@ -293,7 +293,7 @@ class ServerInstance:
         else:
             user_lang = HelperUsers.get_user_lang_by_id(user_id)
 
-        if self.stats_helper.get_download_status():
+        if self.stats_helper.get_import_status():
             if user_id:
                 self.helper.websocket_helper.broadcast_user(
                     user_id,

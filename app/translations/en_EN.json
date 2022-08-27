@@ -464,7 +464,7 @@
     "serverTerm": {
         "commandInput": "Enter your command",
         "delay-explained": "The service/agent has recently started and is delaying the start of the minecraft server instance",
-        "downloading": "Downloading...",
+        "importing": "Importing...",
         "restart": "Restart",
         "sendCommand": "Send command",
         "start": "Start",
