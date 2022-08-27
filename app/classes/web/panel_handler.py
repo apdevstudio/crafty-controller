@@ -860,6 +860,18 @@ class PanelHandler(BaseHandler):
                         page_data["users"] = self.controller.users.get_all_users()
                         page_data["roles"] = self.controller.roles.get_all_roles()
                         page_data["auth-servers"][user.user_id] = super_auth_servers
+                        page_data["managed_users"] = []
+            else:
+                page_data["managed_users"] = self.controller.users.get_managed_users(
+                    exec_user["user_id"]
+                )
+                page_data["assigned_roles"] = []
+                for item in page_data["roles"]:
+                    page_data["assigned_roles"].append(item.role_id)
+
+                page_data["managed_roles"] = self.controller.users.get_managed_roles(
+                    exec_user["user_id"]
+                )
 
             template = "panel/panel_config.html"
 
@@ -885,7 +897,7 @@ class PanelHandler(BaseHandler):
                 )
                 return
 
-            page_data["roles_all"] = self.controller.roles.get_all_roles()
+            page_data["roles"] = self.controller.roles.get_all_roles()
             page_data["servers"] = []
             page_data["servers_all"] = self.controller.servers.get_all_defined_servers()
             page_data["role-servers"] = []
@@ -904,8 +916,16 @@ class PanelHandler(BaseHandler):
             )
             if superuser:
                 page_data["super-disabled"] = ""
+                page_data["users"] = self.controller.users.get_all_users()
             else:
                 page_data["super-disabled"] = "disabled"
+
+            page_data["exec_user"] = exec_user["user_id"]
+
+            page_data["manager"] = {
+                "user_id": -100,
+                "username": "None",
+            }
             for file in sorted(
                 os.listdir(os.path.join(self.helper.root_dir, "app", "translations"))
             ):
@@ -1074,9 +1094,21 @@ class PanelHandler(BaseHandler):
             page_data["user"] = self.controller.users.get_user_by_id(user_id)
             page_data["servers"] = set()
             page_data["role-servers"] = page_role_servers
-            page_data["roles_all"] = self.controller.roles.get_all_roles()
+            page_data["roles"] = self.controller.roles.get_all_roles()
+            page_data["exec_user"] = exec_user["user_id"]
             page_data["servers_all"] = self.controller.servers.get_all_defined_servers()
             page_data["superuser"] = superuser
+            if page_data["user"]["manager"] is not None:
+                page_data["manager"] = self.controller.users.get_user_by_id(
+                    page_data["user"]["manager"]
+                )
+            else:
+                page_data["manager"] = {
+                    "user_id": -100,
+                    "username": "None",
+                }
+            if exec_user["superuser"]:
+                page_data["users"] = self.controller.users.get_all_users()
             page_data[
                 "permissions_all"
             ] = self.controller.crafty_perms.list_defined_crafty_permissions()
@@ -1115,6 +1147,17 @@ class PanelHandler(BaseHandler):
                         "/panel/error?error=Unauthorized access: not a user editor"
                     )
                     return
+            if (
+                (
+                    self.controller.users.get_user_by_id(user_id)["manager"]
+                    != exec_user["user_id"]
+                )
+                and not exec_user["superuser"]
+                and str(exec_user["user_id"]) != str(user_id)
+            ):
+                self.redirect(
+                    "/panel/error?error=Unauthorized access: you cannot edit this user"
+                )
 
                 page_data["servers"] = []
                 page_data["role-servers"] = []
@@ -1212,6 +1255,11 @@ class PanelHandler(BaseHandler):
                 defined_servers = self.controller.servers.get_authorized_servers(
                     exec_user["user_id"]
                 )
+
+            page_data["role_manager"] = {
+                "user_id": -100,
+                "username": "None",
+            }
             page_servers = []
             for server in defined_servers:
                 if server not in page_servers:
@@ -1229,6 +1277,7 @@ class PanelHandler(BaseHandler):
             user_roles = self.get_user_roles()
             page_data["new_role"] = False
             role_id = self.get_argument("id", None)
+            role = self.controller.roles.get_role(role_id)
             page_data["role"] = self.controller.roles.get_role_with_servers(role_id)
             if exec_user["superuser"]:
                 defined_servers = self.controller.servers.list_defined_servers()
@@ -1252,7 +1301,21 @@ class PanelHandler(BaseHandler):
             page_data["user-roles"] = user_roles
             page_data["users"] = self.controller.users.get_all_users()
 
-            if EnumPermissionsCrafty.ROLES_CONFIG not in exec_user_crafty_permissions:
+            if page_data["role"]["manager"] is not None:
+                page_data["role_manager"] = self.controller.users.get_user_by_id(
+                    page_data["role"]["manager"]
+                )
+            else:
+                page_data["role_manager"] = {
+                    "user_id": -100,
+                    "username": "None",
+                }
+
+            if (
+                EnumPermissionsCrafty.ROLES_CONFIG not in exec_user_crafty_permissions
+                or exec_user["user_id"] != role["manager"]
+                and not exec_user["superuser"]
+            ):
                 self.redirect(
                     "/panel/error?error=Unauthorized access: not a role editor"
                 )
@@ -1266,8 +1329,15 @@ class PanelHandler(BaseHandler):
         elif page == "remove_role":
             role_id = bleach.clean(self.get_argument("id", None))
 
-            if not superuser:
-                self.redirect("/panel/error?error=Unauthorized access: not superuser")
+            if (
+                not superuser
+                and self.controller.roles.get_role(role_id)["manager"]
+                != exec_user["user_id"]
+            ):
+                self.redirect(
+                    "/panel/error?error=Unauthorized access: not superuser not"
+                    " role manager"
+                )
                 return
             if role_id is None:
                 self.redirect("/panel/error?error=Invalid Role ID")
@@ -1930,6 +2000,7 @@ class PanelHandler(BaseHandler):
                     "system user is not editable"
                 )
             user_id = bleach.clean(self.get_argument("id", None))
+            user = self.controller.users.get_user_by_id(user_id)
             username = bleach.clean(self.get_argument("username", None).lower())
             if (
                 username != self.controller.users.get_user_by_id(user_id)["username"]
@@ -1962,7 +2033,19 @@ class PanelHandler(BaseHandler):
             else:
                 superuser = 0
 
-            if not exec_user["superuser"]:
+            if exec_user["superuser"]:
+                manager = self.get_argument("manager")
+                if manager == "":
+                    manager = None
+                else:
+                    manager = int(manager)
+            else:
+                manager = user["manager"]
+
+            if (
+                not exec_user["superuser"]
+                and int(exec_user["user_id"]) != user["manager"]
+            ):
                 if username is None or username == "":
                     self.redirect("/panel/error?error=Invalid username")
                     return
@@ -2013,6 +2096,7 @@ class PanelHandler(BaseHandler):
 
                 user_data = {
                     "username": username,
+                    "manager": manager,
                     "password": password0,
                     "email": email,
                     "enabled": enabled,
@@ -2029,13 +2113,13 @@ class PanelHandler(BaseHandler):
                     user_id, user_data=user_data, user_crafty_data=user_crafty_data
                 )
 
-            self.controller.management.add_to_audit_log(
-                exec_user["user_id"],
-                f"Edited user {username} (UID:{user_id}) with roles {roles} "
-                f"and permissions {permissions_mask}",
-                server_id=0,
-                source_ip=self.get_remote_ip(),
-            )
+                self.controller.management.add_to_audit_log(
+                    exec_user["user_id"],
+                    f"Edited user {username} (UID:{user_id}) with roles {roles} "
+                    f"and permissions {permissions_mask}",
+                    server_id=0,
+                    source_ip=self.get_remote_ip(),
+                )
             self.redirect("/panel/panel_config")
 
         elif page == "edit_user_apikeys":
@@ -2158,6 +2242,15 @@ class PanelHandler(BaseHandler):
             if username is None or username == "":
                 self.redirect("/panel/error?error=Invalid username")
                 return
+
+            if exec_user["superuser"]:
+                manager = self.get_argument("manager")
+                if manager == "":
+                    manager = None
+                else:
+                    manager = int(manager)
+            else:
+                manager = int(exec_user["user_id"])
             # does this user id exist?
             if self.controller.users.get_id_by_name(username) is not None:
                 self.redirect("/panel/error?error=User exists")
@@ -2172,6 +2265,7 @@ class PanelHandler(BaseHandler):
 
             user_id = self.controller.users.add_user(
                 username,
+                manager=manager,
                 password=password0,
                 email=email,
                 enabled=enabled,
@@ -2198,14 +2292,19 @@ class PanelHandler(BaseHandler):
                 server_id=0,
                 source_ip=self.get_remote_ip(),
             )
-            self.controller.crafty_perms.add_user_creation(exec_user["user_id"])
             self.redirect("/panel/panel_config")
 
         elif page == "edit_role":
             role_id = bleach.clean(self.get_argument("id", None))
             role_name = bleach.clean(self.get_argument("role_name", None))
 
-            if EnumPermissionsCrafty.ROLES_CONFIG not in exec_user_crafty_permissions:
+            role = self.controller.roles.get_role(role_id)
+
+            if (
+                EnumPermissionsCrafty.ROLES_CONFIG not in exec_user_crafty_permissions
+                and exec_user["user_id"] != role["manager"]
+                and not exec_user["superuser"]
+            ):
                 self.redirect(
                     "/panel/error?error=Unauthorized access: not a role editor"
                 )
@@ -2221,9 +2320,18 @@ class PanelHandler(BaseHandler):
                 self.redirect("/panel/error?error=Invalid Role ID")
                 return
 
+            if exec_user["superuser"]:
+                manager = self.get_argument("manager", None)
+                if manager == "":
+                    manager = None
+            else:
+                manager = role["manager"]
+
             servers = self.get_role_servers()
 
-            self.controller.roles.update_role_advanced(role_id, role_name, servers)
+            self.controller.roles.update_role_advanced(
+                role_id, role_name, servers, manager
+            )
 
             self.controller.management.add_to_audit_log(
                 exec_user["user_id"],
@@ -2235,6 +2343,12 @@ class PanelHandler(BaseHandler):
 
         elif page == "add_role":
             role_name = bleach.clean(self.get_argument("role_name", None))
+            if exec_user["superuser"]:
+                manager = self.get_argument("manager", None)
+                if manager == "":
+                    manager = None
+            else:
+                manager = exec_user["user_id"]
 
             if EnumPermissionsCrafty.ROLES_CONFIG not in exec_user_crafty_permissions:
                 self.redirect(
@@ -2259,7 +2373,9 @@ class PanelHandler(BaseHandler):
 
             servers = self.get_role_servers()
 
-            role_id = self.controller.roles.add_role_advanced(role_name, servers)
+            role_id = self.controller.roles.add_role_advanced(
+                role_name, servers, manager
+            )
 
             self.controller.management.add_to_audit_log(
                 exec_user["user_id"],
@@ -2267,7 +2383,6 @@ class PanelHandler(BaseHandler):
                 server_id=0,
                 source_ip=self.get_remote_ip(),
             )
-            self.controller.crafty_perms.add_role_creation(exec_user["user_id"])
             self.redirect("/panel/panel_config")
 
         else:

@@ -96,6 +96,7 @@ class ApiUsersIndexHandler(BaseApiHandler):
 
         username = data["username"]
         username = str(username).lower()
+        manager = int(user["user_id"])
         password = data["password"]
         email = data.get("email", "default@example.com")
         enabled = data.get("enabled", True)
@@ -149,6 +150,7 @@ class ApiUsersIndexHandler(BaseApiHandler):
         # TODO: do this in the most efficient way
         user_id = self.controller.users.add_user(
             username,
+            manager,
             password,
             email,
             enabled,

@@ -116,7 +116,9 @@ class ApiRolesIndexHandler(BaseApiHandler):
                 400, {"status": "error", "error": "ROLE_NAME_ALREADY_EXISTS"}
             )
 
-        role_id = self.controller.roles.add_role_advanced(role_name, servers)
+        role_id = self.controller.roles.add_role_advanced(
+            role_name, servers, user["user_id"]
+        )
 
         self.controller.management.add_to_audit_log(
             user["user_id"],

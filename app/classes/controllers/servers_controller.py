@@ -51,6 +51,7 @@ class ServersController(metaclass=Singleton):
         server_log_file: str,
         server_stop: str,
         server_type: str,
+        created_by: int,
         server_port: int = 25565,
         server_host: str = "127.0.0.1",
     ) -> int:
@@ -85,6 +86,7 @@ class ServersController(metaclass=Singleton):
             server_log_file,
             server_stop,
             server_type,
+            created_by,
             server_port,
             server_host,
         )
