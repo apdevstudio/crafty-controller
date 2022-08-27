@@ -193,9 +193,9 @@
                     <a data-id="{{server['server_data']['server_id']}}" class="" title="{{
                       translate('dashboard', 'delay-explained' , data['lang'])}}">{{ translate('dashboard', 'starting',
                       data['lang']) }}</i></a>
-                    {% elif server['stats']['downloading']%}
+                    {% elif server['stats']['importing']%}
                     <a data-id="{{server['server_data']['server_id']}}" class=""><i class="fa fa-spinner fa-spin"></i>
-                      {{ translate('serverTerm', 'downloading',
+                      {{ translate('serverTerm', 'importing',
                       data['lang']) }}</a>
                     {% else %}
                     <a data-id="{{server['server_data']['server_id']}}" class="play_button" data-toggle="tooltip"
@@ -399,12 +399,12 @@
                                 data['lang']) }}</i></a>
                             </div>
                           </div>
-                          {% elif server['stats']['downloading']%}
+                          {% elif server['stats']['importing']%}
                           <div class="row">
                             <div class="col-12 px-0">
                               <a data-id="{{server['server_data']['server_id']}}" class="btn btn-link"><i
                                   class="fa fa-spinner fa-spin"></i>
-                                {{ translate('serverTerm', 'downloading', data['lang']) }}</a>
+                                {{ translate('serverTerm', 'importing', data['lang']) }}</a>
                             </div>
                           </div>
                           {% else %}

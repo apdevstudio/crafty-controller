@@ -108,19 +108,19 @@ class ServersController(metaclass=Singleton):
         return ret
 
     @staticmethod
-    def set_download(server_id):
+    def set_import(server_id):
         srv = ServersController().get_server_instance_by_id(server_id)
-        return srv.stats_helper.set_download()
+        return srv.stats_helper.set_import()
 
     @staticmethod
-    def finish_download(server_id):
+    def finish_import(server_id):
         srv = ServersController().get_server_instance_by_id(server_id)
-        return srv.stats_helper.finish_download()
+        return srv.stats_helper.finish_import()
 
     @staticmethod
-    def get_download_status(server_id):
+    def get_import_status(server_id):
         server = ServersController().get_server_instance_by_id(server_id)
-        return server.stats_helper.get_download_status()
+        return server.stats_helper.get_import_status()
 
     def remove_server(self, server_id):
         roles_list = PermissionsServers.get_roles_from_server(server_id)

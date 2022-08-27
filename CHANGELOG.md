@@ -1,11 +1,11 @@
 # Changelog
 ## --- [4.0.11] - 2022/TBD
 ### New features
-TBD
+- Add server import status indicators ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/433))
 ### Bug fixes
 TBD
 ### Tweaks
-TBD
+- Make imports threaded ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/433))
 ### Lang
 TBD
 <br><br>
