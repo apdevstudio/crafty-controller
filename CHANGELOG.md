@@ -1,4 +1,19 @@
 # Changelog
+## --- [4.0.11] - 2022/08/28
+### New features
+- Add server import status indicators ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/433))
+- Users can now be assigned as manager of other users/roles ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/434))
+- Add variable shutdown timeouts ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/435))
+- Add server metrics graph ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/436))
+### Bug fixes
+- Fix creation quota not refilling after server delete ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/434))
+- Add missing bedrock dependency (libcurl.so.4) ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/437))
+### Tweaks
+- Make imports threaded ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/433))
+- Add 'Created By' Field to servers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/434))
+- Add Zip comments to support archives ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/438))
+<br><br>
+
 ## --- [4.0.10] - 2022/08/14
 ### Bug fixes
 - Fix reaction tasks not firing ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/423))

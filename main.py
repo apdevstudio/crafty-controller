@@ -14,6 +14,7 @@ from app.classes.shared.import3 import Import3
 from app.classes.shared.console import Console
 from app.classes.shared.helpers import Helpers
 from app.classes.models.users import HelperUsers
+from app.classes.shared.import_helper import ImportHelpers
 
 console = Console()
 helper = Helpers()
@@ -135,8 +136,9 @@ if __name__ == "__main__":
     else:
         Console.debug("Existing install detected")
     file_helper = FileHelpers(helper)
+    import_helper = ImportHelpers(helper, file_helper)
     # now the tables are created, we can load the tasks_manager and server controller
-    controller = Controller(database, helper, file_helper)
+    controller = Controller(database, helper, file_helper, import_helper)
     import3 = Import3(helper, controller)
     tasks_manager = TasksManager(helper, controller)
     tasks_manager.start_webserver()

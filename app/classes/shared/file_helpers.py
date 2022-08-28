@@ -27,10 +27,15 @@ class FileHelpers:
                 FileHelpers.del_dirs(sub)
             else:
                 # Delete file if it is a file:
-                sub.unlink()
-
-        # This removes the top-level folder:
-        path.rmdir()
+                try:
+                    sub.unlink()
+                except:
+                    logger.error(f"Unable to delete file {sub}")
+        try:
+            # This removes the top-level folder:
+            path.rmdir()
+        except:
+            logger.error("Unable to remove top level")
         return True
 
     @staticmethod
@@ -65,10 +70,13 @@ class FileHelpers:
         FileHelpers.del_file(src_path)
 
     @staticmethod
-    def make_archive(path_to_destination, path_to_zip):
+    def make_archive(path_to_destination, path_to_zip, comment=""):
         # create a ZipFile object
         path_to_destination += ".zip"
         with ZipFile(path_to_destination, "w") as zip_file:
+            zip_file.comment = bytes(
+                comment, "utf-8"
+            )  # comments over 65535 bytes will be truncated
             for root, _dirs, files in os.walk(path_to_zip, topdown=True):
                 ziproot = path_to_zip
                 for file in files:
@@ -93,10 +101,13 @@ class FileHelpers:
         return True
 
     @staticmethod
-    def make_compressed_archive(path_to_destination, path_to_zip):
+    def make_compressed_archive(path_to_destination, path_to_zip, comment=""):
         # create a ZipFile object
         path_to_destination += ".zip"
         with ZipFile(path_to_destination, "w", ZIP_DEFLATED) as zip_file:
+            zip_file.comment = bytes(
+                comment, "utf-8"
+            )  # comments over 65535 bytes will be truncated
             for root, _dirs, files in os.walk(path_to_zip, topdown=True):
                 ziproot = path_to_zip
                 for file in files:
@@ -122,7 +133,7 @@ class FileHelpers:
         return True
 
     def make_compressed_backup(
-        self, path_to_destination, path_to_zip, excluded_dirs, server_id
+        self, path_to_destination, path_to_zip, excluded_dirs, server_id, comment=""
     ):
         # create a ZipFile object
         path_to_destination += ".zip"
@@ -140,6 +151,9 @@ class FileHelpers:
             results,
         )
         with ZipFile(path_to_destination, "w", ZIP_DEFLATED) as zip_file:
+            zip_file.comment = bytes(
+                comment, "utf-8"
+            )  # comments over 65535 bytes will be truncated
             for root, dirs, files in os.walk(path_to_zip, topdown=True):
                 for l_dir in dirs:
                     if str(os.path.join(root, l_dir)).replace("\\", "/") in ex_replace:
@@ -184,7 +198,9 @@ class FileHelpers:
 
         return True
 
-    def make_backup(self, path_to_destination, path_to_zip, excluded_dirs, server_id):
+    def make_backup(
+        self, path_to_destination, path_to_zip, excluded_dirs, server_id, comment=""
+    ):
         # create a ZipFile object
         path_to_destination += ".zip"
         ex_replace = [p.replace("\\", "/") for p in excluded_dirs]
@@ -201,6 +217,9 @@ class FileHelpers:
             results,
         )
         with ZipFile(path_to_destination, "w") as zip_file:
+            zip_file.comment = bytes(
+                comment, "utf-8"
+            )  # comments over 65535 bytes will be truncated
             for root, dirs, files in os.walk(path_to_zip, topdown=True):
                 for l_dir in dirs:
                     if str(os.path.join(root, l_dir)).replace("\\", "/") in ex_replace:
