@@ -3,6 +3,7 @@ import time
 import shutil
 import logging
 import threading
+import urllib
 
 from app.classes.controllers.server_perms_controller import PermissionsServers
 from app.classes.controllers.servers_controller import ServersController
@@ -214,3 +215,36 @@ class ImportHelpers:
                 os.chmod(full_jar_path, 0o2760)
         # deletes temp dir
         FileHelpers.del_dirs(temp_dir)
+
+    def download_bedrock_server(self, path, new_id):
+        download_thread = threading.Thread(
+            target=self.download_threaded_bedrock_server,
+            daemon=True,
+            args=(path, new_id),
+            name=f"{new_id}_download",
+        )
+        download_thread.start()
+
+    def download_threaded_bedrock_server(self, path, new_id):
+        # downloads zip from remote url
+        bedrock_url = Helpers.get_latest_bedrock_url()
+        if bedrock_url.lower().startswith("https"):
+            urllib.request.urlretrieve(
+                bedrock_url,
+                os.path.join(path, "bedrock_server.zip"),
+            )
+
+        unzip_path = os.path.join(path, "bedrock_server.zip")
+        unzip_path = self.helper.wtol_path(unzip_path)
+        # unzips archive that was downloaded.
+        FileHelpers.unzip_file(unzip_path)
+        # adjusts permissions for execution if os is not windows
+        if not self.helper.is_os_windows():
+            os.chmod(os.path.join(path, "bedrock_server"), 0o0744)
+
+        # we'll delete the zip we downloaded now
+        os.remove(os.path.join(path, "bedrock_server.zip"))
+        ServersController.finish_import(new_id)
+        server_users = PermissionsServers.get_server_user_list(new_id)
+        for user in server_users:
+            self.helper.websocket_helper.broadcast_user(user, "send_start_reload", {})

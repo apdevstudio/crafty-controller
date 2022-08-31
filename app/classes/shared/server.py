@@ -338,7 +338,7 @@ class ServerInstance:
                     "eula =true",
                 ]
 
-        if not e_flag:
+        if not e_flag and self.settings["type"] == "minecraft-java":
             if user_id:
                 self.helper.websocket_helper.broadcast_user(
                     user_id, "send_eula_bootbox", {"id": self.server_id}
