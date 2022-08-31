@@ -67,7 +67,7 @@
                     placeholder="{{ translate('serverConfig', 'serverPath', data['lang']) }}" required>
 
                 </div>
-
+                {% if data['server_stats']['server_type'] != "minecraft-bedrock" %}
                 <div class="form-group">
                   <label for="log_path">{{ translate('serverConfig', 'serverLogLocation', data['lang']) }} <small
                       class="text-muted ml-1"> - {{ translate('serverConfig', 'serverLogLocationDesc', data['lang'])
@@ -76,6 +76,7 @@
                     value="{{ data['server_stats']['server_id']['log_path']  }}"
                     placeholder="{{ translate('serverConfig', 'serverLogLocation', data['lang']) }}" required>
                 </div>
+                {% end %}
 
                 <div class="form-group">
                   <label for="executable">{{ translate('serverConfig', 'serverExecutable', data['lang']) }} <small
