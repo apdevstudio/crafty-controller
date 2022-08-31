@@ -1511,7 +1511,7 @@ class PanelHandler(BaseHandler):
                 execution_command = self.get_argument("execution_command", None)
                 server_ip = self.get_argument("server_ip", None)
                 server_port = self.get_argument("server_port", None)
-                executable_update_url = self.get_argument("executable_update_url", None)
+                executable_update_url = self.get_argument("executable_update_url", "")
                 show_status = int(float(self.get_argument("show_status", "0")))
             else:
                 execution_command = server_obj.execution_command
