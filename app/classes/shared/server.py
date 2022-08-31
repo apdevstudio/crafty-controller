@@ -1079,22 +1079,23 @@ class ServerInstance:
         )
         # checks if backup directory already exists
         if os.path.isdir(backup_dir):
-            backup_executable = os.path.join(backup_dir, "old_server.jar")
+            backup_executable = os.path.join(backup_dir, self.settings["executable"])
         else:
             logger.info(
                 f"Executable backup directory not found for Server: {self.name}."
                 f" Creating one."
             )
             os.mkdir(backup_dir)
-            backup_executable = os.path.join(backup_dir, "old_server.jar")
+            backup_executable = os.path.join(backup_dir, self.settings["executable"])
 
-            if os.path.isfile(backup_executable):
-                # removes old backup
-                logger.info(f"Old backup found for server: {self.name}. Removing...")
-                os.remove(backup_executable)
-                logger.info(f"Old backup removed for server: {self.name}.")
-            else:
-                logger.info(f"No old backups found for server: {self.name}")
+        if len(os.listdir(backup_dir)) > 0:
+            # removes old backup
+            logger.info(f"Old backups found for server: {self.name}. Removing...")
+            for item in os.listdir(backup_dir):
+                os.remove(os.path.join(backup_dir, item))
+            logger.info(f"Old backups removed for server: {self.name}.")
+        else:
+            logger.info(f"No old backups found for server: {self.name}")
 
         current_executable = os.path.join(
             Helpers.get_os_understandable_path(self.settings["path"]),
@@ -1113,7 +1114,6 @@ class ServerInstance:
                 self.settings["executable_update_url"], current_executable
             )
         else:
-            print("in download")
             # downloads zip from remote url
             urllib.request.urlretrieve(
                 self.settings["executable_update_url"],
@@ -1126,6 +1126,10 @@ class ServerInstance:
             # adjusts permissions for execution if os is not windows
             if not self.helper.is_os_windows():
                 os.chmod(os.path.join(self.settings["path"], "bedrock_server"), 0o0775)
+
+            # we'll delete the zip we downloaded now
+
+            os.remove(os.path.join(self.settings["path"], "bedrock_server.zip"))
             downloaded = True
 
         while self.stats_helper.get_server_stats()["updating"]:
