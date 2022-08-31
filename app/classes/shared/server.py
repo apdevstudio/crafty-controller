@@ -1116,7 +1116,7 @@ class ServerInstance:
         else:
             # downloads zip from remote url
             urllib.request.urlretrieve(
-                self.settings["executable_update_url"],
+                Helpers.get_latest_bedrock_url(),
                 os.path.join(self.settings["path"], "bedrock_server.zip"),
             )
             unzip_path = os.path.join(self.settings["path"], "bedrock_server.zip")
@@ -1128,7 +1128,6 @@ class ServerInstance:
                 os.chmod(os.path.join(self.settings["path"], "bedrock_server"), 0o0775)
 
             # we'll delete the zip we downloaded now
-
             os.remove(os.path.join(self.settings["path"], "bedrock_server.zip"))
             downloaded = True
 
