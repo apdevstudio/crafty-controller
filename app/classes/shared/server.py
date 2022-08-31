@@ -1125,7 +1125,7 @@ class ServerInstance:
             FileHelpers.unzip_file(unzip_path)
             # adjusts permissions for execution if os is not windows
             if not self.helper.is_os_windows():
-                os.chmod(os.path.join(self.settings["path"], "bedrock_server"), 0o0775)
+                os.chmod(os.path.join(self.settings["path"], "bedrock_server"), 0o0744)
 
             # we'll delete the zip we downloaded now
             os.remove(os.path.join(self.settings["path"], "bedrock_server.zip"))
