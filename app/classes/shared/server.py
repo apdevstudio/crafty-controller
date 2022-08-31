@@ -9,6 +9,7 @@ import threading
 import logging.config
 import subprocess
 import html
+import urllib.request
 
 # TZLocal is set as a hidden import on win pipeline
 from tzlocal import get_localzone
@@ -1100,13 +1101,32 @@ class ServerInstance:
             self.settings["executable"],
         )
 
-        # copies to backup dir
-        FileHelpers.copy_file(current_executable, backup_executable)
+        try:
+            # copies to backup dir
+            FileHelpers.copy_file(current_executable, backup_executable)
+        except FileNotFoundError:
+            logger.error("Could not create backup of jarfile. File not found.")
 
-        # boolean returns true for false for success
-        downloaded = Helpers.download_file(
-            self.settings["executable_update_url"], current_executable
-        )
+        if HelperServers.get_server_type_by_id(self.server_id) != "minecraft-bedrock":
+            # boolean returns true for false for success
+            downloaded = Helpers.download_file(
+                self.settings["executable_update_url"], current_executable
+            )
+        else:
+            print("in download")
+            # downloads zip from remote url
+            urllib.request.urlretrieve(
+                self.settings["executable_update_url"],
+                os.path.join(self.settings["path"], "bedrock_server.zip"),
+            )
+            unzip_path = os.path.join(self.settings["path"], "bedrock_server.zip")
+            unzip_path = self.helper.wtol_path(unzip_path)
+            # unzips archive that was downloaded.
+            FileHelpers.unzip_file(unzip_path)
+            # adjusts permissions for execution if os is not windows
+            if not self.helper.is_os_windows():
+                os.chmod(os.path.join(self.settings["path"], "bedrock_server"), 0o0775)
+            downloaded = True
 
         while self.stats_helper.get_server_stats()["updating"]:
             if downloaded and not self.is_backingup:
