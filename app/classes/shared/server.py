@@ -1115,10 +1115,13 @@ class ServerInstance:
             )
         else:
             # downloads zip from remote url
-            urllib.request.urlretrieve(
-                Helpers.get_latest_bedrock_url(),
-                os.path.join(self.settings["path"], "bedrock_server.zip"),
-            )
+            bedrock_url = Helpers.get_latest_bedrock_url()
+            if bedrock_url.lower().startswith("https"):
+                urllib.request.urlretrieve(
+                    bedrock_url,
+                    os.path.join(self.settings["path"], "bedrock_server.zip"),
+                )
+
             unzip_path = os.path.join(self.settings["path"], "bedrock_server.zip")
             unzip_path = self.helper.wtol_path(unzip_path)
             # unzips archive that was downloaded.
