@@ -121,7 +121,10 @@ def ping(ip, port):
         i = 0
         j = 0
         while True:
-            k = sock.recv(1)
+            try:
+                k = sock.recv(1)
+            except:
+                return 0
             if not k:
                 return 0
             k = k[0]
