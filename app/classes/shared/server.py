@@ -1173,6 +1173,9 @@ class ServerInstance:
                     self.helper.websocket_helper.broadcast_page(
                         "/panel/dashboard", "send_start_reload", {}
                     )
+                    self.helper.websocket_helper.broadcast_page(
+                        "/panel/server_detail", "remove_spinner", {}
+                    )
                 server_users = PermissionsServers.get_server_user_list(self.server_id)
                 for user in server_users:
                     self.helper.websocket_helper.broadcast_user(
