@@ -247,7 +247,9 @@ class ImportHelpers:
             # we'll delete the zip we downloaded now
             os.remove(os.path.join(path, "bedrock_server.zip"))
         except Exception as e:
-            logger.critical(f"Failed to download bedrock executable during server creation! \n{e}")
+            logger.critical(
+                f"Failed to download bedrock executable during server creation! \n{e}"
+            )
 
         ServersController.finish_import(new_id)
         server_users = PermissionsServers.get_server_user_list(new_id)
