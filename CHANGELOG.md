@@ -4,6 +4,7 @@
 TBD
 ### Bug fixes
 - Fix performance issues on server metrics panels (Temporarily setting to 24hr query) ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/440))
+- Fix no id on import3 servers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/442))
 ### Tweaks
 TBD
 ### Lang
