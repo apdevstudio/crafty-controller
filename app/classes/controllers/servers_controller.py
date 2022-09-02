@@ -106,11 +106,9 @@ class ServersController(metaclass=Singleton):
         return ret
 
     def get_history_stats(self, server_id):
-        max_age = self.helper.get_setting("history_max_age")
         now = datetime.datetime.now()
-        minimum_to_exist = now - datetime.timedelta(days=max_age)
         srv = ServersController().get_server_instance_by_id(server_id)
-        return srv.stats_helper.get_history_stats(server_id, minimum_to_exist)
+        return srv.stats_helper.get_history_stats(server_id)
 
     @staticmethod
     def update_unloaded_server(server_obj):
