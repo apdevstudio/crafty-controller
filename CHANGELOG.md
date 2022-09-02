@@ -1,9 +1,9 @@
 # Changelog
-## --- [4.0.12] - 2022/TBD
+## --- [4.0.12] - 2022/09/04
 ### New features
 TBD
 ### Bug fixes
-TBD
+- Fix performance issues on server metrics panels (Temporarily setting to 24hr query) ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/440))
 ### Tweaks
 TBD
 ### Lang
