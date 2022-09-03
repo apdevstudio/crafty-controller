@@ -1171,6 +1171,7 @@ class ServerInstance:
                         "notification",
                         "Executable update finished for " + self.name,
                     )
+                # sleep so first notif can completely run
                 time.sleep(3)
                 self.helper.websocket_helper.broadcast_page(
                     "/panel/server_detail",
@@ -1205,7 +1206,6 @@ class ServerInstance:
             if was_started:
                 self.start_server()
         else:
-            time.sleep(5)
             server_users = PermissionsServers.get_server_user_list(self.server_id)
             for user in server_users:
                 self.helper.websocket_helper.broadcast_user(
