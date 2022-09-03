@@ -1121,6 +1121,7 @@ class ServerInstance:
                     "notification",
                     "Backup failed for " + self.name + ". canceling update.",
                 )
+            return False
 
         # lets download the files
         if HelperServers.get_server_type_by_id(self.server_id) != "minecraft-bedrock":
