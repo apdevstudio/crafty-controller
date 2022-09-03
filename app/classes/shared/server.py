@@ -1193,7 +1193,7 @@ class ServerInstance:
                 )
                 if was_started:
                     self.start_server()
-            elif not downloaded and not self.is_backingup:
+            else:
                 time.sleep(5)
                 server_users = PermissionsServers.get_server_user_list(self.server_id)
                 for user in server_users:
