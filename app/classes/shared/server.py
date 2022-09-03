@@ -1140,8 +1140,6 @@ class ServerInstance:
                 logger.critical(
                     f"Failed to download bedrock executable for update \n{e}"
                 )
-                downloaded = True
-                return
 
         while self.stats_helper.get_server_stats()["updating"]:
             if downloaded and not self.is_backingup:
@@ -1193,7 +1191,7 @@ class ServerInstance:
                 )
                 if was_started:
                     self.start_server()
-            else:
+            elif not downloaded and not self.is_backingup:
                 time.sleep(5)
                 server_users = PermissionsServers.get_server_user_list(self.server_id)
                 for user in server_users:
