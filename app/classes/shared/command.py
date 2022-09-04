@@ -60,7 +60,7 @@ class MainPrompt(cmd.Cmd):
     def do_set_passwd(self, line):
 
         try:
-            username = line
+            username = str(line).lower()
             # If no user is found it returns None
             user_id = self.controller.users.get_id_by_name(username)
             if not username:
