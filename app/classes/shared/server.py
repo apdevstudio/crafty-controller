@@ -1199,7 +1199,7 @@ class ServerInstance:
                 self.settings["server_ip"],
             )
             if was_started:
-                self.start_server(HelperUsers.get_user_id_by_name("system"))
+                self.run_threaded_server(HelperUsers.get_user_id_by_name("system"))
         else:
             for user in server_users:
                 self.helper.websocket_helper.broadcast_user(
