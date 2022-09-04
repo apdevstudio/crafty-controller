@@ -1,11 +1,14 @@
 # Changelog
-## --- [4.0.12] - 2022/TBD
+## --- [4.0.12] - 2022/09/04
 ### New features
-TBD
+- Win Portable Updater will now be included in Windows Package ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/446))
+- Bedrock Server Creator ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/443))
 ### Bug fixes
-TBD
+- Fix performance issues on server metrics panels 'with metrics range' ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/440)) ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/448))
+- Fix no id on import3 servers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/442))
+- Fix functionality of bedrock update ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/441))
 ### Tweaks
-TBD
+- Flatten input on password resets ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/447))
 ### Lang
 TBD
 <br><br>
