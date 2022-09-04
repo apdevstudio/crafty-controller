@@ -108,6 +108,42 @@ class Helpers:
         return False
 
     @staticmethod
+    def get_latest_bedrock_url():
+        """
+        Get latest bedrock executable url \n\n
+        returns url if successful, False if not
+        """
+        url = "https://minecraft.net/en-us/download/server/bedrock/"
+        headers = {
+            "Accept-Encoding": "identity",
+            "Accept-Language": "en",
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/104.0.0.0 Safari/537.36"
+            ),
+        }
+        target_win = 'https://minecraft.azureedge.net/bin-win/[^"]*'
+        target_linux = 'https://minecraft.azureedge.net/bin-linux/[^"]*'
+
+        try:
+            # Get minecraft server download page
+            # (hopefully the don't change the structure)
+            download_page = get(url, headers=headers)
+
+            # Search for our string targets
+            win_download_url = re.search(target_win, download_page.text).group(0)
+            linux_download_url = re.search(target_linux, download_page.text).group(0)
+
+            if os.name == "nt":
+                return win_download_url
+
+            return linux_download_url
+        except Exception as e:
+            logger.error(f"Unable to resolve remote bedrock download url! \n{e}")
+        return False
+
+    @staticmethod
     def find_java_installs():
         # If we're windows return oracle java versions,
         # otherwise java vers need to be manual.

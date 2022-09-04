@@ -65,6 +65,11 @@ class FileHelpers:
         FileHelpers.del_dirs(src_path)
 
     @staticmethod
+    def move_dir_exist(src_path, dest_path):
+        FileHelpers.copy_dir(src_path, dest_path, True)
+        FileHelpers.del_dirs(src_path)
+
+    @staticmethod
     def move_file(src_path, dest_path):
         FileHelpers.copy_file(src_path, dest_path)
         FileHelpers.del_file(src_path)
@@ -290,7 +295,7 @@ class FileHelpers:
                 for item in os.listdir(full_root_path):
                     if os.path.isdir(os.path.join(full_root_path, item)):
                         try:
-                            FileHelpers.move_dir(
+                            FileHelpers.move_dir_exist(
                                 os.path.join(full_root_path, item),
                                 os.path.join(new_dir, item),
                             )
