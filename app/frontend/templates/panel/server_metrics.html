@@ -38,6 +38,16 @@
           <span class="d-block d-sm-none">
             {% include "parts/m_server_controls_list.html %}
           </span>
+          <div class="col-2">
+            <div class="form-group">
+              <label for="days">Metric Period</label>
+              <select required class="form-control form-control-lg select-css" id="days" name="days">
+                {% for value in data['options'] %}
+                <option value="{{value}}">{{value}} Day(s)</option>
+                {% end %}
+              </select>
+            </div>
+          </div>
           <button style="float: right; visibility: hidden;" class="btn btn-outline-success reset-button"
             id="reset-button"><i class="fas fa-undo"></i>&nbsp;{{ translate('serverMetrics', 'resetZoom', data['lang'])
             }}</button>
@@ -69,6 +79,7 @@
   }
 </style>
 <script type="text/javascript">
+  const serverId = new URLSearchParams(document.location.search).get('id')
   var zoomed = false;
   //line
   var ctxL = document.getElementById("lineChart").getContext('2d');
@@ -162,6 +173,10 @@
     }
   });
   $(window).ready(function () {
+    $('#days').on("change", function () {
+      let days = $('#days').find(":selected").val();
+      window.location.href = "/panel/server_detail?id=" + serverId + "&days=" + days + "&subpage=metrics"
+    });
     $('body').click(function () {
       $('.hints').popover("hide");
     });
