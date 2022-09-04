@@ -74,6 +74,7 @@ class Import3:
                     min_mem=(int(server["memory_min"]) / 1000),
                     max_mem=(int(server["memory_max"]) / 1000),
                     port=server["server_port"],
+                    user_id=HelperUsers.get_user_id_by_name("system"),
                 )
                 Console.info(
                     f"Imported server {server['server_name']}[{server['id']}] "
@@ -91,6 +92,7 @@ class Import3:
                 min_mem=(int(json_data["memory_min"]) / 1000),
                 max_mem=(int(json_data["memory_max"]) / 1000),
                 port=json_data["server_port"],
+                user_id=HelperUsers.get_user_id_by_name("system"),
             )
             Console.info(
                 f"Imported server {json_data['server_name']}[{json_data['id']}] "

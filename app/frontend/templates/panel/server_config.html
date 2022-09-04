@@ -253,14 +253,31 @@
                 <button onclick="send_command(serverId, 'update_executable');" id="update_executable"
                   style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1 disabled">{{ translate('serverConfig',
                   'update', data['lang']) }}</button>
+                {% if data['server_stats']['updating'] %}
+                <button onclick="send_command(serverId, 'update_executable');" id="update_executable"
+                  style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1 disabled">{{ translate('serverConfig',
+                  'update', data['lang']) }}&nbsp;<i id="update-spinner" class="fa fa-spinner fa-spin"></i></button>
+                {% else %}
+                <button onclick="send_command(serverId, 'update_executable');" id="update_executable"
+                  style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1 disabled">{{ translate('serverConfig',
+                  'update', data['lang']) }}&nbsp;<i style="visibility: hidden;" id="update-spinner"
+                    class="fa fa-spinner fa-spin"></i></button>
+                {% end %}
                 <a class="btn btn-sm btn-danger disabled">{{ translate('serverConfig', 'deleteServer', data['lang'])
                   }}</a><br />
                 <small>{{ translate('serverConfig', 'stopBeforeDeleting', data['lang']) }}</small>
                 {% else %}
                 {% if not data['failed'] %}
+                {% if data['server_stats']['updating'] %}
                 <button onclick="send_command(serverId, 'update_executable');" id="update_executable"
                   style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1">{{ translate('serverConfig',
-                  'update', data['lang']) }}</button>
+                  'update', data['lang']) }}&nbsp;<i id="update-spinner" class="fa fa-spinner fa-spin"></i></button>
+                {% else %}
+                <button onclick="send_command(serverId, 'update_executable');" id="update_executable"
+                  style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1">{{ translate('serverConfig',
+                  'update', data['lang']) }}&nbsp;<i style="visibility: hidden;" id="update-spinner"
+                    class="fa fa-spinner fa-spin"></i></button>
+                {% end %}
                 {% end %}
                 {% if not data['failed'] %}
                 <button onclick="deleteConfirm()" class="btn btn-sm btn-danger">{{ translate('serverConfig',
@@ -356,6 +373,9 @@
   function send_command(serverId, command) {
     //<!--  this getCookie function is in base.html-->
     var token = getCookie("_xsrf");
+    if (command == "update_executable") {
+      document.getElementById("update-spinner").style.visibility = "visible";
+    }
 
     $.ajax({
       type: "POST",
@@ -508,6 +528,12 @@
     });
   }
 
+  $(document).ready(function () {
+    webSocket.on('remove_spinner', function () {
+      document.getElementById("update-spinner").style.visibility = "hidden";
+    });
+
+  });
 </script>
 
 {% end %}
