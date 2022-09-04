@@ -138,8 +138,8 @@ class HelperServerStats:
             )
         return server_data
 
-    def get_history_stats(self, server_id):
-        max_age = datetime.datetime.now() - timedelta(days=1)
+    def get_history_stats(self, server_id, num_days):
+        max_age = datetime.datetime.now() - timedelta(days=num_days)
         return (
             ServerStats.select()
             .where(ServerStats.created > max_age)

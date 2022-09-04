@@ -756,8 +756,21 @@ class PanelHandler(BaseHandler):
                 page_data["backup_path"] = Helpers.wtol_path(server_info["backup_path"])
 
             if subpage == "metrics":
+                try:
+                    days = int(self.get_argument("days", "1"))
+                except ValueError as e:
+                    self.redirect(
+                        f"/panel/error?error=Type error: Argument must be an int {e}"
+                    )
+                page_data["options"] = [1, 2, 3]
+                if not days in page_data["options"]:
+                    page_data["options"].insert(0, days)
+                else:
+                    page_data["options"].insert(
+                        0, page_data["options"].pop(page_data["options"].index(days))
+                    )
                 page_data["history_stats"] = self.controller.servers.get_history_stats(
-                    server_id
+                    server_id, days
                 )
 
             def get_banned_players_html():

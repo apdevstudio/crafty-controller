@@ -105,10 +105,9 @@ class ServersController(metaclass=Singleton):
         server_instance.update_server_instance()
         return ret
 
-    def get_history_stats(self, server_id):
-        now = datetime.datetime.now()
+    def get_history_stats(self, server_id, days):
         srv = ServersController().get_server_instance_by_id(server_id)
-        return srv.stats_helper.get_history_stats(server_id)
+        return srv.stats_helper.get_history_stats(server_id, days)
 
     @staticmethod
     def update_unloaded_server(server_obj):
