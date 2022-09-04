@@ -9,6 +9,7 @@ import threading
 import logging.config
 import subprocess
 import html
+import urllib.request
 
 # TZLocal is set as a hidden import on win pipeline
 from tzlocal import get_localzone
@@ -1078,66 +1079,91 @@ class ServerInstance:
         )
         # checks if backup directory already exists
         if os.path.isdir(backup_dir):
-            backup_executable = os.path.join(backup_dir, "old_server.jar")
+            backup_executable = os.path.join(backup_dir, self.settings["executable"])
         else:
             logger.info(
                 f"Executable backup directory not found for Server: {self.name}."
                 f" Creating one."
             )
             os.mkdir(backup_dir)
-            backup_executable = os.path.join(backup_dir, "old_server.jar")
+            backup_executable = os.path.join(backup_dir, self.settings["executable"])
 
-            if os.path.isfile(backup_executable):
-                # removes old backup
-                logger.info(f"Old backup found for server: {self.name}. Removing...")
-                os.remove(backup_executable)
-                logger.info(f"Old backup removed for server: {self.name}.")
-            else:
-                logger.info(f"No old backups found for server: {self.name}")
+        if len(os.listdir(backup_dir)) > 0:
+            # removes old backup
+            logger.info(f"Old backups found for server: {self.name}. Removing...")
+            for item in os.listdir(backup_dir):
+                os.remove(os.path.join(backup_dir, item))
+            logger.info(f"Old backups removed for server: {self.name}.")
+        else:
+            logger.info(f"No old backups found for server: {self.name}")
 
         current_executable = os.path.join(
             Helpers.get_os_understandable_path(self.settings["path"]),
             self.settings["executable"],
         )
 
-        # copies to backup dir
-        FileHelpers.copy_file(current_executable, backup_executable)
+        try:
+            # copies to backup dir
+            FileHelpers.copy_file(current_executable, backup_executable)
+        except FileNotFoundError:
+            logger.error("Could not create backup of jarfile. File not found.")
 
-        # boolean returns true for false for success
-        downloaded = Helpers.download_file(
-            self.settings["executable_update_url"], current_executable
-        )
+        # wait for backup
+        while self.is_backingup:
+            time.sleep(10)
 
-        while self.stats_helper.get_server_stats()["updating"]:
-            if downloaded and not self.is_backingup:
-                logger.info("Executable updated successfully. Starting Server")
+        # check if backup was successful
+        if self.last_backup_failed:
+            server_users = PermissionsServers.get_server_user_list(self.server_id)
+            for user in server_users:
+                self.helper.websocket_helper.broadcast_user(
+                    user,
+                    "notification",
+                    "Backup failed for " + self.name + ". canceling update.",
+                )
+            return False
 
-                self.stats_helper.set_update(False)
-                if len(self.helper.websocket_helper.clients) > 0:
-                    # There are clients
-                    self.check_update()
-                    server_users = PermissionsServers.get_server_user_list(
-                        self.server_id
+        # lets download the files
+        if HelperServers.get_server_type_by_id(self.server_id) != "minecraft-bedrock":
+            # boolean returns true for false for success
+            downloaded = Helpers.download_file(
+                self.settings["executable_update_url"], current_executable
+            )
+        else:
+            # downloads zip from remote url
+            try:
+                bedrock_url = Helpers.get_latest_bedrock_url()
+                if bedrock_url.lower().startswith("https"):
+                    urllib.request.urlretrieve(
+                        bedrock_url,
+                        os.path.join(self.settings["path"], "bedrock_server.zip"),
                     )
-                    for user in server_users:
-                        self.helper.websocket_helper.broadcast_user(
-                            user,
-                            "notification",
-                            "Executable update finished for " + self.name,
-                        )
-                    time.sleep(3)
-                    self.helper.websocket_helper.broadcast_page(
-                        "/panel/server_detail",
-                        "update_button_status",
-                        {
-                            "isUpdating": self.check_update(),
-                            "server_id": self.server_id,
-                            "wasRunning": was_started,
-                        },
+
+                unzip_path = os.path.join(self.settings["path"], "bedrock_server.zip")
+                unzip_path = self.helper.wtol_path(unzip_path)
+                # unzips archive that was downloaded.
+                FileHelpers.unzip_file(unzip_path)
+                # adjusts permissions for execution if os is not windows
+                if not self.helper.is_os_windows():
+                    os.chmod(
+                        os.path.join(self.settings["path"], "bedrock_server"), 0o0744
                     )
-                    self.helper.websocket_helper.broadcast_page(
-                        "/panel/dashboard", "send_start_reload", {}
-                    )
+
+                # we'll delete the zip we downloaded now
+                os.remove(os.path.join(self.settings["path"], "bedrock_server.zip"))
+                downloaded = True
+            except Exception as e:
+                logger.critical(
+                    f"Failed to download bedrock executable for update \n{e}"
+                )
+
+        if downloaded:
+            logger.info("Executable updated successfully. Starting Server")
+
+            self.stats_helper.set_update(False)
+            if len(self.helper.websocket_helper.clients) > 0:
+                # There are clients
+                self.check_update()
                 server_users = PermissionsServers.get_server_user_list(self.server_id)
                 for user in server_users:
                     self.helper.websocket_helper.broadcast_user(
@@ -1145,29 +1171,52 @@ class ServerInstance:
                         "notification",
                         "Executable update finished for " + self.name,
                     )
-
-                self.management_helper.add_to_audit_log_raw(
-                    "Alert",
-                    "-1",
-                    self.server_id,
-                    "Executable update finished for " + self.name,
-                    self.settings["server_ip"],
+                # sleep so first notif can completely run
+                time.sleep(3)
+                self.helper.websocket_helper.broadcast_page(
+                    "/panel/server_detail",
+                    "update_button_status",
+                    {
+                        "isUpdating": self.check_update(),
+                        "server_id": self.server_id,
+                        "wasRunning": was_started,
+                    },
                 )
-                if was_started:
-                    self.start_server()
-            elif not downloaded and not self.is_backingup:
-                time.sleep(5)
-                server_users = PermissionsServers.get_server_user_list(self.server_id)
-                for user in server_users:
-                    self.helper.websocket_helper.broadcast_user(
-                        user,
-                        "notification",
-                        "Executable update failed for "
-                        + self.name
-                        + ". Check log file for details.",
-                    )
-                logger.error("Executable download failed.")
-                self.stats_helper.set_update(False)
+                self.helper.websocket_helper.broadcast_page(
+                    "/panel/dashboard", "send_start_reload", {}
+                )
+                self.helper.websocket_helper.broadcast_page(
+                    "/panel/server_detail", "remove_spinner", {}
+                )
+            server_users = PermissionsServers.get_server_user_list(self.server_id)
+            for user in server_users:
+                self.helper.websocket_helper.broadcast_user(
+                    user,
+                    "notification",
+                    "Executable update finished for " + self.name,
+                )
+
+            self.management_helper.add_to_audit_log_raw(
+                "Alert",
+                "-1",
+                self.server_id,
+                "Executable update finished for " + self.name,
+                self.settings["server_ip"],
+            )
+            if was_started:
+                self.start_server()
+        else:
+            server_users = PermissionsServers.get_server_user_list(self.server_id)
+            for user in server_users:
+                self.helper.websocket_helper.broadcast_user(
+                    user,
+                    "notification",
+                    "Executable update failed for "
+                    + self.name
+                    + ". Check log file for details.",
+                )
+            logger.error("Executable download failed.")
+            self.stats_helper.set_update(False)
 
     # **********************************************************************************
     #                               Minecraft Servers Statistics

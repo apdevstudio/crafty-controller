@@ -1500,17 +1500,18 @@ class PanelHandler(BaseHandler):
                 if Helpers.is_os_windows():
                     server_path.replace(" ", "^ ")
                     server_path = Helpers.wtol_path(server_path)
-                log_path = self.get_argument("log_path", None)
-                if Helpers.is_os_windows():
-                    log_path.replace(" ", "^ ")
-                    log_path = Helpers.wtol_path(log_path)
-                if not self.helper.validate_traversal(server_obj.path, log_path):
-                    log_path = ""
+                log_path = self.get_argument("log_path", "")
+                if log_path:
+                    if Helpers.is_os_windows():
+                        log_path.replace(" ", "^ ")
+                        log_path = Helpers.wtol_path(log_path)
+                    if not self.helper.validate_traversal(server_obj.path, log_path):
+                        log_path = ""
                 executable = self.get_argument("executable", None)
                 execution_command = self.get_argument("execution_command", None)
                 server_ip = self.get_argument("server_ip", None)
                 server_port = self.get_argument("server_port", None)
-                executable_update_url = self.get_argument("executable_update_url", None)
+                executable_update_url = self.get_argument("executable_update_url", "")
                 show_status = int(float(self.get_argument("show_status", "0")))
             else:
                 execution_command = server_obj.execution_command
