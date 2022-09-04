@@ -8,7 +8,7 @@
 - Fix no id on import3 servers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/442))
 - Fix functionality of bedrock update ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/441))
 ### Tweaks
-TBD
+- Flatten input on password resets ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/447))
 ### Lang
 TBD
 <br><br>
