@@ -250,18 +250,16 @@
               </div>
               <div class="text-center">
                 {% if data['server_stats']['running'] %}
-                <button onclick="send_command(serverId, 'update_executable');" id="update_executable"
-                  style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1 disabled">{{ translate('serverConfig',
-                  'update', data['lang']) }}</button>
                 {% if data['server_stats']['updating'] %}
-                <button onclick="send_command(serverId, 'update_executable');" id="update_executable"
-                  style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1 disabled">{{ translate('serverConfig',
-                  'update', data['lang']) }}&nbsp;<i id="update-spinner" class="fa fa-spinner fa-spin"></i></button>
+                <i id="update-spinner" class="fa fa-spinner fa-spin"></i>&nbsp;<button
+                  onclick="send_command(serverId, 'update_executable');" id="update_executable" style="max-width: 7rem;"
+                  class="btn btn-warning m-1 flex-grow-1 disabled">{{ translate('serverConfig',
+                  'update', data['lang']) }}</button>
                 {% else %}
-                <button onclick="send_command(serverId, 'update_executable');" id="update_executable"
-                  style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1 disabled">{{ translate('serverConfig',
-                  'update', data['lang']) }}&nbsp;<i style="visibility: hidden;" id="update-spinner"
-                    class="fa fa-spinner fa-spin"></i></button>
+                <i style="visibility: hidden;" id="update-spinner" class="fa fa-spinner fa-spin"></i>&nbsp;<button
+                  onclick="send_command(serverId, 'update_executable');" id="update_executable" style="max-width: 7rem;"
+                  class="btn btn-warning m-1 flex-grow-1 disabled">{{ translate('serverConfig',
+                  'update', data['lang']) }}</button>
                 {% end %}
                 <a class="btn btn-sm btn-danger disabled">{{ translate('serverConfig', 'deleteServer', data['lang'])
                   }}</a><br />
@@ -269,14 +267,15 @@
                 {% else %}
                 {% if not data['failed'] %}
                 {% if data['server_stats']['updating'] %}
-                <button onclick="send_command(serverId, 'update_executable');" id="update_executable"
-                  style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1">{{ translate('serverConfig',
-                  'update', data['lang']) }}&nbsp;<i id="update-spinner" class="fa fa-spinner fa-spin"></i></button>
+                <i id="update-spinner" class="fa fa-spinner fa-spin"></i>&nbsp;<button
+                  onclick="send_command(serverId, 'update_executable');" id="update_executable" style="max-width: 7rem;"
+                  class="btn btn-warning m-1 flex-grow-1">{{ translate('serverConfig',
+                  'update', data['lang']) }}</button>
                 {% else %}
-                <button onclick="send_command(serverId, 'update_executable');" id="update_executable"
-                  style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1">{{ translate('serverConfig',
-                  'update', data['lang']) }}&nbsp;<i style="visibility: hidden;" id="update-spinner"
-                    class="fa fa-spinner fa-spin"></i></button>
+                <i style="visibility: hidden;" id="update-spinner" class="fa fa-spinner fa-spin"></i>&nbsp;<button
+                  onclick="send_command(serverId, 'update_executable');" id="update_executable" style="max-width: 7rem;"
+                  class="btn btn-warning m-1 flex-grow-1">{{ translate('serverConfig',
+                  'update', data['lang']) }}</button>
                 {% end %}
                 {% end %}
                 {% if not data['failed'] %}
@@ -384,16 +383,11 @@
       success: function (data) {
         console.log("got response:");
         console.log(data);
-        setTimeout(function () { location.reload(); }, 10000);
+        if (command != "update_executable") {
+          setTimeout(function () { location.reload(); }, 10000);
+        }
       }
     });
-    if (command != "delete_server" && command != "delete_server_files") {
-      bootbox.alert({
-        backdrop: true,
-        title: '{% raw translate("serverConfig", "sendingRequest", data['lang']) %}',
-        message: '<div align="center"><i class="fas fa-spin fa-spinner"></i> &nbsp; {% raw translate("serverConfig", "bePatientUpdate", data['lang']) %} </div>'
-    });
-    }
   }
 
   function deleteServer() {
