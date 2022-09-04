@@ -1042,6 +1042,7 @@ class ServerInstance:
         return self.stats_helper.get_server_stats()["updating"]
 
     def a_jar_update(self):
+        server_users = PermissionsServers.get_server_user_list(self.server_id)
         was_started = "-1"
         self.backup_server()
         # checks if server is running. Calls shutdown if it is running.
@@ -1060,8 +1061,10 @@ class ServerInstance:
             message = (
                 '<a data-id="' + str(self.server_id) + '" class=""> UPDATING...</i></a>'
             )
-            self.helper.websocket_helper.broadcast_page(
+        for user in server_users:
+            self.helper.websocket_helper.broadcast_user_page(
                 "/panel/server_detail",
+                user,
                 "update_button_status",
                 {
                     "isUpdating": self.check_update(),
@@ -1069,9 +1072,6 @@ class ServerInstance:
                     "wasRunning": was_started,
                     "string": message,
                 },
-            )
-            self.helper.websocket_helper.broadcast_page(
-                "/panel/dashboard", "send_start_reload", {}
             )
         backup_dir = os.path.join(
             Helpers.get_os_understandable_path(self.settings["path"]),
@@ -1114,7 +1114,6 @@ class ServerInstance:
 
         # check if backup was successful
         if self.last_backup_failed:
-            server_users = PermissionsServers.get_server_user_list(self.server_id)
             for user in server_users:
                 self.helper.websocket_helper.broadcast_user(
                     user,
@@ -1164,7 +1163,6 @@ class ServerInstance:
             if len(self.helper.websocket_helper.clients) > 0:
                 # There are clients
                 self.check_update()
-                server_users = PermissionsServers.get_server_user_list(self.server_id)
                 for user in server_users:
                     self.helper.websocket_helper.broadcast_user(
                         user,
@@ -1173,8 +1171,10 @@ class ServerInstance:
                     )
                 # sleep so first notif can completely run
                 time.sleep(3)
-                self.helper.websocket_helper.broadcast_page(
+            for user in server_users:
+                self.helper.websocket_helper.broadcast_user_page(
                     "/panel/server_detail",
+                    user,
                     "update_button_status",
                     {
                         "isUpdating": self.check_update(),
@@ -1182,14 +1182,9 @@ class ServerInstance:
                         "wasRunning": was_started,
                     },
                 )
-                self.helper.websocket_helper.broadcast_page(
-                    "/panel/dashboard", "send_start_reload", {}
+                self.helper.websocket_helper.broadcast_user_page(
+                    user, "/panel/dashboard", "send_start_reload", {}
                 )
-                self.helper.websocket_helper.broadcast_page(
-                    "/panel/server_detail", "remove_spinner", {}
-                )
-            server_users = PermissionsServers.get_server_user_list(self.server_id)
-            for user in server_users:
                 self.helper.websocket_helper.broadcast_user(
                     user,
                     "notification",
@@ -1204,9 +1199,8 @@ class ServerInstance:
                 self.settings["server_ip"],
             )
             if was_started:
-                self.start_server()
+                self.start_server(HelperUsers.get_user_id_by_name("system"))
         else:
-            server_users = PermissionsServers.get_server_user_list(self.server_id)
             for user in server_users:
                 self.helper.websocket_helper.broadcast_user(
                     user,
@@ -1217,6 +1211,8 @@ class ServerInstance:
                 )
             logger.error("Executable download failed.")
             self.stats_helper.set_update(False)
+        for user in server_users:
+            self.helper.websocket_helper.broadcast_user(user, "remove_spinner", {})
 
     # **********************************************************************************
     #                               Minecraft Servers Statistics
