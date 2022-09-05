@@ -1,6 +1,7 @@
 import os
 import logging
 import datetime
+from datetime import timedelta
 
 from app.classes.models.servers import Servers, HelperServers
 from app.classes.shared.helpers import Helpers
@@ -137,7 +138,8 @@ class HelperServerStats:
             )
         return server_data
 
-    def get_history_stats(self, server_id, max_age):
+    def get_history_stats(self, server_id, num_days):
+        max_age = datetime.datetime.now() - timedelta(days=num_days)
         return (
             ServerStats.select()
             .where(ServerStats.created > max_age)

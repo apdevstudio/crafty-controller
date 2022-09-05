@@ -67,7 +67,7 @@
                     placeholder="{{ translate('serverConfig', 'serverPath', data['lang']) }}" required>
 
                 </div>
-
+                {% if data['server_stats']['server_type'] != "minecraft-bedrock" %}
                 <div class="form-group">
                   <label for="log_path">{{ translate('serverConfig', 'serverLogLocation', data['lang']) }} <small
                       class="text-muted ml-1"> - {{ translate('serverConfig', 'serverLogLocationDesc', data['lang'])
@@ -76,6 +76,7 @@
                     value="{{ data['server_stats']['server_id']['log_path']  }}"
                     placeholder="{{ translate('serverConfig', 'serverLogLocation', data['lang']) }}" required>
                 </div>
+                {% end %}
 
                 <div class="form-group">
                   <label for="executable">{{ translate('serverConfig', 'serverExecutable', data['lang']) }} <small
@@ -138,6 +139,7 @@
                   </div>
 
                   {% if data['super_user'] %}
+                  {% if data['server_stats']['server_type'] != "minecraft-bedrock" %}
                   <div class="form-group">
                     <label for="executable_update_url">{{ translate('serverConfig', 'exeUpdateURL', data['lang']) }}
                       <small class="text-muted ml-1"> - {{ translate('serverConfig', 'exeUpdateURLDesc', data['lang'])
@@ -146,6 +148,7 @@
                       value="{{ data['server_stats']['server_id']['executable_update_url']  }}"
                       placeholder="{{ translate('serverConfig', 'exeUpdateURL', data['lang']) }}">
                   </div>
+                  {% end %}
 
                   <div class="form-group">
                     <label for="server_ip">{{ translate('serverConfig', 'serverIP', data['lang']) }} <small
@@ -247,17 +250,33 @@
               </div>
               <div class="text-center">
                 {% if data['server_stats']['running'] %}
-                <button onclick="send_command(serverId, 'update_executable');" id="update_executable"
-                  style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1 disabled">{{ translate('serverConfig',
+                {% if data['server_stats']['updating'] %}
+                <i id="update-spinner" class="fa fa-spinner fa-spin"></i>&nbsp;<button
+                  onclick="send_command(serverId, 'update_executable');" id="update_executable" style="max-width: 7rem;"
+                  class="btn btn-warning m-1 flex-grow-1 disabled">{{ translate('serverConfig',
                   'update', data['lang']) }}</button>
+                {% else %}
+                <i style="visibility: hidden;" id="update-spinner" class="fa fa-spinner fa-spin"></i>&nbsp;<button
+                  onclick="send_command(serverId, 'update_executable');" id="update_executable" style="max-width: 7rem;"
+                  class="btn btn-warning m-1 flex-grow-1 disabled">{{ translate('serverConfig',
+                  'update', data['lang']) }}</button>
+                {% end %}
                 <a class="btn btn-sm btn-danger disabled">{{ translate('serverConfig', 'deleteServer', data['lang'])
                   }}</a><br />
                 <small>{{ translate('serverConfig', 'stopBeforeDeleting', data['lang']) }}</small>
                 {% else %}
                 {% if not data['failed'] %}
-                <button onclick="send_command(serverId, 'update_executable');" id="update_executable"
-                  style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1">{{ translate('serverConfig',
+                {% if data['server_stats']['updating'] %}
+                <i id="update-spinner" class="fa fa-spinner fa-spin"></i>&nbsp;<button
+                  onclick="send_command(serverId, 'update_executable');" id="update_executable" style="max-width: 7rem;"
+                  class="btn btn-warning m-1 flex-grow-1">{{ translate('serverConfig',
                   'update', data['lang']) }}</button>
+                {% else %}
+                <i style="visibility: hidden;" id="update-spinner" class="fa fa-spinner fa-spin"></i>&nbsp;<button
+                  onclick="send_command(serverId, 'update_executable');" id="update_executable" style="max-width: 7rem;"
+                  class="btn btn-warning m-1 flex-grow-1">{{ translate('serverConfig',
+                  'update', data['lang']) }}</button>
+                {% end %}
                 {% end %}
                 {% if not data['failed'] %}
                 <button onclick="deleteConfirm()" class="btn btn-sm btn-danger">{{ translate('serverConfig',
@@ -353,6 +372,9 @@
   function send_command(serverId, command) {
     //<!--  this getCookie function is in base.html-->
     var token = getCookie("_xsrf");
+    if (command == "update_executable") {
+      document.getElementById("update-spinner").style.visibility = "visible";
+    }
 
     $.ajax({
       type: "POST",
@@ -361,16 +383,11 @@
       success: function (data) {
         console.log("got response:");
         console.log(data);
-        setTimeout(function () { location.reload(); }, 10000);
+        if (command != "update_executable") {
+          setTimeout(function () { location.reload(); }, 10000);
+        }
       }
     });
-    if (command != "delete_server" && command != "delete_server_files") {
-      bootbox.alert({
-        backdrop: true,
-        title: '{% raw translate("serverConfig", "sendingRequest", data['lang']) %}',
-        message: '<div align="center"><i class="fas fa-spin fa-spinner"></i> &nbsp; {% raw translate("serverConfig", "bePatientUpdate", data['lang']) %} </div>'
-    });
-    }
   }
 
   function deleteServer() {
@@ -505,6 +522,12 @@
     });
   }
 
+  $(document).ready(function () {
+    webSocket.on('remove_spinner', function () {
+      document.getElementById("update-spinner").style.visibility = "hidden";
+    });
+
+  });
 </script>
 
 {% end %}

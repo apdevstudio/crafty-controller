@@ -697,6 +697,49 @@ class Controller:
         )
         return new_id
 
+    def create_bedrock_server(self, server_name, user_id):
+        server_id = Helpers.create_uuid()
+        new_server_dir = os.path.join(self.helper.servers_dir, server_id)
+        backup_path = os.path.join(self.helper.backup_path, server_id)
+        server_exe = "bedrock_server"
+        if Helpers.is_os_windows():
+            # if this is windows we will override the linux bedrock server name.
+            server_exe = "bedrock_server.exe"
+            new_server_dir = Helpers.wtol_path(new_server_dir)
+            backup_path = Helpers.wtol_path(backup_path)
+            new_server_dir.replace(" ", "^ ")
+            backup_path.replace(" ", "^ ")
+
+        Helpers.ensure_dir_exists(new_server_dir)
+        Helpers.ensure_dir_exists(backup_path)
+
+        full_jar_path = os.path.join(new_server_dir, server_exe)
+
+        if Helpers.is_os_windows():
+            server_command = f'"{full_jar_path}"'
+        else:
+            server_command = f"./{server_exe}"
+        logger.debug("command: " + server_command)
+        server_log_file = ""
+        server_stop = "stop"
+
+        new_id = self.register_server(
+            server_name,
+            server_id,
+            new_server_dir,
+            backup_path,
+            server_command,
+            server_exe,
+            server_log_file,
+            server_stop,
+            "19132",
+            user_id,
+            server_type="minecraft-bedrock",
+        )
+        ServersController.set_import(new_id)
+        self.import_helper.download_bedrock_server(new_server_dir, new_id)
+        return new_id
+
     def import_bedrock_zip_server(
         self,
         server_name: str,

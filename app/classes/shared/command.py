@@ -60,7 +60,7 @@ class MainPrompt(cmd.Cmd):
     def do_set_passwd(self, line):
 
         try:
-            username = line
+            username = str(line).lower()
             # If no user is found it returns None
             user_id = self.controller.users.get_id_by_name(username)
             if not username:
@@ -74,20 +74,23 @@ class MainPrompt(cmd.Cmd):
         except:
             Console.error(f"User: {line} Not Found")
             return False
+        # get new password from user
         new_pass = getpass.getpass(prompt=f"NEW password for: {username} > ")
+        # check to make sure it fits our requirements.
+        if len(new_pass) > 512:
+            Console.warning("Passwords must be greater than 6char long and under 512")
+            return False
+        if len(new_pass) < 6:
+            Console.warning("Passwords must be greater than 6char long and under 512")
+            return False
+        # grab repeated password input
         new_pass_conf = getpass.getpass(prompt="Re-enter your password: > ")
 
+        # check to make sure they match
         if new_pass != new_pass_conf:
             Console.error("Passwords do not match. Please try again.")
             return False
 
-        if len(new_pass) > 512:
-            Console.warning("Passwords must be greater than 6char long and under 512")
-            return False
-
-        if len(new_pass) < 6:
-            Console.warning("Passwords must be greater than 6char long and under 512")
-            return False
         self.controller.users.update_user(user_id, {"password": new_pass})
 
     @staticmethod

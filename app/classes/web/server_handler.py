@@ -97,6 +97,7 @@ class ServerHandler(BaseHandler):
             "version_data": self.helper.get_version_string(),
             "user_data": exec_user,
             "user_role": exec_user_role,
+            "online": Helpers.check_internet(),
             "roles": list_roles,
             "super_user": exec_user["superuser"],
             "user_crafty_permissions": exec_user_crafty_permissions,
@@ -173,7 +174,6 @@ class ServerHandler(BaseHandler):
                 )
                 return
 
-            page_data["online"] = Helpers.check_internet()
             page_data["server_types"] = self.controller.server_jars.get_serverjar_data()
             page_data["js_server_types"] = json.dumps(
                 self.controller.server_jars.get_serverjar_data()
@@ -548,25 +548,14 @@ class ServerHandler(BaseHandler):
                     self.get_remote_ip(),
                 )
             else:
-                if len(server_parts) != 2:
-                    self.redirect("/panel/error?error=Invalid server data")
-                    return
-                server_type, server_version = server_parts
-                # TODO: add server type check here and call the correct server
-                # add functions if not a jar
-                new_server_id = self.controller.create_jar_server(
-                    server_type,
-                    server_version,
+
+                new_server_id = self.controller.create_bedrock_server(
                     server_name,
-                    min_mem,
-                    max_mem,
-                    port,
                     exec_user["user_id"],
                 )
                 self.controller.management.add_to_audit_log(
                     exec_user["user_id"],
-                    f"created a {server_version} {str(server_type).capitalize()} "
-                    f'server named "{server_name}"',
+                    "created a Bedrock " f'server named "{server_name}"',
                     # Example: Admin created a 1.16.5 Bukkit server named "survival"
                     new_server_id,
                     self.get_remote_ip(),

@@ -30,6 +30,11 @@ win-dev-build:
       --collect-all tzdata
       --collect-all pytz
       --collect-all six
+    - |
+      echo "Retrieving 'latest' updater from crafty-controller/crafty-4-windows-updater"
+      $src = 'https://gitlab.com/crafty-controller/crafty-4-windows-updater/-/jobs/artifacts/dev/raw/crafty_updater.exe?job=win-dev-build'
+      $dest = 'crafty_updater.exe'
+      Invoke-WebRequest -Uri $src -OutFile $dest
 
   # Download latest:
   # | https://gitlab.com/crafty-controller/crafty-4/-/jobs/artifacts/dev/download?job=win-dev-build
@@ -38,6 +43,7 @@ win-dev-build:
     paths:
       - app\
       - .\crafty.exe
+      - .\crafty_updater.exe
     exclude:
       - app\classes\**\*
 
@@ -72,6 +78,11 @@ win-prod-build:
       --collect-all tzdata
       --collect-all pytz
       --collect-all six
+    - |
+      echo "Retrieving 'latest' updater from crafty-controller/crafty-4-windows-updater"
+      $src = 'https://gitlab.com/crafty-controller/crafty-4-windows-updater/-/jobs/artifacts/master/raw/crafty_updater.exe?job=win-prod-build'
+      $dest = 'crafty_updater.exe'
+      Invoke-WebRequest -Uri $src -OutFile $dest
   after_script:
     - Add-Content -Path job.env -Value "JOB_ID=$CI_JOB_ID"
 
@@ -82,6 +93,7 @@ win-prod-build:
     paths:
       - app\
       - .\crafty.exe
+      - .\crafty_updater.exe
     expire_in: never
     exclude:
       - app\classes\**\*
