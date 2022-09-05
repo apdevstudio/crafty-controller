@@ -1,4 +1,15 @@
 # Changelog
+## --- [4.0.13] - 2022/TBD
+### New features
+TBD
+### Bug fixes
+TBD
+### Tweaks
+TBD
+### Lang
+TBD
+<br><br>
+
 ## --- [4.0.12] - 2022/09/04
 ### New features
 - Win Portable Updater will now be included in Windows Package ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/446))
