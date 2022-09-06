@@ -549,6 +549,7 @@ class PanelHandler(BaseHandler):
                         "log_path": server_temp_obj["log_path"],
                         "executable": server_temp_obj["executable"],
                         "execution_command": server_temp_obj["execution_command"],
+                        "shutdown_timeout": server_obj["shutdown_timeout"],
                         "stop_command": server_temp_obj["stop_command"],
                         "executable_update_url": server_temp_obj[
                             "executable_update_url"
