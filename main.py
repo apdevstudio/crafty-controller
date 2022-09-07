@@ -169,8 +169,9 @@ if __name__ == "__main__":
         tasks_manager.start_scheduler()
 
         # refresh our cache and schedule for every 12 hoursour cache refresh
-        # for serverjars.com
+        # for serverjars.com & SteamApps
         tasks_manager.serverjar_cache_refresher()
+        tasks_manager.steamapps_cache_refresher()
 
     tasks_starter_thread = Thread(target=tasks_starter, name="tasks_starter")
 

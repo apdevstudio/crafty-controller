@@ -31,6 +31,7 @@ from app.classes.shared.helpers import Helpers
 from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.import_helper import ImportHelpers
 from app.classes.minecraft.serverjars import ServerJars
+from app.classes.steamcmd.serverapps import SteamApps
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ class Controller:
         self.file_helper: FileHelpers = file_helper
         self.import_helper: ImportHelpers = import_helper
         self.server_jars: ServerJars = ServerJars(helper)
+        self.steam_apps: SteamApps = SteamApps(helper)
         self.users_helper: HelperUsers = HelperUsers(database, self.helper)
         self.roles_helper: HelperRoles = HelperRoles(database)
         self.servers_helper: HelperServers = HelperServers(database)
