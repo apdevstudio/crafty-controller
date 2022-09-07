@@ -196,7 +196,7 @@
   function new_line_handler(data) {
     $('#virt_console').append(data.line)
     const elem = document.getElementById('virt_console');
-    if (!$("#stop_scroll").is(':checked') && chkScroll) {
+    if (!scrolled) {
       scrollConsole()
     }
   }
@@ -301,10 +301,10 @@
 
     if (Math.round(elem[0].scrollHeight - elem.scrollTop()) <= elem.outerHeight()) {
       document.getElementById("to-bottom").style.visibility = "hidden";
-      return true;
+      scrolled = false;
     }else{
       document.getElementById("to-bottom").style.visibility = "visible";
-      return false;
+      scrolled = true;
     }
   }
 
@@ -316,6 +316,7 @@
 }
 
   $(document).ready(() => {
+    var scrolled;
     $('#virt_console').on('scroll', chkScroll);
     $('#to-bottom').on('click', scrollToBottom)
   });
