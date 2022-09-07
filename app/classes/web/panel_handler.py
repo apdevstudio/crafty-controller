@@ -1727,7 +1727,7 @@ class PanelHandler(BaseHandler):
                 if interval_type == "days":
                     sch_time = bleach.clean(self.get_argument("time", None))
                 if action == "command":
-                    command = bleach.clean(self.get_argument("command", None))
+                    command = self.get_argument("command", None)
                 elif action == "start":
                     command = "start_server"
                 elif action == "stop":
@@ -1743,7 +1743,7 @@ class PanelHandler(BaseHandler):
                 delay = bleach.clean(self.get_argument("delay", None))
                 parent = bleach.clean(self.get_argument("parent", None))
                 if action == "command":
-                    command = bleach.clean(self.get_argument("command", None))
+                    command = self.get_argument("command", None)
                 elif action == "start":
                     command = "start_server"
                 elif action == "stop":
@@ -1763,7 +1763,7 @@ class PanelHandler(BaseHandler):
                     return
                 action = bleach.clean(self.get_argument("action", None))
                 if action == "command":
-                    command = bleach.clean(self.get_argument("command", None))
+                    command = self.get_argument("command", None)
                 elif action == "start":
                     command = "start_server"
                 elif action == "stop":
@@ -1889,7 +1889,7 @@ class PanelHandler(BaseHandler):
                 if interval_type == "days":
                     sch_time = bleach.clean(self.get_argument("time", None))
                 if action == "command":
-                    command = bleach.clean(self.get_argument("command", None))
+                    command = self.get_argument("command", None)
                 elif action == "start":
                     command = "start_server"
                 elif action == "stop":
@@ -1904,7 +1904,7 @@ class PanelHandler(BaseHandler):
                 delay = bleach.clean(self.get_argument("delay", None))
                 parent = bleach.clean(self.get_argument("parent", None))
                 if action == "command":
-                    command = bleach.clean(self.get_argument("command", None))
+                    command = self.get_argument("command", None)
                 elif action == "start":
                     command = "start_server"
                 elif action == "stop":
@@ -1924,7 +1924,7 @@ class PanelHandler(BaseHandler):
                     return
                 action = bleach.clean(self.get_argument("action", None))
                 if action == "command":
-                    command = bleach.clean(self.get_argument("command", None))
+                    command = self.get_argument("command", None)
                 elif action == "start":
                     command = "start_server"
                 elif action == "stop":

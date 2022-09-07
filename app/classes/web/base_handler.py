@@ -104,7 +104,7 @@ class BaseHandler(tornado.web.RequestHandler):
         strip: bool = True,
     ) -> t.Optional[str]:
         arg = self._get_argument(name, default, self.request.arguments, strip)
-        return self.autobleach(name, arg)
+        return self.autobleach(name, arg).replace("&amp;", "&")
 
     def get_arguments(self, name: str, strip: bool = True) -> t.List[str]:
         if not isinstance(strip, bool):
