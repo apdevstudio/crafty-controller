@@ -226,7 +226,7 @@ class FileHelpers:
                 comment, "utf-8"
             )  # comments over 65535 bytes will be truncated
             for root, dirs, files in os.walk(path_to_zip, topdown=True):
-                for l_dir in dirs:
+                for l_dir in dirs[:]:
                     # make all paths in exclusions a unix style slash to match directories.
                     if str(os.path.join(root, l_dir)).replace("\\", "/") in ex_replace:
                         dirs.remove(l_dir)
