@@ -227,17 +227,21 @@ class FileHelpers:
             )  # comments over 65535 bytes will be truncated
             for root, dirs, files in os.walk(path_to_zip, topdown=True):
                 for l_dir in dirs:
+                    # make all paths in exclusions a unix style slash to match directories.
                     if str(os.path.join(root, l_dir)).replace("\\", "/") in ex_replace:
                         dirs.remove(l_dir)
                 ziproot = path_to_zip
+                # iterate through list of files
                 for file in files:
+                    # check if file/dir is in exclusions list. Only proceed if not exluded.
                     if (
                         str(os.path.join(root, file)).replace("\\", "/")
                         not in ex_replace
                         and file != "crafty.sqlite"
                     ):
                         try:
-                            logger.info(f"backing up: {os.path.join(root, file)}")
+                            logger.debug(f"backing up: {os.path.join(root, file)}")
+                            # add trailing slash to zip root dir if not windows.
                             if os.name == "nt":
                                 zip_file.write(
                                     os.path.join(root, file),
@@ -254,12 +258,20 @@ class FileHelpers:
                                 f"Error backing up: {os.path.join(root, file)}!"
                                 f" - Error was: {e}"
                             )
+                    # debug logging for exlusions list
+                    else:
+                        logger.debug(f"Found {file} in exclusion list. Skipping...")
+
+                    # add current file bytes to total bytes.
                     total_bytes += os.path.getsize(os.path.join(root, file))
+                    # calcualte percentage based off total size and current archive size
                     percent = round((total_bytes / dir_bytes) * 100, 2)
+                    # package results
                     results = {
                         "percent": percent,
                         "total_files": self.helper.human_readable_file_size(dir_bytes),
                     }
+                    # send status results to page.
                     self.helper.websocket_helper.broadcast_page_params(
                         "/panel/server_detail",
                         {"id": str(server_id)},
