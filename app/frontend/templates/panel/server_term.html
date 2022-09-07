@@ -40,6 +40,9 @@
           </span>
 
           <div class="col-md-12">
+            <button id="to-bottom" style="visibility: hidden; float: right;" class="btn btn-outline-success">{{ translate('serverDetails', 'reset', data['lang']) }}</button>
+            <br />
+            <br />
             <div class="input-group">
               <div id="virt_console" class="" style="width: 100%; font-size: .8em; padding: 5px 10px; border: 1px solid #383e5d; background-color:#2a2c44;height:500px; overflow: scroll;"></div>
             </div>
@@ -193,8 +196,7 @@
   function new_line_handler(data) {
     $('#virt_console').append(data.line)
     const elem = document.getElementById('virt_console');
-    const scrollDiff = (elem.scrollHeight - elem.scrollTop) - elem.clientHeight;
-    if (!$("#stop_scroll").is(':checked') && scrollDiff < 450) {
+    if (!$("#stop_scroll").is(':checked') && chkScroll) {
       scrollConsole()
     }
   }
@@ -293,6 +295,30 @@
       return nextCommand;
     }
   }
+
+  const chkScroll = (e) => {
+    const elem = $(e.currentTarget);
+
+    if (Math.round(elem[0].scrollHeight - elem.scrollTop()) <= elem.outerHeight()) {
+      document.getElementById("to-bottom").style.visibility = "hidden";
+      return true;
+    }else{
+      document.getElementById("to-bottom").style.visibility = "visible";
+      return false;
+    }
+  }
+
+  const scrollToBottom = (id) => {
+   const element = $(`#virt_console`);
+   element.animate({
+      scrollTop: element.prop("scrollHeight")
+   }, 500);
+}
+
+  $(document).ready(() => {
+    $('#virt_console').on('scroll', chkScroll);
+    $('#to-bottom').on('click', scrollToBottom)
+  });
 </script>
 
 {% end %}
