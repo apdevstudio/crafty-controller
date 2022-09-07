@@ -70,6 +70,7 @@ class Helpers:
             self.root_dir, "app", "config", "db", "crafty.sqlite"
         )
         self.serverjar_cache = os.path.join(self.config_dir, "serverjars.json")
+        self.steamapps_cache = os.path.join(self.config_dir, "steamapps.json")
         self.credits_cache = os.path.join(self.config_dir, "credits.json")
         self.passhasher = PasswordHasher()
         self.exiting = False
