@@ -227,13 +227,15 @@ class FileHelpers:
             )  # comments over 65535 bytes will be truncated
             for root, dirs, files in os.walk(path_to_zip, topdown=True):
                 for l_dir in dirs[:]:
-                    # make all paths in exclusions a unix style slash to match directories.
+                    # make all paths in exclusions a unix style slash
+                    # to match directories.
                     if str(os.path.join(root, l_dir)).replace("\\", "/") in ex_replace:
                         dirs.remove(l_dir)
                 ziproot = path_to_zip
                 # iterate through list of files
                 for file in files:
-                    # check if file/dir is in exclusions list. Only proceed if not exluded.
+                    # check if file/dir is in exclusions list.
+                    # Only proceed if not exluded.
                     if (
                         str(os.path.join(root, file)).replace("\\", "/")
                         not in ex_replace
