@@ -28,7 +28,11 @@ class ApiUsersUserPfpHandler(BaseApiHandler):
             rating = "g"
 
         # Get grvatar hash for profile pictures
-        if user["email"] != "default@example.com" or "":
+        if (
+            self.helper.check_internet()
+            and user["email"] != "default@example.com"
+            and user["email"] == ""
+        ):
             gravatar = libgravatar.Gravatar(libgravatar.sanitize_email(user["email"]))
             url = gravatar.get_image(
                 size=80,

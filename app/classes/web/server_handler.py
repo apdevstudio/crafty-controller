@@ -138,7 +138,11 @@ class ServerHandler(BaseHandler):
         else:
             rating = "g"
 
-        if exec_user["email"] != "default@example.com" or "":
+        if (
+            self.helper.check_internet()
+            and exec_user["email"] != "default@example.com"
+            and exec_user["email"] == ""
+        ):
             gravatar = libgravatar.Gravatar(
                 libgravatar.sanitize_email(exec_user["email"])
             )
