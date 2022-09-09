@@ -339,9 +339,9 @@ class PanelHandler(BaseHandler):
 
         # Get grvatar hash for profile pictures
         if (
-            self.helper.check_internet()
-            and exec_user["email"] != "default@example.com"
-            and exec_user["email"] == ""
+            not self.helper.check_internet()
+            or exec_user["email"] != "default@example.com"
+            or exec_user["email"] != ""
         ):
             gravatar = libgravatar.Gravatar(
                 libgravatar.sanitize_email(exec_user["email"])
