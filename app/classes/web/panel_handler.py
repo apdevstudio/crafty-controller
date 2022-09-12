@@ -8,7 +8,6 @@ import logging
 import threading
 import shlex
 import bleach
-import libgravatar
 import requests
 import tornado.web
 import tornado.escape
@@ -330,41 +329,6 @@ class PanelHandler(BaseHandler):
             else None,
             "superuser": superuser,
         }
-
-        # http://en.gravatar.com/site/implement/images/#rating
-        if self.helper.get_setting("allow_nsfw_profile_pictures"):
-            rating = "x"
-        else:
-            rating = "g"
-
-        # Get grvatar hash for profile pictures
-        if (
-            not self.helper.check_internet()
-            or exec_user["email"] != "default@example.com"
-            or exec_user["email"] != ""
-        ):
-            gravatar = libgravatar.Gravatar(
-                libgravatar.sanitize_email(exec_user["email"])
-            )
-            url = gravatar.get_image(
-                size=80,
-                default="404",
-                force_default=False,
-                rating=rating,
-                filetype_extension=False,
-                use_ssl=True,
-            )  # + "?d=404"
-            try:
-                if requests.head(url).status_code != 404:
-                    profile_url = url
-                else:
-                    profile_url = "/static/assets/images/faces-clipart/pic-3.png"
-            except:
-                profile_url = "/static/assets/images/faces-clipart/pic-3.png"
-        else:
-            profile_url = "/static/assets/images/faces-clipart/pic-3.png"
-
-        page_data["user_image"] = profile_url
 
         if page == "unauthorized":
             template = "panel/denied.html"
