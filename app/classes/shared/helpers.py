@@ -681,8 +681,8 @@ class Helpers:
             try:
                 if requests.head(url).status_code != 404:
                     profile_url = url
-            except:
-                profile_url = "/static/assets/images/faces-clipart/pic-3.png"
+            except Exception as e:
+                logger.debug(f"Could not pull resource from Gravatar with error {e}")
 
         return profile_url
 
