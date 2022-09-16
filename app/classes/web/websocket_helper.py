@@ -27,7 +27,7 @@ class WebSocketHelper:
             f"Sending to {len(self.clients)} clients: "
             f"{json.dumps({'event': event_type, 'data': data})}"
         )
-        for client in self.clients:
+        for client in self.clients[:]:
             try:
                 self.send_message(client, event_type, data)
             except Exception as e:
@@ -91,7 +91,7 @@ class WebSocketHelper:
             f"clients: {json.dumps({'event': event_type, 'data': data})}"
         )
 
-        for client in clients:
+        for client in clients[:]:
             try:
                 self.send_message(client, event_type, data)
             except Exception as e:
