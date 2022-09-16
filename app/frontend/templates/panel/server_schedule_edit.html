@@ -145,17 +145,35 @@
                           data['lang']) }}</small> </label>
                       <select id="parent" name="parent" class="form-control form-control-lg select-css"
                         value="{{ data['schedule']['action']  }}">
-                        {% for schedule in data['schedules'] %}
-                        {% if schedule.schedule_id != data['schedule']['schedule_id'] %}
-                        {% if schedule.interval != '' %}
-                        <option id="{{schedule.schedule_id}}" value="{{schedule.schedule_id}}">
-                          {{schedule.name}} | {{schedule.command}} | {{schedule.interval}} {{
-                          schedule.interval_type}}</option>
+                        {% if data['parent'] %}
+                          <option id="{{data['parent']['schedule_id']}}" value="{{data['parent']['schedule_id']}}">
+                            {{data['parent']['name']}} | {{data['parent']['command']}} | {{data['parent']['interval']}}
+                          </option>
+                          {% for schedule in data['schedules'] %}
+                            {% if schedule.schedule_id != data['schedule']['schedule_id'] and schedule.schedule_id != data['parent']['schedule_id'] %}
+                              {% if schedule.interval != '' %}
+                                <option id="{{schedule.schedule_id}}" value="{{schedule.schedule_id}}">
+                                  {{schedule.name}} | {{schedule.command}} | {{schedule.interval}} {{
+                                  schedule.interval_type}}</option>
+                                {% else %}
+                                <option id="{{schedule.schedule_id}}" value="{{schedule.schedule_id}}">
+                                  {{schedule.name}} | {{schedule.command}} | {{schedule.cron_string}}</option>
+                              {% end %}
+                            {% end %}
+                          {% end %}
                         {% else %}
-                        <option id="{{schedule.schedule_id}}" value="{{schedule.schedule_id}}">
-                          {{schedule.name}} | {{schedule.command}} | {{schedule.cron_string}}</option>
-                        {% end %}
-                        {% end %}
+                          {% for schedule in data['schedules'] %}
+                            {% if schedule.schedule_id != data['schedule']['schedule_id'] and schedule.schedule_id %}
+                              {% if schedule.interval != '' %}
+                                <option id="{{schedule.schedule_id}}" value="{{schedule.schedule_id}}">
+                                  {{schedule.name}} | {{schedule.command}} | {{schedule.interval}} {{
+                                  schedule.interval_type}}</option>
+                                {% else %}
+                                <option id="{{schedule.schedule_id}}" value="{{schedule.schedule_id}}">
+                                  {{schedule.name}} | {{schedule.command}} | {{schedule.cron_string}}</option>
+                              {% end %}
+                            {% end %}
+                          {% end %}
                         {% end %}
                       </select>
                     </div>
