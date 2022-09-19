@@ -977,6 +977,7 @@ class PanelHandler(BaseHandler):
             # We'll just default to basic for new schedules
             page_data["schedule"]["difficulty"] = "basic"
             page_data["schedule"]["interval_type"] = "days"
+            page_data["parent"] = None
 
             if not EnumPermissionsServer.SCHEDULE in page_data["user_permissions"]:
                 if not superuser:
@@ -1059,8 +1060,12 @@ class PanelHandler(BaseHandler):
             page_data["schedule"]["interval_type"] = schedule.interval_type
             if schedule.interval_type == "reaction":
                 difficulty = "reaction"
+                page_data["parent"] = self.controller.management.get_scheduled_task(
+                    schedule.parent
+                )
             elif schedule.cron_string == "":
                 difficulty = "basic"
+                page_data["parent"] = None
             else:
                 difficulty = "advanced"
             page_data["schedule"]["difficulty"] = difficulty
