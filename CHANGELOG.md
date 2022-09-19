@@ -7,6 +7,7 @@ TBD
 - Fix traceback error when a user click the roles config tab while already on the roles config page; **this is for new role creation only** ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/452))
 - Fix logic issue when removing items from backup exclusions ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/453))
 - Cleanup various JS errors ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/455))
+- Temp fix for `&amp;` issue in pathing and minecraft colour codes ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/457))
 ### Tweaks
 - Add button to scroll to bottom of vterm ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/454))
 ### Lang
