@@ -11,6 +11,7 @@ TBD
 - Cache Gravatar pfp's as to not query every page load ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/459))
 - Fix crash on client list changing while sending websockets ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/461))
 - Set default parent option on edit of reaction schedule ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/462))
+- Fix wtol Nonetype error on server start when 'which java' returns `none` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/463))
 ### Tweaks
 - Add button to scroll to bottom of vterm ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/454))
 - Persist schedules and execution commands across backup restores ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/458))
