@@ -359,7 +359,8 @@
         "schedule": "Schedule",
         "serverDetails": "Server Details",
         "terminal": "Terminal",
-        "metrics": "Metrics"
+        "metrics": "Metrics",
+        "reset": "Reset Scroll"
     },
     "serverFiles": {
         "clickUpload": "Click here to select your files",
