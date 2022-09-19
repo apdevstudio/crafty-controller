@@ -1,7 +1,5 @@
 # Changelog
-## --- [4.0.13] - 2022/TBD
-### New features
-TBD
+## --- [4.0.13] - 2022/09/14
 ### Bug fixes
 - Fix bug where trying to reconfigure unloaded server would stack ([Commit](https://gitlab.com/crafty-controller/crafty-4/-/commit/1b2fef06fb3b02b76c9506caf7e07e932df95fab) | [Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/460))
 - Fix traceback error when a user click the roles config tab while already on the roles config page; **this is for new role creation only** ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/452))
@@ -15,8 +13,6 @@ TBD
 ### Tweaks
 - Add button to scroll to bottom of vterm ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/454))
 - Persist schedules and execution commands across backup restores ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/458))
-### Lang
-TBD
 <br><br>
 
 ## --- [4.0.12] - 2022/09/04
