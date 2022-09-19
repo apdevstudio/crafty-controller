@@ -457,7 +457,7 @@
         "absoluteZipPath": "Absoluter Pfad zu dem Server",
         "addRole": "Server zu existierender Rolle hinzufügen",
         "autoCreate": "Wenn keine ausgewählt werden, wird Crafty eine erstellen!",
-        "bePatient": "Bitte haben Sie etwas Geduld, da wir ' + (importing ? 'import' :  'download')",
+        "bePatient": "Bitte haben Sie etwas Geduld, da wir ' + (importing ? 'import' :  'download') + '",
         "buildServer": "Server erstellen!",
         "clickRoot": "Hier klicken, um das Stammverzeichnis auszuwählen",
         "close": "Schließen",
