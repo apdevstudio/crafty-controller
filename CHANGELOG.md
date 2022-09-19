@@ -10,6 +10,7 @@ TBD
 - Temp fix for `&amp;` issue in pathing and minecraft colour codes ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/457))
 ### Tweaks
 - Add button to scroll to bottom of vterm ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/454))
+- Persist schedules and execution commands across backup restores ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/458))
 ### Lang
 TBD
 <br><br>
