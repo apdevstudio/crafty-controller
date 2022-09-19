@@ -42,6 +42,7 @@ class Users(BaseModel):
     preparing = BooleanField(default=False)
     hints = BooleanField(default=True)
     manager = IntegerField(default=None, null=True)
+    pfp = CharField(default="/static/assets/images/faces-clipart/pic-3.png")
 
     class Meta:
         table_name = "users"
@@ -220,6 +221,7 @@ class HelperUsers:
                 Users.password: pw_enc,
                 Users.email: email,
                 Users.enabled: enabled,
+                Users.pfp: self.helper.get_gravatar_image(email),
                 Users.superuser: superuser,
                 Users.created: Helpers.get_time_as_string(),
                 Users.manager: manager,
