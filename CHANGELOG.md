@@ -3,7 +3,7 @@
 ### New features
 TBD
 ### Bug fixes
-TBD
+Fixed bug where trying to reconfigure unloaded server would stack [Commit](https://gitlab.com/crafty-controller/crafty-4/-/commit/1b2fef06fb3b02b76c9506caf7e07e932df95fab)
 ### Tweaks
 TBD
 ### Lang
