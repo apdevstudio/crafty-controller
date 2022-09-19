@@ -666,6 +666,12 @@ class TasksManager:
             logger.info(
                 "No updates found! You are on the most up to date Crafty version."
             )
+        logger.info("Refreshing Gravatar PFPs...")
+        for user in HelperUsers.get_all_users():
+            if user.email:
+                HelperUsers.update_user(
+                    user.id, {"pfp": self.helper.get_gravatar_image(user.email)}
+                )
 
     def log_watcher(self):
         self.controller.servers.check_for_old_logs()
