@@ -244,7 +244,7 @@ class ServerInstance:
             )
             oracle_path = shutil.which("java")
             if oracle_path:
-                # Checks for Oracle Java. Only Oracle Java's helper will cause a re-exec.
+                # Checks for Oracle Java. Only Oracle Java's helper will cause a re-exec
                 if "/Oracle/Java/" in str(self.helper.wtol_path(oracle_path)):
                     logger.info(
                         "Oracle Java detected. Changing"
