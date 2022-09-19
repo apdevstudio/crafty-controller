@@ -18,10 +18,10 @@
 
     <li class="nav-item dropdown user-dropdown">
       <a class="nav-link dropdown-toggle" id="UserDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
-        <img class="img-xs rounded-circle profile-picture" src="{{ data['user_image'] }}" alt="Profile image"> </a>
+        <img class="img-xs rounded-circle profile-picture" onerror="pfpError(this)" src="{{ data['user_data']['pfp'] }}" alt="Profile image"> </a>
       <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
         <div class="dropdown-header text-center">
-          <img class="img-md rounded-circle profile-picture" src="{{ data['user_image'] }}" alt="Profile image">
+          <img class="img-md rounded-circle profile-picture" onerror="pfpError(this)" src="{{ data['user_data']['pfp'] }}" alt="Profile image">
           <p class="mb-1 mt-3 font-weight-semibold">{{ data['user_data']['username'] }}</p>
           <p class="font-weight-light text-muted mb-0">Roles: </p>
           {% for r in data['user_role'] %}            
@@ -47,3 +47,11 @@
       </div>
     </li>
   </ul>
+
+  <script>
+    function pfpError(image) {
+    image.onerror = "";
+    image.src = "/static/assets/images/faces-clipart/pic-3.png";
+    return true;
+  }
+  </script>
