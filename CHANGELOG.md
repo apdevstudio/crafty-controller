@@ -3,7 +3,8 @@
 ### New features
 TBD
 ### Bug fixes
-Fixed bug where trying to reconfigure unloaded server would stack [Commit](https://gitlab.com/crafty-controller/crafty-4/-/commit/1b2fef06fb3b02b76c9506caf7e07e932df95fab)
+- Fixed bug where trying to reconfigure unloaded server would stack [Commit](https://gitlab.com/crafty-controller/crafty-4/-/commit/1b2fef06fb3b02b76c9506caf7e07e932df95fab)
+- Fixes traceback error when a user click the roles config tab while already on the roles config page; **this is for new role creation only**([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/452))
 ### Tweaks
 TBD
 ### Lang
