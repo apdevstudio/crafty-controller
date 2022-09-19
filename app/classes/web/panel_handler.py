@@ -8,7 +8,6 @@ import logging
 import threading
 import shlex
 import bleach
-import libgravatar
 import requests
 import tornado.web
 import tornado.escape
@@ -331,37 +330,6 @@ class PanelHandler(BaseHandler):
             "superuser": superuser,
         }
 
-        # http://en.gravatar.com/site/implement/images/#rating
-        if self.helper.get_setting("allow_nsfw_profile_pictures"):
-            rating = "x"
-        else:
-            rating = "g"
-
-        # Get grvatar hash for profile pictures
-        if exec_user["email"] != "default@example.com" or "":
-            gravatar = libgravatar.Gravatar(
-                libgravatar.sanitize_email(exec_user["email"])
-            )
-            url = gravatar.get_image(
-                size=80,
-                default="404",
-                force_default=False,
-                rating=rating,
-                filetype_extension=False,
-                use_ssl=True,
-            )  # + "?d=404"
-            try:
-                if requests.head(url).status_code != 404:
-                    profile_url = url
-                else:
-                    profile_url = "/static/assets/images/faces-clipart/pic-3.png"
-            except:
-                profile_url = "/static/assets/images/faces-clipart/pic-3.png"
-        else:
-            profile_url = "/static/assets/images/faces-clipart/pic-3.png"
-
-        page_data["user_image"] = profile_url
-
         if page == "unauthorized":
             template = "panel/denied.html"
 
@@ -549,7 +517,7 @@ class PanelHandler(BaseHandler):
                         "log_path": server_temp_obj["log_path"],
                         "executable": server_temp_obj["executable"],
                         "execution_command": server_temp_obj["execution_command"],
-                        "shutdown_timeout": server_obj["shutdown_timeout"],
+                        "shutdown_timeout": server_temp_obj["shutdown_timeout"],
                         "stop_command": server_temp_obj["stop_command"],
                         "executable_update_url": server_temp_obj[
                             "executable_update_url"
@@ -1732,7 +1700,7 @@ class PanelHandler(BaseHandler):
                 if interval_type == "days":
                     sch_time = bleach.clean(self.get_argument("time", None))
                 if action == "command":
-                    command = bleach.clean(self.get_argument("command", None))
+                    command = self.get_argument("command", None)
                 elif action == "start":
                     command = "start_server"
                 elif action == "stop":
@@ -1748,7 +1716,7 @@ class PanelHandler(BaseHandler):
                 delay = bleach.clean(self.get_argument("delay", None))
                 parent = bleach.clean(self.get_argument("parent", None))
                 if action == "command":
-                    command = bleach.clean(self.get_argument("command", None))
+                    command = self.get_argument("command", None)
                 elif action == "start":
                     command = "start_server"
                 elif action == "stop":
@@ -1768,7 +1736,7 @@ class PanelHandler(BaseHandler):
                     return
                 action = bleach.clean(self.get_argument("action", None))
                 if action == "command":
-                    command = bleach.clean(self.get_argument("command", None))
+                    command = self.get_argument("command", None)
                 elif action == "start":
                     command = "start_server"
                 elif action == "stop":
@@ -1894,7 +1862,7 @@ class PanelHandler(BaseHandler):
                 if interval_type == "days":
                     sch_time = bleach.clean(self.get_argument("time", None))
                 if action == "command":
-                    command = bleach.clean(self.get_argument("command", None))
+                    command = self.get_argument("command", None)
                 elif action == "start":
                     command = "start_server"
                 elif action == "stop":
@@ -1909,7 +1877,7 @@ class PanelHandler(BaseHandler):
                 delay = bleach.clean(self.get_argument("delay", None))
                 parent = bleach.clean(self.get_argument("parent", None))
                 if action == "command":
-                    command = bleach.clean(self.get_argument("command", None))
+                    command = self.get_argument("command", None)
                 elif action == "start":
                     command = "start_server"
                 elif action == "stop":
@@ -1929,7 +1897,7 @@ class PanelHandler(BaseHandler):
                     return
                 action = bleach.clean(self.get_argument("action", None))
                 if action == "command":
-                    command = bleach.clean(self.get_argument("command", None))
+                    command = self.get_argument("command", None)
                 elif action == "start":
                     command = "start_server"
                 elif action == "stop":

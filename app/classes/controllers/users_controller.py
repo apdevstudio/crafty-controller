@@ -147,14 +147,24 @@ class UsersController:
         return HelperServers.get_total_owned_servers(exec_user_id)
 
     def update_user(self, user_id: str, user_data=None, user_crafty_data=None):
+        # check if user crafty perms were updated
         if user_crafty_data is None:
             user_crafty_data = {}
+        # check if general user data was updated
         if user_data is None:
             user_data = {}
+        # get current user data
         base_data = HelperUsers.get_user(user_id)
         up_data = {}
+        # check if we updated user email. If so we update gravatar
+        if user_data["email"]:
+            pfp = self.helper.get_gravatar_image(user_data["email"])
+            up_data["pfp"] = pfp
+        # create sets to store role data
         added_roles = set()
         removed_roles = set()
+
+        # search for changes in user data
         for key in user_data:
             if key == "user_id":
                 continue
@@ -174,8 +184,10 @@ class UsersController:
                 up_data["hints"] = user_data["hints"]
             elif base_data[key] != user_data[key]:
                 up_data[key] = user_data[key]
+        # change last update for user
         up_data["last_update"] = self.helper.get_time_as_string()
         logger.debug(f"user: {user_data} +role:{added_roles} -role:{removed_roles}")
+
         for role in added_roles:
             HelperUsers.get_or_create(user_id=user_id, role_id=role)
         permissions_mask = user_crafty_data.get("permissions_mask", "000")
