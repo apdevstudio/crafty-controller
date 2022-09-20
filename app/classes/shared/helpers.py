@@ -668,7 +668,7 @@ class Helpers:
             rating = "g"
 
         # Get grvatar hash for profile pictures
-        if not self.check_internet() or email != "default@example.com" or email != "":
+        if self.check_internet() and email != "default@example.com" and email:
             gravatar = libgravatar.Gravatar(libgravatar.sanitize_email(email))
             url = gravatar.get_image(
                 size=80,
