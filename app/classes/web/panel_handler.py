@@ -1068,6 +1068,7 @@ class PanelHandler(BaseHandler):
                 page_data["parent"] = None
             else:
                 difficulty = "advanced"
+                page_data["parent"] = None
             page_data["schedule"]["difficulty"] = difficulty
 
             if not EnumPermissionsServer.SCHEDULE in page_data["user_permissions"]:
@@ -1699,6 +1700,12 @@ class PanelHandler(BaseHandler):
                 # only check for time if it's number of days
                 if interval_type == "days":
                     sch_time = bleach.clean(self.get_argument("time", None))
+                    if interval > 30:
+                        self.redirect(
+                            "/panel/error?error=Invalid argument."
+                            " Days must be 30 or fewer."
+                        )
+                        return
                 if action == "command":
                     command = self.get_argument("command", None)
                 elif action == "start":
@@ -1861,6 +1868,12 @@ class PanelHandler(BaseHandler):
                 # only check for time if it's number of days
                 if interval_type == "days":
                     sch_time = bleach.clean(self.get_argument("time", None))
+                    if interval > 30:
+                        self.redirect(
+                            "/panel/error?error=Invalid argument."
+                            " Days must be 30 or fewer."
+                        )
+                        return
                 if action == "command":
                     command = self.get_argument("command", None)
                 elif action == "start":
