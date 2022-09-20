@@ -242,32 +242,36 @@ class ServerInstance:
                 "Detected nebulous java in start command. "
                 "Replacing with full java path."
             )
-            # Checks for Oracle Java. Only Oracle Java's helper will cause a re-exec.
-            if "/Oracle/Java/" in str(self.helper.wtol_path(shutil.which("java"))):
-                logger.info(
-                    "Oracle Java detected. Changing start command to avoid re-exec."
-                )
-                which_java_raw = self.helper.which_java()
-                try:
-                    java_path = which_java_raw + "\\bin\\java"
-                except TypeError:
-                    logger.warning(
-                        "Could not find java in the registry even though"
-                        " Oracle java is installed. Re-exec expected, but we have no"
-                        " other options. CPU stats will not work for process."
+            oracle_path = shutil.which("java")
+            if oracle_path:
+                # Checks for Oracle Java. Only Oracle Java's helper will cause a re-exec
+                if "/Oracle/Java/" in str(self.helper.wtol_path(oracle_path)):
+                    logger.info(
+                        "Oracle Java detected. Changing"
+                        " start command to avoid re-exec."
                     )
-                    java_path = ""
-                if str(which_java_raw) != str(self.helper.get_servers_root_dir) or str(
-                    self.helper.get_servers_root_dir
-                ) in str(which_java_raw):
-                    if java_path != "":
-                        self.server_command[0] = java_path
-                else:
-                    logger.critcal(
-                        "Possible attack detected. User attempted to exec "
-                        "java binary from server directory."
-                    )
-                    return
+                    which_java_raw = self.helper.which_java()
+                    try:
+                        java_path = which_java_raw + "\\bin\\java"
+                    except TypeError:
+                        logger.warning(
+                            "Could not find java in the registry even though"
+                            " Oracle java is installed."
+                            " Re-exec expected, but we have no"
+                            " other options. CPU stats will not work for process."
+                        )
+                        java_path = ""
+                    if str(which_java_raw) != str(
+                        self.helper.get_servers_root_dir
+                    ) or str(self.helper.get_servers_root_dir) in str(which_java_raw):
+                        if java_path != "":
+                            self.server_command[0] = java_path
+                    else:
+                        logger.critcal(
+                            "Possible attack detected. User attempted to exec "
+                            "java binary from server directory."
+                        )
+                        return
         self.server_path = Helpers.get_os_understandable_path(self.settings["path"])
 
         # let's do some quick checking to make sure things actually exists
