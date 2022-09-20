@@ -13,6 +13,12 @@
 ### Tweaks
 - Add button to scroll to bottom of vterm ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/454))
 - Persist schedules and execution commands across backup restores ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/458))
+### Release Testing- Bug fixes
+- Fix bug with logical issues surrounding gravatar caching ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/465))
+- Fix bug where server terminal would not scroll on startup ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/465))
+- Fix issue on post with adding users when no email is included (this also affected editing users) ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/466))
+- Fix issue with schedules allowing days to be more than 30 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/466))
+- Fix issue with schedules when trying to edit a cron task ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/466))
 <br><br>
 
 ## --- [4.0.12] - 2022/09/04
