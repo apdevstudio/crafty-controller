@@ -157,7 +157,7 @@ class UsersController:
         base_data = HelperUsers.get_user(user_id)
         up_data = {}
         # check if we updated user email. If so we update gravatar
-        if user_data["email"]:
+        if user_data["email"] != base_data["email"]:
             pfp = self.helper.get_gravatar_image(user_data["email"])
             up_data["pfp"] = pfp
         # create sets to store role data

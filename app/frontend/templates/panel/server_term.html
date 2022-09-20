@@ -196,8 +196,12 @@
   function new_line_handler(data) {
     $('#virt_console').append(data.line)
     const elem = document.getElementById('virt_console');
-    if (!scrolled) {
-      scrollConsole()
+    try{
+      if (!scrolled) {
+        scrollConsole();
+      }
+    }catch{
+      scrollConsole();
     }
   }
 
@@ -298,7 +302,6 @@
 
   const chkScroll = (e) => {
     const elem = $(e.currentTarget);
-
     if (Math.round(elem[0].scrollHeight - elem.scrollTop()) <= elem.outerHeight()) {
       document.getElementById("to-bottom").style.visibility = "hidden";
       scrolled = false;
@@ -316,7 +319,7 @@
 }
 
   $(document).ready(() => {
-    var scrolled;
+    var scrolled = false;
     $('#virt_console').on('scroll', chkScroll);
     $('#to-bottom').on('click', scrollToBottom)
   });
