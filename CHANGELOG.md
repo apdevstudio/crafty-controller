@@ -1,4 +1,9 @@
 # Changelog
+## --- [4.0.14] - 2022/09/23
+### Bug fixes
+- HOTFIX - Rollback breaking websockets change !461 (self.clients was already a set and we tried to subscript a set of a set) ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/467))
+<br><br>
+
 ## --- [4.0.13] - 2022/09/20
 ### Bug fixes
 - Fix bug where trying to reconfigure unloaded server would stack ([Commit](https://gitlab.com/crafty-controller/crafty-4/-/commit/1b2fef06fb3b02b76c9506caf7e07e932df95fab) | [Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/460))

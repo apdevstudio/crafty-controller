@@ -27,7 +27,7 @@ class WebSocketHelper:
             f"Sending to {len(self.clients)} clients: "
             f"{json.dumps({'event': event_type, 'data': data})}"
         )
-        for client in self.clients[:]:  # pylint: disable=unsubscriptable-object
+        for client in self.clients:
             try:
                 self.send_message(client, event_type, data)
             except Exception as e:
@@ -35,9 +35,6 @@ class WebSocketHelper:
                     f"Error caught while sending WebSocket message to "
                     f"{client.get_remote_ip()} {e}"
                 )
-
-    # Excempting 'unsubscriptable-object' warning as false positive from 'self' use
-    # Code has been tested by Andrew and functions as intended.
 
     def broadcast_page(self, page: str, event_type: str, data):
         def filter_fn(client):
