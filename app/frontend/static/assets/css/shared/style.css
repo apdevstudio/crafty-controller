@@ -215,7 +215,7 @@ body {
   line-height: 1.5;
   color: #212529;
   text-align: left;
-  background-var(--base-text);
+  background: var(--base-text);
 }
 
 [tabindex="-1"]:focus {
@@ -662,7 +662,7 @@ mark,
 
 .img-thumbnail {
   padding: 0.25rem;
-  background-var(--base-text);
+  background: var(--base-text);
   border: 1px solid #dee2e6;
   border-radius: 0.25rem;
   max-width: 100%;
@@ -2439,7 +2439,7 @@ pre code {
   font-weight: 400;
   line-height: 1;
   color: #495057;
-  background-var(--base-text);
+  background: var(--base-text);
   background-clip: padding-box;
   border: 1px solid #ced4da;
   border-radius: 2px;
@@ -2494,7 +2494,7 @@ pre code {
 .tt-query:focus,
 .typeahead:focus {
   color: #495057;
-  background-var(--base-text);
+  background: var(--base-text);
   border-color: #80bdff;
   outline: 0;
   -webkit-box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
@@ -2612,7 +2612,7 @@ select.tt-hint:focus::-ms-value,
 select.tt-query:focus::-ms-value,
 select.typeahead:focus::-ms-value {
   color: #495057;
-  background-var(--base-text);
+  background: var(--base-text);
 }
 
 .form-control-file,
@@ -4311,7 +4311,7 @@ input[type="button"].btn-block {
   color: #212529;
   text-align: left;
   list-style: none;
-  background-var(--base-text);
+  background: var(--base-text);
   background-clip: padding-box;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 0.25rem;
@@ -5862,7 +5862,7 @@ input[type="button"].btn-block {
   height: 1.25rem;
   pointer-events: none;
   content: "";
-  background-var(--base-text);
+  background: var(--base-text);
   border: #adb5bd solid 1px;
 }
 
@@ -5946,7 +5946,7 @@ input[type="button"].btn-block {
 }
 
 .custom-switch .custom-control-input:checked~.custom-control-label::after {
-  background-var(--base-text);
+  background: var(--base-text);
   -webkit-transform: translateX(1rem);
   transform: translateX(1rem);
 }
@@ -5966,7 +5966,7 @@ input[type="button"].btn-block {
   color: #495057;
   vertical-align: middle;
   background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/8px 10px;
-  background-var(--base-text);
+  background: var(--base-text);
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
   -webkit-appearance: none;
@@ -5983,7 +5983,7 @@ input[type="button"].btn-block {
 
 .custom-select:focus::-ms-value {
   color: #495057;
-  background-var(--base-text);
+  background: var(--base-text);
 }
 
 .custom-select[multiple],
@@ -6064,7 +6064,7 @@ input[type="button"].btn-block {
   font-weight: 400;
   line-height: 1.5;
   color: #495057;
-  background-var(--base-text);
+  background: var(--base-text);
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
 }
@@ -6330,7 +6330,7 @@ input[type="button"].btn-block {
 .nav-tabs .nav-link.active,
 .nav-tabs .nav-item.show .nav-link {
   color: #495057;
-  background-var(--base-text);
+  background: var(--base-text);
   border-color: #dee2e6 #dee2e6 #fff;
 }
 
@@ -6867,7 +6867,7 @@ input[type="button"].btn-block {
   flex-direction: column;
   min-width: 0;
   word-wrap: break-word;
-  background-var(--base-text);
+  background: var(--base-text);
   background-clip: border-box;
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.25rem;
@@ -7190,7 +7190,7 @@ input[type="button"].btn-block {
   margin-left: -1px;
   line-height: 1.25;
   color: #007bff;
-  background-var(--base-text);
+  background: var(--base-text);
   border: 1px solid #dee2e6;
 }
 
@@ -7267,7 +7267,7 @@ input[type="button"].btn-block {
   color: #6c757d;
   pointer-events: none;
   cursor: auto;
-  background-var(--base-text);
+  background: var(--base-text);
   border-color: #dee2e6;
 }
 
@@ -7848,7 +7848,7 @@ a.badge-dark.focus {
   display: block;
   padding: 0.75rem 1.25rem;
   margin-bottom: -1px;
-  background-var(--base-text);
+  background: var(--base-text);
   border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
@@ -7867,7 +7867,7 @@ a.badge-dark.focus {
 .list-group-item:disabled {
   color: #6c757d;
   pointer-events: none;
-  background-var(--base-text);
+  background: var(--base-text);
 }
 
 .list-group-item.active {
@@ -8365,7 +8365,7 @@ a.close.disabled {
   flex-direction: column;
   width: 100%;
   pointer-events: auto;
-  background-var(--base-text);
+  background: var(--base-text);
   background-clip: padding-box;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 0.3rem;
@@ -8643,7 +8643,7 @@ a.close.disabled {
   line-break: auto;
   font-size: 0.875rem;
   word-wrap: break-word;
-  background-var(--base-text);
+  background: var(--base-text);
   background-clip: padding-box;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 0.3rem;
@@ -8987,7 +8987,7 @@ a.close.disabled {
   margin-left: 3px;
   text-indent: -999px;
   cursor: pointer;
-  background-var(--base-text);
+  background: var(--base-text);
   background-clip: padding-box;
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
@@ -9233,7 +9233,7 @@ button.bg-dark:focus,
 }
 
 .bg-white {
-  background-var(--base-text)fff !important;
+  background: var(--base-text)fff !important;
 }
 
 .bg-transparent {
@@ -13433,7 +13433,7 @@ a.text-dark:focus {
   .jsgrid .jsgrid-table td,
   .table th,
   .jsgrid .jsgrid-table th {
-    background-var(--base-text)fff !important;
+    background: var(--base-text)fff !important;
   }
 
   .table-bordered th,
@@ -16626,7 +16626,7 @@ pre {
 .ajax-upload-dragdrop .btn-inverse-light.ajax-file-upload,
 .swal2-modal .swal2-buttonswrapper .btn-inverse-light.swal2-styled,
 .wizard>.actions a.btn-inverse-light {
-  background-var(--base-text)fff;
+  background: var(--base-text)fff;
   color: rgba(0, 0, 0, 0.5);
   border-color: #d9d9d9;
 }
@@ -26251,7 +26251,7 @@ body.avgrund-active {
 
 .swal2-modal .swal2-buttonswrapper .swal2-styled.swal2-cancel {
   margin-top: 32px;
-  background-var(--base-text)fff !important;
+  background: var(--base-text)fff !important;
   border: 1px solid #dee2e6;
   color: #212529;
   font-weight: initial;
@@ -26361,7 +26361,7 @@ div.tagsinput span.tag a {
 }
 
 .typeahead {
-  background-var(--base-text);
+  background: var(--base-text);
 }
 
 .typeahead:focus {
@@ -26381,7 +26381,7 @@ div.tagsinput span.tag a {
   width: 100%;
   margin: 12px 0;
   padding: 8px 0;
-  background-var(--base-text)fff;
+  background: var(--base-text)fff;
   border: 1px solid #dee2e6;
   border-radius: 8px;
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);

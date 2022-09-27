@@ -13,11 +13,12 @@
 
 root,
 :root.default {
+  --select-bg: #dee0f4;
   --ram-bg: #323550;
   --base-text: #b9c0d3;
   --outline: #383e5d;
   --card-banner-bg: #282a40;
-  --deep-bg: #1c1e2f;
+  --deep-bg: #1C1E2F;
   --dropdown-bg: #222437;
   --blue: #00aeef;
   --indigo: #6610f2;
@@ -65,6 +66,7 @@ root,
 }
 
 :root.light {
+  --select-bg: #dee0f4;
   --ram-bg: #4d4d4e;
   --base-text: black;
   --outline: #383e5d;
@@ -117,6 +119,7 @@ root,
 }
 
 :root.dark {
+  --select-bg: #dee0f4;
   --ram-bg: #3d3d3d;
   --base-text: #b9c0d3;
   --outline: #3f3f3f;
@@ -169,6 +172,7 @@ root,
 }
 
 :root.ronald {
+  --select-bg: #dee0f4;
   --card-banner-bg: white;
   --deep-bg: yellow;
   --dropdown-bg: red;
@@ -252,7 +256,7 @@ body {
   line-height: 1.5;
   color: var(--base-text);
   text-align: left;
-  background-color: var(--base-text);
+  background-color: var(--select-bg);
 }
 
 [tabindex="-1"]:focus {
@@ -699,7 +703,7 @@ mark,
 
 .img-thumbnail {
   padding: 0.25rem;
-  background-color: var(--base-text);
+  background-color: var(--select-bg);
   border: 1px solid #dee2e6;
   border-radius: 0.25rem;
   max-width: 100%;
@@ -2531,7 +2535,7 @@ pre code {
 .tt-query:focus,
 .typeahead:focus {
   color: #495057;
-  background-color: var(--base-text);
+  background-color: var(--select-bg);
   border-color: #80bdff;
   outline: 0;
   -webkit-box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
@@ -5899,7 +5903,7 @@ input[type="button"].btn-block {
   height: 1.25rem;
   pointer-events: none;
   content: "";
-  background-color: var(--base-text);
+  background-color: var(--select-bg);
   border: #adb5bd solid 1px;
 }
 
@@ -5983,7 +5987,7 @@ input[type="button"].btn-block {
 }
 
 .custom-switch .custom-control-input:checked~.custom-control-label::after {
-  background-color: var(--base-text);
+  background-color: var(--select-bg);
   -webkit-transform: translateX(1rem);
   transform: translateX(1rem);
 }
@@ -6003,7 +6007,7 @@ input[type="button"].btn-block {
   color: #495057;
   vertical-align: middle;
   background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/8px 10px;
-  background-color: var(--base-text);
+  background-color: var(--select-bg);
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
   -webkit-appearance: none;
@@ -6101,7 +6105,7 @@ input[type="button"].btn-block {
   font-weight: 400;
   line-height: 1.5;
   color: #495057;
-  background-color: var(--base-text);
+  background-color: var(--select-bg);
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
 }
@@ -6367,7 +6371,7 @@ input[type="button"].btn-block {
 .nav-tabs .nav-link.active,
 .nav-tabs .nav-item.show .nav-link {
   color: #495057;
-  background-color: var(--base-text);
+  background-color: var(--select-bg);
   border-color: #dee2e6 #dee2e6 #fff;
 }
 
@@ -7227,7 +7231,7 @@ input[type="button"].btn-block {
   margin-left: -1px;
   line-height: 1.25;
   color: #007bff;
-  background-color: var(--base-text);
+  background-color: var(--select-bg);
   border: 1px solid #dee2e6;
 }
 
@@ -7304,7 +7308,7 @@ input[type="button"].btn-block {
   color: #6c757d;
   pointer-events: none;
   cursor: auto;
-  background-color: var(--base-text);
+  background-color: var(--select-bg);
   border-color: #dee2e6;
 }
 
@@ -7885,7 +7889,7 @@ a.badge-dark.focus {
   display: block;
   padding: 0.75rem 1.25rem;
   margin-bottom: -1px;
-  background-color: var(--base-text);
+  background-color: var(--select-bg);
   border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
@@ -7904,7 +7908,7 @@ a.badge-dark.focus {
 .list-group-item:disabled {
   color: #6c757d;
   pointer-events: none;
-  background-color: var(--base-text);
+  background-color: var(--select-bg);
 }
 
 .list-group-item.active {
@@ -8402,7 +8406,7 @@ a.close.disabled {
   flex-direction: column;
   width: 100%;
   pointer-events: auto;
-  background-color: var(--base-text);
+  background-color: var(--select-bg);
   background-clip: padding-box;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 0.3rem;
@@ -9024,7 +9028,7 @@ a.close.disabled {
   margin-left: 3px;
   text-indent: -999px;
   cursor: pointer;
-  background-color: var(--base-text);
+  background-color: var(--select-bg);
   background-clip: padding-box;
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
@@ -27760,7 +27764,7 @@ div.tagsinput span.tag a {
 }
 
 .typeahead {
-  background-color: var(--base-text);
+  background-color: var(--select-bg);
 }
 
 .typeahead:focus {
