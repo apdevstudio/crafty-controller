@@ -13,6 +13,7 @@
 
 root,
 :root.default {
+  /*CHANGE THESE FOR THEMES*/
   --select-bg: #dee0f4;
   --ram-bg: #323550;
   --base-text: #b9c0d3;
@@ -20,6 +21,7 @@ root,
   --card-banner-bg: #282a40;
   --deep-bg: #1C1E2F;
   --dropdown-bg: #222437;
+  /*END THEME VARIATION*/
   --blue: #00aeef;
   --indigo: #6610f2;
   --purple: #ab8ce4;
@@ -66,6 +68,7 @@ root,
 }
 
 :root.light {
+  /*CHANGE THESE FOR THEMES*/
   --select-bg: #dee0f4;
   --ram-bg: #4d4d4e;
   --base-text: black;
@@ -73,6 +76,7 @@ root,
   --card-banner-bg: #e0e0e0;
   --deep-bg: #F5F5F5;
   --dropdown-bg: #d8d8d8;
+  /*END THEME VARIATION*/
   --blue: #00aeef;
   --indigo: #6610f2;
   --purple: #ab8ce4;
@@ -119,6 +123,7 @@ root,
 }
 
 :root.dark {
+  /*CHANGE THESE FOR THEMES*/
   --select-bg: #dee0f4;
   --ram-bg: #3d3d3d;
   --base-text: #b9c0d3;
@@ -126,6 +131,7 @@ root,
   --card-banner-bg: #212221;
   --deep-bg: #0d0d0d;
   --dropdown-bg: #171717;
+  /*END THEME VARIATION*/
   --blue: #00aeef;
   --indigo: #6610f2;
   --purple: #ab8ce4;
@@ -172,10 +178,15 @@ root,
 }
 
 :root.ronald {
+  /*CHANGE THESE FOR THEMES*/
   --select-bg: #dee0f4;
   --card-banner-bg: white;
   --deep-bg: yellow;
   --dropdown-bg: red;
+  --ram-bg: #4d4d4e;
+  --base-text: black;
+  --outline: #383e5d;
+  /*END THEME VARIATION*/
   --blue: #00aeef;
   --indigo: #6610f2;
   --purple: #ab8ce4;
