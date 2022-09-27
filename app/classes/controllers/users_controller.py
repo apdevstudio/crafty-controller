@@ -241,6 +241,7 @@ class UsersController:
         email="default@example.com",
         enabled: bool = True,
         superuser: bool = False,
+        theme="default",
     ):
         return self.users_helper.add_user(
             username,
@@ -249,6 +250,7 @@ class UsersController:
             email=email,
             enabled=enabled,
             superuser=superuser,
+            theme=theme,
         )
 
     @staticmethod
