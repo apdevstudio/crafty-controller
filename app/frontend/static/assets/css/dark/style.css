@@ -14,6 +14,7 @@
 root,
 :root.default {
   /*CHANGE THESE FOR THEMES*/
+  --tooltip-bg: black;
   --select-bg: #dee0f4;
   --ram-bg: #323550;
   --base-text: #b9c0d3;
@@ -69,6 +70,7 @@ root,
 
 :root.light {
   /*CHANGE THESE FOR THEMES*/
+  --tooltip-bg: white;
   --select-bg: #dee0f4;
   --ram-bg: #4d4d4e;
   --base-text: black;
@@ -124,6 +126,7 @@ root,
 
 :root.dark {
   /*CHANGE THESE FOR THEMES*/
+  --tooltip-bg: black;
   --select-bg: #dee0f4;
   --ram-bg: #3d3d3d;
   --base-text: #b9c0d3;
@@ -179,6 +182,7 @@ root,
 
 :root.ronald {
   /*CHANGE THESE FOR THEMES*/
+  --tooltip-bg: white;
   --select-bg: #dee0f4;
   --card-banner-bg: white;
   --deep-bg: yellow;
@@ -257,6 +261,10 @@ main,
 nav,
 section {
   display: block;
+}
+
+.tooltip>.tooltip-inner {
+  background-color: var(--tooltip-bg);
 }
 
 body {
