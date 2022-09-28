@@ -672,6 +672,15 @@ class TasksManager:
                 HelperUsers.update_user(
                     user.id, {"pfp": self.helper.get_gravatar_image(user.email)}
                 )
+        # Search for old files in imports
+        for file in os.listdir(os.path.join(self.controller.project_root), "imports"):
+            if self.helper.is_file_older_than_x_days(
+                os.path.join(self.controller.project_root), "imports", file
+            ):
+                try:
+                    os.remove(os.path.join(file))
+                except:
+                    logger.debug("Could not clear out file from import directory")
 
     def log_watcher(self):
         self.controller.servers.check_for_old_logs()
