@@ -35,7 +35,6 @@ class UploadHandler(BaseHandler):
         # Class & Function Defination
         api_key, _token_data, exec_user = self.current_user
         self.upload_type = str(self.request.headers.get("X-Content-Upload-Type"))
-        print(self.upload_type)
 
         if self.upload_type == "server_import":
             superuser = exec_user["superuser"]
