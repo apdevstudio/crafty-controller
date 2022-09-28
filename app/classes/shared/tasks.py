@@ -673,9 +673,9 @@ class TasksManager:
                     user.id, {"pfp": self.helper.get_gravatar_image(user.email)}
                 )
         # Search for old files in imports
-        for file in os.listdir(os.path.join(self.controller.project_root), "imports"):
+        for file in os.listdir(os.path.join(self.controller.project_root, "imports")):
             if self.helper.is_file_older_than_x_days(
-                os.path.join(self.controller.project_root), "imports", file
+                os.path.join(self.controller.project_root, "imports", file)
             ):
                 try:
                     os.remove(os.path.join(file))

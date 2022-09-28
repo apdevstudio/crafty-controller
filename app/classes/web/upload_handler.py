@@ -109,6 +109,9 @@ class UploadHandler(BaseHandler):
 
             self.helper.ensure_dir_exists(path)
             filename = self.request.headers.get("X-FileName", None)
+            if not str(filename).endswith(".zip"):
+                self.helper.websocket_helper.broadcast("close_upload_box", "error")
+                self.finish("error")
             full_path = os.path.join(path, filename)
 
             if self.do_upload:
