@@ -313,7 +313,8 @@
               <button id="zip_submit" type="submit" title="You must select server root dir first" disabled
                 class="btn btn-primary mr-2">{{ translate('serverWizard', 'importServerButton', data['lang'])
                 }}</button>
-              <button type="reset" class="btn btn-danger mr-2">{{ translate('serverWizard', 'resetForm', data['lang'])
+              <button type="button" class="btn btn-danger mr-2 tree-reset">{{ translate('serverWizard', 'resetForm',
+                data['lang'])
                 }}</button>
             </div>
         </div>
@@ -460,7 +461,8 @@
                 <button id="upload_submit" type="submit" title="You must select server root dir first" disabled
                   class="btn btn-primary mr-2">{{ translate('serverWizard', 'importServerButton', data['lang'])
                   }}</button>
-                <button type="reset" class="btn btn-danger mr-2">{{ translate('serverWizard', 'resetForm', data['lang'])
+                <button type="button" class="btn btn-danger mr-2 tree-reset">{{ translate('serverWizard', 'resetForm',
+                  data['lang'])
                   }}</button>
               </div>
             </div>
@@ -641,6 +643,9 @@
   }
 </script>
 <script>
+  $(".tree-reset").on("click", function () {
+    location.href = "/server/bedrock_step1";
+  });
   document.getElementById("root_files_button").addEventListener("click", function () {
     if (document.forms["zip"]["server_path"].value != "") {
       if (document.getElementById('root_files_button').classList.contains('clicked')) {
@@ -792,6 +797,8 @@
         document.getElementById('main-tree-input-upload').setAttribute('value', data.path)
         getTreeView(data.path);
         show_file_tree();
+        $("#root_files_button").attr("disabled", "disabled");
+        $("#root_upload_button").attr("disabled", "disabled");
 
       }, 5000);
     });
