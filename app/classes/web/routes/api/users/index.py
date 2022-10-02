@@ -105,6 +105,7 @@ class ApiUsersIndexHandler(BaseApiHandler):
         permissions = data.get("permissions", None)
         roles = data.get("roles", None)
         hints = data.get("hints", True)
+        theme = data.get("theme", "default")
 
         if username.lower() in ["system", ""]:
             return self.finish_json(
@@ -155,6 +156,7 @@ class ApiUsersIndexHandler(BaseApiHandler):
             email,
             enabled,
             new_superuser,
+            theme,
         )
         self.controller.users.update_user(
             user_id,

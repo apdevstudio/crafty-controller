@@ -566,6 +566,7 @@
         "roleName": "Role Name",
         "super": "Super User",
         "userLang": "User Language",
+        "userTheme": "UI Theme",
         "userName": "User Name",
         "userNameDesc": "What do you want to call this user?",
         "userRoles": "User Roles",

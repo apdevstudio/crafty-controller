@@ -1,11 +1,11 @@
 .select-css option {
-    background-color: #1C1E2F;
-    color: white
+    background-color: var(--deep-bg);
+    color: var(--base-text)
 }
 
 .select-css option:checked {
-    background-color: #1C1E2F;
-    color: white
+    background-color: var(--deep-bg);
+    color: var(--base-text)
 }
 
 

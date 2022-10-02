@@ -598,9 +598,117 @@
       </div>
     </div>
   </div>
-  <style>
-    .refresh-class:hover {
-      cursor: grab;
+</div>
+<style>
+  .refresh-class:hover {
+    cursor: grab;
+  }
+
+  .scroll {
+    max-height: 12em;
+    overflow-y: auto;
+  }
+
+  .menu-btn {
+    font-size: 0.9em;
+    padding: 2px 10px;
+  }
+
+  .menu {
+    padding-top: 10px;
+    z-index: 200;
+    margin-top: 4px;
+    position: absolute;
+    background-color: var(--card-banner-bg);
+  }
+
+  .menu-option {
+    padding: 6px 20px 6px;
+    color: white;
+  }
+
+  #overlay {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+  }
+</style>
+<style>
+  /* Remove default bullets */
+  .tree-view,
+  .tree-nested {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    margin-left: 10px;
+  }
+
+  /* Style the items */
+  .tree-item,
+  .files-tree-title {
+    cursor: pointer;
+    user-select: none;
+    /* Prevent text selection */
+  }
+
+  /* Create the caret/arrow with a unicode, and style it */
+  .tree-caret .fa-folder {
+    display: inline-block;
+  }
+
+  .tree-caret .fa-folder-open {
+    display: none;
+  }
+
+  /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+  .tree-caret-down .fa-folder {
+    display: none;
+  }
+
+  .tree-caret-down .fa-folder-open {
+    display: inline-block;
+  }
+
+  /* Hide the nested list */
+  .tree-nested {
+    display: none;
+  }
+
+  #op_logo {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+</style>
+
+{% end %}
+
+{% block js%}
+<script>
+  document.getElementById("root_files_button").addEventListener("click", function () {
+    if (document.forms["zip"]["server_path"].value != "") {
+      if (document.getElementById('root_files_button').classList.contains('clicked')) {
+        document.getElementById('main-tree-div').innerHTML = '<input type="radio" id="main-tree-input" name="root_path" value="" checked><span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path=""><i class="far fa-folder"></i><i class="far fa-folder-open"></i>{{ translate("serverFiles", "files", data["lang"]) }}</span></input>'
+      } else {
+        document.getElementById('root_files_button').classList.add('clicked')
+      }
+      path = document.forms["zip"]["server_path"].value;
+      console.log(document.forms["zip"]["server_path"].value)
+      var token = getCookie("_xsrf");
+      var dialog = bootbox.dialog({
+        message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
+        closeButton: false
+      });
+      $.ajax({
+        type: "POST",
+        headers: { 'X-XSRFToken': token },
+        url: '/ajax/unzip_server?id=-1&path=' + path,
+      });
+    } else {
+      bootbox.alert("You must input a path before selecting this button");
     }
 
     .scroll {
