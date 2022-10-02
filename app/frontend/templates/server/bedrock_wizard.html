@@ -313,7 +313,8 @@
               <button id="zip_submit" type="submit" title="You must select server root dir first" disabled
                 class="btn btn-primary mr-2">{{ translate('serverWizard', 'importServerButton', data['lang'])
                 }}</button>
-              <button type="reset" class="btn btn-danger mr-2">{{ translate('serverWizard', 'resetForm', data['lang'])
+              <button type="button" class="btn btn-danger mr-2 tree-reset">{{ translate('serverWizard', 'resetForm',
+                data['lang'])
                 }}</button>
             </div>
         </div>
@@ -321,9 +322,154 @@
         </p>
       </div>
     </div>
-    <div class="col-sm-6 grid-margin">
-      <img id="op_logo" style="filter: grayscale(10%); opacity: .1;" src="../../static/assets/images/logo_small.svg"
-        alt="Crafty logo" />
+    <div class="col-sm-6 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+
+          <h4>{{ translate('serverWizard', 'uploadZip', data['lang']) }}</h4>
+          <br />
+          <p class="card-description">
+
+          <form name="zip" method="post" class="server-wizard" onSubmit="wait_msg(true)">
+            {% raw xsrf_form_html() %}
+            <input type="hidden" value="import_zip" name="create_type">
+
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
+                    <input type="text" class="form-control" id="server_name" name="server_name" value=""
+                      placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+                  </div>
+                </div>
+
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="server">Server Upload </label><br>
+                    <span id="upload_input">
+                      <input type="file" multiple="false" class="form-control" id="file" name="file" required
+                        style="width: 70%;">
+                      <button type="button" class="btn btn-info" onclick="sendFile()">UPLOAD</button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div id="lower_half" style="visibility: hidden;">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="server">{{ translate('serverWizard', 'selectRoot', data['lang']) }} <small>{{
+                        translate('serverWizard', 'explainRoot', data['lang']) }}</small></label>
+                    <br>
+                    <button class="btn btn-primary mr-2" id="root_upload_button" type="button">{{
+                      translate('serverWizard', 'clickRoot', data['lang']) }}</button>
+                  </div>
+                </div>
+
+
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="server_jar">{{ translate('serverWizard', 'serverJar', data['lang']) }}</label>
+                    <input type="text" class="form-control" id="server_jar" name="server_jar" value=""
+                      placeholder="paper.jar" required>
+                  </div>
+                </div>
+
+                <div class="col-sm-12">
+                  <h4 class="card-title">{{ translate('serverWizard', 'quickSettings', data['lang']) }} <small
+                      style="text-transform: none;"> - {{ translate('serverWizard', 'quickSettingsDescription',
+                      data['lang']) }}</small></h4>
+                  <hr>
+                  <div class="row">
+
+                    <div class="col-sm-12">
+                      <div class="form-group">
+                        <label for="port3">{{ translate('serverWizard', 'serverPort', data['lang']) }} <small> - {{
+                            translate('serverWizard', 'defaultPort', data['lang']) }}</small></label>
+                        <input type="number" class="form-control" id="port4" name="port" value="19132" step="1" min="1"
+                          required>
+                      </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                      <div class="form-group">
+                        <div id="accordion-3">
+                          <div class="card">
+                            <div class="card-header p-2" id="Role-3">
+                              <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-3"
+                                aria-expanded="true" aria-controls="collapseRole-3">
+                                <i class="fas fa-chevron-down"></i> {{ translate('serverWizard', 'addRole',
+                                data['lang'])
+                                }} <small style="text-transform: none;"> - {{ translate('serverWizard', 'autoCreate',
+                                  data['lang']) }}</small>
+                              </p>
+                            </div>
+                            <div id="collapseRole-3" class="collapse" aria-labelledby="Role-3" data-parent="">
+                              <div class="card-body scroll">
+                                <div class="form-group">
+                                  {% for r in data['roles'] %}
+                                  <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}"
+                                        type="checkbox">&nbsp;
+                                      {{ r['role_name'].capitalize() }}</label></span>
+                                  {% end %}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm-12" style="visibility: hidden;">
+                      <div class="form-group">
+                        <input type="text" class="form-control" id="zip_root_path" name="zip_root_path">
+                      </div>
+                    </div>
+                    <div class="modal fade" id="dir_select" tabindex="-1" role="dialog" aria-labelledby="dir_select"
+                      aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">{{ translate('serverWizard',
+                              'selectZipDir', data['lang']) }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="tree-ctx-item" id="main-tree-div" data-path=""
+                              style="overflow: scroll; max-height:75%;">
+                              <input type="radio" id="main-tree-input-upload" name="root_path" value="" checked>
+                              <span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path="">
+                                <i class="far fa-folder"></i>
+                                <i class="far fa-folder-open"></i>
+                                {{ translate('serverFiles', 'files', data['lang']) }}
+                              </span>
+                              </input>
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">{{
+                              translate('serverWizard', 'close', data['lang']) }}</button>
+                            <button type="button" id="modal-okay" data-dismiss="modal" class="btn btn-primary">{{
+                              translate('serverWizard', 'save', data['lang']) }}</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <button id="upload_submit" type="submit" title="You must select server root dir first" disabled
+                  class="btn btn-primary mr-2">{{ translate('serverWizard', 'importServerButton', data['lang'])
+                  }}</button>
+                <button type="button" class="btn btn-danger mr-2 tree-reset">{{ translate('serverWizard', 'resetForm',
+                  data['lang'])
+                  }}</button>
+              </div>
+            </div>
+          </form>
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -412,6 +558,65 @@
 
 {% block js%}
 <script>
+
+  var file;
+  function sendFile() {
+    file = $("#file")[0].files[0]
+    document.getElementById("upload_input").innerHTML = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>'
+    let xmlHttpRequest = new XMLHttpRequest();
+    let token = getCookie("_xsrf")
+    let fileName = file.name
+    let target = '/upload'
+    let mimeType = file.type
+    let size = file.size
+    let type = 'server_import'
+
+    xmlHttpRequest.open('POST', target, true);
+    xmlHttpRequest.setRequestHeader('X-Content-Type', mimeType);
+    xmlHttpRequest.setRequestHeader('X-XSRFToken', token);
+    xmlHttpRequest.setRequestHeader('X-Content-Length', size);
+    xmlHttpRequest.setRequestHeader('X-Content-Disposition', 'attachment; filename="' + fileName + '"');
+    xmlHttpRequest.setRequestHeader('X-Content-Upload-Type', type);
+    xmlHttpRequest.setRequestHeader('X-FileName', fileName);
+    xmlHttpRequest.addEventListener('load', (event) => {
+      if (event.target.responseText == 'success') {
+        console.log('Upload for file', file.name, 'was successful!')
+        document.getElementById("upload_input").innerHTML = '<div class="card-header header-sm d-flex justify-content-between align-items-center"><span id="file-uploaded" style="color: gray;">' + fileName + '</span> 🔒</div>';
+        document.getElementById("lower_half").style.visibility = "visible";
+      }
+      else {
+        alert('Upload failed with response: ' + event.target.responseText);
+        doUpload = false;
+      }
+    }, false);
+    xmlHttpRequest.addEventListener('error', (e) => {
+      console.error('Error while uploading file', file.name + '.', 'Event:', e)
+    }, false);
+    xmlHttpRequest.send(file);
+  }
+
+  document.getElementById("root_upload_button").addEventListener("click", function () {
+    if (file) {
+      if (document.getElementById('root_upload_button').classList.contains('clicked')) {
+        document.getElementById('main-tree-div').innerHTML = '<input type="radio" id="main-tree-input-upload" name="root_path" value="" checked><span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path=""><i class="far fa-folder"></i><i class="far fa-folder-open"></i>{{ translate("serverFiles", "files", data["lang"]) }}</span></input>'
+      } else {
+        document.getElementById('root_upload_button').classList.add('clicked')
+      }
+      var token = getCookie("_xsrf");
+      var dialog = bootbox.dialog({
+        message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
+        closeButton: false
+      });
+      $.ajax({
+        type: "POST",
+        headers: { 'X-XSRFToken': token },
+        url: '/ajax/unzip_server?id=-1&file=' + file.name,
+      });
+    } else {
+      bootbox.alert("You must input a path before selecting this button");
+    }
+  });
+
   function eula_confirm() {
     bootbox.confirm({
       title: "{% raw translate('error', 'eulaTitle', data['lang']) %}",
@@ -438,6 +643,9 @@
   }
 </script>
 <script>
+  $(".tree-reset").on("click", function () {
+    location.href = "/server/bedrock_step1";
+  });
   document.getElementById("root_files_button").addEventListener("click", function () {
     if (document.forms["zip"]["server_path"].value != "") {
       if (document.getElementById('root_files_button').classList.contains('clicked')) {
@@ -488,7 +696,11 @@
   }
 
   function getTreeView(path) {
-    document.getElementById('zip_submit').disabled = false;
+    if (document.getElementById("lower_half").visibility == "hidden") {
+      document.getElementById('zip_submit').disabled = false;
+    } else {
+      document.getElementById('upload_submit').disabled = false;
+    }
     path = path
 
     $.ajax({
@@ -582,8 +794,11 @@
           x.remove()
         }
         document.getElementById('main-tree-input').setAttribute('value', data.path)
+        document.getElementById('main-tree-input-upload').setAttribute('value', data.path)
         getTreeView(data.path);
         show_file_tree();
+        $("#root_files_button").attr("disabled", "disabled");
+        $("#root_upload_button").attr("disabled", "disabled");
 
       }, 5000);
     });

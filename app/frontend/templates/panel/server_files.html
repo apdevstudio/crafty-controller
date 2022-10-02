@@ -711,6 +711,7 @@
     xmlHttpRequest.setRequestHeader('X-Content-Length', size);
     xmlHttpRequest.setRequestHeader('X-Content-Disposition', 'attachment; filename="' + fileName + '"');
     xmlHttpRequest.setRequestHeader('X-Path', path);
+    xmlHttpRequest.setRequestHeader('X-Content-Upload-Type', 'server_files')
     xmlHttpRequest.setRequestHeader('X-Files-Left', left);
     xmlHttpRequest.setRequestHeader('X-FileName', fileName);
     xmlHttpRequest.setRequestHeader('X-ServerId', serverId);

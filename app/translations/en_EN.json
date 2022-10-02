@@ -502,6 +502,7 @@
         "importServer": "Import an Existing Server",
         "importServerButton": "Import Server!",
         "importZip": "Import from a Zip File",
+        "uploadZip": "Upload Zip File For Server Import",
         "maxMem": "Maximum Memory",
         "minMem": "Minimum Memory",
         "myNewServer": "My New Server",
