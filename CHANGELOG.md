@@ -7,6 +7,7 @@
 - Fix traceback on basic schedule with "days" interval ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/469))
 - Fix bad method call with API stdin ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/470))<br>
     *(Thank you ['IWant2Tryhard'](https://github.com/MyNameTsThad) for catching that 🐛)*
+- Fix clients variable as static to prevent crash if client list changed while sending a websocket ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/473))
 <br><br>
 
 ## --- [4.0.14] - 2022/09/23
