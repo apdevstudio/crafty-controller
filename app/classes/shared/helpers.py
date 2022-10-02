@@ -20,6 +20,7 @@ import itertools
 from datetime import datetime
 from socket import gethostname
 from contextlib import redirect_stderr, suppress
+import libgravatar
 from packaging import version as pkg_version
 
 from app.classes.shared.null_writer import NullWriter
@@ -400,6 +401,10 @@ class Helpers:
         return False
 
     @staticmethod
+    def get_themes():
+        return ["default", "dark", "light", "ronald"]
+
+    @staticmethod
     def get_local_ip():
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
@@ -658,6 +663,33 @@ class Helpers:
             logger.debug(f"Found path: {path}")
             return True
         return False
+
+    def get_gravatar_image(self, email):
+        profile_url = "/static/assets/images/faces-clipart/pic-3.png"
+        # http://en.gravatar.com/site/implement/images/#rating
+        if self.get_setting("allow_nsfw_profile_pictures"):
+            rating = "x"
+        else:
+            rating = "g"
+
+        # Get grvatar hash for profile pictures
+        if self.check_internet() and email != "default@example.com" and email:
+            gravatar = libgravatar.Gravatar(libgravatar.sanitize_email(email))
+            url = gravatar.get_image(
+                size=80,
+                default="404",
+                force_default=False,
+                rating=rating,
+                filetype_extension=False,
+                use_ssl=True,
+            )  # + "?d=404"
+            try:
+                if requests.head(url).status_code != 404:
+                    profile_url = url
+            except Exception as e:
+                logger.debug(f"Could not pull resource from Gravatar with error {e}")
+
+        return profile_url
 
     @staticmethod
     def get_file_contents(path: str, lines=100):

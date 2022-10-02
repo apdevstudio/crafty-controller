@@ -359,7 +359,8 @@
         "schedule": "Schedule",
         "serverDetails": "Server Details",
         "terminal": "Terminal",
-        "metrics": "Metrics"
+        "metrics": "Metrics",
+        "reset": "Reset Scroll"
     },
     "serverFiles": {
         "clickUpload": "Click here to select your files",
@@ -501,6 +502,7 @@
         "importServer": "Import an Existing Server",
         "importServerButton": "Import Server!",
         "importZip": "Import from a Zip File",
+        "uploadZip": "Upload Zip File For Server Import",
         "maxMem": "Maximum Memory",
         "minMem": "Minimum Memory",
         "myNewServer": "My New Server",
@@ -564,6 +566,7 @@
         "roleName": "Role Name",
         "super": "Super User",
         "userLang": "User Language",
+        "userTheme": "UI Theme",
         "userName": "User Name",
         "userNameDesc": "What do you want to call this user?",
         "userRoles": "User Roles",

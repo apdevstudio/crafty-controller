@@ -26,7 +26,7 @@ class ApiServersServerStdinHandler(BaseApiHandler):
             # if the user doesn't have Commands permission, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
-        svr = self.controller.get_server_obj_optional(server_id)
+        svr = self.controller.servers.get_server_obj_optional(server_id)
         if svr is None:
             # It's in auth_data[0] but not as a Server object
             logger.critical(

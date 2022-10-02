@@ -85,13 +85,16 @@ class WebSocketHelper:
         self.broadcast_with_fn(filter_fn, event_type, data)
 
     def broadcast_with_fn(self, filter_fn, event_type: str, data):
-        clients = list(filter(filter_fn, self.clients))
+        # assign self.clients to a static variable here so hopefully
+        # the set size won't change
+        static_clients = self.clients
+        clients = list(filter(filter_fn, static_clients))
         logger.debug(
             f"Sending to {len(clients)} out of {len(self.clients)} "
             f"clients: {json.dumps({'event': event_type, 'data': data})}"
         )
 
-        for client in clients:
+        for client in clients[:]:
             try:
                 self.send_message(client, event_type, data)
             except Exception as e:

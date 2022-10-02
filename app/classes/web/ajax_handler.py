@@ -383,6 +383,8 @@ class AjaxHandler(BaseHandler):
             zip_name = bleach.clean(self.get_argument("zip_file", None))
             svr_obj = self.controller.servers.get_server_obj(server_id)
             server_data = self.controller.servers.get_server_data_by_id(server_id)
+
+            # import the server again based on zipfile
             if server_data["type"] == "minecraft-java":
                 backup_path = svr_obj.backup_path
                 if Helpers.validate_traversal(backup_path, zip_name):
@@ -401,6 +403,27 @@ class AjaxHandler(BaseHandler):
                     self.controller.rename_backup_dir(
                         server_id, new_server_id, new_server["server_uuid"]
                     )
+                    # preserve current schedules
+                    for schedule in self.controller.management.get_schedules_by_server(
+                        server_id
+                    ):
+                        self.controller.management.create_scheduled_task(
+                            new_server_id,
+                            schedule.action,
+                            schedule.interval,
+                            schedule.interval_type,
+                            schedule.start_time,
+                            schedule.command,
+                            schedule.name,
+                            schedule.enabled,
+                        )
+                    # preserve execution command
+                    new_server_obj = self.controller.servers.get_server_obj(
+                        new_server_id
+                    )
+                    new_server_obj.execution_command = server_data["execution_command"]
+                    self.controller.servers.update_server(new_server_obj)
+                    # remove old server's tasks
                     try:
                         self.tasks_manager.remove_all_server_tasks(server_id)
                     except:
@@ -424,6 +447,26 @@ class AjaxHandler(BaseHandler):
                     self.controller.rename_backup_dir(
                         server_id, new_server_id, new_server["server_uuid"]
                     )
+                    # preserve current schedules
+                    for schedule in self.controller.management.get_schedules_by_server(
+                        server_id
+                    ):
+                        self.controller.management.create_scheduled_task(
+                            new_server_id,
+                            schedule.action,
+                            schedule.interval,
+                            schedule.interval_type,
+                            schedule.start_time,
+                            schedule.command,
+                            schedule.name,
+                            schedule.enabled,
+                        )
+                    # preserve execution command
+                    new_server_obj = self.controller.servers.get_server_obj(
+                        new_server_id
+                    )
+                    new_server_obj.execution_command = server_data["execution_command"]
+                    self.controller.servers.update_server(new_server_obj)
                     try:
                         self.tasks_manager.remove_all_server_tasks(server_id)
                     except:
@@ -433,6 +476,12 @@ class AjaxHandler(BaseHandler):
 
         elif page == "unzip_server":
             path = self.get_argument("path", None)
+            if not path:
+                path = os.path.join(
+                    self.controller.project_root,
+                    "imports",
+                    self.get_argument("file", ""),
+                )
             if Helpers.check_file_exists(path):
                 self.helper.unzip_server(path, exec_user["user_id"])
             else:

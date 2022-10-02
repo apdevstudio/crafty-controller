@@ -39,7 +39,7 @@
         <div class="card-body  pt-0">
           <ul class="nav nav-tabs col-md-12 tab-simple-styled " role="tablist">
             <li class="nav-item">
-              <a class="nav-link active" href="/panel/edit_role?id={{ data['role']['role_id'] }}&subpage=config" role="tab" aria-selected="true">
+              <a class="nav-link active" href="" role="tab" aria-selected="true">
                 <i class="fas fa-cogs"></i>{{ translate('rolesConfig', 'config', data['lang']) }}</a>
             </li>
             <!-- <li class="nav-item">
@@ -152,13 +152,13 @@
                                 position: absolute;
                                 bottom: 0;
                                 left: 0;
-                                border-bottom: var(--table-border-width) solid #383e5d;
+                                border-bottom: var(--table-border-width) solid var(--outline);
                                 transition: border-bottom-color 500ms;
                                 padding-bottom: 5px;
                                 user-select: none;
                               }
                               table.rotate-table > tbody td {
-                                border-right: var(--table-border-width) solid #383e5d;
+                                border-right: var(--table-border-width) solid var(--outline);
                                 /* make sure this is at least as wide as sqrt(2) * height of the tallest letter in your font or the headers will overlap each other*/
                                 min-width: 30px;
                                 padding-top: 2px;

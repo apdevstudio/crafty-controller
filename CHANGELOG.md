@@ -1,5 +1,5 @@
 # Changelog
-## --- [4.0.13] - 2022/TBD
+## --- [4.0.16] - 2022/TBD
 ### New features
 TBD
 ### Bug fixes
@@ -8,6 +8,44 @@ TBD
 TBD
 ### Lang
 TBD
+<br><br>
+
+## --- [4.0.15] - 2022/10/02
+### New features
+- Base Theme Switching (Dark, Light, Default) 🤩🎨 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/471))
+- Upload Zip functionality for server imports 🏗️🎉 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/472))
+### Bug fixes
+- Fix traceback on basic schedule with "days" interval ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/469))
+- Fix bad method call with API stdin ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/470))<br>
+    *(Thank you ['IWant2Tryhard'](https://github.com/MyNameTsThad) for catching that 🐛)*
+- Fix clients variable as static to prevent crash if client list changed while sending a websocket ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/473))
+<br><br>
+
+## --- [4.0.14] - 2022/09/23
+### Bug fixes
+- HOTFIX - Rollback breaking websockets change !461 (self.clients was already a set and we tried to subscript a set of a set) ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/467))
+<br><br>
+
+## --- [4.0.13] - 2022/09/20
+### Bug fixes
+- Fix bug where trying to reconfigure unloaded server would stack ([Commit](https://gitlab.com/crafty-controller/crafty-4/-/commit/1b2fef06fb3b02b76c9506caf7e07e932df95fab) | [Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/460))
+- Fix traceback error when a user click the roles config tab while already on the roles config page; **this is for new role creation only** ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/452))
+- Fix logic issue when removing items from backup exclusions ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/453))
+- Cleanup various JS errors ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/455))
+- Temp fix for `&amp;` issue in pathing and minecraft colour codes ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/457))
+- Cache Gravatar pfp's as to not query every page load ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/459))
+- Fix crash on client list changing while sending websockets ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/461))
+- Set default parent option on edit of reaction schedule ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/462))
+- Fix wtol Nonetype error on server start when 'which java' returns `none` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/463))
+### Tweaks
+- Add button to scroll to bottom of vterm ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/454))
+- Persist schedules and execution commands across backup restores ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/458))
+### Release Testing- Bug fixes
+- Fix bug with logical issues surrounding gravatar caching ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/465))
+- Fix bug where server terminal would not scroll on startup ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/465))
+- Fix issue on post with adding users when no email is included (this also affected editing users) ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/466))
+- Fix issue with schedules allowing days to be more than 30 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/466))
+- Fix issue with schedules when trying to edit a cron task ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/466))
 <br><br>
 
 ## --- [4.0.12] - 2022/09/04

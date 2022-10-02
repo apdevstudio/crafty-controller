@@ -18,6 +18,7 @@ env.bak/
 venv.bak/
 
 .idea/
+/imports/
 /servers/
 /backups/
 /temp/
