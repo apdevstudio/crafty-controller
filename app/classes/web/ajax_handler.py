@@ -476,6 +476,12 @@ class AjaxHandler(BaseHandler):
 
         elif page == "unzip_server":
             path = self.get_argument("path", None)
+            if not path:
+                path = os.path.join(
+                    self.controller.project_root,
+                    "imports",
+                    self.get_argument("file", ""),
+                )
             if Helpers.check_file_exists(path):
                 self.helper.unzip_server(path, exec_user["user_id"])
             else:
