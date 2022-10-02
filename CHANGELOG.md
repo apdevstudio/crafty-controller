@@ -1,9 +1,11 @@
 # Changelog
-## --- [4.0.15] - 2022/TBD
+## --- [4.0.15] - 2022/10/02
 ### New features
 TBD
 ### Bug fixes
-TBD
+- Fix traceback on basic schedule with "days" interval ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/469))
+- Fix bad method call with API stdin ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/470))<br>
+    *(Thank you ['IWant2Tryhard'](https://github.com/MyNameTsThad) for catching that 🐛)*
 ### Tweaks
 TBD
 ### Lang

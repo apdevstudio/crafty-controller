@@ -1702,7 +1702,7 @@ class PanelHandler(BaseHandler):
                 # only check for time if it's number of days
                 if interval_type == "days":
                     sch_time = bleach.clean(self.get_argument("time", None))
-                    if interval > 30:
+                    if int(interval) > 30:
                         self.redirect(
                             "/panel/error?error=Invalid argument."
                             " Days must be 30 or fewer."
@@ -1870,7 +1870,7 @@ class PanelHandler(BaseHandler):
                 # only check for time if it's number of days
                 if interval_type == "days":
                     sch_time = bleach.clean(self.get_argument("time", None))
-                    if interval > 30:
+                    if int(interval) > 30:
                         self.redirect(
                             "/panel/error?error=Invalid argument."
                             " Days must be 30 or fewer."
