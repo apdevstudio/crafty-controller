@@ -400,6 +400,10 @@ class Helpers:
         return False
 
     @staticmethod
+    def get_themes():
+        return ["default", "dark", "light", "ronald"]
+
+    @staticmethod
     def get_local_ip():
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:

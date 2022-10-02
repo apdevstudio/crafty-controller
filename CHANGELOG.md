@@ -1,4 +1,15 @@
 # Changelog
+## --- [4.0.15] - 2022/10/02
+### New features
+- Base Theme Switching (Dark, Light, Default) 🤩🎨 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/471))
+- Upload Zip functionality for server imports 🏗️🎉 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/472))
+### Bug fixes
+- Fix traceback on basic schedule with "days" interval ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/469))
+- Fix bad method call with API stdin ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/470))<br>
+    *(Thank you ['IWant2Tryhard'](https://github.com/MyNameTsThad) for catching that 🐛)*
+- Fix clients variable as static to prevent crash if client list changed while sending a websocket ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/473))
+<br><br>
+
 ## --- [4.0.14] - 2022/09/23
 ### Bug fixes
 - HOTFIX - Rollback breaking websockets change !461 (self.clients was already a set and we tried to subscript a set of a set) ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/467))

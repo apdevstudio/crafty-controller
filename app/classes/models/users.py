@@ -43,6 +43,7 @@ class Users(BaseModel):
     hints = BooleanField(default=True)
     manager = IntegerField(default=None, null=True)
     pfp = CharField(default="/static/assets/images/faces-clipart/pic-3.png")
+    theme = CharField(default="default")
 
     class Meta:
         table_name = "users"
@@ -210,6 +211,7 @@ class HelperUsers:
         email: t.Optional[str] = None,
         enabled: bool = True,
         superuser: bool = False,
+        theme: str = "default",
     ) -> str:
         if password is not None:
             pw_enc = self.helper.encode_pass(password)
@@ -225,6 +227,7 @@ class HelperUsers:
                 Users.superuser: superuser,
                 Users.created: Helpers.get_time_as_string(),
                 Users.manager: manager,
+                Users.theme: theme,
             }
         ).execute()
         return user_id
