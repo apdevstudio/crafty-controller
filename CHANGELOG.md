@@ -2,14 +2,11 @@
 ## --- [4.0.15] - 2022/10/02
 ### New features
 - Base Theme Switching (Dark, Light, Default) 🤩🎨 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/471))
+- Upload Zip functionality for server imports 🏗️🎉 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/472))
 ### Bug fixes
 - Fix traceback on basic schedule with "days" interval ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/469))
 - Fix bad method call with API stdin ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/470))<br>
     *(Thank you ['IWant2Tryhard'](https://github.com/MyNameTsThad) for catching that 🐛)*
-### Tweaks
-TBD
-### Lang
-TBD
 <br><br>
 
 ## --- [4.0.14] - 2022/09/23
