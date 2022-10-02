@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ data['lang_page'] }}">
+<html lang="{{ data['lang_page'] }}" class="{{data['user_data'].get('theme', 'default')}}">
 
 <head>
   <!-- Required meta tags -->
@@ -54,7 +54,7 @@
 
 </head>
 
-<body class="dark-theme">
+<body>
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
     <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -127,7 +127,7 @@
       width: 180px;
       margin-left: 10px;
       margin-right: 10px;
-      background: #282a40;
+      background: var(--card-banner-bg);
       transition: right 0.75s, opacity 0.75s, top 0.75s;
       right: -6rem;
       opacity: 0.1;

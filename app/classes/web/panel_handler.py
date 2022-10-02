@@ -878,6 +878,7 @@ class PanelHandler(BaseHandler):
             page_data["user"]["roles"] = set()
             page_data["user"]["hints"] = True
             page_data["superuser"] = superuser
+            page_data["themes"] = self.helper.get_themes()
 
             if EnumPermissionsCrafty.USER_CONFIG not in exec_user_crafty_permissions:
                 self.redirect(
@@ -1092,6 +1093,7 @@ class PanelHandler(BaseHandler):
             page_data["exec_user"] = exec_user["user_id"]
             page_data["servers_all"] = self.controller.servers.get_all_defined_servers()
             page_data["superuser"] = superuser
+            page_data["themes"] = self.helper.get_themes()
             if page_data["user"]["manager"] is not None:
                 page_data["manager"] = self.controller.users.get_user_by_id(
                     page_data["user"]["manager"]
@@ -2011,6 +2013,7 @@ class PanelHandler(BaseHandler):
             user_id = bleach.clean(self.get_argument("id", None))
             user = self.controller.users.get_user_by_id(user_id)
             username = bleach.clean(self.get_argument("username", None).lower())
+            theme = bleach.clean(self.get_argument("theme", "default"))
             if (
                 username != self.controller.users.get_user_by_id(user_id)["username"]
                 and username in self.controller.users.get_all_usernames()
@@ -2077,6 +2080,7 @@ class PanelHandler(BaseHandler):
                         "email": email,
                         "lang": lang,
                         "hints": hints,
+                        "theme": theme,
                     }
                     self.controller.users.update_user(user_id, user_data=user_data)
 
@@ -2113,6 +2117,7 @@ class PanelHandler(BaseHandler):
                     "lang": lang,
                     "superuser": superuser,
                     "hints": hints,
+                    "theme": theme,
                 }
                 user_crafty_data = {
                     "permissions_mask": permissions_mask,
@@ -2224,6 +2229,7 @@ class PanelHandler(BaseHandler):
             password1 = bleach.clean(self.get_argument("password1", None))
             email = bleach.clean(self.get_argument("email", "default@example.com"))
             enabled = int(float(self.get_argument("enabled", "0")))
+            theme = bleach.clean(self.get_argument("theme"), "default")
             hints = True
             lang = bleach.clean(
                 self.get_argument("lang", self.helper.get_setting("language"))
@@ -2279,6 +2285,7 @@ class PanelHandler(BaseHandler):
                 email=email,
                 enabled=enabled,
                 superuser=new_superuser,
+                theme=theme,
             )
             user_data = {"roles": roles, "lang": lang, "hints": True}
             user_crafty_data = {
