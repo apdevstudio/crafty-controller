@@ -401,7 +401,7 @@ class Helpers:
 
     @staticmethod
     def get_themes():
-        return ["default", "dark", "light", "ronald"]
+        return ["default", "dark", "light", "ronald", "pink"]
 
     @staticmethod
     def get_local_ip():

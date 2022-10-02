@@ -236,6 +236,62 @@ root,
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
+:root.pink {
+  /*CHANGE THESE FOR THEMES*/
+  --tooltip-bg: rgb(255, 162, 249);
+  --select-bg: hsl(301, 100%, 92%);
+  --card-banner-bg: rgb(243, 170, 221);
+  --deep-bg: rgb(209, 128, 185);
+  --dropdown-bg: rgb(220, 137, 190);
+  --ram-bg: #87587b;
+  --base-text: rgb(255, 255, 255);
+  --outline: #c6c6c6;
+  /*END THEME VARIATION*/
+  --blue: #00aeef;
+  --indigo: #6610f2;
+  --purple: #ab8ce4;
+  --pink: #E91E63;
+  --red: #ff0017;
+  --orange: #fb9678;
+  --yellow: #ffd500;
+  --green: #3bd949;
+  --teal: #58d8a3;
+  --cyan: #57c7d4;
+  --white: #ffffff;
+  --gray: #6c757d;
+  --gray-dark: #292b2c;
+  --blue: #00aeef;
+  --indigo: #6610f2;
+  --purple: #ab8ce4;
+  --pink: #E91E63;
+  --red: #ff0017;
+  --orange: #fb9678;
+  --yellow: #ffd500;
+  --green: #3bd949;
+  --teal: #58d8a3;
+  --cyan: #57c7d4;
+  --white: #ffffff;
+  --white-smoke: #f3f5f6;
+  --gray: #6c757d;
+  --gray-light: #8ba2b5;
+  --gray-lightest: #f7f7f9;
+  --primary: #2196f3;
+  --secondary: #dde4eb;
+  --success: #19d895;
+  --info: #8862e0;
+  --warning: #ffaf00;
+  --danger: #ff6258;
+  --light: #fbfbfb;
+  --dark: #252C46;
+  --breakpoint-xs: 0;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
 *,
 *::before,
 *::after {
