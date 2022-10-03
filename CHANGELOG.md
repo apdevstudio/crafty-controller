@@ -3,9 +3,9 @@
 ### New features
 TBD
 ### Bug fixes
-TBD
+- Fix conditional issue with zip imports/uploads ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/476))
 ### Tweaks
-- Fixed the sidebar to not move when scrolling ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/475))
+- Fix sidebar to not move when scrolling ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/475))
 ### Lang
 TBD
 <br><br>
