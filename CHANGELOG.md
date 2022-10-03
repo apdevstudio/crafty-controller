@@ -5,7 +5,7 @@ TBD
 ### Bug fixes
 TBD
 ### Tweaks
-TBD
+- Fixed the sidebar to not move when scrolling ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/475))
 ### Lang
 TBD
 <br><br>
