@@ -696,7 +696,9 @@
   }
 
   function getTreeView(path) {
-    if (document.getElementById("lower_half").visibility == "hidden") {
+    const styles = window.getComputedStyle(document.getElementById("lower_half"));
+    //If this value is still hidden we know the user is executing a zip import and not an upload
+    if (styles.visibility === "hidden") {
       document.getElementById('zip_submit').disabled = false;
     } else {
       document.getElementById('upload_submit').disabled = false;
