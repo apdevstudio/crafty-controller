@@ -97,7 +97,7 @@ class ApiServersServerTasksTaskIndexHandler(BaseApiHandler):
         if str(data.get("parent")) == str(task_id) and data.get("parent") is not None:
             data["parent"] = None
 
-        HelpersManagement.update_scheduled_task(task_id, data)
+        self.tasks_manager.update_job(task_id, data)
 
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],
