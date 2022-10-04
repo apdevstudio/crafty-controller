@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="/static/assets/vendors/typicons/typicons.css">
   <link rel="stylesheet" href="/static/assets/vendors/fontawesome5/css/all.css">
   <link rel="stylesheet" type="text/css"
-    href="https://cdn.datatables.net/v/bs4/dt-1.10.22/fh-3.1.7/r-2.2.6/sc-2.0.3/sp-1.2.2/datatables.min.css" />
+        href="https://cdn.datatables.net/v/bs4/dt-1.10.22/fh-3.1.7/r-2.2.6/sc-2.0.3/sp-1.2.2/datatables.min.css" />
   <link rel="stylesheet" href="/static/assets/vendors/css/vendor.bundle.base.css">
   <link rel="stylesheet" href="/static/assets/css/crafty.css">
 
@@ -41,14 +41,14 @@
   <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
   <script defer src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"
-    integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+          integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"
-    integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+          integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/1.2.1/chartjs-plugin-zoom.min.js"
-    integrity="sha512-klQv6lz2YR+MecyFYMFRuU2eAl8IPRo6zHnsc9n142TJuJHS8CG0ix4Oq9na9ceeg1u5EkBfZsFcV3U7J51iew=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+          integrity="sha512-klQv6lz2YR+MecyFYMFRuU2eAl8IPRo6zHnsc9n142TJuJHS8CG0ix4Oq9na9ceeg1u5EkBfZsFcV3U7J51iew=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <!-- End Bootstrap Toggle -->
 
@@ -82,32 +82,33 @@
         {% include notify.html %}
 
         <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
-          data-toggle="offcanvas">
+                data-toggle="offcanvas">
           <span class="mdi mdi-menu"></span>
         </button>
       </div>
     </nav>
 
-    {% include main_menu.html %}
+    <div class="container-fluid page-body-wrapper">
+      {% include main_menu.html %}
 
-    <div class="main-panel">
+      <div class="main-panel">
 
-      <div class="warnings">
-        <noscript class="noscript-warning" style="padding: 20px; background-color: rgb(247, 151, 15);">
-          <div>{% raw translate('base', 'doesNotWorkWithoutJavascript', data['lang']) %}</div>
-        </noscript>
+        <div class="warnings">
+          <noscript class="noscript-warning" style="padding: 20px; background-color: rgb(247, 151, 15);">
+            <div>{% raw translate('base', 'doesNotWorkWithoutJavascript', data['lang']) %}</div>
+          </noscript>
+        </div>
+
+        {% block content %}
+        {% end %}
+
+        {% include footer.html %}
+
       </div>
-
-      {% block content %}
-      {% end %}
-
-      {% include footer.html %}
+      <!-- main-panel ends -->
 
     </div>
-    <!-- main-panel ends -->
-
-  </div>
-  <!-- page-body-wrapper ends -->
+    <!-- page-body-wrapper ends -->
   </div>
 
 
@@ -173,7 +174,7 @@
   <script src="/static/assets/js/shared/hoverable-collapse.js"></script>
   <script src="/static/assets/js/shared/misc.js"></script>
   <script type="text/javascript"
-    src="https://cdn.datatables.net/v/bs4/dt-1.10.22/fh-3.1.7/r-2.2.6/sc-2.0.3/sp-1.2.2/datatables.min.js"></script>
+          src="https://cdn.datatables.net/v/bs4/dt-1.10.22/fh-3.1.7/r-2.2.6/sc-2.0.3/sp-1.2.2/datatables.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>
   <script type="text/javascript" src="/static/assets/js/motd.js"></script>
 
