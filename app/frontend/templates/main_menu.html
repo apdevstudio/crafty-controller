@@ -56,11 +56,9 @@
     if (isExtraLargeBreakpoint()) {
       let value = localStorage.getItem('crafty-sidebar-expanded') !== 'false';
       $('body').toggleClass('sidebar-icon-only', !value);
-      $('body').toggleClass('sidebar-fixed', true);
       localStorage.setItem('crafty-sidebar-expanded', value);
     } else if (isLargeBreakpoint()) {
       $('body').toggleClass('sidebar-icon-only', true);
-      $('body').toggleClass('sidebar-fixed', true);
     }
   }
 </script>

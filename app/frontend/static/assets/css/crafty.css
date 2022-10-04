@@ -8,6 +8,26 @@
     color: var(--base-text)
 }
 
+nav.sidebar {
+    position: fixed;
+}
+
+
+@media (min-width: 992px) {
+    nav.sidebar {
+        position: fixed;
+        max-height: auto;
+    }
+
+    .main-panel {
+        margin-left: 270px;
+    }
+
+    .sidebar-icon-only .main-panel {
+        margin-left: 70px;
+    }
+}
+
 
 .sidebar>.nav>.nav-item:not(.nav-profile)>.nav-link:before {
     content: none;
