@@ -4,7 +4,6 @@ import json
 import logging
 
 from jsonschema import ValidationError, validate
-from app.classes.models.management import HelpersManagement
 from app.classes.models.server_permissions import EnumPermissionsServer
 
 from app.classes.web.base_api_handler import BaseApiHandler
