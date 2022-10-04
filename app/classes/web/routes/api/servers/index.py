@@ -648,7 +648,7 @@ class ApiServersIndexHandler(BaseApiHandler):
 
         try:
             data = orjson.loads(self.request.body)
-        except orjson.decoder.JSONDecodeError as e:
+        except orjson.JSONDecodeError as e:
             return self.finish_json(
                 400, {"status": "error", "error": "INVALID_JSON", "error_data": str(e)}
             )
@@ -664,7 +664,22 @@ class ApiServersIndexHandler(BaseApiHandler):
                     "error_data": str(e),
                 },
             )
-
+        # Check to make sure port is allowable
+        if data["monitoring_type"] == "minecraft_java":
+            try:
+                port = data["minecraft_java_monitoring_data"]["port"]
+            except:
+                port = 25565
+        else:
+            try:
+                port = data["minecraft_bedrock_monitoring_data"]["port"]
+            except:
+                port = 19132
+        if port > 65535 or port < 1:
+            self.finish_json(
+                405, {"status": "error", "error": "DATA CONSTRAINT FAILED"}
+            )
+            return
         new_server_id, new_server_uuid = self.controller.create_api_server(
             data, user["user_id"]
         )
