@@ -75,15 +75,15 @@
 }
 
 .mc-log-time {
-    color: #19d895;
+    color: var(--success);
 }
 
 .mc-log-info {
-    color: #8862e0;
+    color: var(--info);
 }
 
 .mc-log-warn {
-    color: #ffaf00;
+    color: var(--warning);
 }
 
 .mc-log-error {
@@ -95,7 +95,7 @@
 }
 
 .mc-log-keyword {
-    color: #2196f3;
+    color: var(--primary);
 }
 
 .scrollable-element {
