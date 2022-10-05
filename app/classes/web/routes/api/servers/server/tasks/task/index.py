@@ -4,7 +4,6 @@ import json
 import logging
 
 from jsonschema import ValidationError, validate
-from app.classes.models.management import HelpersManagement
 from app.classes.models.server_permissions import EnumPermissionsServer
 
 from app.classes.web.base_api_handler import BaseApiHandler
@@ -97,7 +96,7 @@ class ApiServersServerTasksTaskIndexHandler(BaseApiHandler):
         if str(data.get("parent")) == str(task_id) and data.get("parent") is not None:
             data["parent"] = None
 
-        HelpersManagement.update_scheduled_task(task_id, data)
+        self.tasks_manager.update_job(task_id, data)
 
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],
