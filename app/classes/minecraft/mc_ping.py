@@ -139,7 +139,7 @@ def ping(ip, port):
     try:
         sock.connect((ip, port))
 
-    except socket.error:
+    except:
         return False
 
     try:

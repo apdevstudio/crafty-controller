@@ -1501,6 +1501,12 @@ class PanelHandler(BaseHandler):
                 execution_command = self.get_argument("execution_command", None)
                 server_ip = self.get_argument("server_ip", None)
                 server_port = self.get_argument("server_port", None)
+                if int(server_port) < 1 or int(server_port) > 65535:
+                    self.redirect(
+                        "/panel/error?error=Constraint Error: "
+                        "Port must be greater than 0 and less than 65535"
+                    )
+                    return
                 executable_update_url = self.get_argument("executable_update_url", "")
                 show_status = int(float(self.get_argument("show_status", "0")))
             else:
