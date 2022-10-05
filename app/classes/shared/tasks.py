@@ -438,13 +438,13 @@ class TasksManager:
         ):
             if not "enabled" in job_data:
                 return
+
+            if job_data["enabled"] is True:
+                job_data = HelpersManagement.get_scheduled_task(sch_id)
+                job_data["server_id"] = job_data["server_id"]["server_id"]
             else:
-                if job_data["enabled"] is True:
-                    job_data = HelpersManagement.get_scheduled_task(sch_id)
-                    job_data["server_id"] = job_data["server_id"]["server_id"]
-                else:
-                    self.scheduler.remove_job(str(sch_id))
-                    return
+                self.scheduler.remove_job(str(sch_id))
+                return
 
         try:
             if job_data["interval"] != "reaction":
