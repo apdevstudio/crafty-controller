@@ -53,12 +53,10 @@
 
       More code in `app/frontend/static/assets/js/shared/misc.js` and `app/frontend/templates/base.html`
     */
-    if (isExtraLargeBreakpoint()) {
+    if (isLargeBreakpoint()) {
       let value = localStorage.getItem('crafty-sidebar-expanded') !== 'false';
       $('body').toggleClass('sidebar-icon-only', !value);
       localStorage.setItem('crafty-sidebar-expanded', value);
-    } else if (isLargeBreakpoint()) {
-      $('body').toggleClass('sidebar-icon-only', true);
     }
   }
 </script>
