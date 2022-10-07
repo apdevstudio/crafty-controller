@@ -55,43 +55,42 @@
 </head>
 
 <body>
-  <!-- partial:partials/_navbar.html -->
-  <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-    <div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center">
-      <a class="navbar-brand brand-logo" href="/panel/dashboard">
-        <img src="/static/assets/images/logo_long.svg" alt="logo" /> </a>
-      <a class="navbar-brand brand-logo-mini" href="/panel/dashboard">
-        <img src="/static/assets/images/logo_small.svg" alt="logo" /> </a>
-    </div>
-    <div class="navbar-menu-wrapper d-flex align-items-center">
-      <style>
-        body:not(.sidebar-icon-only) .navbar-toggler .mdi-chevron-double-right {
-          display: none;
-        }
-
-        body.sidebar-icon-only .navbar-toggler .mdi-chevron-double-left {
-          display: none;
-        }
-      </style>
-      <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
-        <span class="mdi mdi-chevron-double-left"></span>
-        <span class="mdi mdi-chevron-double-right"></span>
-      </button>
-
-      {% include notify.html %}
-
-      <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
-              data-toggle="offcanvas">
-        <span class="mdi mdi-menu"></span>
-      </button>
-    </div>
-  </nav>
-
   <div class="container-scroller">
-    <div class="flex-column">
-      <div class="sticky-sidebar">
-        {% include main_menu.html %}
+    <!-- partial:partials/_navbar.html -->
+    <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center">
+        <a class="navbar-brand brand-logo" href="/panel/dashboard">
+          <img src="/static/assets/images/logo_long.svg" alt="logo" /> </a>
+        <a class="navbar-brand brand-logo-mini" href="/panel/dashboard">
+          <img src="/static/assets/images/logo_small.svg" alt="logo" /> </a>
       </div>
+      <div class="navbar-menu-wrapper d-flex align-items-center">
+        <style>
+          body:not(.sidebar-icon-only) .navbar-toggler .mdi-chevron-double-right {
+            display: none;
+          }
+
+          body.sidebar-icon-only .navbar-toggler .mdi-chevron-double-left {
+            display: none;
+          }
+        </style>
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+          <span class="mdi mdi-chevron-double-left"></span>
+          <span class="mdi mdi-chevron-double-right"></span>
+        </button>
+
+        {% include notify.html %}
+
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+                data-toggle="offcanvas">
+          <span class="mdi mdi-menu"></span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="container-fluid page-body-wrapper">
+      {% include main_menu.html %}
+
       <div class="main-panel">
 
         <div class="warnings">
@@ -107,6 +106,7 @@
 
       </div>
       <!-- main-panel ends -->
+
     </div>
     <!-- page-body-wrapper ends -->
   </div>

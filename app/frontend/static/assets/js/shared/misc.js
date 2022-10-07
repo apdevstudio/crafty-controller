@@ -197,6 +197,12 @@ if ($("canvas").length) {
 						!body.hasClass("sidebar-icon-only")
 					);
 				}
+				if (vw >= 992 && vw < 1200) {
+					localStorage.setItem(
+						"crafty-sidebar-expanded",
+						!body.hasClass("sidebar-icon-only")
+					);
+				}
 			}
 		});
 
