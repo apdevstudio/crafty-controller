@@ -27,7 +27,7 @@ if ($("body").hasClass("dark-theme")) {
 	var chartFontcolor = "#b9c0d3";
 	var chartGridLineColor = "#383e5d";
 } else {
-	var chartFontcolor = "#6c757d";
+	var chartFontcolor = "var(--gray)";
 	var chartGridLineColor = "rgba(0,0,0,0.08)";
 }
 if ($("canvas").length) {
