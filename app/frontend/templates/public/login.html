@@ -1,80 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Crafty Controller</title>
-    <!-- plugins:css -->
-    <link rel="stylesheet" href="/static/assets/vendors/mdi/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="/static/assets/vendors/flag-icon-css/css/flag-icon.min.css">
-    <link rel="stylesheet" href="/static/assets/vendors/ti-icons/css/themify-icons.css">
-    <link rel="stylesheet" href="/static/assets/vendors/typicons/typicons.css">
-    <link rel="stylesheet" href="/static/assets/vendors/css/vendor.bundle.base.css">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <!-- End Plugin css for this page -->
-    <!-- Layout styles -->
-    <link rel="stylesheet" href="/static/assets/css/dark/style.css">
-    <!-- End Layout styles -->
-    <link rel="shortcut icon" type="image/svg+xml" href="/static/assets/images/logo_small.svg">
-    <link rel="alternate icon" href="/static/assets/images/favicon.png" />
-  </head>
-  <body class="dark-theme">
-    <div class="container-scroller">
-      <div class="container-fluid page-body-wrapper full-page-wrapper">
-        <div class="content-wrapper d-flex align-items-center auth auth-bg-1 theme-one">
-          <div class="row w-100">
-            <div class="col-lg-4 mx-auto">
 
-              <div class="auto-form-wrapper login-modal">
-                <div class="text-center">
-                  <img src="/static/assets/images/logo_long.svg">
-                </div>
-                <style>
-                  .login-modal {
-                    border-radius: 0.4rem !important;
-                    box-shadow: 0 8px 12px 0 hsla(0, 0%, 0%, 0.2) !important;
-                  }
-                  .login-text-input {
-                    border: none !important;
-                    background-color: hsl(234, 30%, 45%);
-                    color: #ffffff !important;
-                  }
-                  .login-text-input:hover,
-                  .login-text-input:focus {
-                    background-color: hsl(234, 30%, 39%) !important;
-                  }
-                  .login-input {
-                    border-radius: 0.4rem !important;
-                    box-shadow: 0 8px 12px 0 hsla(0, 0%, 0%, 0.2);
-                    transition: all 0.3s ease-in-out;
-                  }
-                  .login-input:hover,
-                  .login-input:focus {
-                    box-shadow: 0 12px 16px 0 hsla(0, 0%, 0%, 0.4);
-                  }
-                </style>
-                {% if data['query'] %}
-                <form action="/public/login?{{ data['query'] }}" method="post">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Crafty Controller</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="/static/assets/vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="/static/assets/vendors/flag-icon-css/css/flag-icon.min.css">
+  <link rel="stylesheet" href="/static/assets/vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="/static/assets/vendors/typicons/typicons.css">
+  <link rel="stylesheet" href="/static/assets/vendors/css/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <!-- End Plugin css for this page -->
+  <!-- Layout styles -->
+  <link rel="stylesheet" href="/static/assets/css/dark/style.css">
+  <!-- End Layout styles -->
+  <link rel="shortcut icon" type="image/svg+xml" href="/static/assets/images/logo_small.svg">
+  <link rel="alternate icon" href="/static/assets/images/favicon.png" />
+</head>
+
+<body class="dark-theme">
+  <div class="container-scroller">
+    <div class="container-fluid page-body-wrapper full-page-wrapper">
+      <div class="content-wrapper d-flex align-items-center auth auth-bg-1 theme-one">
+        <div class="row w-100">
+          <div class="col-lg-4 mx-auto">
+
+            <div class="auto-form-wrapper login-modal">
+              <div class="text-center">
+                <img src="/static/assets/images/logo_long.svg">
+              </div>
+              <style>
+                .login-modal {
+                  border-radius: 0.4rem !important;
+                  box-shadow: 0 8px 12px 0 hsla(0, 0%, 0%, 0.2) !important;
+                }
+
+                .login-text-input {
+                  border: none !important;
+                  background-color: hsl(234, 30%, 45%);
+                  color: var(--white) !important;
+                }
+
+                .login-text-input:hover,
+                .login-text-input:focus {
+                  background-color: hsl(234, 30%, 39%) !important;
+                }
+
+                .login-input {
+                  border-radius: 0.4rem !important;
+                  box-shadow: 0 8px 12px 0 hsla(0, 0%, 0%, 0.2);
+                  transition: all 0.3s ease-in-out;
+                }
+
+                .login-input:hover,
+                .login-input:focus {
+                  box-shadow: 0 12px 16px 0 hsla(0, 0%, 0%, 0.4);
+                }
+              </style>
+              {% if data['query'] %}
+              <form action="/public/login?{{ data['query'] }}" method="post">
                 {% else %}
                 <form action="/public/login" method="post">
-                {% end %}
+                  {% end %}
                   {% raw xsrf_form_html() %}
                   <div class="form-group">
                     <label class="label">{{ translate('login', 'username', data['lang']) }}</label>
                     <div class="input-group">
-                      <input type="text" class="form-control login-text-input login-input" placeholder="{{ translate('login', 'username', data['lang']) }}" name="username" id="username" required="true">
+                      <input type="text" class="form-control login-text-input login-input"
+                        placeholder="{{ translate('login', 'username', data['lang']) }}" name="username" id="username"
+                        required="true">
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="label">{{ translate('login', 'password', data['lang']) }}</label>
                     <div class="input-group">
-                      <input type="password" class="form-control login-text-input login-input" placeholder="{{ translate('login', 'password', data['lang']) }}" name="password" id="password" required="true">
+                      <input type="password" class="form-control login-text-input login-input"
+                        placeholder="{{ translate('login', 'password', data['lang']) }}" name="password" id="password"
+                        required="true">
                     </div>
                   </div>
                   <div class="form-group">
-                    <button class="login-input btn btn-primary submit-btn btn-block">{{ translate('login', 'login', data['lang']) }}</button>
+                    <button class="login-input btn btn-primary submit-btn btn-block">{{ translate('login', 'login',
+                      data['lang']) }}</button>
                   </div>
                   {% if error_msg is not None %}
                   <fieldset style="color: red; text-align: center;">
@@ -85,33 +96,36 @@
                     <div class="form-check form-check-flat mt-0">
                       &nbsp;
                     </div>
-                    <a href="#" class="text-small forgot-password ">{{ translate('login', 'forgotPassword', data['lang']) }}</a>
+                    <a href="#" class="text-small forgot-password ">{{ translate('login', 'forgotPassword',
+                      data['lang']) }}</a>
                   </div>
 
                   <div class="text-block text-center my-3">
-                    <span class="text-small font-weight-semibold"><a href="https://craftycontrol.com/">Crafty Control {{data['version'] }}</a> </span>
+                    <span class="text-small font-weight-semibold"><a href="https://craftycontrol.com/">Crafty Control
+                        {{data['version'] }}</a> </span>
                   </div>
                 </form>
 
-              </div>
-
             </div>
+
           </div>
         </div>
-        <!-- content-wrapper ends -->
       </div>
-      <!-- page-body-wrapper ends -->
+      <!-- content-wrapper ends -->
     </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    <script src="/static/assets/vendors/js/vendor.bundle.base.js"></script>
-    <!-- endinject -->
-    <!-- inject:js -->
-    <script src="/static/assets/js/shared/off-canvas.js"></script>
-    <script src="/static/assets/js/shared/hoverable-collapse.js"></script>
-    <script src="/static/assets/js/shared/misc.js"></script>
-    <script src="/static/assets/js/shared/settings.js"></script>
-    <script src="/static/assets/js/shared/todolist.js"></script>
-    <!-- endinject -->
-  </body>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+  <!-- plugins:js -->
+  <script src="/static/assets/vendors/js/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- inject:js -->
+  <script src="/static/assets/js/shared/off-canvas.js"></script>
+  <script src="/static/assets/js/shared/hoverable-collapse.js"></script>
+  <script src="/static/assets/js/shared/misc.js"></script>
+  <script src="/static/assets/js/shared/settings.js"></script>
+  <script src="/static/assets/js/shared/todolist.js"></script>
+  <!-- endinject -->
+</body>
+
 </html>

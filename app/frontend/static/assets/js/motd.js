@@ -15,7 +15,7 @@ var styleMap = {
     '§c': 'color:#FF5555',
     '§d': 'color:#FF55FF',
     '§e': 'color:#FFFF55',
-    '§f': 'color:#FFFFFF',
+    '§f': 'color:var(--white)',
     '§l': 'font-weight:bold',
     '§m': 'text-decoration:line-through',
     '§n': 'text-decoration:underline',
