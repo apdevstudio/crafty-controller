@@ -367,6 +367,10 @@ class HelpersManagement:
             }
         return conf
 
+    @staticmethod
+    def remove_backup_config(server_id):
+        Backups.delete().where(Backups.server_id == server_id).execute()
+
     def set_backup_config(
         self,
         server_id: int,

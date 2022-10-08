@@ -420,6 +420,7 @@ class Controller:
             and root_create_data["create_type"] == "download_jar"
         ):
             self.server_jars.download_jar(
+                create_data["category"],
                 create_data["type"],
                 create_data["version"],
                 full_jar_path,
