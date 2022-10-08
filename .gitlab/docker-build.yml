@@ -99,10 +99,9 @@ docker-build-prod:
       --build-arg "BUILD_DATE=$(date +"%Y-%m-%dT%H:%M:%SZ")"
       --build-arg "BUILD_REF=${CI_COMMIT_SHA}"
       --build-arg "CRAFTY_VER=${VERSION}"
-      --tag "crafty-build"
+      --tag "$CI_REGISTRY_IMAGE"
       --platform linux/arm64/v8,linux/amd64 .
-    - docker image tag "crafty-build" "$CI_REGISTRY_IMAGE"
-    - docker image tag "crafty-build" "$CI_REGISTRY_IMAGE:${VERSION}"
+    - docker image tag "$CI_REGISTRY_IMAGE" "$CI_REGISTRY_IMAGE:${VERSION}"
     - docker image push -a
   after_script:
     - |
