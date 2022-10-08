@@ -17,7 +17,6 @@ docker-build-dev:
       MAJOR=$(cat app/config/version.json | jq '.major' )
       MINOR=$(cat app/config/version.json | jq '.minor' )
       SUB=$(cat app/config/version.json | jq '.sub' )
-      META=$(cat app/config/version.json | jq -r '.meta' )
     - |
       apk --no-cache add curl
       latest_tag=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | sed -Ene '/^ *"tag_name": *"(v.+)",$/s//\1/p')
@@ -33,7 +32,7 @@ docker-build-dev:
   script:
     - |
       tag=":$CI_COMMIT_REF_SLUG"
-      VERSION="${MAJOR}.${MINOR}.${SUB}-${META}"
+      VERSION="${MAJOR}.${MINOR}.${SUB}"
     - |
       echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
       echo "Crafty Version: $VERSION"
@@ -72,7 +71,6 @@ docker-build-prod:
       MAJOR=$(cat app/config/version.json | jq '.major' )
       MINOR=$(cat app/config/version.json | jq '.minor' )
       SUB=$(cat app/config/version.json | jq '.sub' )
-      META=$(cat app/config/version.json | jq -r '.meta' )
     - |
       apk --no-cache add curl
       latest_tag=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | sed -Ene '/^ *"tag_name": *"(v.+)",$/s//\1/p')
@@ -88,7 +86,7 @@ docker-build-prod:
   script:
     - |
       tag=""
-      VERSION="${MAJOR}.${MINOR}.${SUB}-${META}"
+      VERSION="${MAJOR}.${MINOR}.${SUB}"
     - |
       echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
       echo "Crafty Version: $VERSION"

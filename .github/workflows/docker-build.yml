@@ -58,8 +58,7 @@ jobs:
           MAJOR=$(cat app/config/version.json | jq '.major' )
           MINOR=$(cat app/config/version.json | jq '.minor' )
           SUB=$(cat app/config/version.json | jq '.sub' )
-          META=$(cat app/config/version.json | jq -r '.meta' )
-          echo "::set-output name=version::$MAJOR.$MINOR.$SUB-$META"
+          echo "::set-output name=version::$MAJOR.$MINOR.$SUB"
 
       - name: Get branch tag
         id: branch
