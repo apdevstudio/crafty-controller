@@ -1,5 +1,5 @@
 # Changelog
-## --- [4.0.16] - 2022/TBD
+## --- [4.0.16] - 2022/10/09
 ### New features
 TBD
 ### Bug fixes
@@ -7,6 +7,7 @@ TBD
 - Fix API Schedule updates ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/478))
 - Add port constraint for all server creation & api ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/479))
 - Clean up backup configs when deleting servers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/480))
+- Add timeout to socket for servers with incorrect port selection ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/482))
 ### Tweaks
 - Fix sidebar to not move when scrolling ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/481))
 - Add the rest of CSS predefined colors to themes ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/477))
