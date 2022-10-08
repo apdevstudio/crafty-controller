@@ -450,10 +450,9 @@ class Helpers:
         major = version_data.get("major", "?")
         minor = version_data.get("minor", "?")
         sub = version_data.get("sub", "?")
-        meta = version_data.get("meta", "?")
 
         # set some defaults if we don't get version_data from our helper
-        version = f"{major}.{minor}.{sub}-{meta}"
+        version = f"{major}.{minor}.{sub}"
         return str(version)
 
     def encode_pass(self, password):
