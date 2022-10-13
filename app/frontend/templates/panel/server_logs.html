@@ -132,12 +132,16 @@
     //Use textContent for including hidden elements
     for (var i = 0; i < cards.length; i++) {
       if (words.length > 0) {
+        let flag = false;
         for (var k = 0; k < words.length; k++) {
-          if (!cards[i].textContent.toLowerCase().includes(words[k])) {
-            cards[i].classList.remove("is-hidden");
-          } else {
-            cards[i].classList.add("is-hidden");
+          if (cards[i].textContent.toLowerCase().includes(words[k])) {
+            flag = true;
           }
+        }
+        if (!flag) {
+          cards[i].classList.remove("is-hidden");
+        } else {
+          cards[i].classList.add("is-hidden");
         }
       } else {
         cards[i].classList.remove("is-hidden");
@@ -187,7 +191,8 @@
 
   function deleteItem(item) {
     safe_item = sanitize(item);
-    words.splice(words.indexOf(item));
+    console.log(item)
+    words.splice(words.indexOf(item), words.indexOf(item));
     $("#" + safe_item.replaceAll(" ", "-")).remove();
     liveSearch();
     localStorage.setItem("words", JSON.stringify(words))
