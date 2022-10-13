@@ -192,7 +192,7 @@
   function deleteItem(item) {
     safe_item = sanitize(item);
     console.log(item)
-    words.splice(words.indexOf(item), words.indexOf(item));
+    words.splice(words.indexOf(item), 1);
     $("#" + safe_item.replaceAll(" ", "-")).remove();
     liveSearch();
     localStorage.setItem("words", JSON.stringify(words))
