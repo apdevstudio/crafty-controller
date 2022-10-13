@@ -376,6 +376,38 @@ class Helpers:
 
         return default_return
 
+    def set_settings(self, data):
+        try:
+            with open(self.settings_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4)
+
+        except Exception as e:
+            logger.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+            Console.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+            return False
+
+        return True
+
+    def get_all_settings(self):
+        try:
+            with open(self.settings_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+
+        except Exception as e:
+            data = {}
+            logger.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+            Console.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+
+        return data
+
     def set_setting(self, key, new_value):
         try:
             with open(self.settings_file, "r", encoding="utf-8") as f:

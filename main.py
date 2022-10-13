@@ -159,6 +159,7 @@ if __name__ == "__main__":
     logger.info("Initializing all servers defined")
     Console.info("Initializing all servers defined")
     controller.servers.init_all_servers()
+    controller.get_config_diff()
 
     def tasks_starter():
         # start stats logging
