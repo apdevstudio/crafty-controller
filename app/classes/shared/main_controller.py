@@ -267,7 +267,9 @@ class Controller:
             "enable_user_self_delete": False,
         }
         user_config = self.helper.get_all_settings()
+        # Check user's config version
         try:
+            # If they are on the same version there is no need to remove this.
             if user_config["config_ver"] == master_config["config_ver"]:
                 return user_config
             else:
@@ -276,17 +278,22 @@ class Controller:
             logger.debug("No config version found")
         items_to_del = []
 
+        # Iterate through user's config.json and check for
+        # Keys/values that need to be removed
         for key in user_config:
             if key not in master_config.keys():
                 items_to_del.append(key)
 
+        # Remove key/values from user config that were staged
         for item in items_to_del[:]:
             del user_config[item]
 
+        # Add new keys to user config.
         for key, value in master_config.items():
             if key not in user_config.keys():
                 user_config[key] = value
 
+        # Call helper to set updated config.
         self.helper.set_settings(user_config)
 
     def send_log_status(self):
