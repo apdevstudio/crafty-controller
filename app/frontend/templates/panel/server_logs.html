@@ -42,9 +42,16 @@
           <div class="col-md-12">
             <div class="input-group">
               <div id="virt_console" class=""
-                style="font-size: .8em; padding: 5px 10px; border: 1px solid var(--outline); background-color:var(--card-banner-bg);height:500px; overflow: scroll;">
+                style="width: 100%; font-size: .8em; padding: 5px 10px; border: 1px solid var(--outline); background-color:var(--card-banner-bg);height:500px; overflow: scroll;">
               </div>
             </div>
+            <br />
+            <label for="ignore">{{ translate('serverDetails', 'filter', data['lang']) }}</label>
+            <input type="text" class="form-control" name="ignore" id="searchbox" value="" required>
+            <br />
+            <br />
+            <h4>{{ translate('serverDetails', 'filterList', data['lang']) }}</h4>
+            <ul id="ignored-words" style="list-style: None;"></ul>
             <br />
 
 
@@ -55,14 +62,30 @@
     </div>
   </div>
 
-
+  <span class="is-hidden">secret</span>
 </div>
+<style>
+  .is-hidden {
+    display: none;
+    position: fixed !important;
+  }
+</style>
 <!-- content-wrapper ends -->
 
 {% end %}
 
 {% block js %}
 <script>
+  var cards = []
+  if (localStorage.getItem("words")) {
+    try {
+      var words = JSON.parse(localStorage.getItem("words"));
+    } catch {
+      var words = []
+    }
+  } else {
+    var words = [];
+  }
 
   const serverId = new URLSearchParams(document.location.search).get('id')
   function get_server_log() {
@@ -75,6 +98,8 @@
           console.log('Got Log From Server')
           $('#virt_console').html(data);
           scroll();
+          cards = document.querySelectorAll('.box');
+          liveSearch();
         },
       });
     }
@@ -88,8 +113,8 @@
 
   $(document).ready(function () {
     console.log("ready!");
-    get_server_log()
-
+    get_server_log();
+    populateWords();
 
   });
 
@@ -100,6 +125,80 @@
       logview.scrollTop(logview[0].scrollHeight - logview.height());
   }
 
+  function liveSearch() {
+    let search_query = document.getElementById("searchbox").value;
+
+    //Use innerText if all contents are visible
+    //Use textContent for including hidden elements
+    for (var i = 0; i < cards.length; i++) {
+      if (words.length > 0) {
+        for (var k = 0; k < words.length; k++) {
+          if (!cards[i].textContent.toLowerCase().includes(words[k])) {
+            cards[i].classList.remove("is-hidden");
+          } else {
+            cards[i].classList.add("is-hidden");
+          }
+        }
+      } else {
+        cards[i].classList.remove("is-hidden");
+      }
+    }
+  }
+
+  //A little delay
+  let typingTimer;
+  let typeInterval = 500;
+  let searchInput = document.getElementById('searchbox');
+
+  searchInput.addEventListener('keyup', (e) => {
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(liveSearch, typeInterval);
+    let key = e.keyCode;
+    if (key === 13) {
+      let word = document.getElementById("searchbox").value
+      word = word.toLowerCase();
+      if (word === "\\n") {
+        window.alert("Nice try...");
+        document.getElementById("searchbox").value = "";
+        return;
+      }
+      safe_word = sanitize(word)
+      words.push(word);
+      $("#ignored-words").append("<li id=" + safe_word.replaceAll(" ", "-") + "><div class='card-header header-sm d-flex justify-content-between align-items-center'>" + word + "&nbsp;<button class='btn btn-danger' onclick='deleteItem(" + '"' + word + '"' + ")' ><i class='fas fa-trash'></i></button></div></li>")
+      document.getElementById("searchbox").value = "";
+      localStorage.setItem("words", JSON.stringify(words))
+    }
+
+  });
+
+  function sanitize(string) {
+    const map = {
+      '&': '',
+      '<': '',
+      '>': '',
+      '"': '',
+      "'": '',
+      "/": '',
+    };
+    const reg = /[&<>"'/]/ig;
+    string = string.replaceAll("\\", "")
+    return string.replace(reg, (match) => (map[match]));
+  }
+
+  function deleteItem(item) {
+    safe_item = sanitize(item);
+    words.splice(words.indexOf(item));
+    $("#" + safe_item.replaceAll(" ", "-")).remove();
+    liveSearch();
+    localStorage.setItem("words", JSON.stringify(words))
+  }
+
+  function populateWords() {
+    for (var i = 0; i < words.length; i++) {
+      let safe_word = sanitize(words[i]);
+      $("#ignored-words").append("<li id=" + safe_word.replaceAll(" ", "-") + "><div class='card-header header-sm d-flex justify-content-between align-items-center'>" + words[i] + "&nbsp;<button class='btn btn-danger' onclick='deleteItem(" + '"' + words[i] + '"' + ")' ><i class='fas fa-trash'></i></button></div></li>")
+    }
+  }
 
 </script>
 
