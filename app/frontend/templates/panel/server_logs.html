@@ -76,15 +76,14 @@
 
 {% block js %}
 <script>
-  var cards = []
+  var cards = [];
+  var words = [];
   if (localStorage.getItem("words")) {
     try {
-      var words = JSON.parse(localStorage.getItem("words"));
+      words = JSON.parse(localStorage.getItem("words"));
     } catch {
-      var words = []
+      words = [];
     }
-  } else {
-    var words = [];
   }
 
   const serverId = new URLSearchParams(document.location.search).get('id')
@@ -126,25 +125,16 @@
   }
 
   function liveSearch() {
-    let search_query = document.getElementById("searchbox").value;
+    for (let i = 0; i < cards.length; i++) {
+      // Reinitialise line visibility
+      cards[i].classList.remove("is-hidden");
 
-    //Use innerText if all contents are visible
-    //Use textContent for including hidden elements
-    for (var i = 0; i < cards.length; i++) {
-      if (words.length > 0) {
-        let flag = false;
-        for (var k = 0; k < words.length; k++) {
-          if (cards[i].textContent.toLowerCase().includes(words[k])) {
-            flag = true;
-          }
-        }
-        if (!flag) {
-          cards[i].classList.remove("is-hidden");
-        } else {
-          cards[i].classList.add("is-hidden");
-        }
-      } else {
-        cards[i].classList.remove("is-hidden");
+      // If we have no words to filter, continue.
+      if (!words.length) continue;
+
+      // If we find our target word hide the line
+      if (words.some( ai => cards[i].textContent.toLowerCase().includes(ai) )) {
+        cards[i].classList.add("is-hidden");
       }
     }
   }
@@ -157,8 +147,8 @@
   searchInput.addEventListener('keyup', (e) => {
     clearTimeout(typingTimer);
     typingTimer = setTimeout(liveSearch, typeInterval);
-    let key = e.keyCode;
-    if (key === 13) {
+    // On Return/Enter key press
+    if (e.keyCode === 13) {
       let word = document.getElementById("searchbox").value
       word = word.toLowerCase();
       if (word === "\\n") {
@@ -190,7 +180,7 @@
   }
 
   function deleteItem(item) {
-    safe_item = sanitize(item);
+    let safe_item = sanitize(item);
     console.log(item)
     words.splice(words.indexOf(item), 1);
     $("#" + safe_item.replaceAll(" ", "-")).remove();
@@ -199,7 +189,7 @@
   }
 
   function populateWords() {
-    for (var i = 0; i < words.length; i++) {
+    for (let i = 0; i < words.length; i++) {
       let safe_word = sanitize(words[i]);
       $("#ignored-words").append("<li id=" + safe_word.replaceAll(" ", "-") + "><div class='card-header header-sm d-flex justify-content-between align-items-center'>" + words[i] + "&nbsp;<button class='btn btn-danger' onclick='deleteItem(" + '"' + words[i] + '"' + ")' ><i class='fas fa-trash'></i></button></div></li>")
     }
