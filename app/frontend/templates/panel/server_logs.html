@@ -151,12 +151,16 @@
     if (e.keyCode === 13) {
       let word = document.getElementById("searchbox").value
       word = word.toLowerCase();
+      safe_word = sanitize(word)
       if (word === "\\n") {
         window.alert("Nice try...");
         document.getElementById("searchbox").value = "";
         return;
       }
-      safe_word = sanitize(word)
+      if (!safe_word) {
+        window.alert("Illegal character detected")
+        return;
+      }
       words.push(word);
       $("#ignored-words").append("<li id=" + safe_word.replaceAll(" ", "-") + "><div class='card-header header-sm d-flex justify-content-between align-items-center'>" + word + "&nbsp;<button class='btn btn-danger' onclick='deleteItem(" + '"' + word + '"' + ")' ><i class='fas fa-trash'></i></button></div></li>")
       document.getElementById("searchbox").value = "";
@@ -166,24 +170,15 @@
   });
 
   function sanitize(string) {
-    const map = {
-      '&': '',
-      '<': '',
-      '>': '',
-      '"': '',
-      "'": '',
-      "/": '',
-    };
-    const reg = /[&<>"'/]/ig;
-    string = string.replaceAll("\\", "")
-    return string.replace(reg, (match) => (map[match]));
+    return string.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
   }
 
   function deleteItem(item) {
     let safe_item = sanitize(item);
-    console.log(item)
     words.splice(words.indexOf(item), 1);
-    $("#" + safe_item.replaceAll(" ", "-")).remove();
+    if (safe_item) {
+      $("#" + safe_item.replaceAll(" ", "-")).remove();
+    }
     liveSearch();
     localStorage.setItem("words", JSON.stringify(words))
   }
@@ -191,7 +186,7 @@
   function populateWords() {
     for (let i = 0; i < words.length; i++) {
       let safe_word = sanitize(words[i]);
-      $("#ignored-words").append("<li id=" + safe_word.replaceAll(" ", "-") + "><div class='card-header header-sm d-flex justify-content-between align-items-center'>" + words[i] + "&nbsp;<button class='btn btn-danger' onclick='deleteItem(" + '"' + words[i] + '"' + ")' ><i class='fas fa-trash'></i></button></div></li>")
+      $("#ignored-words").append("<li id=" + safe_word.replaceAll(" ", "-") + "><div class='card-header header-sm d-flex justify-content-between align-items-center'>" + words[i] + "&nbsp;<button class='btn btn-danger' onclick='deleteItem(" + '"' + words[i] + '"' + ")' ><i class='fas fa-trash'></i></button></div></li > ")
     }
   }
 
