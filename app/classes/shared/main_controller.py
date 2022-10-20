@@ -419,6 +419,13 @@ class Controller:
             data["create_type"] == "minecraft_java"
             and root_create_data["create_type"] == "download_jar"
         ):
+            server_obj = self.servers.get_server_obj(new_server_id)
+            url = (
+                f"https://serverjars.com/api/fetchJar/{create_data['category']}"
+                f"/{create_data['type']}/{create_data['version']}"
+            )
+            server_obj.executable_update_url = url
+            self.servers.update_server(server_obj)
             self.server_jars.download_jar(
                 create_data["category"],
                 create_data["type"],
@@ -502,7 +509,10 @@ class Controller:
             user_id,
             server_type="minecraft-java",
         )
-
+        server_obj = self.servers.get_server_obj(new_id)
+        url = f"https://serverjars.com/api/fetchJar/{jar}/{server}/{version}"
+        server_obj.executable_update_url = url
+        self.servers.update_server(server_obj)
         # download the jar
         self.server_jars.download_jar(
             jar, server, version, os.path.join(server_dir, server_file), new_id
