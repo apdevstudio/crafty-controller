@@ -76,7 +76,7 @@
 
 {% block js %}
 <script>
-  var cards = []
+  var lines = []
   if (localStorage.getItem("words")) {
     try {
       var words = JSON.parse(localStorage.getItem("words"));
@@ -98,7 +98,7 @@
           console.log('Got Log From Server')
           $('#virt_console').html(data);
           scroll();
-          cards = document.querySelectorAll('.box');
+          lines = document.querySelectorAll('.box');
           liveSearch();
         },
       });
@@ -130,21 +130,21 @@
 
     //Use innerText if all contents are visible
     //Use textContent for including hidden elements
-    for (var i = 0; i < cards.length; i++) {
+    for (var i = 0; i < lines.length; i++) {
       if (words.length > 0) {
         let flag = false;
         for (var k = 0; k < words.length; k++) {
-          if (cards[i].textContent.toLowerCase().includes(words[k])) {
+          if (lines[i].textContent.toLowerCase().includes(words[k])) {
             flag = true;
           }
         }
         if (!flag) {
-          cards[i].classList.remove("is-hidden");
+          lines[i].classList.remove("is-hidden");
         } else {
-          cards[i].classList.add("is-hidden");
+          lines[i].classList.add("is-hidden");
         }
       } else {
-        cards[i].classList.remove("is-hidden");
+        lines[i].classList.remove("is-hidden");
       }
     }
   }
