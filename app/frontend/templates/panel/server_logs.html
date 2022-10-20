@@ -151,14 +151,20 @@
     if (e.keyCode === 13) {
       let word = document.getElementById("searchbox").value
       word = word.toLowerCase();
+      word = word.replace(/[`'"]/gi, " ")
       safe_word = sanitize(word)
-      if (word === "\\n") {
+      if (word.includes("\\n")) {
         window.alert("Nice try...");
         document.getElementById("searchbox").value = "";
         return;
       }
       if (!safe_word) {
-        window.alert("Illegal character detected")
+        window.alert("Illegal character detected");
+        document.getElementById("searchbox").value = "";
+        return;
+      } else if (safe_word.startsWith(" ")) {
+        window.alert("Illegal first character");
+        document.getElementById("searchbox").value = "";
         return;
       }
       words.push(word);
