@@ -126,12 +126,12 @@
     // Return/Enter key press otherwise bail
     if (e.keyCode !== 13) return;
 
-    let word = document.getElementById("searchbox").value
+    let word = document.getElementById("searchbox").value;
     document.getElementById("searchbox").value = "";
-
     word = word.toLowerCase();
-    word = word.replace(/[`'"]/gi, " ")
-    safe_word = sanitize(word)
+    word = word.replace(/[`'"]/gi, " ");
+
+    let safe_word = sanitize(word).trimLeft();
 
     if (word.includes("\\n")) {
       window.alert("Nice try...");
@@ -140,11 +140,6 @@
 
     if (!safe_word) {
       window.alert("Illegal character detected");
-      return;
-    }
-
-    if (safe_word.startsWith(" ")) {
-      window.alert("Illegal first character");
       return;
     }
 
