@@ -76,6 +76,7 @@
 
 {% block js %}
 <script>
+  // ##### Log Filter Block #####
   var lines = [];
   var words = [];
   if (localStorage.getItem("words")) {
@@ -84,42 +85,6 @@
     } catch {
       words = [];
     }
-  }
-
-  const serverId = new URLSearchParams(document.location.search).get('id')
-  function get_server_log() {
-    if (!$("#stop_scroll").is(':checked')) {
-      $.ajax({
-        type: 'GET',
-        url: '/ajax/server_log?id=' + serverId + '&full=1',
-        dataType: 'text',
-        success: function (data) {
-          console.log('Got Log From Server')
-          $('#virt_console').html(data);
-          scroll();
-          lines = document.querySelectorAll('.box');
-          liveSearch();
-        },
-      });
-    }
-  }
-
-  //used to get cookies from browser - this is part of tornados xsrf protection - it's for extra security
-  function getCookie(name) {
-    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
-    return r ? r[1] : undefined;
-  }
-
-  $(document).ready(function () {
-    console.log("ready!");
-    get_server_log();
-    populateWords();
-  });
-
-  function scroll() {
-    var logview = $('#virt_console');
-    if (logview.length)
-      logview.scrollTop(logview[0].scrollHeight - logview.height());
   }
 
   function liveSearch() {
@@ -137,15 +102,23 @@
     }
   }
 
-  //A little delay
-  let typingTimer;
-  let typeInterval = 500;
-  let searchInput = document.getElementById('searchbox');
-
   function sanitize(string) {
     return string.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
   }
 
+  function deleteItem(item) {
+    let safe_item = sanitize(item);
+    words.splice(words.indexOf(item), 1);
+    if (safe_item) $("#" + safe_item.replaceAll(" ", "-")).remove();
+
+    liveSearch();
+    localStorage.setItem("words", JSON.stringify(words));
+  }
+
+  //A little delay
+  let typingTimer;
+  let typeInterval = 500;
+  let searchInput = document.getElementById('searchbox');
   searchInput.addEventListener('keyup', (e) => {
     clearTimeout(typingTimer);
     typingTimer = setTimeout(liveSearch, typeInterval);
@@ -188,15 +161,6 @@
     localStorage.setItem("words", JSON.stringify(words));
   });
 
-  function deleteItem(item) {
-    let safe_item = sanitize(item);
-    words.splice(words.indexOf(item), 1);
-    if (safe_item) $("#" + safe_item.replaceAll(" ", "-")).remove();
-
-    liveSearch();
-    localStorage.setItem("words", JSON.stringify(words));
-  }
-
   function populateWords() {
     for (let i = 0; i < words.length; i++) {
       let safe_word = sanitize(words[i]);
@@ -209,5 +173,45 @@
       );
     }
   }
+  // ##### End Log Filter Block #####
+
+  // Used to get cookies from browser - this is part of tornados xsrf protection
+  // (it's for extra security)
+  function getCookie(name) {
+    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+    return r ? r[1] : undefined;
+  }
+
+  // Reset Scroll
+  function scroll() {
+    var logview = $('#virt_console');
+    if (logview.length)
+      logview.scrollTop(logview[0].scrollHeight - logview.height());
+  }
+
+  // Populate logs and filter if present
+  const serverId = new URLSearchParams(document.location.search).get('id')
+  function get_server_log() {
+    if (!$("#stop_scroll").is(':checked')) {
+      $.ajax({
+        type: 'GET',
+        url: '/ajax/server_log?id=' + serverId + '&full=1',
+        dataType: 'text',
+        success: function (data) {
+          console.log('Got Log From Server')
+          $('#virt_console').html(data);
+          scroll();
+          lines = document.querySelectorAll('.box');
+          liveSearch();
+        },
+      });
+    }
+  }
+
+  $(document).ready(function () {
+    console.log("ready!");
+    get_server_log();
+    populateWords();
+  });
 </script>
 {% end %}
