@@ -87,7 +87,7 @@
     }
   }
 
-  function liveSearch() {
+  function hideFilteredWords() {
     for (let i = 0; i < lines.length; i++) {
       // Reinitialise line visibility
       lines[i].classList.remove("is-hidden");
@@ -106,12 +106,12 @@
     return string.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
   }
 
-  function deleteItem(item) {
+  function deleteWord(item) {
     let safe_item = sanitize(item);
     words.splice(words.indexOf(item), 1);
     if (safe_item) $("#" + safe_item.replaceAll(" ", "-")).remove();
 
-    liveSearch();
+    hideFilteredWords();
     localStorage.setItem("words", JSON.stringify(words));
   }
 
@@ -121,7 +121,7 @@
   let searchInput = document.getElementById('searchbox');
   searchInput.addEventListener('keyup', (e) => {
     clearTimeout(typingTimer);
-    typingTimer = setTimeout(liveSearch, typeInterval);
+    typingTimer = setTimeout(hideFilteredWords, typeInterval);
 
     // Return/Enter key press otherwise bail
     if (e.keyCode !== 13) return;
@@ -150,7 +150,7 @@
     $("#ignored-words").append(
       `<li id=${safe_word.replaceAll(" ", "-")}>` +
       "<div class='card-header header-sm d-flex justify-content-between align-items-center'>" +
-      `${word}&nbsp;<button class='btn btn-danger' onclick='deleteItem("${word}")' >` +
+      `${word}&nbsp;<button class='btn btn-danger' onclick='deleteWord("${word}")' >` +
       "<i class='fas fa-trash'></i></button></div></li>"
     );
 
@@ -165,7 +165,7 @@
       $("#ignored-words").append(
         `<li id=${safe_word.replaceAll(" ", "-")}>` +
         "<div class='card-header header-sm d-flex justify-content-between align-items-center'>" +
-        `${word}&nbsp;<button class='btn btn-danger' onclick='deleteItem("${word}")' >` +
+        `${word}&nbsp;<button class='btn btn-danger' onclick='deleteWord("${word}")' >` +
         "<i class='fas fa-trash'></i></button></div></li>"
       );
     });
@@ -199,7 +199,7 @@
           $('#virt_console').html(data);
           scroll();
           lines = document.querySelectorAll('.box');
-          liveSearch();
+          hideFilteredWords();
         },
       });
     }
