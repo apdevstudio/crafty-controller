@@ -11,6 +11,7 @@
 - Add timeout to socket for servers with incorrect port selection ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/482))
 - Fix server_stats db file when deleting server ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/486))
 - Fix "cannot render after finish" from backup_now ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/489))
+- Fix Support Logs on windows by changing the way we declare projects working directory ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/491))
 ### Tweaks
 - Fix sidebar to not move when scrolling ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/481))
 - Add the rest of CSS predefined colors to themes ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/477))
