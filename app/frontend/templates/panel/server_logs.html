@@ -159,8 +159,8 @@
   });
 
   function populateWords() {
-    for (let i = 0; i < words.length; i++) {
-      let safe_word = sanitize(words[i]);
+    words.map(word => {
+      let safe_word = sanitize(word);
 
       $("#ignored-words").append(
         `<li id=${safe_word.replaceAll(" ", "-")}>` +
@@ -168,7 +168,7 @@
         `${word}&nbsp;<button class='btn btn-danger' onclick='deleteItem("${word}")' >` +
         "<i class='fas fa-trash'></i></button></div></li>"
       );
-    }
+    });
   }
   // ##### End Log Filter Block #####
 
