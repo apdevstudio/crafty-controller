@@ -144,6 +144,10 @@
   let typeInterval = 500;
   let searchInput = document.getElementById('searchbox');
 
+  function sanitize(string) {
+    return string.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
+  }
+
   searchInput.addEventListener('keyup', (e) => {
     clearTimeout(typingTimer);
     typingTimer = setTimeout(liveSearch, typeInterval);
@@ -180,10 +184,6 @@
     localStorage.setItem("words", JSON.stringify(words))
 
   });
-
-  function sanitize(string) {
-    return string.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
-  }
 
   function deleteItem(item) {
     let safe_item = sanitize(item);
