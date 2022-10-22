@@ -156,33 +156,32 @@
     if (e.keyCode !== 13) return;
 
     let word = document.getElementById("searchbox").value
+    document.getElementById("searchbox").value = "";
+
     word = word.toLowerCase();
     word = word.replace(/[`'"]/gi, " ")
     safe_word = sanitize(word)
 
     if (word.includes("\\n")) {
       window.alert("Nice try...");
-      document.getElementById("searchbox").value = "";
       return;
     }
 
     if (!safe_word) {
       window.alert("Illegal character detected");
-      document.getElementById("searchbox").value = "";
       return;
     }
 
     if (safe_word.startsWith(" ")) {
       window.alert("Illegal first character");
-      document.getElementById("searchbox").value = "";
       return;
     }
 
     words.push(word);
     $("#ignored-words").append("<li id=" + safe_word.replaceAll(" ", "-") + "><div class='card-header header-sm d-flex justify-content-between align-items-center'>" + word + "&nbsp;<button class='btn btn-danger' onclick='deleteItem(" + '"' + word + '"' + ")' ><i class='fas fa-trash'></i></button></div></li>")
-    document.getElementById("searchbox").value = "";
-    localStorage.setItem("words", JSON.stringify(words))
 
+    // Set word filters in browser cache
+    localStorage.setItem("words", JSON.stringify(words))
   });
 
   function deleteItem(item) {
