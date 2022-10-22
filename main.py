@@ -197,8 +197,15 @@ if __name__ == "__main__":
         if not controller.check_system_user():
             controller.add_system_user()
 
-        project_root = os.path.dirname(__file__)
-        controller.set_project_root(project_root)
+        if getattr(sys, "frozen", False):
+            # If the application is run as a bundle, the PyInstaller bootloader
+            # extends the sys module by a flag frozen=True and sets the app
+            # path into variable _MEIPASS'.
+            application_path = sys._MEIPASS
+        else:
+            application_path = os.path.dirname(os.path.abspath(__file__))
+
+        controller.set_project_root(application_path)
         controller.clear_unexecuted_commands()
         controller.clear_support_status()
 
