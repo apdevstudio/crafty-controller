@@ -143,6 +143,8 @@
       return;
     }
 
+    if (words.includes(safe_word)) return;
+
     // Display filtered word
     words.push(word);
     $("#ignored-words").append(
