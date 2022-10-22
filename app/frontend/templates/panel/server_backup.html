@@ -294,9 +294,10 @@
       headers: { 'X-XSRFToken': token },
       url: '/ajax/backup_now?id=' + server_id,
       success: function (data) {
-        location.reload();
+        return;
       },
     });
+    return;
   }
 
   function del_backup(filename, id) {
