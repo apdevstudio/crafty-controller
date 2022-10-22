@@ -1,7 +1,7 @@
 # Changelog
-## --- [4.0.16] - 2022/10/09
+## --- [4.0.16] - 2022/10/23
 ### New features
-TBD
+- Automatically set update url for (new) server creation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/487))
 ### Bug fixes
 - Fix conditional issue with zip imports/uploads ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/476))
 - Fix API Schedule updates ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/478))
