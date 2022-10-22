@@ -1,18 +1,18 @@
 # Changelog
-## --- [4.0.16] - 2022/10/09
+## --- [4.0.16] - 2022/10/23
 ### New features
-TBD
+- Automatically set update url for (new) server creation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/487))
 ### Bug fixes
 - Fix conditional issue with zip imports/uploads ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/476))
 - Fix API Schedule updates ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/478))
 - Add port constraint for all server creation & api ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/479))
 - Clean up backup configs when deleting servers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/480))
 - Add timeout to socket for servers with incorrect port selection ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/482))
+- Fix server_stats db file when deleting server ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/486))
 ### Tweaks
 - Fix sidebar to not move when scrolling ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/481))
 - Add the rest of CSS predefined colors to themes ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/477))
-### Lang
-TBD
+- Only send realtime stats when clients connected ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/488))
 <br><br>
 
 ## --- [4.0.15] - 2022/10/02
