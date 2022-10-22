@@ -42,9 +42,16 @@
           <div class="col-md-12">
             <div class="input-group">
               <div id="virt_console" class=""
-                style="font-size: .8em; padding: 5px 10px; border: 1px solid var(--outline); background-color:var(--card-banner-bg);height:500px; overflow: scroll;">
+                style="width: 100%; font-size: .8em; padding: 5px 10px; border: 1px solid var(--outline); background-color:var(--card-banner-bg);height:500px; overflow: scroll;">
               </div>
             </div>
+            <br />
+            <label for="ignore">{{ translate('serverDetails', 'filter', data['lang']) }}</label>
+            <input type="text" class="form-control" name="ignore" id="searchbox" value="" required>
+            <br />
+            <br />
+            <h4>{{ translate('serverDetails', 'filterList', data['lang']) }}</h4>
+            <ul id="ignored-words" style="list-style: None;"></ul>
             <br />
 
 
@@ -55,15 +62,131 @@
     </div>
   </div>
 
-
+  <span class="is-hidden">secret</span>
 </div>
+<style>
+  .is-hidden {
+    display: none;
+    position: fixed !important;
+  }
+</style>
 <!-- content-wrapper ends -->
 
 {% end %}
 
 {% block js %}
 <script>
+  // ##### Log Filter Block #####
+  var lines = [];
+  var words = [];
+  if (localStorage.getItem("words")) {
+    try {
+      words = JSON.parse(localStorage.getItem("words"));
+    } catch {
+      words = [];
+    }
+  }
 
+  function hideFilteredWords() {
+    for (let i = 0; i < lines.length; i++) {
+      // Reinitialise line visibility
+      lines[i].classList.remove("is-hidden");
+
+      // If we have no words to filter, continue.
+      if (!words.length) continue;
+
+      // If we find our target word hide the line
+      if (words.some(ai => lines[i].textContent.toLowerCase().includes(ai))) {
+        lines[i].classList.add("is-hidden");
+      }
+    }
+  }
+
+  function sanitize(string) {
+    return string.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
+  }
+
+  function deleteWord(item) {
+    let safe_item = sanitize(item);
+    words.splice(words.indexOf(item), 1);
+    if (safe_item) $("#" + safe_item.replaceAll(" ", "-")).remove();
+
+    hideFilteredWords();
+    localStorage.setItem("words", JSON.stringify(words));
+  }
+
+  //A little delay
+  let typingTimer;
+  let typeInterval = 500;
+  let searchInput = document.getElementById('searchbox');
+  searchInput.addEventListener('keyup', (e) => {
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(hideFilteredWords, typeInterval);
+
+    // Return/Enter key press otherwise bail
+    if (e.keyCode !== 13) return;
+
+    let word = document.getElementById("searchbox").value;
+    document.getElementById("searchbox").value = "";
+    word = word.toLowerCase();
+    word = word.replace(/[`'"]/gi, " ");
+
+    let safe_word = sanitize(word).trimLeft();
+
+    if (word.includes("\\n")) {
+      window.alert("Nice try...");
+      return;
+    }
+
+    if (!safe_word) {
+      window.alert("Illegal character detected");
+      return;
+    }
+
+    if (words.includes(safe_word)) return;
+
+    // Display filtered word
+    words.push(word);
+    $("#ignored-words").append(
+      `<li id=${safe_word.replaceAll(" ", "-")}>` +
+      "<div class='card-header header-sm d-flex justify-content-between align-items-center'>" +
+      `${word}&nbsp;<button class='btn btn-danger' onclick='deleteWord("${word}")' >` +
+      "<i class='fas fa-trash'></i></button></div></li>"
+    );
+
+    // Set word filters in browser cache
+    localStorage.setItem("words", JSON.stringify(words));
+  });
+
+  function populateWords() {
+    words.map(word => {
+      let safe_word = sanitize(word);
+
+      $("#ignored-words").append(
+        `<li id=${safe_word.replaceAll(" ", "-")}>` +
+        "<div class='card-header header-sm d-flex justify-content-between align-items-center'>" +
+        `${word}&nbsp;<button class='btn btn-danger' onclick='deleteWord("${word}")' >` +
+        "<i class='fas fa-trash'></i></button></div></li>"
+      );
+    });
+  }
+  // ##### End Log Filter Block #####
+
+  // Used to get cookies from browser - this is part of tornados xsrf protection
+  // (it's for extra security)
+  function getCookie(name) {
+    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+    return r ? r[1] : undefined;
+  }
+
+  // Reset Scroll
+  function scroll() {
+    var logview = $('#virt_console');
+    if (logview.length)
+      logview.scrollTop(logview[0].scrollHeight - logview.height());
+  }
+
+  // Populate logs and filter if present
   const serverId = new URLSearchParams(document.location.search).get('id')
   function get_server_log() {
     if (!$("#stop_scroll").is(':checked')) {
@@ -75,32 +198,17 @@
           console.log('Got Log From Server')
           $('#virt_console').html(data);
           scroll();
+          lines = document.querySelectorAll('.box');
+          hideFilteredWords();
         },
       });
     }
   }
 
-  //used to get cookies from browser - this is part of tornados xsrf protection - it's for extra security
-  function getCookie(name) {
-    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
-    return r ? r[1] : undefined;
-  }
-
   $(document).ready(function () {
     console.log("ready!");
-    get_server_log()
-
-
+    get_server_log();
+    populateWords();
   });
-
-
-  function scroll() {
-    var logview = $('#virt_console');
-    if (logview.length)
-      logview.scrollTop(logview[0].scrollHeight - logview.height());
-  }
-
-
 </script>
-
 {% end %}
