@@ -147,31 +147,37 @@
   searchInput.addEventListener('keyup', (e) => {
     clearTimeout(typingTimer);
     typingTimer = setTimeout(liveSearch, typeInterval);
-    // On Return/Enter key press
-    if (e.keyCode === 13) {
-      let word = document.getElementById("searchbox").value
-      word = word.toLowerCase();
-      word = word.replace(/[`'"]/gi, " ")
-      safe_word = sanitize(word)
-      if (word.includes("\\n")) {
-        window.alert("Nice try...");
-        document.getElementById("searchbox").value = "";
-        return;
-      }
-      if (!safe_word) {
-        window.alert("Illegal character detected");
-        document.getElementById("searchbox").value = "";
-        return;
-      } else if (safe_word.startsWith(" ")) {
-        window.alert("Illegal first character");
-        document.getElementById("searchbox").value = "";
-        return;
-      }
-      words.push(word);
-      $("#ignored-words").append("<li id=" + safe_word.replaceAll(" ", "-") + "><div class='card-header header-sm d-flex justify-content-between align-items-center'>" + word + "&nbsp;<button class='btn btn-danger' onclick='deleteItem(" + '"' + word + '"' + ")' ><i class='fas fa-trash'></i></button></div></li>")
+
+    // Return/Enter key press otherwise bail
+    if (e.keyCode !== 13) return;
+
+    let word = document.getElementById("searchbox").value
+    word = word.toLowerCase();
+    word = word.replace(/[`'"]/gi, " ")
+    safe_word = sanitize(word)
+
+    if (word.includes("\\n")) {
+      window.alert("Nice try...");
       document.getElementById("searchbox").value = "";
-      localStorage.setItem("words", JSON.stringify(words))
+      return;
     }
+
+    if (!safe_word) {
+      window.alert("Illegal character detected");
+      document.getElementById("searchbox").value = "";
+      return;
+    }
+
+    if (safe_word.startsWith(" ")) {
+      window.alert("Illegal first character");
+      document.getElementById("searchbox").value = "";
+      return;
+    }
+
+    words.push(word);
+    $("#ignored-words").append("<li id=" + safe_word.replaceAll(" ", "-") + "><div class='card-header header-sm d-flex justify-content-between align-items-center'>" + word + "&nbsp;<button class='btn btn-danger' onclick='deleteItem(" + '"' + word + '"' + ")' ><i class='fas fa-trash'></i></button></div></li>")
+    document.getElementById("searchbox").value = "";
+    localStorage.setItem("words", JSON.stringify(words))
 
   });
 
