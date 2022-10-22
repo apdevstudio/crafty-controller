@@ -12,8 +12,7 @@
 ### Tweaks
 - Fix sidebar to not move when scrolling ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/481))
 - Add the rest of CSS predefined colors to themes ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/477))
-### Lang
-TBD
+- Only send realtime stats when clients connected ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/488))
 <br><br>
 
 ## --- [4.0.15] - 2022/10/02
