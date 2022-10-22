@@ -1223,41 +1223,19 @@ class ServerInstance:
     # **********************************************************************************
 
     def realtime_stats(self):
-        total_players = 0
-        max_players = 0
-        servers_ping = []
-        raw_ping_result = []
-        raw_ping_result = self.get_raw_server_stats(self.server_id)
-
-        if f"{raw_ping_result.get('icon')}" == "b''":
-            raw_ping_result["icon"] = False
-
-        servers_ping.append(
-            {
-                "id": raw_ping_result.get("id"),
-                "started": raw_ping_result.get("started"),
-                "running": raw_ping_result.get("running"),
-                "cpu": raw_ping_result.get("cpu"),
-                "mem": raw_ping_result.get("mem"),
-                "mem_percent": raw_ping_result.get("mem_percent"),
-                "world_name": raw_ping_result.get("world_name"),
-                "world_size": raw_ping_result.get("world_size"),
-                "server_port": raw_ping_result.get("server_port"),
-                "int_ping_results": raw_ping_result.get("int_ping_results"),
-                "online": raw_ping_result.get("online"),
-                "max": raw_ping_result.get("max"),
-                "players": raw_ping_result.get("players"),
-                "desc": raw_ping_result.get("desc"),
-                "version": raw_ping_result.get("version"),
-                "icon": raw_ping_result.get("icon"),
-                "crashed": self.is_crashed,
-            }
-        )
+        # only get stats if clients are connected.
+        # no point in burning cpu
         if len(self.helper.websocket_helper.clients) > 0:
-            self.helper.websocket_helper.broadcast_page_params(
-                "/panel/server_detail",
-                {"id": str(self.server_id)},
-                "update_server_details",
+            total_players = 0
+            max_players = 0
+            servers_ping = []
+            raw_ping_result = []
+            raw_ping_result = self.get_raw_server_stats(self.server_id)
+
+            if f"{raw_ping_result.get('icon')}" == "b''":
+                raw_ping_result["icon"] = False
+
+            servers_ping.append(
                 {
                     "id": raw_ping_result.get("id"),
                     "started": raw_ping_result.get("started"),
@@ -1276,24 +1254,53 @@ class ServerInstance:
                     "version": raw_ping_result.get("version"),
                     "icon": raw_ping_result.get("icon"),
                     "crashed": self.is_crashed,
-                    "created": datetime.datetime.now().strftime("%Y/%m/%d, %H:%M:%S"),
-                },
+                }
             )
-        total_players += int(raw_ping_result.get("online"))
-        max_players += int(raw_ping_result.get("max"))
-
-        self.record_server_stats()
-
-        if (len(servers_ping) > 0) & (len(self.helper.websocket_helper.clients) > 0):
-            try:
-                self.helper.websocket_helper.broadcast_page(
-                    "/panel/dashboard", "update_server_status", servers_ping
+            if len(self.helper.websocket_helper.clients) > 0:
+                self.helper.websocket_helper.broadcast_page_params(
+                    "/panel/server_detail",
+                    {"id": str(self.server_id)},
+                    "update_server_details",
+                    {
+                        "id": raw_ping_result.get("id"),
+                        "started": raw_ping_result.get("started"),
+                        "running": raw_ping_result.get("running"),
+                        "cpu": raw_ping_result.get("cpu"),
+                        "mem": raw_ping_result.get("mem"),
+                        "mem_percent": raw_ping_result.get("mem_percent"),
+                        "world_name": raw_ping_result.get("world_name"),
+                        "world_size": raw_ping_result.get("world_size"),
+                        "server_port": raw_ping_result.get("server_port"),
+                        "int_ping_results": raw_ping_result.get("int_ping_results"),
+                        "online": raw_ping_result.get("online"),
+                        "max": raw_ping_result.get("max"),
+                        "players": raw_ping_result.get("players"),
+                        "desc": raw_ping_result.get("desc"),
+                        "version": raw_ping_result.get("version"),
+                        "icon": raw_ping_result.get("icon"),
+                        "crashed": self.is_crashed,
+                        "created": datetime.datetime.now().strftime(
+                            "%Y/%m/%d, %H:%M:%S"
+                        ),
+                    },
                 )
-                self.helper.websocket_helper.broadcast_page(
-                    "/status", "update_server_status", servers_ping
-                )
-            except:
-                Console.critical("Can't broadcast server status to websocket")
+            total_players += int(raw_ping_result.get("online"))
+            max_players += int(raw_ping_result.get("max"))
+
+            self.record_server_stats()
+
+            if (len(servers_ping) > 0) & (
+                len(self.helper.websocket_helper.clients) > 0
+            ):
+                try:
+                    self.helper.websocket_helper.broadcast_page(
+                        "/panel/dashboard", "update_server_status", servers_ping
+                    )
+                    self.helper.websocket_helper.broadcast_page(
+                        "/status", "update_server_status", servers_ping
+                    )
+                except:
+                    Console.critical("Can't broadcast server status to websocket")
 
     def get_servers_stats(self):
 
