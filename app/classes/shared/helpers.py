@@ -450,10 +450,9 @@ class Helpers:
         major = version_data.get("major", "?")
         minor = version_data.get("minor", "?")
         sub = version_data.get("sub", "?")
-        meta = version_data.get("meta", "?")
 
         # set some defaults if we don't get version_data from our helper
-        version = f"{major}.{minor}.{sub}-{meta}"
+        version = f"{major}.{minor}.{sub}"
         return str(version)
 
     def encode_pass(self, password):
@@ -958,8 +957,8 @@ class Helpers:
                 output += f"""<li class="tree-item" data-path="{dpath}">
                     \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" class="tree-caret tree-ctx-item tree-folder">
                     <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" data-name="{filename}" onclick="getDirView(event)">
-                      <i style="color: #8862e0;" class="far fa-folder"></i>
-                      <i style="color: #8862e0;" class="far fa-folder-open"></i>
+                      <i style="color: var(--info);" class="far fa-folder"></i>
+                      <i style="color: var(--info);" class="far fa-folder-open"></i>
                       {filename}
                       </span>
                     </div><li>
@@ -997,8 +996,8 @@ class Helpers:
                 output += f"""<li class="tree-item" data-path="{dpath}">
                     \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" class="tree-caret tree-ctx-item tree-folder">
                     <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" data-name="{filename}" onclick="getDirView(event)">
-                      <i style="color: #8862e0;" class="far fa-folder"></i>
-                      <i style="color: #8862e0;" class="far fa-folder-open"></i>
+                      <i style="color: var(--info);" class="far fa-folder"></i>
+                      <i style="color: var(--info);" class="far fa-folder-open"></i>
                       {filename}
                       </span>
                     </div><li>"""
@@ -1027,8 +1026,8 @@ class Helpers:
                     \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" class="tree-caret tree-ctx-item tree-folder">
                     <input type="radio" name="root_path" value="{dpath}">
                     <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" data-name="{filename}" onclick="getDirView(event)">
-                      <i style="color: #8862e0;" class="far fa-folder"></i>
-                      <i style="color: #8862e0;" class="far fa-folder-open"></i>
+                      <i style="color: var(--info);" class="far fa-folder"></i>
+                      <i style="color: var(--info);" class="far fa-folder-open"></i>
                       {filename}
                       </span>
                     </input></div><li>
@@ -1049,8 +1048,8 @@ class Helpers:
                     \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" class="tree-caret tree-ctx-item tree-folder">
                     <input type="radio" name="root_path" value="{dpath}">
                     <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" data-name="{filename}" onclick="getDirView(event)">
-                      <i style="color: #8862e0;" class="far fa-folder"></i>
-                      <i style="color: #8862e0;" class="far fa-folder-open"></i>
+                      <i style="color: var(--info);" class="far fa-folder"></i>
+                      <i style="color: var(--info);" class="far fa-folder-open"></i>
                       {filename}
                       </span>
                     </input></div><li>"""

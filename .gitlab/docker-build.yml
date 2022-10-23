@@ -17,7 +17,6 @@ docker-build-dev:
       MAJOR=$(cat app/config/version.json | jq '.major' )
       MINOR=$(cat app/config/version.json | jq '.minor' )
       SUB=$(cat app/config/version.json | jq '.sub' )
-      META=$(cat app/config/version.json | jq -r '.meta' )
     - |
       apk --no-cache add curl
       latest_tag=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | sed -Ene '/^ *"tag_name": *"(v.+)",$/s//\1/p')
@@ -33,7 +32,7 @@ docker-build-dev:
   script:
     - |
       tag=":$CI_COMMIT_REF_SLUG"
-      VERSION="${MAJOR}.${MINOR}.${SUB}-${META}"
+      VERSION="${MAJOR}.${MINOR}.${SUB}"
     - |
       echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
       echo "Crafty Version: $VERSION"
@@ -72,7 +71,6 @@ docker-build-prod:
       MAJOR=$(cat app/config/version.json | jq '.major' )
       MINOR=$(cat app/config/version.json | jq '.minor' )
       SUB=$(cat app/config/version.json | jq '.sub' )
-      META=$(cat app/config/version.json | jq -r '.meta' )
     - |
       apk --no-cache add curl
       latest_tag=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | sed -Ene '/^ *"tag_name": *"(v.+)",$/s//\1/p')
@@ -87,22 +85,22 @@ docker-build-prod:
     - echo $CI_BUILD_TOKEN | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
     - |
-      tag=""
-      VERSION="${MAJOR}.${MINOR}.${SUB}-${META}"
+      VERSION="${MAJOR}.${MINOR}.${SUB}"
     - |
-      echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
+      echo "Running on branch '$CI_COMMIT_BRANCH'"
       echo "Crafty Version: $VERSION"
     - docker context create tls-environment
     - docker buildx create --name zedBuilder --use tls-environment
     - docker buildx build
-      --cache-from type=registry,ref="$CI_REGISTRY_IMAGE${tag}"
+      --cache-from type=registry,ref="$CI_REGISTRY_IMAGE"
       --build-arg BUILDKIT_INLINE_CACHE=1
       --build-arg "BUILD_DATE=$(date +"%Y-%m-%dT%H:%M:%SZ")"
       --build-arg "BUILD_REF=${CI_COMMIT_SHA}"
       --build-arg "CRAFTY_VER=${VERSION}"
-      --tag "$CI_REGISTRY_IMAGE${tag}"
-      --platform linux/arm64/v8,linux/amd64
-      --push .
+      --tag "$CI_REGISTRY_IMAGE"
+      --platform linux/arm64/v8,linux/amd64 .
+    - docker image tag "$CI_REGISTRY_IMAGE" "$CI_REGISTRY_IMAGE:${VERSION}"
+    - docker image push -a
   after_script:
     - |
       docker buildx rm zedBuilder && echo "Successfully Stopped builder instance" || echo "Failed to stop builder instance."
