@@ -1,144 +1,141 @@
 <!-- partial -->
-<div class="container-fluid page-body-wrapper">
-  <!-- partial:partials/_sidebar.html -->
-  <style>
-    @media screen and (max-width: 991px) {
-      .sidebar-offcanvas {
-        -webkit-transition: all 0.25s cubic-bezier(.22, .61, .36, 1);
-        transition: all 0.25s cubic-bezier(.22, .61, .36, 1);
-        box-shadow: 0px 8px 17px 2px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12), 0px 5px 5px -3px rgba(0, 0, 0, 0.2);
-      }
+<!-- partial:partials/_sidebar.html -->
+<style>
+  @media screen and (max-width: 991px) {
+    .sidebar-offcanvas {
+      -webkit-transition: all 0.25s cubic-bezier(.22, .61, .36, 1);
+      transition: all 0.25s cubic-bezier(.22, .61, .36, 1);
+      box-shadow: 0px 8px 17px 2px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12), 0px 5px 5px -3px rgba(0, 0, 0, 0.2);
     }
-  </style>
-  <script>
-    function debounce(func, wait, immediate) {
-      var timeout;
-      return function () {
-        var context = this, args = arguments;
-        var later = function () {
-          timeout = null;
-          if (!immediate) func.apply(context, args);
-        };
-        var callNow = immediate && !timeout;
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-        if (callNow) func.apply(context, args);
+  }
+</style>
+<script>
+  function debounce(func, wait, immediate) {
+    var timeout;
+    return function () {
+      var context = this, args = arguments;
+      var later = function () {
+        timeout = null;
+        if (!immediate) func.apply(context, args);
       };
+      var callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
     };
-    function isExtraLargeBreakpoint() {
-      const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-      return vw >= 1200;
+  };
+  function isExtraLargeBreakpoint() {
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    return vw >= 1200;
+  }
+  function isLargeBreakpoint() {
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    return vw >= 992;
+  }
+  $(document).ready(function () {
+    sidebarResizeHandler(null);
+    $(window).on(
+      'resize',
+      debounce(sidebarResizeHandler, 25, true)
+    );
+  });
+  function sidebarResizeHandler(e) {
+    /*
+        Viewport sizes: Extra large (vw >= 1200px), large (vw >= 992px), medium (vw >= 768px)
+      - A localstorage item is set to remember a user's preference between collapsed or expanded.
+      - For extra large viewports, the sidebar is the user's preference (by default expanded). When
+        expanded or collapsed manually, it doesn't overlap the page content and the preference
+        gets saved to a localstorage item.
+      - For large viewports, the sidebar is collapsed. When expanded manually, it doesn't overlap
+        the page content. The user's localstorage preference is not overridden during this state.
+      - For medium and below viewports, the sidebar is hidden behing a hamburger icon. When expanded, the sidebar
+        overlaps the page content. The user's localstorage preference is not overridden during this state.
+
+      More code in `app/frontend/static/assets/js/shared/misc.js` and `app/frontend/templates/base.html`
+    */
+    if (isLargeBreakpoint()) {
+      let value = localStorage.getItem('crafty-sidebar-expanded') !== 'false';
+      $('body').toggleClass('sidebar-icon-only', !value);
+      localStorage.setItem('crafty-sidebar-expanded', value);
     }
-    function isLargeBreakpoint() {
-      const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-      return vw >= 992;
-    }
-    $(document).ready(function () {
-      sidebarResizeHandler(null);
-      $(window).on(
-        'resize',
-        debounce(sidebarResizeHandler, 25, true)
-      );
-    });
-    function sidebarResizeHandler(e) {
-      /*
-          Viewport sizes: Extra large (vw >= 1200px), large (vw >= 992px), medium (vw >= 768px)
-        - A localstorage item is set to remember a user's preference between collapsed or expanded.
-        - For extra large viewports, the sidebar is the user's preference (by default expanded). When
-          expanded or collapsed manually, it doesn't overlap the page content and the preference
-          gets saved to a localstorage item.
-        - For large viewports, the sidebar is collapsed. When expanded manually, it doesn't overlap
-          the page content. The user's localstorage preference is not overridden during this state.
-        - For medium and below viewports, the sidebar is hidden behing a hamburger icon. When expanded, the sidebar
-          overlaps the page content. The user's localstorage preference is not overridden during this state.
+  }
+</script>
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+  <ul class="nav">
 
-        More code in `app/frontend/static/assets/js/shared/misc.js` and `app/frontend/templates/base.html`
-      */
-      if (isExtraLargeBreakpoint()) {
-        let value = localStorage.getItem('crafty-sidebar-expanded') !== 'false';
-        $('body').toggleClass('sidebar-icon-only', !value);
-        localStorage.setItem('crafty-sidebar-expanded', value);
-      } else if (isLargeBreakpoint()) {
-        $('body').toggleClass('sidebar-icon-only', true);
-      }
-    }
-  </script>
-  <nav class="sidebar sidebar-offcanvas" id="sidebar">
-    <ul class="nav">
+    <li class="nav-item nav-category" style="margin-top:10px;">{{ translate('sidebar', 'navigation', data['lang']) }}
+    </li>
 
-      <li class="nav-item nav-category" style="margin-top:10px;">{{ translate('sidebar', 'navigation', data['lang']) }}
-      </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/panel/dashboard">
+        <i class="fas fa-chart-network"></i>&nbsp;
+        <span class="menu-title">{{ translate('sidebar', 'dashboard', data['lang']) }}</span>
+      </a>
+    </li>
 
-      <li class="nav-item">
-        <a class="nav-link" href="/panel/dashboard">
-          <i class="fas fa-chart-network"></i>&nbsp;
-          <span class="menu-title">{{ translate('sidebar', 'dashboard', data['lang']) }}</span>
-        </a>
-      </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="collapse" href="#page-layouts" aria-expanded="false"
+         aria-controls="page-layouts">
+        <i class="fas fa-server"></i> &nbsp;
+        <span class="menu-title">{{ translate('sidebar', 'servers', data['lang']) }}</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="page-layouts">
+        <ul class="nav flex-column sub-menu">
+          {% if data['crafty_permissions']['Server_Creation'] in data['user_crafty_permissions'] %}
+          <li class="nav-item">
+            <a class="nav-link" href="/server/step1"><i class="fas fa-plus-circle"></i> &nbsp; {{ translate('sidebar',
+              'newServer', data['lang']) }}</a>
+          </li>
+          {% end %}
+          {% for s in data['menu_servers'] %}
+          <li class="nav-item">
+            <a class="nav-link" href="/panel/server_detail?id={{s['server_id']}}"><i class="fas fa-server"></i> &nbsp;
+              {{s['server_name']}}</a>
+          </li>
+          {% end %}
 
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="collapse" href="#page-layouts" aria-expanded="false"
-          aria-controls="page-layouts">
-          <i class="fas fa-server"></i> &nbsp;
-          <span class="menu-title">{{ translate('sidebar', 'servers', data['lang']) }}</span>
-          <i class="menu-arrow"></i>
-        </a>
-        <div class="collapse" id="page-layouts">
-          <ul class="nav flex-column sub-menu">
-            {% if data['crafty_permissions']['Server_Creation'] in data['user_crafty_permissions'] %}
-            <li class="nav-item">
-              <a class="nav-link" href="/server/step1"><i class="fas fa-plus-circle"></i> &nbsp; {{ translate('sidebar',
-                'newServer', data['lang']) }}</a>
-            </li>
-            {% end %}
-            {% for s in data['menu_servers'] %}
-            <li class="nav-item">
-              <a class="nav-link" href="/panel/server_detail?id={{s['server_id']}}"><i class="fas fa-server"></i> &nbsp;
-                {{s['server_name']}}</a>
-            </li>
-            {% end %}
+        </ul>
+      </div>
+    </li>
 
-          </ul>
-        </div>
-      </li>
+    <li class="nav-item">
+      <a class="nav-link" href="https://wiki.craftycontrol.com" target="_blank">
+        <i class="fas fa-book"></i> &nbsp;
+        <span class="menu-title">{{ translate('sidebar', 'documentation', data['lang']) }}</span>
+      </a>
+    </li>
 
-      <li class="nav-item">
-        <a class="nav-link" href="https://wiki.craftycontrol.com" target="_blank">
-          <i class="fas fa-book"></i> &nbsp;
-          <span class="menu-title">{{ translate('sidebar', 'documentation', data['lang']) }}</span>
-        </a>
-      </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/panel/wiki">
+        <i class="fa fa-info-circle"></i> &nbsp;
+        <span class="menu-title">Wiki</span>
+      </a>
+    </li>
 
-      <li class="nav-item">
-        <a class="nav-link" href="/panel/wiki">
-          <i class="fa fa-info-circle"></i> &nbsp;
-          <span class="menu-title">Wiki</span>
-        </a>
-      </li>
+    <li class="nav-item">
+      <a class="nav-link" href="https://discord.gg/9VJPhCE" target="_blank">
+        <i class="fab fa-discord"></i> &nbsp;
+        <span class="menu-title">Discord</span>
+      </a>
+    </li>
 
-      <li class="nav-item">
-        <a class="nav-link" href="https://discord.gg/9VJPhCE" target="_blank">
-          <i class="fab fa-discord"></i> &nbsp;
-          <span class="menu-title">Discord</span>
-        </a>
-      </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/panel/credits">
+        <i class="fas fa-heart"></i> &nbsp;
+        <span class="menu-title">{{ translate('sidebar', 'credits', data['lang']) }}</span>
+      </a>
+    </li>
 
-      <li class="nav-item">
-        <a class="nav-link" href="/panel/credits">
-          <i class="fas fa-heart"></i> &nbsp;
-          <span class="menu-title">{{ translate('sidebar', 'credits', data['lang']) }}</span>
-        </a>
-      </li>
+    {% if data['show_contribute'] %}
+    <li class="nav-item">
+      <a class="nav-link" href="/panel/contribute">
+        <i class="fas fa-donate"></i> &nbsp;
+        <span class="menu-title">{{ translate('sidebar', 'contribute', data['lang']) }}</span>
+      </a>
+    </li>
+    {% end %}
 
-      {% if data['show_contribute'] %}
-      <li class="nav-item">
-        <a class="nav-link" href="/panel/contribute">
-          <i class="fas fa-donate"></i> &nbsp;
-          <span class="menu-title">{{ translate('sidebar', 'contribute', data['lang']) }}</span>
-        </a>
-      </li>
-      {% end %}
-
-    </ul>
-  </nav>
-  <!-- partial -->
+  </ul>
+</nav>
+<!-- partial -->

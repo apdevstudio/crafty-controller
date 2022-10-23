@@ -311,6 +311,12 @@ class ServerHandler(BaseHandler):
             min_mem = bleach.clean(self.get_argument("min_memory", ""))
             max_mem = bleach.clean(self.get_argument("max_memory", ""))
             port = bleach.clean(self.get_argument("port", ""))
+            if int(port) < 1 or int(port) > 65535:
+                self.redirect(
+                    "/panel/error?error=Constraint Error: "
+                    "Port must be greater than 0 and less than 65535"
+                )
+                return
             import_type = bleach.clean(self.get_argument("create_type", ""))
             import_server_path = bleach.clean(self.get_argument("server_path", ""))
             import_server_jar = bleach.clean(self.get_argument("server_jar", ""))
@@ -451,6 +457,12 @@ class ServerHandler(BaseHandler):
             server = bleach.clean(self.get_argument("server", ""))
             server_name = bleach.clean(self.get_argument("server_name", ""))
             port = bleach.clean(self.get_argument("port", ""))
+            if int(port) < 1 or int(port) > 65535:
+                self.redirect(
+                    "/panel/error?error=Constraint Error: "
+                    "Port must be greater than 0 and less than 65535"
+                )
+                return
             import_type = bleach.clean(self.get_argument("create_type", ""))
             import_server_path = bleach.clean(self.get_argument("server_path", ""))
             import_server_exe = bleach.clean(self.get_argument("server_jar", ""))

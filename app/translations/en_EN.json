@@ -360,7 +360,9 @@
         "serverDetails": "Server Details",
         "terminal": "Terminal",
         "metrics": "Metrics",
-        "reset": "Reset Scroll"
+        "reset": "Reset Scroll",
+        "filter": "Filter Logs",
+        "filterList": "Filtered Words"
     },
     "serverFiles": {
         "clickUpload": "Click here to select your files",

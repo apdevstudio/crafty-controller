@@ -8,6 +8,26 @@
     color: var(--base-text)
 }
 
+nav.sidebar {
+    position: fixed;
+}
+
+
+@media (min-width: 992px) {
+    nav.sidebar {
+        position: fixed;
+        max-height: auto;
+    }
+
+    .main-panel {
+        margin-left: 270px;
+    }
+
+    .sidebar-icon-only .main-panel {
+        margin-left: 70px;
+    }
+}
+
 
 .sidebar>.nav>.nav-item:not(.nav-profile)>.nav-link:before {
     content: none;
@@ -51,15 +71,15 @@
 }
 
 .mc-log-time {
-    color: #19d895;
+    color: var(--success);
 }
 
 .mc-log-info {
-    color: #8862e0;
+    color: var(--info);
 }
 
 .mc-log-warn {
-    color: #ffaf00;
+    color: var(--warning);
 }
 
 .mc-log-error {
@@ -71,7 +91,7 @@
 }
 
 .mc-log-keyword {
-    color: #2196f3;
+    color: var(--primary);
 }
 
 .scrollable-element {

@@ -76,7 +76,7 @@ class AjaxHandler(BaseHandler):
                     line = re.sub("(\033\\[(0;)?[0-9]*[A-z]?(;[0-9])?m?)", "", line)
                     line = re.sub("[A-z]{2}\b\b", "", line)
                     line = self.helper.log_colors(html.escape(line))
-                    self.write(f"{line}<br />")
+                    self.write(f"<span class='box'>{line}<br /></span>")
                     # self.write(d.encode("utf-8"))
 
                 except Exception as e:
@@ -137,8 +137,8 @@ class AjaxHandler(BaseHandler):
                             \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" class="tree-caret tree-ctx-item tree-folder">
                             <input type="checkbox" class="checkBoxClass" name="root_path" value="{dpath}" checked>
                             <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" data-name="{filename}" onclick="getDirView(event)">
-                            <i style="color: #8862e0;" class="far fa-folder"></i>
-                            <i style="color: #8862e0;" class="far fa-folder-open"></i>
+                            <i style="color: var(--info);" class="far fa-folder"></i>
+                            <i style="color: var(--info);" class="far fa-folder-open"></i>
                             <strong>{filename}</strong>
                             </span>
                             </input></div><li>
@@ -157,8 +157,8 @@ class AjaxHandler(BaseHandler):
                             \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" class="tree-caret tree-ctx-item tree-folder">
                             <input type="checkbox" class="checkBoxClass" name="root_path" value="{dpath}">
                             <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" data-name="{filename}" onclick="getDirView(event)">
-                            <i style="color: #8862e0;" class="far fa-folder"></i>
-                            <i style="color: #8862e0;" class="far fa-folder-open"></i>
+                            <i style="color: var(--info);" class="far fa-folder"></i>
+                            <i style="color: var(--info);" class="far fa-folder-open"></i>
                             <strong>{filename}</strong>
                             </span>
                             </input></div><li>
