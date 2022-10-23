@@ -97,10 +97,11 @@ docker-build-prod:
       --build-arg "BUILD_DATE=$(date +"%Y-%m-%dT%H:%M:%SZ")"
       --build-arg "BUILD_REF=${CI_COMMIT_SHA}"
       --build-arg "CRAFTY_VER=${VERSION}"
-      --tag "$CI_REGISTRY_IMAGE"
+      --tag "crafty_build"
       --platform linux/arm64/v8,linux/amd64 .
-    - docker image tag "$CI_REGISTRY_IMAGE" "$CI_REGISTRY_IMAGE:${VERSION}"
-    - docker image push -a
+    - docker tag crafty_build:latest $CI_REGISTRY_IMAGE:latest
+    - docker tag crafty_build:latest $CI_REGISTRY_IMAGE:$VERSION
+    - docker push -a
   after_script:
     - |
       docker buildx rm zedBuilder && echo "Successfully Stopped builder instance" || echo "Failed to stop builder instance."
