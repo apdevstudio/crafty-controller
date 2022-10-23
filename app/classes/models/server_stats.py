@@ -120,6 +120,7 @@ class HelperServerStats:
             return None
 
     def get_all_servers_stats(self):
+        self.database.connect(reuse_if_open=True)
         servers = HelperServers.get_all_defined_servers()
         server_data = []
         try:
@@ -136,18 +137,23 @@ class HelperServerStats:
             logger.error(
                 f"Stats collection failed with error: {ex}. Was a server just created?"
             )
+        self.database.close()
         return server_data
 
     def get_history_stats(self, server_id, num_days):
+        self.database.connect(reuse_if_open=True)
         max_age = datetime.datetime.now() - timedelta(days=num_days)
-        return (
+        server_stats = (
             ServerStats.select()
             .where(ServerStats.created > max_age)
             .where(ServerStats.server_id == server_id)
             .execute(self.database)
         )
+        self.database.connect(reuse_if_open=True)
+        return server_stats
 
     def insert_server_stats(self, server_stats):
+        self.database.connect(reuse_if_open=True)
         server_id = server_stats.get("id", 0)
 
         if server_id == 0:
@@ -176,13 +182,18 @@ class HelperServerStats:
             }
         ).execute(self.database)
 
+        self.database.close()
+
     def remove_old_stats(self, last_week):
+        self.database.connect(reuse_if_open=True)
         # self.select_database(self.server_id)
         ServerStats.delete().where(ServerStats.created < last_week).execute(
             self.database
         )
+        self.database.close()
 
     def get_latest_server_stats(self):
+        self.database.connect(reuse_if_open=True)
         latest = (
             ServerStats.select()
             .where(ServerStats.server_id == self.server_id)
@@ -190,12 +201,15 @@ class HelperServerStats:
             .limit(1)
             .get(self.database)
         )
+
+        self.database.close()
         try:
             return DatabaseShortcuts.get_data_obj(latest)
         except IndexError:
             return {}
 
     def get_server_stats(self):
+        self.database.connect(reuse_if_open=True)
         stats = (
             ServerStats.select()
             .where(ServerStats.server_id == self.server_id)
@@ -203,63 +217,70 @@ class HelperServerStats:
             .limit(1)
             .first(self.database)
         )
+        self.database.close()
         return DatabaseShortcuts.get_data_obj(stats)
 
     def server_id_exists(self):
-        # self.select_database(self.server_id)
         if not HelperServers.get_server_data_by_id(self.server_id):
             return False
         return True
 
     def sever_crashed(self):
-        # self.select_database(self.server_id)
+        self.database.connect(reuse_if_open=True)
         ServerStats.update(crashed=True).where(
             ServerStats.server_id == self.server_id
         ).execute(self.database)
+        self.database.close()
 
     def set_import(self):
-        # self.select_database(self.server_id)
+        self.database.connect(reuse_if_open=True)
         ServerStats.update(importing=True).where(
             ServerStats.server_id == self.server_id
         ).execute(self.database)
+        self.database.close()
 
     def finish_import(self):
-        # self.select_database(self.server_id)
+        self.database.connect(reuse_if_open=True)
         ServerStats.update(importing=False).where(
             ServerStats.server_id == self.server_id
         ).execute(self.database)
+        self.database.close()
 
     def get_import_status(self):
-        # self.select_database(self.server_id)
+        self.database.connect(reuse_if_open=True)
         import_status = (
             ServerStats.select()
             .where(ServerStats.server_id == self.server_id)
             .get(self.database)
         )
+        self.database.close()
         return import_status.importing
 
     def server_crash_reset(self):
         if self.server_id is None:
             return
 
-        # self.select_database(self.server_id)
+        self.database.connect(reuse_if_open=True)
         ServerStats.update(crashed=False).where(
             ServerStats.server_id == self.server_id
         ).execute(self.database)
+        self.database.close()
 
     def is_crashed(self):
-        # self.select_database(self.server_id)
+        self.database.connect(reuse_if_open=True)
         svr: ServerStats = (
             ServerStats.select()
             .where(ServerStats.server_id == self.server_id)
             .get(self.database)
         )
+        self.database.close()
         return svr.crashed
 
     def set_update(self, value):
         if self.server_id is None:
             return
-        # self.select_database(self.server_id)
+
+        self.database.connect(reuse_if_open=True)
         try:
             # Checks if server even exists
             ServerStats.select().where(ServerStats.server_id == self.server_id).execute(
@@ -267,22 +288,26 @@ class HelperServerStats:
             )
         except DoesNotExist as ex:
             logger.error(f"Database entry not found! {ex}")
+            self.database.close()
             return
+
         ServerStats.update(updating=value).where(
             ServerStats.server_id == self.server_id
         ).execute(self.database)
+        self.database.close()
 
     def get_update_status(self):
-        # self.select_database(self.server_id)
+        self.database.connect(reuse_if_open=True)
         update_status = (
             ServerStats.select()
             .where(ServerStats.server_id == self.server_id)
             .get(self.database)
         )
+        self.database.close()
         return update_status.updating
 
     def set_first_run(self):
-        # self.select_database(self.server_id)
+        self.database.connect(reuse_if_open=True)
         # Sets first run to false
         try:
             # Checks if server even exists
@@ -291,22 +316,25 @@ class HelperServerStats:
             )
         except Exception as ex:
             logger.error(f"Database entry not found! {ex}")
+            self.database.close()
             return
         ServerStats.update(first_run=False).where(
             ServerStats.server_id == self.server_id
         ).execute(self.database)
+        self.database.close()
 
     def get_first_run(self):
-        # self.select_database(self.server_id)
+        self.database.connect(reuse_if_open=True)
         first_run = (
             ServerStats.select()
             .where(ServerStats.server_id == self.server_id)
             .get(self.database)
         )
+        self.database.close()
         return first_run.first_run
 
     def get_ttl_without_player(self):
-        # self.select_database(self.server_id)
+        self.database.connect(reuse_if_open=True)
         last_stat = (
             ServerStats.select()
             .where(ServerStats.server_id == self.server_id)
@@ -320,6 +348,7 @@ class HelperServerStats:
             .order_by(ServerStats.created.desc())
             .first(self.database)
         )
+        self.database.close()
         return last_stat.created - last_stat_with_player.created
 
     def can_stop_no_players(self, time_limit):
@@ -327,7 +356,7 @@ class HelperServerStats:
         return (time_limit == -1) or (ttl_no_players > time_limit)
 
     def set_waiting_start(self, value):
-        # self.select_database(self.server_id)
+        self.database.connect(reuse_if_open=True)
         try:
             # Checks if server even exists
             ServerStats.select().where(ServerStats.server_id == self.server_id).execute(
@@ -335,15 +364,19 @@ class HelperServerStats:
             )
         except DoesNotExist as ex:
             logger.error(f"Database entry not found! {ex}")
+            self.database.close()
             return
         ServerStats.update(waiting_start=value).where(
             ServerStats.server_id == self.server_id
         ).execute(self.database)
+        self.database.close()
 
     def get_waiting_start(self):
+        self.database.connect(reuse_if_open=True)
         waiting_start = (
             ServerStats.select()
             .where(ServerStats.server_id == self.server_id)
             .get(self.database)
         )
+        self.database.close()
         return waiting_start.waiting_start
