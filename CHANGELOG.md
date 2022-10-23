@@ -1,4 +1,15 @@
 # Changelog
+## --- [4.0.17] - 2022/TBD
+### New features
+TBD
+### Bug fixes
+TBD
+### Tweaks
+TBD
+### Lang
+TBD
+<br><br>
+
 ## --- [4.0.16] - 2022/10/23
 ### New features
 - Automatically set update url for (new) server creation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/487))
