@@ -198,14 +198,21 @@ if __name__ == "__main__":
             controller.add_system_user()
 
         if getattr(sys, "frozen", False):
-            # If the application is run as a bundle, the PyInstaller bootloader
-            # extends the sys module by a flag frozen=True and sets the app
-            # path into variable _MEIPASS'.
-            application_path = sys._MEIPASS
+            application_path = os.path.dirname(sys.executable)
+            running_mode = "Frozen/executable"
         else:
-            application_path = os.path.dirname(os.path.abspath(__file__))
+            try:
+                app_full_path = os.path.realpath(__file__)
+                application_path = os.path.dirname(app_full_path)
+                running_mode = "Non-interactive (e.g. 'python main.py')"
+            except NameError:
+                application_path = os.getcwd()
+                running_mode = "Interactive"
 
         controller.set_project_root(application_path)
+        Console.info(f"Execution Mode: {running_mode}")
+        Console.info(f"Application path  : '{application_path}'")
+
         controller.clear_unexecuted_commands()
         controller.clear_support_status()
 
