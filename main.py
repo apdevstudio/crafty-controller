@@ -210,8 +210,8 @@ if __name__ == "__main__":
                 running_mode = "Interactive"
 
         controller.set_project_root(application_path)
-        Console.info(f"Execution Mode: {running_mode}")
-        Console.info(f"Application path  : '{application_path}'")
+        Console.debug(f"Execution Mode: {running_mode}")
+        Console.debug(f"Application path  : '{application_path}'")
 
         controller.clear_unexecuted_commands()
         controller.clear_support_status()
