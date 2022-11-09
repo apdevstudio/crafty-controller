@@ -375,7 +375,7 @@ class AjaxHandler(BaseHandler):
                     )
                     current = self.controller.cached_login
                     split = current.split("/")
-                    if split == 1:
+                    if len(split) == 1:
                         current_photo = current
                     else:
                         current_photo = split[1]
