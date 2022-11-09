@@ -849,6 +849,25 @@ class PanelHandler(BaseHandler):
                         page_data["roles"] = self.controller.roles.get_all_roles()
                         page_data["auth-servers"][user.user_id] = super_auth_servers
                         page_data["managed_users"] = []
+                        page_data["backgrounds"] = []
+                        cached_split = self.controller.cached_login.split("/")
+
+                        if len(cached_split) == 1:
+                            page_data["backgrounds"].append(
+                                self.controller.cached_login
+                            )
+                        else:
+                            page_data["backgrounds"].append(cached_split[1])
+                        if "login_1.jpg" not in page_data["backgrounds"]:
+                            page_data["backgrounds"].append("login_1.jpg")
+                        for item in os.listdir(
+                            os.path.join(
+                                self.controller.project_root,
+                                "app/frontend/static/assets/images/auth/custom",
+                            )
+                        ):
+                            if item not in page_data["backgrounds"]:
+                                page_data["backgrounds"].append(item)
             else:
                 page_data["managed_users"] = self.controller.users.get_managed_users(
                     exec_user["user_id"]

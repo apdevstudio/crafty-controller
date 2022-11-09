@@ -26992,11 +26992,6 @@ div.tagsinput span.tag a {
   min-height: 100vh;
 }
 
-.auth.auth-bg-1 {
-  background: url("../../images/auth/login_1.jpg");
-  background-size: cover;
-}
-
 .auth.register-bg-1 {
   background: url("../../images/auth/register.jpg") center center no-repeat;
   background-size: cover;
