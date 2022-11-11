@@ -136,10 +136,11 @@ def ping(ip, port):
                 return i
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(5)
     try:
         sock.connect((ip, port))
 
-    except socket.error:
+    except:
         return False
 
     try:

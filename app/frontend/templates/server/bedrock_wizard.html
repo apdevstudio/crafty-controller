@@ -131,7 +131,7 @@
                   <label for="port2">{{ translate('serverWizard', 'serverPort', data['lang']) }}
                     <small></small></label>
                   <input type="number" class="form-control" id="port2" name="port" value="19132" step="1" min="1"
-                    required>
+                    max="65535" required>
                 </div>
               </div>
               <div class="col-sm-12">
@@ -241,7 +241,7 @@
                     <label for="port3">{{ translate('serverWizard', 'serverPort', data['lang']) }}
                       <small></small></label>
                     <input type="number" class="form-control" id="port3" name="port" value="19132" step="1" min="1"
-                      required>
+                      max="65535" required>
                   </div>
                 </div>
 
@@ -387,7 +387,7 @@
                         <label for="port3">{{ translate('serverWizard', 'serverPort', data['lang']) }} <small> - {{
                             translate('serverWizard', 'defaultPort', data['lang']) }}</small></label>
                         <input type="number" class="form-control" id="port4" name="port" value="19132" step="1" min="1"
-                          required>
+                          max="65535" required>
                       </div>
                     </div>
 
@@ -696,7 +696,9 @@
   }
 
   function getTreeView(path) {
-    if (document.getElementById("lower_half").visibility == "hidden") {
+    const styles = window.getComputedStyle(document.getElementById("lower_half"));
+    //If this value is still hidden we know the user is executing a zip import and not an upload
+    if (styles.visibility === "hidden") {
       document.getElementById('zip_submit').disabled = false;
     } else {
       document.getElementById('upload_submit').disabled = false;

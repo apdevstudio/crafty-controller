@@ -1,4 +1,34 @@
 # Changelog
+## --- [4.0.17] - 2022/TBD
+### New features
+TBD
+### Bug fixes
+TBD
+### Tweaks
+TBD
+### Lang
+TBD
+<br><br>
+
+## --- [4.0.16] - 2022/10/23
+### New features
+- Automatically set update url for (new) server creation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/487))
+- Add filter to logs panel ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/484))
+### Bug fixes
+- Fix conditional issue with zip imports/uploads ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/476))
+- Fix API Schedule updates ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/478))
+- Add port constraint for all server creation & api ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/479))
+- Clean up backup configs when deleting servers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/480))
+- Add timeout to socket for servers with incorrect port selection ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/482))
+- Fix server_stats db file when deleting server ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/486))
+- Fix "cannot render after finish" from backup_now ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/489))
+- Fix Support Logs on windows by changing the way we declare projects working directory ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/491) | [Commit](https://gitlab.com/crafty-controller/crafty-4/-/commit/a6aa0f86797856a09c639317c5151c354f4024dc))
+### Tweaks
+- Fix sidebar to not move when scrolling ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/481))
+- Add the rest of CSS predefined colors to themes ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/477))
+- Only send realtime stats when clients connected ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/488))
+<br><br>
+
 ## --- [4.0.15] - 2022/10/02
 ### New features
 - Base Theme Switching (Dark, Light, Default) 🤩🎨 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/471))
@@ -7,6 +37,7 @@
 - Fix traceback on basic schedule with "days" interval ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/469))
 - Fix bad method call with API stdin ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/470))<br>
     *(Thank you ['IWant2Tryhard'](https://github.com/MyNameTsThad) for catching that 🐛)*
+- Fix clients variable as static to prevent crash if client list changed while sending a websocket ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/473))
 <br><br>
 
 ## --- [4.0.14] - 2022/09/23

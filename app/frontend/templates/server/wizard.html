@@ -109,7 +109,7 @@
                   <label for="port1">{{ translate('serverWizard', 'serverPort', data['lang']) }} <small> - {{
                       translate('serverWizard', 'defaultPort', data['lang']) }}</small></label>
                   <input type="number" class="form-control" id="port1" name="port" value="25565" step="1" min="1"
-                    required>
+                    max="65535 " required>
                 </div>
               </div>
               <div class="col-sm-12">
@@ -224,7 +224,7 @@
                   <label for="port2">{{ translate('serverWizard', 'serverPort', data['lang']) }} <small> - {{
                       translate('serverWizard', 'defaultPort', data['lang']) }}</small></label>
                   <input type="number" class="form-control" id="port2" name="port" value="25565" step="1" min="1"
-                    required>
+                    max="65535" required>
                 </div>
               </div>
               <div class="col-sm-12">
@@ -351,7 +351,7 @@
                     <label for="port3">{{ translate('serverWizard', 'serverPort', data['lang']) }} <small> - {{
                         translate('serverWizard', 'defaultPort', data['lang']) }}</small></label>
                     <input type="number" class="form-control" id="port3" name="port" value="25565" step="1" min="1"
-                      required>
+                      max="65535" required>
                   </div>
                 </div>
 
@@ -515,7 +515,7 @@
                         <label for="port3">{{ translate('serverWizard', 'serverPort', data['lang']) }} <small> - {{
                             translate('serverWizard', 'defaultPort', data['lang']) }}</small></label>
                         <input type="number" class="form-control" id="port3" name="port" value="25565" step="1" min="1"
-                          required>
+                          max="65535" required>
                       </div>
                     </div>
 
@@ -685,6 +685,87 @@
     transform: translateY(-50%);
   }
 </style>
+<style>
+  .scroll {
+    max - height: 12em;
+    overflow - y: auto;
+  }
+
+  .menu - btn {
+    font - size: 0.9em;
+    padding: 2px 10px;
+  }
+
+  .menu {
+    padding - top: 10px;
+    z - index: 200;
+    margin - top: 4px;
+    position: absolute;
+    background - color: #2a2c44;
+  }
+
+  .menu - option {
+    padding: 6px 20px 6px;
+    color: white;
+  }
+
+  #overlay {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100 %;
+    height: 100 %;
+    z - index: 100;
+  }
+</style>
+<style>
+  /* Remove default bullets */
+  .tree-view,
+  .tree-nested {
+    list - style - type: none;
+    margin: 0;
+    padding: 0;
+    margin-left: 10px;
+  }
+
+  /* Style the items */
+  .tree-item,
+  .files-tree-title {
+    cursor: pointer;
+    user-select: none;
+    /* Prevent text selection */
+  }
+
+  /* Create the caret/arrow with a unicode, and style it */
+  .tree-caret .fa-folder {
+    display: inline-block;
+  }
+
+  .tree-caret .fa-folder-open {
+    display: none;
+  }
+
+  /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+  .tree-caret-down .fa-folder {
+    display: none;
+  }
+
+  .tree-caret-down .fa-folder-open {
+    display: inline-block;
+  }
+
+  /* Hide the nested list */
+  .tree-nested {
+    display: none;
+  }
+
+  #op_logo {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+</style>
+</style>
 
 {% end %}
 
@@ -712,94 +793,15 @@
     } else {
       bootbox.alert("You must input a path before selecting this button");
     }
+</script>
 
-    .scroll {
-      max - height: 12em;
-      overflow - y: auto;
-    }
+{% end %}
 
-    .menu - btn {
-      font - size: 0.9em;
-      padding: 2px 10px;
-    }
-
-    .menu {
-      padding - top: 10px;
-      z - index: 200;
-      margin - top: 4px;
-      position: absolute;
-      background - color: #2a2c44;
-    }
-
-    .menu - option {
-      padding: 6px 20px 6px;
-      color: white;
-    }
-
-    #overlay {
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      width: 100 %;
-      height: 100 %;
-      z - index: 100;
-    }
-  </style >
-      <style>
-    /* Remove default bullets */
-        .tree-view,
-        .tree-nested {
-          list - style - type: none;
-        margin: 0;
-        padding: 0;
-        margin-left: 10px;
-    }
-
-        /* Style the items */
-        .tree-item,
-        .files-tree-title {
-          cursor: pointer;
-        user-select: none;
-      /* Prevent text selection */
-    }
-
-        /* Create the caret/arrow with a unicode, and style it */
-        .tree-caret .fa-folder {
-          display: inline-block;
-    }
-
-        .tree-caret .fa-folder-open {
-          display: none;
-    }
-
-        /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
-        .tree-caret-down .fa-folder {
-          display: none;
-    }
-
-        .tree-caret-down .fa-folder-open {
-          display: inline-block;
-    }
-
-        /* Hide the nested list */
-        .tree-nested {
-          display: none;
-    }
-
-        #op_logo {
-          position: relative;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-      </style>
-
-    {% end %}
-
-    {% block js %}
-    <script>
-      var file;
-      function sendFile() {
-        file = $("#file")[0].files[0]
+{% block js %}
+<script>
+    var file;
+    function sendFile() {
+      file = $("#file")[0].files[0]
       document.getElementById("upload_input").innerHTML = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>'
       let xmlHttpRequest = new XMLHttpRequest();
       let token = getCookie("_xsrf")
@@ -818,13 +820,13 @@
       xmlHttpRequest.setRequestHeader('X-FileName', fileName);
       xmlHttpRequest.addEventListener('load', (event) => {
         if (event.target.responseText == 'success') {
-        console.log('Upload for file', file.name, 'was successful!')
+          console.log('Upload for file', file.name, 'was successful!')
           document.getElementById("upload_input").innerHTML = '<div class="card-header header-sm d-flex justify-content-between align-items-center"><span id="file-uploaded" style="color: gray;">' + fileName + '</span> 🔒</div>';
-      document.getElementById("lower_half").style.visibility = "visible";
+          document.getElementById("lower_half").style.visibility = "visible";
         }
-      else {
-        alert('Upload failed with response: ' + event.target.responseText);
-      doUpload = false;
+        else {
+          alert('Upload failed with response: ' + event.target.responseText);
+          doUpload = false;
         }
       }, false);
       xmlHttpRequest.addEventListener('error', (e) => {
@@ -834,46 +836,46 @@
     }
 
 
-      document.getElementById("root_files_button").addEventListener("click", function () {
+    document.getElementById("root_files_button").addEventListener("click", function () {
       if (document.forms["zip"]["server_path"].value != "") {
         if (document.getElementById('root_files_button').classList.contains('clicked')) {
-        document.getElementById('main-tree-div').innerHTML = '<input type="radio" id="main-tree-input" name="root_path" value="" checked><span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path=""><i class="far fa-folder"></i><i class="far fa-folder-open"></i>{{ translate("serverFiles", "files", data["lang"]) }}</span></input>'
-      } else {
-        document.getElementById('root_files_button').classList.add('clicked')
-      }
-      path = document.forms["zip"]["server_path"].value;
-      console.log(document.forms["zip"]["server_path"].value)
-      var token = getCookie("_xsrf");
-      var dialog = bootbox.dialog({
-        message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
-      closeButton: false
+          document.getElementById('main-tree-div').innerHTML = '<input type="radio" id="main-tree-input" name="root_path" value="" checked><span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path=""><i class="far fa-folder"></i><i class="far fa-folder-open"></i>{{ translate("serverFiles", "files", data["lang"]) }}</span></input>'
+        } else {
+          document.getElementById('root_files_button').classList.add('clicked')
+        }
+        path = document.forms["zip"]["server_path"].value;
+        console.log(document.forms["zip"]["server_path"].value)
+        var token = getCookie("_xsrf");
+        var dialog = bootbox.dialog({
+          message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
+          closeButton: false
         });
-      $.ajax({
-        type: "POST",
-      headers: {'X-XSRFToken': token },
-      url: '/ajax/unzip_server?id=-1&path=' + path,
+        $.ajax({
+          type: "POST",
+          headers: { 'X-XSRFToken': token },
+          url: '/ajax/unzip_server?id=-1&path=' + path,
         });
       } else {
         bootbox.alert("You must input a path before selecting this button");
       }
     });
 
-      document.getElementById("root_upload_button").addEventListener("click", function () {
+    document.getElementById("root_upload_button").addEventListener("click", function () {
       if (file) {
         if (document.getElementById('root_upload_button').classList.contains('clicked')) {
-        document.getElementById('main-tree-div').innerHTML = '<input type="radio" id="main-tree-input-upload" name="root_path" value="" checked><span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path=""><i class="far fa-folder"></i><i class="far fa-folder-open"></i>{{ translate("serverFiles", "files", data["lang"]) }}</span></input>'
-      } else {
-        document.getElementById('root_upload_button').classList.add('clicked')
-      }
-      var token = getCookie("_xsrf");
-      var dialog = bootbox.dialog({
-        message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
-      closeButton: false
+          document.getElementById('main-tree-div').innerHTML = '<input type="radio" id="main-tree-input-upload" name="root_path" value="" checked><span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path=""><i class="far fa-folder"></i><i class="far fa-folder-open"></i>{{ translate("serverFiles", "files", data["lang"]) }}</span></input>'
+        } else {
+          document.getElementById('root_upload_button').classList.add('clicked')
+        }
+        var token = getCookie("_xsrf");
+        var dialog = bootbox.dialog({
+          message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
+          closeButton: false
         });
-      $.ajax({
-        type: "POST",
-      headers: {'X-XSRFToken': token },
-      url: '/ajax/unzip_server?id=-1&file=' + file.name,
+        $.ajax({
+          type: "POST",
+          headers: { 'X-XSRFToken': token },
+          url: '/ajax/unzip_server?id=-1&file=' + file.name,
         });
       } else {
         bootbox.alert("You must input a path before selecting this button");
@@ -882,15 +884,15 @@
 </script>
 
 <script>
-      $(".tree-reset").on("click", function () {
-        location.href = "/server/step1";
-      });
-      function dropDown(event) {
-        event.target.parentElement.children[1].classList.remove("d-none");
+    $(".tree-reset").on("click", function () {
+      location.href = "/server/step1";
+    });
+    function dropDown(event) {
+      event.target.parentElement.children[1].classList.remove("d-none");
       document.getElementById("overlay").classList.remove("d-none");
     }
 
-      function hide(event) {
+    function hide(event) {
       var items = document.getElementsByClassName('menu');
       items.forEach(item => {
         item.classList.add("d-none");
@@ -899,36 +901,36 @@
       document.getElementById("overlay").classList.add("d-none");
     }
 
-      $(document).ready(function () {
-        console.log('ready');
+    $(document).ready(function () {
+      console.log('ready');
       var forms = $('form.server-wizard');
       forms.each(function (i, formEl) {
         var form = $(formEl);
-      var min = form.find('[name=min_memory]');
-      var max = form.find('[name=max_memory]');
-      console.log(form, min, max)
-      min.change(function () {
-        check_sizes(max, min, 'min');
+        var min = form.find('[name=min_memory]');
+        var max = form.find('[name=max_memory]');
+        console.log(form, min, max)
+        min.change(function () {
+          check_sizes(max, min, 'min');
         });
-      max.change(function () {
-        check_sizes(max, min, 'max');
+        max.change(function () {
+          check_sizes(max, min, 'max');
         });
       });
     });
 
-      function wait_msg(importing) {
-        bootbox.alert({
-          title: importing ? '{% raw translate("serverWizard", "importing", data["lang"]) %}' : '{% raw translate("serverWizard", "downloading", data["lang"]) %}',
-          message: '<i class="fas fa-cloud-download"></i> {% raw translate("serverWizard", "bePatient", data["lang"]) %}',
-        });
+    function wait_msg(importing) {
+      bootbox.alert({
+        title: importing ? '{% raw translate("serverWizard", "importing", data["lang"]) %}' : '{% raw translate("serverWizard", "downloading", data["lang"]) %}',
+        message: '<i class="fas fa-cloud-download"></i> {% raw translate("serverWizard", "bePatient", data["lang"]) %}',
+      });
     }
 
-      function show_file_tree() {
-        $("#dir_select").modal();
+    function show_file_tree() {
+      $("#dir_select").modal();
     }
 
-      function check_sizes(a, b, changed) {
-        max_mem = parseFloat(a.val());
+    function check_sizes(a, b, changed) {
+      max_mem = parseFloat(a.val());
       min_mem = parseFloat(b.val());
       if (max_mem < min_mem && changed === 'min') {
         a.val(min_mem)
@@ -938,9 +940,10 @@
       }
     }
 
-      function getTreeView(path) {
+    function getTreeView(path) {
+      const styles = window.getComputedStyle(document.getElementById("lower_half"));
       //If this value is still hidden we know the user is executing a zip import and not an upload
-      if (document.getElementById("lower_half").visibility == "hidden") {
+      if (styles.visibility === "hidden") {
         document.getElementById('zip_submit').disabled = false;
       } else {
         document.getElementById('upload_submit').disabled = false;
@@ -949,51 +952,51 @@
 
       $.ajax({
         type: "GET",
-      url: '/ajax/get_zip_tree?id=-1&path=' + path,
-      dataType: 'text',
-      success: function (data) {
-        console.log("got response:");
-      console.log(data);
+        url: '/ajax/get_zip_tree?id=-1&path=' + path,
+        dataType: 'text',
+        success: function (data) {
+          console.log("got response:");
+          console.log(data);
 
-      dataArr = data.split('\n');
-      serverDir = dataArr.shift(); // Remove & return first element (server directory)
-      text = dataArr.join('\n');
+          dataArr = data.split('\n');
+          serverDir = dataArr.shift(); // Remove & return first element (server directory)
+          text = dataArr.join('\n');
 
-      try {
-        document.getElementById('main-tree-div').innerHTML += text;
-      document.getElementById('main-tree').parentElement.classList.add("clicked");
+          try {
+            document.getElementById('main-tree-div').innerHTML += text;
+            document.getElementById('main-tree').parentElement.classList.add("clicked");
           } catch {
-        document.getElementById('files-tree').innerHTML = text;
+            document.getElementById('files-tree').innerHTML = text;
           }
 
 
-      document.getElementsByClassName('files-tree-title')[0].setAttribute('data-path', serverDir);
-      document.getElementsByClassName('files-tree-title')[0].setAttribute('data-name', 'Files');
+          document.getElementsByClassName('files-tree-title')[0].setAttribute('data-path', serverDir);
+          document.getElementsByClassName('files-tree-title')[0].setAttribute('data-name', 'Files');
 
         },
       });
     }
 
-      function getToggleMain(event) {
-        path = event.target.parentElement.getAttribute('data-path');
+    function getToggleMain(event) {
+      path = event.target.parentElement.getAttribute('data-path');
       document.getElementById("files-tree").classList.toggle("d-block");
       document.getElementById(path + "span").classList.toggle("tree-caret-down");
       document.getElementById(path + "span").classList.toggle("tree-caret");
     }
 
 
-      function getDirView(event) {
-        path = event.target.parentElement.getAttribute('data-path');
+    function getDirView(event) {
+      path = event.target.parentElement.getAttribute('data-path');
 
       if (document.getElementById(path).classList.contains('clicked')) {
 
         var toggler = document.getElementById(path + "span");
 
-      if (toggler.classList.contains('files-tree-title')) {
-        document.getElementById(path + "ul").classList.toggle("d-block");
-      document.getElementById(path + "span").classList.toggle("tree-caret-down");
+        if (toggler.classList.contains('files-tree-title')) {
+          document.getElementById(path + "ul").classList.toggle("d-block");
+          document.getElementById(path + "span").classList.toggle("tree-caret-down");
         }
-      return;
+        return;
       } else {
         $.ajax({
           type: "GET",
@@ -1026,43 +1029,43 @@
         });
       }
     }
-      if (webSocket) {
-        webSocket.on('send_temp_path', function (data) {
-          setTimeout(function () {
-            var x = document.querySelector('.bootbox');
-            if (x) {
-              x.remove()
-            }
-            var x = document.querySelector('.modal-backdrop');
-            if (x) {
-              x.remove()
-            }
-            document.getElementById('main-tree-input').setAttribute('value', data.path)
-            document.getElementById('main-tree-input-upload').setAttribute('value', data.path)
-            getTreeView(data.path);
-            show_file_tree();
+    if (webSocket) {
+      webSocket.on('send_temp_path', function (data) {
+        setTimeout(function () {
+          var x = document.querySelector('.bootbox');
+          if (x) {
+            x.remove()
+          }
+          var x = document.querySelector('.modal-backdrop');
+          if (x) {
+            x.remove()
+          }
+          document.getElementById('main-tree-input').setAttribute('value', data.path)
+          document.getElementById('main-tree-input-upload').setAttribute('value', data.path)
+          getTreeView(data.path);
+          show_file_tree();
 
-            $("#root_files_button").attr("disabled", "disabled");
-            $("#root_upload_button").attr("disabled", "disabled");
+          $("#root_files_button").attr("disabled", "disabled");
+          $("#root_upload_button").attr("disabled", "disabled");
 
-          }, 5000);
-        });
+        }, 5000);
+      });
     }
 
-      function refreshCache() {
+    function refreshCache() {
       var token = getCookie("_xsrf")
       document.getElementById("refresh-cache").classList.add("fa-spin")
       $.ajax({
         type: "POST",
-      headers: {'X-XSRFToken': token },
-      url: '/ajax/jar_cache',
-      success: function () {
-        document.getElementById("refresh-cache").classList.remove("fa-sync");
-      document.getElementById("refresh-cache").classList.remove("fa-spin");
-      document.getElementById("refresh-cache").classList.add("fa-check");
+        headers: { 'X-XSRFToken': token },
+        url: '/ajax/jar_cache',
+        success: function () {
+          document.getElementById("refresh-cache").classList.remove("fa-sync");
+          document.getElementById("refresh-cache").classList.remove("fa-spin");
+          document.getElementById("refresh-cache").classList.add("fa-check");
 
-      setTimeout(function () {
-        location.reload();
+          setTimeout(function () {
+            location.reload();
           }, 2000);
         },
       });
@@ -1070,12 +1073,12 @@
 
 </script>
 <script type="text/javascript">
-      var text = '{% raw data["js_server_types"] %}';
-      var serverTypesLists = JSON.parse(text);
-      /* CountryChange() is called from the onchange event of a select element.
-      * param selectObj - the select object which fired the on change event.
-      */
-      function serverTypeChange(selectObj) {
+    var text = '{% raw data["js_server_types"] %}';
+    var serverTypesLists = JSON.parse(text);
+    /* CountryChange() is called from the onchange event of a select element.
+    * param selectObj - the select object which fired the on change event.
+    */
+    function serverTypeChange(selectObj) {
       // get the index of the selected option
       var idx = document.getElementById('server_type').selectedIndex;
       // get the value of the selected option
@@ -1084,9 +1087,9 @@
         var which = document.getElementById('server_type').options[idx].value;
       } catch {
         while (cSelect.options.length > 0) {
-        cSelect.remove(0);
+          cSelect.remove(0);
         }
-      return;
+        return;
       }
       let server_type = which.split('|')[0];
       let server = which.split('|')[1];
@@ -1103,29 +1106,29 @@
       // create new options ordered by ascending
       cList[server].forEach(type => {
         newOption = document.createElement("option");
-      newOption.value = which + "|" + type;  // assumes option string and value are the same
-      newOption.text = type;
-      // add the new option
-      try {
-        cSelect.add(newOption);  // this will fail in DOM browsers but is needed for IE
+        newOption.value = which + "|" + type;  // assumes option string and value are the same
+        newOption.text = type;
+        // add the new option
+        try {
+          cSelect.add(newOption);  // this will fail in DOM browsers but is needed for IE
         }
-      catch (e) {
-        cSelect.appendChild(newOption);
+        catch (e) {
+          cSelect.appendChild(newOption);
         }
       })
     }
 
-      function serverJarChange(selectObj) {
-        let type_select = document.getElementById('server_jar')
+    function serverJarChange(selectObj) {
+      let type_select = document.getElementById('server_jar')
       let tidx = type_select.selectedIndex;
       let val = type_select.options[tidx].value;
       if (val == 'None') {
         var jcSelect = document.getElementById("server_type");
         while (jcSelect.options.length > 0) {
-        jcSelect.remove(0);
+          jcSelect.remove(0);
         }
-      serverTypeChange(selectObj);
-      return;
+        serverTypeChange(selectObj);
+        return;
       }
       // get the index of the selected option
       var jidx = selectObj.selectedIndex;
@@ -1144,14 +1147,14 @@
       // create new options ordered by ascending
       jcList.forEach(type => {
         jnewOption = document.createElement("option");
-      jnewOption.value = jwhich + "|" + type;  // assumes option string and value are the same
-      jnewOption.text = type;
-      // add the new option
-      try {
-        jcSelect.add(jnewOption);  // this will fail in DOM browsers but is needed for IE
+        jnewOption.value = jwhich + "|" + type;  // assumes option string and value are the same
+        jnewOption.text = type;
+        // add the new option
+        try {
+          jcSelect.add(jnewOption);  // this will fail in DOM browsers but is needed for IE
         }
-      catch (e) {
-        jcSelect.appendChild(jnewOption);
+        catch (e) {
+          jcSelect.appendChild(jnewOption);
         }
       })
       serverTypeChange(selectObj);
