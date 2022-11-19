@@ -573,33 +573,49 @@ class ServerInstance:
             else:
                 # Process has exited. Lets do some work to setup the new
                 # run command.
-                # We need to grab the exact forge version number.
-                # We know we can find it here.
-                version = os.listdir(
-                    os.path.join(self.server_path, "libraries/net/minecraftforge/forge")
-                )[0]
                 # Let's grab the server object we're going to update.
                 server_obj = HelperServers.get_server_obj(self.server_id)
+
                 # The forge install is done so we can delete that install file.
                 os.remove(os.path.join(server_obj.path, server_obj.executable))
+
+                # We need to grab the exact forge version number.
+                # We know we can find it here in the run.sh/bat script.
+                run_file_path = ""
+                if self.helper.is_os_windows():
+                    run_file_path = os.path.join(server_obj.path, "run.bat")
+                else:
+                    run_file_path = os.path.join(server_obj.path, "run.sh")
+
+                if Helpers.check_file_perms(run_file_path) and os.path.isfile(
+                    run_file_path
+                ):
+                    run_file = open(run_file_path, "r")
+                    run_file_text = run_file.read()
+                else:
+                    Console.error(
+                        "ERROR ! Forge install can't read the scripts files. Aborting ..."
+                    )
+                    return
+
+                # We get the server command parameters from forge script
+                server_command = re.findall(
+                    r"java @([a-zA-Z0-9_\.]+) @([a-z.\/\-]+)([0-9.\-]+)\/\b([a-z_0-9]+\.txt)\b( .{2,4})?",
+                    run_file_text,
+                )[0]
+
+                version = server_command[2]
+                executable_path = f"{server_command[1]}{server_command[2]}/"
+
                 # Let's set the proper server executable
                 server_obj.executable = os.path.join(
-                    "libraries/net/minecraftforge/forge/"
-                    f"{version}/forge-{version}-server.jar"
+                    f"{executable_path}forge-{version}-server.jar"
                 )
                 # Now lets set up the new run command.
                 # This is based off the run.sh/bat that
                 # Forge uses in 1.16 and <
-                if self.helper.is_os_windows():
-                    server_obj.execution_command = (
-                        "java @user_jvm_args.txt @libraries/net/"
-                        f"minecraftforge/forge/{version}/win_args.txt nogui"
-                    )
-                else:
-                    server_obj.execution_command = (
-                        "java @user_jvm_args.txt @libraries/net/"
-                        f"minecraftforge/forge/{version}/unix_args.txt nogui"
-                    )
+                execution_command = f"java @{server_command[0]} @{executable_path}{server_command[3]} nogui {server_command[4]}"
+                server_obj.execution_command = execution_command
                 Console.debug("SUCCESS! Forge install completed")
 
                 # We'll update the server with the new information now.
