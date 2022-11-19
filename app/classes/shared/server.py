@@ -202,12 +202,15 @@ class ServerInstance:
         # remove the scheduled job since it's ran
         return self.server_scheduler.remove_job(str(self.server_id))
 
-    def run_threaded_server(self, user_id):
+    def run_threaded_server(self, user_id, forge_install=False):
         # start the server
         self.server_thread = threading.Thread(
             target=self.start_server,
             daemon=True,
-            args=(user_id,),
+            args=(
+                user_id,
+                forge_install,
+            ),
             name=f"{self.server_id}_server_thread",
         )
         self.server_thread.start()
@@ -292,7 +295,7 @@ class ServerInstance:
             logger.critical(f"Unable to write/access {self.server_path}")
             Console.critical(f"Unable to write/access {self.server_path}")
 
-    def start_server(self, user_id):
+    def start_server(self, user_id, forge_install=False):
         if not user_id:
             user_lang = self.helper.get_setting("language")
         else:
@@ -341,7 +344,9 @@ class ServerInstance:
                     "eula= true",
                     "eula =true",
                 ]
-
+        # If this is a forge installer we're running we can bypass the eula checks.
+        if forge_install is True:
+            e_flag = True
         if not e_flag and self.settings["type"] == "minecraft-java":
             if user_id:
                 self.helper.websocket_helper.broadcast_user(
@@ -540,6 +545,10 @@ class ServerInstance:
                 self.detect_crash, "interval", seconds=30, id=f"c_{self.server_id}"
             )
 
+        # If this is a forge install we'll call the watcher to do the things
+        if forge_install:
+            self.forge_install_watcher()
+
     def check_internet_thread(self, user_id, user_lang):
         if user_id:
             if not Helpers.check_internet():
@@ -552,6 +561,50 @@ class ServerInstance:
                         )
                     },
                 )
+
+    def forge_install_watcher(self):
+        # Enter for install if that parameter is true
+        while True:
+            # We'll watch the process
+            if self.process.poll() is None:
+                # IF process still has not exited we'll keep looping
+                time.sleep(5)
+                Console.debug("Installing Forge...")
+            else:
+                # Process has exited. Lets do some work to setup the new
+                # run command.
+                # We need to grab the exact forge version number.
+                # We know we can find it here.
+                version = os.listdir(
+                    os.path.join(self.server_path, "libraries/net/minecraftforge/forge")
+                )[0]
+                # Let's grab the server object we're going to update.
+                server_obj = HelperServers.get_server_obj(self.server_id)
+                # The forge install is done so we can delete that install file.
+                os.remove(os.path.join(server_obj.path, server_obj.executable))
+                # Let's set the proper server executable
+                server_obj.executable = os.path.join(
+                    "libraries/net/minecraftforge/forge/"
+                    f"{version}/forge-{version}-server.jar"
+                )
+                # Now lets set up the new run command.
+                # This is based off the run.sh/bat that
+                # Forge uses in 1.16 and <
+                if self.helper.is_os_windows():
+                    server_obj.execution_command = (
+                        "java @user_jvm_args.txt @libraries/net/"
+                        f"minecraftforge/forge/{version}/win_args.txt nogui"
+                    )
+                else:
+                    server_obj.execution_command = (
+                        "java @user_jvm_args.txt @libraries/net/"
+                        f"minecraftforge/forge/{version}/unix_args.txt nogui"
+                    )
+                Console.debug("SUCCESS! Forge install completed")
+
+                # We'll update the server with the new information now.
+                HelperServers.update_server(server_obj)
+                break
 
     def stop_crash_detection(self):
         # This is only used if the crash detection settings change

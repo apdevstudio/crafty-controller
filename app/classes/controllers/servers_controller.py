@@ -119,9 +119,15 @@ class ServersController(metaclass=Singleton):
         return srv.stats_helper.set_import()
 
     @staticmethod
-    def finish_import(server_id):
+    def finish_import(server_id, forge=False):
         srv = ServersController().get_server_instance_by_id(server_id)
-        return srv.stats_helper.finish_import()
+        srv.stats_helper.finish_import()
+        # This is where we start the forge installerr
+        if forge:
+            srv.run_threaded_server(
+                HelperUsers.get_user_id_by_name("system"), forge_install=True
+            )
+        return
 
     @staticmethod
     def get_import_status(server_id):
