@@ -427,6 +427,9 @@ class ServerInstance:
                             ).format(self.name, ex)
                         },
                     )
+                if forge_install:
+                    # Reset import status if failed while forge installing
+                    self.stats_helper.finish_import()
                 return False
 
         else:
@@ -465,6 +468,9 @@ class ServerInstance:
                             ).format(self.name, ex)
                         },
                     )
+                if forge_install:
+                    # Reset import status if failed while forge installing
+                    self.stats_helper.finish_import()
                 return False
 
         out_buf = ServerOutBuf(self.helper, self.process, self.server_id)
