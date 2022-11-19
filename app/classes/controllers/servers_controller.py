@@ -128,7 +128,6 @@ class ServersController(metaclass=Singleton):
             )
         else:
             srv.stats_helper.finish_import()
-        return
 
     @staticmethod
     def get_import_status(server_id):
