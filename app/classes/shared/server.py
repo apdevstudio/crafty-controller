@@ -301,7 +301,7 @@ class ServerInstance:
         else:
             user_lang = HelperUsers.get_user_lang_by_id(user_id)
 
-        if self.stats_helper.get_import_status():
+        if self.stats_helper.get_import_status() and not forge_install:
             if user_id:
                 self.helper.websocket_helper.broadcast_user(
                     user_id,
@@ -604,6 +604,13 @@ class ServerInstance:
 
                 # We'll update the server with the new information now.
                 HelperServers.update_server(server_obj)
+                self.stats_helper.finish_import()
+                server_users = PermissionsServers.get_server_user_list(self.server_id)
+
+                for user in server_users:
+                    self.helper.websocket_helper.broadcast_user(
+                        user, "send_start_reload", {}
+                    )
                 break
 
     def stop_crash_detection(self):

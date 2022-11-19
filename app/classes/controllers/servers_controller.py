@@ -121,12 +121,13 @@ class ServersController(metaclass=Singleton):
     @staticmethod
     def finish_import(server_id, forge=False):
         srv = ServersController().get_server_instance_by_id(server_id)
-        srv.stats_helper.finish_import()
         # This is where we start the forge installerr
         if forge:
             srv.run_threaded_server(
                 HelperUsers.get_user_id_by_name("system"), forge_install=True
             )
+        else:
+            srv.stats_helper.finish_import()
         return
 
     @staticmethod
