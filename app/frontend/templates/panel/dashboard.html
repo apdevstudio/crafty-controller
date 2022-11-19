@@ -168,7 +168,12 @@
 
                   <td draggable="false" id="controls{{server['server_data']['server_id']}}" class="actions_serverlist">
                     {% if server['user_command_permission'] %}
-                    {% if server['stats']['updating']%}
+                    {% if server['stats']['importing'] and server['stats']['running'] %}
+                    <!-- WHAT HAPPENED HERE -->
+                    <a data-id="{{server['server_data']['server_id']}}" class=""><i
+                        class="fa fa-spinner fa-spin"></i>&nbsp;{{ translate('serverTerm', 'installing',
+                      data['lang']) }}</i></a>
+                    {% elif server['stats']['updating']%}
                     <!-- WHAT HAPPENED HERE -->
                     <a data-id="{{server['server_data']['server_id']}}" class=""><i
                         class="fa fa-spinner fa-spin"></i>&nbsp;{{ translate('serverTerm', 'updating',
