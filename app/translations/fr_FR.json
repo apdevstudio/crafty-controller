@@ -97,7 +97,8 @@
         "status": "Statut",
         "stop": "Arrêter",
         "version": "Version",
-        "welcome": "Bienvenue sur Crafty Controller"
+        "welcome": "Bienvenue sur Crafty Controller",
+        "installing": "Installation ..."
     },
     "datatables": {
         "i18n": {
@@ -450,7 +451,13 @@
         "starting": "Démarrage retardé",
         "stop": "Arrêter",
         "stopScroll": "Stopper l'Auto Défilement",
-        "updating": "Mise à Jour ..."
+        "updating": "Mise à Jour ...",
+        "installing": "Installation ..."
+    },
+    "serverMetrics": {
+        "resetZoom": "Reset Zoom",
+        "zoomHint1": "Pour zoomer le graphique, maintenir la touche SHIFT et utiliser la molette de la souris.",
+        "zoomHint2": "Il est aussi possible de maintenir la touche SHIFT puis de clicker et déplacer la zone sur laquelle zoomer."
     },
     "serverWizard": {
         "absoluteServerPath": "Chemin absolu de Votre Serveur",
