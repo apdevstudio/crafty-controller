@@ -275,22 +275,27 @@
 
                   </td>
                   <td draggable="false" id="server_running_status_{{server['server_data']['server_id']}}">
-                    {% if server['stats']['running'] %}
-                    <span class="text-success"><i class="fas fa-signal"></i> {{ translate('dashboard', 'online',
-                      data['lang']) }}</span>
-                    {% elif server['stats']['crashed'] %}
-                    <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ translate('dashboard',
-                      'crashed',
-                      data['lang']) }}</span>
-                    {% else %}
-                    <span class="text-warning"><i class="fas fa-ban"></i> {{ translate('dashboard', 'offline',
-                      data['lang']) }}</span>
-                    {% end %}
+                    <span class="port" data-toggle="tooltip" title="{{
+                      server['server_data']['server_port'] }}">
+                      {% if server['stats']['running'] %}
+                      <span class="text-success"><i class="fas fa-signal"></i> {{ translate('dashboard', 'online',
+                        data['lang']) }}</span>
+                      {% elif server['stats']['crashed'] %}
+                      <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ translate('dashboard',
+                        'crashed',
+                        data['lang']) }}</span>
+                      {% else %}
+                      <span class="text-warning"><i class="fas fa-ban"></i> {{ translate('dashboard', 'offline',
+                        data['lang']) }}</span>
+                      {% end %}
+                      <br />
+                      <br />
                   </td>
                   <span class="server-player-totals" id="server_players_{{server['server_data']['server_id']}}"
                     data-players="{{ server['stats']['online']}}" data-max="{{ server['stats']['max'] }}"></span>
                 </tr>
                 {% end %}
+                </span>
                 {% for server in data['failed_servers'] %}
                 <tr id="{{server['server_id']}}" draggable="false">
                   <td class="text-warning"><i class="fas fa-server"></i>&nbsp;<a class="text-warning"
