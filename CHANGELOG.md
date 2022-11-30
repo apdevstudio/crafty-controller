@@ -3,7 +3,7 @@
 ### New features
 TBD
 ### Bug fixes
-TBD
+- Fix no port on bedrock server creation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/493))
 ### Tweaks
 TBD
 ### Lang
