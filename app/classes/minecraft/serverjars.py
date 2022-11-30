@@ -187,31 +187,28 @@ class ServerJars:
 
         # open a file stream
         with requests.get(fetch_url, timeout=2, stream=True) as r:
+            success = False
             try:
                 with open(path, "wb") as output:
                     shutil.copyfileobj(r.raw, output)
-                    ServersController.finish_import(server_id)
+                    # If this is the newer forge version we will run the installer
+                    if server == "forge" and int(version.split(".")[1]) > 15:
+                        ServersController.finish_import(server_id, True)
+                    else:
+                        ServersController.finish_import(server_id)
 
-                    for user in server_users:
-                        self.helper.websocket_helper.broadcast_user(
-                            user, "notification", "Executable download finished"
-                        )
-                        time.sleep(3)
-                        self.helper.websocket_helper.broadcast_user(
-                            user, "send_start_reload", {}
-                        )
-                    return True
+                    success = True
             except Exception as e:
                 logger.error(f"Unable to save jar to {path} due to error:{e}")
                 ServersController.finish_import(server_id)
                 server_users = PermissionsServers.get_server_user_list(server_id)
-                for user in server_users:
-                    self.helper.websocket_helper.broadcast_user(
-                        user, "notification", "Executable download finished"
-                    )
-                    time.sleep(3)
-                    self.helper.websocket_helper.broadcast_user(
-                        user, "send_start_reload", {}
-                    )
 
-                return False
+            for user in server_users:
+                self.helper.websocket_helper.broadcast_user(
+                    user, "notification", "Executable download finished"
+                )
+                time.sleep(3)
+                self.helper.websocket_helper.broadcast_user(
+                    user, "send_start_reload", {}
+                )
+            return success

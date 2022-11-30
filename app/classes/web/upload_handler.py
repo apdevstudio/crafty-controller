@@ -152,64 +152,45 @@ class UploadHandler(BaseHandler):
                 return
             self.do_upload = True
 
-            if superuser:
-                exec_user_server_permissions = (
-                    self.controller.server_perms.list_defined_permissions()
+            if not superuser:
+                self.helper.websocket_helper.broadcast_user(
+                    user_id,
+                    "send_start_error",
+                    {
+                        "error": self.helper.translation.translate(
+                            "error",
+                            "superError",
+                            self.controller.users.get_user_lang_by_id(user_id),
+                        ),
+                    },
                 )
-            elif api_key is not None:
-                exec_user_server_permissions = (
-                    self.controller.server_perms.get_api_key_permissions_list(
-                        api_key, server_id
-                    )
+                return
+            if not self.request.headers.get("X-Content-Type", None).startswith(
+                "image/"
+            ):
+                self.helper.websocket_helper.broadcast_user(
+                    user_id,
+                    "send_start_error",
+                    {
+                        "error": self.helper.translation.translate(
+                            "error",
+                            "fileError",
+                            self.controller.users.get_user_lang_by_id(user_id),
+                        ),
+                    },
                 )
-            else:
-                exec_user_server_permissions = (
-                    self.controller.server_perms.get_user_id_permissions_list(
-                        exec_user["user_id"], server_id
-                    )
-                )
-
-            server_id = self.request.headers.get("X-ServerId", None)
-            if server_id is None:
-                logger.warning("Server ID not found in upload handler call")
-                Console.warning("Server ID not found in upload handler call")
-                self.do_upload = False
-
+                return
             if user_id is None:
                 logger.warning("User ID not found in upload handler call")
                 Console.warning("User ID not found in upload handler call")
                 self.do_upload = False
 
-            if EnumPermissionsServer.FILES not in exec_user_server_permissions:
-                logger.warning(
-                    f"User {user_id} tried to upload a file to "
-                    f"{server_id} without permissions!"
-                )
-                Console.warning(
-                    f"User {user_id} tried to upload a file to "
-                    f"{server_id} without permissions!"
-                )
-                self.do_upload = False
-
-            path = self.request.headers.get("X-Path", None)
+            path = os.path.join(
+                self.controller.project_root,
+                "app/frontend/static/assets/images/auth/custom",
+            )
             filename = self.request.headers.get("X-FileName", None)
             full_path = os.path.join(path, filename)
-
-            if not Helpers.in_path(
-                Helpers.get_os_understandable_path(
-                    self.controller.servers.get_server_data_by_id(server_id)["path"]
-                ),
-                full_path,
-            ):
-                logger.warning(
-                    f"User {user_id} tried to upload a file to {server_id} "
-                    f"but the path is not inside of the server!"
-                )
-                Console.warning(
-                    f"User {user_id} tried to upload a file to {server_id} "
-                    f"but the path is not inside of the server!"
-                )
-                self.do_upload = False
 
             if self.do_upload:
                 try:

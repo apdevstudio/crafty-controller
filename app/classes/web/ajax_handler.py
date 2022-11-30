@@ -352,6 +352,38 @@ class AjaxHandler(BaseHandler):
                 self.controller.clear_unexecuted_commands()
                 return
 
+        elif page == "select_photo":
+            if exec_user["superuser"]:
+                photo = self.get_argument("photo", None)
+                if photo == "login_1.jpg":
+                    self.controller.management.set_login_image("login_1.jpg")
+                    self.controller.cached_login = f"{photo}"
+                else:
+                    self.controller.management.set_login_image(f"custom/{photo}")
+                    self.controller.cached_login = f"custom/{photo}"
+                return
+
+        elif page == "delete_photo":
+            if exec_user["superuser"]:
+                photo = self.get_argument("photo", None)
+                if photo and photo != "login_1.jpg":
+                    os.remove(
+                        os.path.join(
+                            self.controller.project_root,
+                            f"app/frontend/static/assets/images/auth/custom/{photo}",
+                        )
+                    )
+                    current = self.controller.cached_login
+                    split = current.split("/")
+                    if len(split) == 1:
+                        current_photo = current
+                    else:
+                        current_photo = split[1]
+                    if current_photo == photo:
+                        self.controller.management.set_login_image("login_1.jpg")
+                        self.controller.cached_login = "login_1.jpg"
+            return
+
         elif page == "kill":
             if not permissions["Commands"] in user_perms:
                 if not superuser:
