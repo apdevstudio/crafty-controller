@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
@@ -24,7 +24,6 @@ RUN apt-get update \
         default-jre \
         openjdk-8-jre-headless \
         openjdk-11-jre-headless \
-        openjdk-16-jre-headless \
         openjdk-17-jre-headless \
     && apt-get autoremove \
     && apt-get clean
