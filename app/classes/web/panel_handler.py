@@ -860,6 +860,12 @@ class PanelHandler(BaseHandler):
                             page_data["backgrounds"].append(cached_split[1])
                         if "login_1.jpg" not in page_data["backgrounds"]:
                             page_data["backgrounds"].append("login_1.jpg")
+                        self.helper.ensure_dir_exists(
+                            os.path.join(
+                                self.controller.project_root,
+                                "app/frontend/static/assets/images/auth/custom",
+                            )
+                        )
                         for item in os.listdir(
                             os.path.join(
                                 self.controller.project_root,
