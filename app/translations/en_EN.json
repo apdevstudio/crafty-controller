@@ -227,7 +227,12 @@
         "superConfirmTitle": "Enable superuser? Are you sure?",
         "user": "User",
         "users": "Users",
-        "loginImage": "Upload a background image for the login screen."
+        "loginImage": "Upload a background image for the login screen.",
+        "backgroundUpload": "Background Upload",
+        "loginBackground": "Login Background Image",
+        "select": "Select",
+        "selectImage": "Select an image",
+        "preview": "Preview"
     },
     "rolesConfig": {
         "config": "Role Config",

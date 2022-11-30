@@ -247,11 +247,13 @@
 
                         <div class="col-sm-12">
                           <div class="form-group">
-                            <label for="server">Background Upload</label><br>
+                            <label for="server">{{ translate('panelConfig', 'backgroundUpload', data['lang'])
+                              }}</label><br>
                             <span id="upload_input">
                               <input type="file" multiple="false" class="form-control" id="file" name="file" required
                                 style="width: 70%;">
-                              <button type="button" class="btn btn-info" onclick="sendFile()">UPLOAD</button>
+                              <button type="button" class="btn btn-info" id="upload-button" onclick="sendFile()"
+                                disabled>UPLOAD</button>
                             </span>
                           </div>
                         </div>
@@ -265,7 +267,7 @@
             <div class="col-sm-6 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4>Login Background Image</h4><br /><br>
+                  <h4>{{ translate('panelConfig', 'loginBackground', data['lang']) }}</h4><br /><br><br />
                   <form id="photo_form">
                     <select class="form-select form-control form-control-lg select-css" id="photo" name="photo"
                       form="photo_form">
@@ -273,10 +275,18 @@
                       <option value="{{image}}">{{image}}</option>
                       {% end %}
                     </select>
+                    <div>
+                      <br>
+                      <h6>{{ translate('panelConfig', 'preview', data['lang']) }}:</h6>
+                      <img style="width: 200px; height: 113px;"
+                        src="../../static/assets/images/auth/{{ data['background'] }}">
+                    </div>
                     <br />
                     <br />
-                    <button class="btn btn-outline-success select-photo" type="button">Select</button>
-                    <button class="btn btn-outline-danger delete-photo" type="button">Delete</button>
+                    <button class="btn btn-outline-success select-photo" type="button">{{ translate('panelConfig',
+                      'select', data['lang']) }}</button>
+                    <button class="btn btn-outline-danger delete-photo" type="button">{{ translate('panelConfig',
+                      'delete', data['lang']) }}</button>
                   </form>
                 </div>
               </div>
@@ -332,6 +342,13 @@
       $('.too_small2').popover("hide");
     } // New width
   });
+  $('#file').change(function () {
+    console.log("File changed");
+    if ($('#file').val()) {
+      $('#upload-button').prop("disabled", false);
+      console.log("File changed good");
+    }
+  });
 </script>
 <script>
 
@@ -382,6 +399,7 @@
       headers: { 'X-XSRFToken': token },
       url: '/ajax/select_photo?photo=' + photo,
       success: function (data) {
+        window.location.reload();
       },
     });
   })
@@ -409,7 +427,9 @@
       if (event.target.responseText == 'success') {
         console.log('Upload for file', file.name, 'was successful!')
         document.getElementById("upload_input").innerHTML = '<div class="card-header header-sm d-flex justify-content-between align-items-center"><span id="file-uploaded" style="color: gray;">' + fileName + '</span> 🔒</div>';
-        document.getElementById("lower_half").style.visibility = "visible";
+        setTimeout(function () {
+          window.location.reload();
+        }, 2000);
       }
       else {
         alert('Upload failed with response: ' + event.target.responseText);

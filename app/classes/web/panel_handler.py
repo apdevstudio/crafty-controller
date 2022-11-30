@@ -874,6 +874,7 @@ class PanelHandler(BaseHandler):
                         ):
                             if item not in page_data["backgrounds"]:
                                 page_data["backgrounds"].append(item)
+                        page_data["background"] = self.controller.cached_login
             else:
                 page_data["managed_users"] = self.controller.users.get_managed_users(
                     exec_user["user_id"]
