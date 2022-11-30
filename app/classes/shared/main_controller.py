@@ -484,17 +484,32 @@ class Controller:
             return False
 
         if Helpers.is_os_windows():
-            server_command = (
-                f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                f'-jar "{server_file}" nogui'
-            )
+            # Let's check for and setup for install server commands
+            if server == "forge":
+                server_command = (
+                    f"java -Xms{Helpers.float_to_string(min_mem)}M "
+                    f"-Xmx{Helpers.float_to_string(max_mem)}M "
+                    f'-jar "{server_file}" --installServer'
+                )
+            else:
+                server_command = (
+                    f"java -Xms{Helpers.float_to_string(min_mem)}M "
+                    f"-Xmx{Helpers.float_to_string(max_mem)}M "
+                    f'-jar "{server_file}" nogui'
+                )
         else:
-            server_command = (
-                f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                f"-jar {server_file} nogui"
-            )
+            if server == "forge":
+                server_command = (
+                    f"java -Xms{Helpers.float_to_string(min_mem)}M "
+                    f"-Xmx{Helpers.float_to_string(max_mem)}M "
+                    f"-jar {server_file} --installServer"
+                )
+            else:
+                server_command = (
+                    f"java -Xms{Helpers.float_to_string(min_mem)}M "
+                    f"-Xmx{Helpers.float_to_string(max_mem)}M "
+                    f"-jar {server_file} nogui"
+                )
         server_log_file = "./logs/latest.log"
         server_stop = "stop"
 

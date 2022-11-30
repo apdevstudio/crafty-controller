@@ -168,22 +168,11 @@
 
                   <td draggable="false" id="controls{{server['server_data']['server_id']}}" class="actions_serverlist">
                     {% if server['user_command_permission'] %}
-                    {% if server['stats']['running'] %}
-                    <a data-id="{{server['server_data']['server_id']}}" class="stop_button" data-toggle="tooltip"
-                      title="{{ translate('dashboard', 'stop' , data['lang']) }}">
-                      <i class="fas fa-stop"></i>
-                    </a> &nbsp;
-
-                    <a data-id="{{server['server_data']['server_id']}}" class="restart_button" data-toggle="tooltip"
-                      title="{{ translate('dashboard', 'restart' , data['lang']) }}">
-                      <i class="fas fa-sync"></i>
-                    </a> &nbsp;
-
-                    <a data-id="{{server['server_data']['server_id']}}" class="kill_button" data-toggle="tooltip"
-                      title="{{ translate('dashboard', 'kill' , data['lang']) }}">
-                      <i class="fas fa-skull"></i>
-                    </a> &nbsp;
-
+                    {% if server['stats']['importing'] and server['stats']['running'] %}
+                    <!-- WHAT HAPPENED HERE -->
+                    <a data-id="{{server['server_data']['server_id']}}" class=""><i
+                        class="fa fa-spinner fa-spin"></i>&nbsp;{{ translate('serverTerm', 'installing',
+                      data['lang']) }}</i></a>
                     {% elif server['stats']['updating']%}
                     <!-- WHAT HAPPENED HERE -->
                     <a data-id="{{server['server_data']['server_id']}}" class=""><i
@@ -198,6 +187,21 @@
                     <a data-id="{{server['server_data']['server_id']}}" class=""><i class="fa fa-spinner fa-spin"></i>
                       {{ translate('serverTerm', 'importing',
                       data['lang']) }}</a>
+                    {% elif server['stats']['running'] %}
+                    <a data-id="{{server['server_data']['server_id']}}" class="stop_button" data-toggle="tooltip"
+                      title="{{ translate('dashboard', 'stop' , data['lang']) }}">
+                      <i class="fas fa-stop"></i>
+                    </a> &nbsp;
+
+                    <a data-id="{{server['server_data']['server_id']}}" class="restart_button" data-toggle="tooltip"
+                      title="{{ translate('dashboard', 'restart' , data['lang']) }}">
+                      <i class="fas fa-sync"></i>
+                    </a> &nbsp;
+
+                    <a data-id="{{server['server_data']['server_id']}}" class="kill_button" data-toggle="tooltip"
+                      title="{{ translate('dashboard', 'kill' , data['lang']) }}">
+                      <i class="fas fa-skull"></i>
+                    </a> &nbsp;
                     {% else %}
                     <a data-id="{{server['server_data']['server_id']}}" class="play_button" data-toggle="tooltip"
                       title="{{ translate('dashboard', 'start' , data['lang']) }}">
