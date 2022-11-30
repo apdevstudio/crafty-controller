@@ -48,6 +48,7 @@ class PublicHandler(BaseHandler):
         template = "public/404.html"
 
         if page == "login":
+            page_data["background"] = self.controller.cached_login
             template = "public/login.html"
 
         elif page == 404:

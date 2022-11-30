@@ -73,6 +73,7 @@ class Controller:
             timezone=str(tz)
         )
         self.first_login = False
+        self.cached_login = self.management.get_login_image()
         self.support_scheduler.start()
 
     @staticmethod

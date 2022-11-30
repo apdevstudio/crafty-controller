@@ -182,7 +182,9 @@
         "not-downloaded": "We can't seem to find your executable file. Has it finished downloading? Are the permissions set to executable?",
         "portReminder": "We have detected this is the first time {} has been run. Make sure to forward port {} through your router/firewall to make this remotely accessible from the internet.",
         "start-error": "Server {} failed to start with error code: {}",
-        "terribleFailure": "What a Terrible Failure!"
+        "terribleFailure": "What a Terrible Failure!",
+        "superError": "You must be a super user to complete this action.",
+        "fileError": "File type must be an image."
     },
     "footer": {
         "allRightsReserved": "All rights reserved",
@@ -225,7 +227,13 @@
         "superConfirm": "Proceed only if you want this user to have access to EVERYTHING (all user accounts, servers, panel settings, etc.). They can even revoke your superuser rights.",
         "superConfirmTitle": "Enable superuser? Are you sure?",
         "user": "User",
-        "users": "Users"
+        "users": "Users",
+        "loginImage": "Upload a background image for the login screen.",
+        "backgroundUpload": "Background Upload",
+        "loginBackground": "Login Background Image",
+        "select": "Select",
+        "selectImage": "Select an image",
+        "preview": "Preview"
     },
     "rolesConfig": {
         "config": "Role Config",

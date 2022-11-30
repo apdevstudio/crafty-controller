@@ -124,7 +124,7 @@ data['lang']) }}{% end %}
                       <div class="form-group">
                         <label class="form-label" for="theme">{{ translate('userConfig', 'userTheme', data['lang'])
                           }}</label>
-                        <select class="form-select form-control form-control-lg select-css" id="language"
+                        <select class="form-select form-control form-control-lg select-css" id="theme"
                           name="theme" form="user_form">
                           <option value="{{data['user'].get('theme', 'default')}}">{{data['user'].get('theme', 'default')}}</option>
                           {% for theme in data['themes'] %}
