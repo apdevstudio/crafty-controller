@@ -202,12 +202,15 @@ class ServerInstance:
         # remove the scheduled job since it's ran
         return self.server_scheduler.remove_job(str(self.server_id))
 
-    def run_threaded_server(self, user_id):
+    def run_threaded_server(self, user_id, forge_install=False):
         # start the server
         self.server_thread = threading.Thread(
             target=self.start_server,
             daemon=True,
-            args=(user_id,),
+            args=(
+                user_id,
+                forge_install,
+            ),
             name=f"{self.server_id}_server_thread",
         )
         self.server_thread.start()
@@ -292,13 +295,13 @@ class ServerInstance:
             logger.critical(f"Unable to write/access {self.server_path}")
             Console.critical(f"Unable to write/access {self.server_path}")
 
-    def start_server(self, user_id):
+    def start_server(self, user_id, forge_install=False):
         if not user_id:
             user_lang = self.helper.get_setting("language")
         else:
             user_lang = HelperUsers.get_user_lang_by_id(user_id)
 
-        if self.stats_helper.get_import_status():
+        if self.stats_helper.get_import_status() and not forge_install:
             if user_id:
                 self.helper.websocket_helper.broadcast_user(
                     user_id,
@@ -341,7 +344,9 @@ class ServerInstance:
                     "eula= true",
                     "eula =true",
                 ]
-
+        # If this is a forge installer we're running we can bypass the eula checks.
+        if forge_install is True:
+            e_flag = True
         if not e_flag and self.settings["type"] == "minecraft-java":
             if user_id:
                 self.helper.websocket_helper.broadcast_user(
@@ -422,6 +427,9 @@ class ServerInstance:
                             ).format(self.name, ex)
                         },
                     )
+                if forge_install:
+                    # Reset import status if failed while forge installing
+                    self.stats_helper.finish_import()
                 return False
 
         else:
@@ -460,6 +468,9 @@ class ServerInstance:
                             ).format(self.name, ex)
                         },
                     )
+                if forge_install:
+                    # Reset import status if failed while forge installing
+                    self.stats_helper.finish_import()
                 return False
 
         out_buf = ServerOutBuf(self.helper, self.process, self.server_id)
@@ -540,6 +551,10 @@ class ServerInstance:
                 self.detect_crash, "interval", seconds=30, id=f"c_{self.server_id}"
             )
 
+        # If this is a forge install we'll call the watcher to do the things
+        if forge_install:
+            self.forge_install_watcher()
+
     def check_internet_thread(self, user_id, user_lang):
         if user_id:
             if not Helpers.check_internet():
@@ -552,6 +567,78 @@ class ServerInstance:
                         )
                     },
                 )
+
+    def forge_install_watcher(self):
+        # Enter for install if that parameter is true
+        while True:
+            # We'll watch the process
+            if self.process.poll() is None:
+                # IF process still has not exited we'll keep looping
+                time.sleep(5)
+                Console.debug("Installing Forge...")
+            else:
+                # Process has exited. Lets do some work to setup the new
+                # run command.
+                # Let's grab the server object we're going to update.
+                server_obj = HelperServers.get_server_obj(self.server_id)
+
+                # The forge install is done so we can delete that install file.
+                os.remove(os.path.join(server_obj.path, server_obj.executable))
+
+                # We need to grab the exact forge version number.
+                # We know we can find it here in the run.sh/bat script.
+                run_file_path = ""
+                if self.helper.is_os_windows():
+                    run_file_path = os.path.join(server_obj.path, "run.bat")
+                else:
+                    run_file_path = os.path.join(server_obj.path, "run.sh")
+
+                if Helpers.check_file_perms(run_file_path) and os.path.isfile(
+                    run_file_path
+                ):
+                    run_file = open(run_file_path, "r", encoding="utf-8")
+                    run_file_text = run_file.read()
+                else:
+                    Console.error(
+                        "ERROR ! Forge install can't read the scripts files."
+                        " Aborting ..."
+                    )
+                    return
+
+                # We get the server command parameters from forge script
+                server_command = re.findall(
+                    r"java @([a-zA-Z0-9_\.]+)"
+                    r" @([a-z.\/\-]+)([0-9.\-]+)\/\b([a-z_0-9]+\.txt)\b( .{2,4})?",
+                    run_file_text,
+                )[0]
+
+                version = server_command[2]
+                executable_path = f"{server_command[1]}{server_command[2]}/"
+
+                # Let's set the proper server executable
+                server_obj.executable = os.path.join(
+                    f"{executable_path}forge-{version}-server.jar"
+                )
+                # Now lets set up the new run command.
+                # This is based off the run.sh/bat that
+                # Forge uses in 1.16 and <
+                execution_command = (
+                    f"java @{server_command[0]}"
+                    f" @{executable_path}{server_command[3]} nogui {server_command[4]}"
+                )
+                server_obj.execution_command = execution_command
+                Console.debug("SUCCESS! Forge install completed")
+
+                # We'll update the server with the new information now.
+                HelperServers.update_server(server_obj)
+                self.stats_helper.finish_import()
+                server_users = PermissionsServers.get_server_user_list(self.server_id)
+
+                for user in server_users:
+                    self.helper.websocket_helper.broadcast_user(
+                        user, "send_start_reload", {}
+                    )
+                break
 
     def stop_crash_detection(self):
         # This is only used if the crash detection settings change

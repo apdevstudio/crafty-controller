@@ -457,6 +457,9 @@ class ServerHandler(BaseHandler):
             server = bleach.clean(self.get_argument("server", ""))
             server_name = bleach.clean(self.get_argument("server_name", ""))
             port = bleach.clean(self.get_argument("port", ""))
+
+            if not port:
+                port = 19132
             if int(port) < 1 or int(port) > 65535:
                 self.redirect(
                     "/panel/error?error=Constraint Error: "
