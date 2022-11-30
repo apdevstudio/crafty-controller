@@ -97,7 +97,8 @@
         "status": "Status",
         "stop": "Stop",
         "version": "Version",
-        "welcome": "Welcome to Crafty Controller"
+        "welcome": "Welcome to Crafty Controller",
+        "installing": "Installing..."
     },
     "datatables": {
         "i18n": {
@@ -489,7 +490,8 @@
         "starting": "Delayed-Start",
         "stop": "Stop",
         "stopScroll": "Stop Auto Scrolling",
-        "updating": "Updating..."
+        "updating": "Updating...",
+        "installing": "Installing..."
     },
     "serverMetrics": {
         "resetZoom": "Reset Zoom",

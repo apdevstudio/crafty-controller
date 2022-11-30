@@ -1,9 +1,11 @@
 # Changelog
 ## --- [4.0.17] - 2022/TBD
 ### New features
-TBD
+- Automate forge install process through Crafty server creation for Forge server version 1.16 and greater. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/495))
+- Tooltip for server port on dashboard. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/496))
+- Custom login image backgrounds. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/494))
 ### Bug fixes
-TBD
+- Fix no port on bedrock server creation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/493))
 ### Tweaks
 TBD
 ### Lang
