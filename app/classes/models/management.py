@@ -43,6 +43,7 @@ class AuditLog(BaseModel):
 # **********************************************************************************
 class CraftySettings(BaseModel):
     secret_api_key = CharField(default="")
+    login_photo = CharField(default="login_1.jpg")
 
     class Meta:
         table_name = "crafty_settings"
@@ -253,6 +254,19 @@ class HelpersManagement:
             CraftySettings.id == 1
         )
         return settings[0].secret_api_key
+
+    @staticmethod
+    def get_login_image():
+        settings = CraftySettings.select(CraftySettings.login_photo).where(
+            CraftySettings.id == 1
+        )
+        return settings[0].login_photo
+
+    @staticmethod
+    def set_login_image(photo):
+        CraftySettings.update({CraftySettings.login_photo: photo}).where(
+            CraftySettings.id == 1
+        ).execute()
 
     # **********************************************************************************
     #                                  Schedules Methods
