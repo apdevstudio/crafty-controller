@@ -7,6 +7,13 @@
 
 {% block content %}
 <!-- View for Large screen -->
+<style>
+  .auth.auth-bg-1 {
+    background: url("../../static/assets/images/auth/{{data['background']}}"),
+    url("../../static/assets/images/auth/login-1.jpg");
+    background-size: cover;
+  }
+</style>
 <div class="row justify-content-center">
   <div class="content-wrapper col-md login-modal d-none d-sm-block" style="background-color: var(--dropdown-bg);">
     <img src="/static/assets/images/logo_long.png" style='width: 25%; margin-left: 38%;'>
