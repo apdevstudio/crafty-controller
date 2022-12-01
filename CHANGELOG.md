@@ -1,4 +1,15 @@
 # Changelog
+## --- [4.0.19] - 2022/TBD
+### New features
+TBD
+### Bug fixes
+TBD
+### Tweaks
+TBD
+### Lang
+TBD
+<br><br>
+
 ## --- [4.0.17/4.0.18] - 2022/11/30
 ### New features
 - Automate forge install process through Crafty server creation for Forge server version 1.16 and greater. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/495))
