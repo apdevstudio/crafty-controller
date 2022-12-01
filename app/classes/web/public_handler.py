@@ -39,6 +39,7 @@ class PublicHandler(BaseHandler):
             "lang": self.helper.get_setting("language"),
             "lang_page": self.helper.get_lang_page(self.helper.get_setting("language")),
             "query": "",
+            "background": self.controller.cached_login,
         }
 
         if self.request.query:
@@ -48,7 +49,6 @@ class PublicHandler(BaseHandler):
         template = "public/404.html"
 
         if page == "login":
-            page_data["background"] = self.controller.cached_login
             template = "public/login.html"
 
         elif page == 404:

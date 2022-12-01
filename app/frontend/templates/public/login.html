@@ -21,6 +21,13 @@
   <link rel="shortcut icon" type="image/svg+xml" href="/static/assets/images/logo_small.svg">
   <link rel="alternate icon" href="/static/assets/images/favicon.png" />
 </head>
+<style>
+  .auth.auth-bg-1 {
+    background: url("../../static/assets/images/auth/{{data['background']}}"),
+    url("../../static/assets/images/auth/login-1.jpg");
+    background-size: cover;
+  }
+</style>
 
 <body class="dark-theme">
   <div class="container-scroller">
@@ -59,11 +66,6 @@
                 .login-input:hover,
                 .login-input:focus {
                   box-shadow: 0 12px 16px 0 hsla(0, 0%, 0%, 0.4);
-                }
-
-                .auth.auth-bg-1 {
-                  background: url("../../static/assets/images/auth/{{data['background']}}");
-                  background-size: cover;
                 }
               </style>
               {% if data['query'] %}
