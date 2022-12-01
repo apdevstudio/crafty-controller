@@ -1,16 +1,5 @@
 # Changelog
-## --- [4.0.18] - 2022/TBD
-### New features
-TBD
-### Bug fixes
-TBD
-### Tweaks
-TBD
-### Lang
-TBD
-<br><br>
-
-## --- [4.0.17] - 2022/11/30
+## --- [4.0.17/4.0.18] - 2022/11/30
 ### New features
 - Automate forge install process through Crafty server creation for Forge server version 1.16 and greater. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/495))
 - Tooltip for server port on dashboard. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/496))
@@ -18,8 +7,10 @@ TBD
 ### Bug fixes
 - Fix no port on bedrock server creation. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/493))
 ### Tweaks
-- Docker🐋 | Update image base to Ubuntu 22.04 Jammy ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/497))<br>
+- Docker🐋 | Update image base to Ubuntu 22.04 Jammy. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/497))<br>
 *(OpenJDK16 Removed, no jammy backport)*
+### Hotfix (4.0.18)
+- Apply custom login backgrounds on all public pages. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/499))
 <br><br>
 
 ## --- [4.0.16] - 2022/10/23
