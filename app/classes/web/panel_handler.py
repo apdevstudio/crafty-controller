@@ -289,6 +289,7 @@ class PanelHandler(BaseHandler):
         page_data: t.Dict[str, t.Any] = {
             # todo: make this actually pull and compare version data
             "update_available": self.helper.update_available,
+            "background": self.controller.cached_login,
             "serverTZ": tz,
             "version_data": self.helper.get_version_string(),
             "failed_servers": self.controller.servers.failed_servers,
