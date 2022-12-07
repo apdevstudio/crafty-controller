@@ -7,6 +7,7 @@ TBD
 - Fix '+' char in path causing any file operation to fail. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/502))
 - Fix colours on public pages. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/504))
 - Fix bug where public background was not sent to public pages...like the error page resulting in an error...ironic...I know. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/505))
+- Be sure a user cannot server import crafty dir. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/506))
 ### Tweaks
 TBD
 ### Lang
