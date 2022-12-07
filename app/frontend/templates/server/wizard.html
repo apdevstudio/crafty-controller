@@ -788,7 +788,7 @@
       $.ajax({
         type: "POST",
         headers: { 'X-XSRFToken': token },
-        url: '/ajax/unzip_server?id=-1&path=' + path,
+        url: '/ajax/unzip_server?id=-1&path=' + encodeURIComponent(path),
       });
     } else {
       bootbox.alert("You must input a path before selecting this button");
@@ -853,7 +853,7 @@
         $.ajax({
           type: "POST",
           headers: { 'X-XSRFToken': token },
-          url: '/ajax/unzip_server?id=-1&path=' + path,
+          url: '/ajax/unzip_server?id=-1&path=' + encodeURIComponent(path),
         });
       } else {
         bootbox.alert("You must input a path before selecting this button");
@@ -875,7 +875,7 @@
         $.ajax({
           type: "POST",
           headers: { 'X-XSRFToken': token },
-          url: '/ajax/unzip_server?id=-1&file=' + file.name,
+          url: '/ajax/unzip_server?id=-1&file=' + encodeURIComponent(file.name),
         });
       } else {
         bootbox.alert("You must input a path before selecting this button");
