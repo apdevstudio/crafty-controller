@@ -278,9 +278,10 @@
                     {% end %}
 
                   </td>
-                  <td draggable="false" id="server_running_status_{{server['server_data']['server_id']}}">
+                  <td draggable="false">
                     <span class="port" data-toggle="tooltip" title="{{
                       server['server_data']['server_port'] }}">
+                      <div id="server_running_status_{{server['server_data']['server_id']}}">
                       {% if server['stats']['running'] %}
                       <span class="text-success"><i class="fas fa-signal"></i> {{ translate('dashboard', 'online',
                         data['lang']) }}</span>
@@ -299,6 +300,7 @@
                     data-players="{{ server['stats']['online']}}" data-max="{{ server['stats']['max'] }}"></span>
                 </tr>
                 {% end %}
+              </div>
                 </span>
                 {% for server in data['failed_servers'] %}
                 <tr id="{{server['server_id']}}" draggable="false">

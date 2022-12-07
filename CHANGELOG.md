@@ -3,7 +3,7 @@
 ### New features
 TBD
 ### Bug fixes
-TBD
+- Fix port tooltip not showing on dash while server online ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/503))
 ### Tweaks
 TBD
 ### Lang
