@@ -4,6 +4,7 @@ import pathlib
 import re
 import logging
 import time
+import urllib.parse
 import bleach
 import tornado.web
 import tornado.escape
@@ -507,7 +508,7 @@ class AjaxHandler(BaseHandler):
                     self.redirect("/panel/dashboard")
 
         elif page == "unzip_server":
-            path = self.get_argument("path", None)
+            path = urllib.parse.unquote(self.get_argument("path", None))
             if not path:
                 path = os.path.join(
                     self.controller.project_root,

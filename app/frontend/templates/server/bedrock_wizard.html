@@ -565,7 +565,7 @@
     document.getElementById("upload_input").innerHTML = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>'
     let xmlHttpRequest = new XMLHttpRequest();
     let token = getCookie("_xsrf")
-    let fileName = file.name
+    let fileName = encodeURIComponent(file.name)
     let target = '/upload'
     let mimeType = file.type
     let size = file.size
@@ -610,7 +610,7 @@
       $.ajax({
         type: "POST",
         headers: { 'X-XSRFToken': token },
-        url: '/ajax/unzip_server?id=-1&file=' + file.name,
+        url: '/ajax/unzip_server?id=-1&file=' + encodeURIComponent(file.name),
       });
     } else {
       bootbox.alert("You must input a path before selecting this button");
@@ -663,7 +663,7 @@
       $.ajax({
         type: "POST",
         headers: { 'X-XSRFToken': token },
-        url: '/ajax/unzip_server?id=-1&path=' + path,
+        url: '/ajax/unzip_server?id=-1&path=' + encodeURIComponent(path),
       });
     } else {
       bootbox.alert("You must input a path before selecting this button");

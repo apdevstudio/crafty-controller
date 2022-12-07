@@ -7,6 +7,7 @@ import json
 import logging
 import threading
 import shlex
+import urllib.parse
 import bleach
 import requests
 import tornado.web
@@ -289,6 +290,7 @@ class PanelHandler(BaseHandler):
         page_data: t.Dict[str, t.Any] = {
             # todo: make this actually pull and compare version data
             "update_available": self.helper.update_available,
+            "background": self.controller.cached_login,
             "serverTZ": tz,
             "version_data": self.helper.get_version_string(),
             "failed_servers": self.controller.servers.failed_servers,
@@ -1386,9 +1388,10 @@ class PanelHandler(BaseHandler):
             template = "panel/activity_logs.html"
 
         elif page == "download_file":
-            file = Helpers.get_os_understandable_path(self.get_argument("path", ""))
-            name = self.get_argument("name", "")
-
+            file = Helpers.get_os_understandable_path(
+                urllib.parse.unquote(self.get_argument("path", ""))
+            )
+            name = urllib.parse.unquote(self.get_argument("name", ""))
             server_id = self.check_server_id()
             if server_id is None:
                 return
