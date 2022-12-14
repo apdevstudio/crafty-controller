@@ -2,7 +2,7 @@ import json
 import logging
 import os
 import time
-from pathlib import PurePath
+from pathlib import PurePath, PurePosixPath
 import tornado.web
 import tornado.escape
 import bleach
