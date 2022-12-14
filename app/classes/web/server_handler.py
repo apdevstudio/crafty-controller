@@ -2,7 +2,7 @@ import json
 import logging
 import os
 import time
-from pathlib import Path
+from pathlib import PurePath
 import tornado.web
 import tornado.escape
 import bleach
@@ -320,7 +320,9 @@ class ServerHandler(BaseHandler):
                 return
             import_type = bleach.clean(self.get_argument("create_type", ""))
             import_server_path = bleach.clean(self.get_argument("server_path", ""))
-            if Path(self.controller.project_root).is_relative_to(import_server_path):
+            if PurePath(self.controller.project_root).is_relative_to(
+                import_server_path
+            ):
                 self.redirect(
                     "/panel/error?error=Loop Error: The selected path will cause"
                     " an infinite copy loop. Make sure Crafty's directory is not"
@@ -476,7 +478,9 @@ class ServerHandler(BaseHandler):
                 return
             import_type = bleach.clean(self.get_argument("create_type", ""))
             import_server_path = bleach.clean(self.get_argument("server_path", ""))
-            if Path(self.controller.project_root).is_relative_to(import_server_path):
+            if PurePath(self.controller.project_root).is_relative_to(
+                import_server_path
+            ):
                 self.redirect(
                     "/panel/error?error=Loop Error: The selected path will cause"
                     " an infinite copy loop. Make sure Crafty's directory is not"
