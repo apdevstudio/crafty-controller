@@ -2,7 +2,7 @@ import json
 import logging
 import os
 import time
-from pathlib import PurePath, PurePosixPath
+from pathlib import PurePosixPath
 import tornado.web
 import tornado.escape
 import bleach
@@ -320,7 +320,7 @@ class ServerHandler(BaseHandler):
                 return
             import_type = bleach.clean(self.get_argument("create_type", ""))
             import_server_path = bleach.clean(self.get_argument("server_path", ""))
-            if PurePath(self.controller.project_root).is_relative_to(
+            if PurePosixPath(self.controller.project_root).is_relative_to(
                 import_server_path
             ):
                 self.redirect(
@@ -478,7 +478,7 @@ class ServerHandler(BaseHandler):
                 return
             import_type = bleach.clean(self.get_argument("create_type", ""))
             import_server_path = bleach.clean(self.get_argument("server_path", ""))
-            if PurePath(self.controller.project_root).is_relative_to(
+            if PurePosixPath(self.controller.project_root).is_relative_to(
                 import_server_path
             ):
                 self.redirect(
