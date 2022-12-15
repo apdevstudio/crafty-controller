@@ -424,8 +424,8 @@
                         <input type="text" class="form-control" id="zip_root_path" name="zip_root_path">
                       </div>
                     </div>
-                    <div class="modal fade" id="dir_select" tabindex="-1" role="dialog" aria-labelledby="dir_select"
-                      aria-hidden="true">
+                    <div class="modal fade" id="dir_upload_select" tabindex="-1" role="dialog"
+                      aria-labelledby="dir_select" aria-hidden="true">
                       <div class="modal-dialog" role="document">
                         <div class="modal-content">
                           <div class="modal-header">
@@ -436,7 +436,7 @@
                             </button>
                           </div>
                           <div class="modal-body">
-                            <div class="tree-ctx-item" id="main-tree-div" data-path=""
+                            <div class="tree-ctx-item" id="main-tree-div-upload" data-path=""
                               style="overflow: scroll; max-height:75%;">
                               <input type="radio" id="main-tree-input-upload" name="root_path" value="" checked>
                               <span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path="">
@@ -558,7 +558,7 @@
 
 {% block js%}
 <script>
-
+  var upload;
   var file;
   function sendFile() {
     file = $("#file")[0].files[0]
@@ -597,8 +597,9 @@
 
   document.getElementById("root_upload_button").addEventListener("click", function () {
     if (file) {
+      upload = true;
       if (document.getElementById('root_upload_button').classList.contains('clicked')) {
-        document.getElementById('main-tree-div').innerHTML = '<input type="radio" id="main-tree-input-upload" name="root_path" value="" checked><span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path=""><i class="far fa-folder"></i><i class="far fa-folder-open"></i>{{ translate("serverFiles", "files", data["lang"]) }}</span></input>'
+        document.getElementById('main-tree-div-upload').innerHTML = '<input type="radio" id="main-tree-input-upload" name="root_path" value="" checked><span id="main-tree-upload" class="files-tree-title tree-caret-down root-dir" data-path=""><i class="far fa-folder"></i><i class="far fa-folder-open"></i>{{ translate("serverFiles", "files", data["lang"]) }}</span></input>'
       } else {
         document.getElementById('root_upload_button').classList.add('clicked')
       }
@@ -692,7 +693,11 @@
   }
 
   function show_file_tree() {
-    $("#dir_select").modal();
+    if (upload) {
+      $("#dir_upload_select").modal();
+    } else {
+      $("#dir_select").modal();
+    }
   }
 
   function getTreeView(path) {
@@ -716,12 +721,20 @@
         dataArr = data.split('\n');
         serverDir = dataArr.shift(); // Remove & return first element (server directory)
         text = dataArr.join('\n');
-
-        try {
-          document.getElementById('main-tree-div').innerHTML += text;
-          document.getElementById('main-tree').parentElement.classList.add("clicked");
-        } catch {
-          document.getElementById('files-tree').innerHTML = text;
+        if (styles.visibility === "hidden") {
+          try {
+            document.getElementById('main-tree-div').innerHTML += text;
+            document.getElementById('main-tree').parentElement.classList.add("clicked");
+          } catch {
+            document.getElementById('files-tree').innerHTML = text;
+          }
+        } else {
+          try {
+            document.getElementById('main-tree-div-upload').innerHTML += text;
+            document.getElementById('main-tree-upload').parentElement.classList.add("clicked");
+          } catch {
+            document.getElementById('files-tree').innerHTML = text;
+          }
         }
 
 
