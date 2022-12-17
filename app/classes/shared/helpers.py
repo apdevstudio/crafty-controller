@@ -385,8 +385,7 @@ class Helpers:
 
         if relative.startswith(os.pardir):
             return False
-        else:
-            return True
+        return True
 
     def set_setting(self, key, new_value):
         try:
