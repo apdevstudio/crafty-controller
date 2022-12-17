@@ -508,12 +508,12 @@ class AjaxHandler(BaseHandler):
                     self.redirect("/panel/dashboard")
 
         elif page == "unzip_server":
-            path = urllib.parse.unquote(self.get_argument("path", None))
+            path = urllib.parse.unquote(self.get_argument("path", ""))
             if not path:
                 path = os.path.join(
                     self.controller.project_root,
                     "imports",
-                    self.get_argument("file", ""),
+                    urllib.parse.unquote(self.get_argument("file", "")),
                 )
             if Helpers.check_file_exists(path):
                 self.helper.unzip_server(path, exec_user["user_id"])

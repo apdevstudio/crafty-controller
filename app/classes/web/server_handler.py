@@ -2,7 +2,6 @@ import json
 import logging
 import os
 import time
-from pathlib import Path
 import tornado.web
 import tornado.escape
 import bleach
@@ -320,13 +319,6 @@ class ServerHandler(BaseHandler):
                 return
             import_type = bleach.clean(self.get_argument("create_type", ""))
             import_server_path = bleach.clean(self.get_argument("server_path", ""))
-            if Path(self.controller.project_root).is_relative_to(import_server_path):
-                self.redirect(
-                    "/panel/error?error=Loop Error: The selected path will cause"
-                    " an infinite copy loop. Make sure Crafty's directory is not"
-                    " in your server path."
-                )
-                return
             import_server_jar = bleach.clean(self.get_argument("server_jar", ""))
             server_parts = server.split("|")
             captured_roles = []
@@ -339,6 +331,15 @@ class ServerHandler(BaseHandler):
                 return
 
             if import_type == "import_jar":
+                if not self.helper.is_subdir(
+                    import_server_path, self.controller.project_root
+                ):
+                    self.redirect(
+                        "/panel/error?error=Loop Error: The selected path will cause"
+                        " an infinite copy loop. Make sure Crafty's directory is not"
+                        " in your server path."
+                    )
+                    return
                 good_path = self.controller.verify_jar_server(
                     import_server_path, import_server_jar
                 )
@@ -476,13 +477,6 @@ class ServerHandler(BaseHandler):
                 return
             import_type = bleach.clean(self.get_argument("create_type", ""))
             import_server_path = bleach.clean(self.get_argument("server_path", ""))
-            if Path(self.controller.project_root).is_relative_to(import_server_path):
-                self.redirect(
-                    "/panel/error?error=Loop Error: The selected path will cause"
-                    " an infinite copy loop. Make sure Crafty's directory is not"
-                    " in your server path."
-                )
-                return
             import_server_exe = bleach.clean(self.get_argument("server_jar", ""))
             server_parts = server.split("|")
             captured_roles = []
@@ -495,6 +489,15 @@ class ServerHandler(BaseHandler):
                 return
 
             if import_type == "import_jar":
+                if self.helper.is_subdir(
+                    import_server_path, self.controller.project_root
+                ):
+                    self.redirect(
+                        "/panel/error?error=Loop Error: The selected path will cause"
+                        " an infinite copy loop. Make sure Crafty's directory is not"
+                        " in your server path."
+                    )
+                    return
                 good_path = self.controller.verify_jar_server(
                     import_server_path, import_server_exe
                 )
