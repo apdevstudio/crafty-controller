@@ -62,9 +62,10 @@
                   <label for="server_path">{{ translate('serverConfig', 'serverPath', data['lang']) }} <small
                       class="text-muted ml-1"> - {{ translate('serverConfig', 'serverPathDesc', data['lang']) }}</small>
                   </label>
-                  <input type="text" class="form-control" name="server_path" id="server_path"
-                    value="{{ data['server_stats']['server_id']['path']  }}"
-                    placeholder="{{ translate('serverConfig', 'serverPath', data['lang']) }}" required>
+                  <div class="card-header header-sm d-flex justify-content-between align-items-center">
+                    <span style="color: gray;   font-size: 12px;">{{ data['server_stats']['server_id']['path'] }}</span>
+                    🔒
+                  </div>
 
                 </div>
                 {% if data['server_stats']['server_type'] != "minecraft-bedrock" %}
