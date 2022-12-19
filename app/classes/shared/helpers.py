@@ -376,7 +376,6 @@ class Helpers:
 
         return default_return
 
-
     def set_settings(self, data):
         try:
             with open(self.settings_file, "w", encoding="utf-8") as f:
@@ -420,7 +419,6 @@ class Helpers:
             return False
         return True
 
->>>>>>> app/classes/shared/helpers.py
     def set_setting(self, key, new_value):
         try:
             with open(self.settings_file, "r", encoding="utf-8") as f:
