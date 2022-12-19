@@ -340,7 +340,9 @@
         "yesDeleteFiles": "Yes, delete files",
         "shutdownTimeout": "Shutdown Timeout",
         "timeoutExplain1": "How long Crafty will wait for your server to shutdown after executing the",
-        "timeoutExplain2": "command before it forces the process down."
+        "timeoutExplain2": "command before it forces the process down.",
+        "statsHint1": "The port your server is running on should go here.",
+        "statsHint2": "This does not change the port of your server. You must still change the port in your server config file."
     },
     "serverConfigHelp": {
         "desc": "Here is where you can change the configuration of your server",

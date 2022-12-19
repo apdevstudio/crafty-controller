@@ -22155,7 +22155,7 @@ ul li {
 }
 
 .popover .popover-body {
-  color: #000;
+  color: var(--base-text);
   background: var(--card-banner-bg);
 }
 
