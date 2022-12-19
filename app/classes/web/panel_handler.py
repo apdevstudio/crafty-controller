@@ -1592,7 +1592,6 @@ class PanelHandler(BaseHandler):
                     execution_list[0] = "java"
                 execution_command = ""
                 for item in execution_list:
-                    print(item)
                     execution_command += item + " "
 
             server_obj: Servers = self.controller.servers.get_server_obj(server_id)
