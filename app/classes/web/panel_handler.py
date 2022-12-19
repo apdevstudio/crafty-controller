@@ -1554,7 +1554,10 @@ class PanelHandler(BaseHandler):
                 return
             if java_selection:
                 try:
-                    execution_list = shlex.split(execution_command)
+                    if self.helper.is_os_windows():
+                        execution_list = shlex.split(execution_command, posix=False)
+                    else:
+                        execution_list = shlex.split(execution_command, posix=True)
                 except ValueError:
                     self.redirect(
                         "/panel/error?error=Invalid execution command. Java path"
@@ -1589,6 +1592,7 @@ class PanelHandler(BaseHandler):
                     execution_list[0] = "java"
                 execution_command = ""
                 for item in execution_list:
+                    print(item)
                     execution_command += item + " "
 
             server_obj: Servers = self.controller.servers.get_server_obj(server_id)
