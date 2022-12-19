@@ -95,6 +95,14 @@ class ManagementController:
         return HelpersManagement.delete_scheduled_task(schedule_id)
 
     @staticmethod
+    def set_login_image(path):
+        HelpersManagement.set_login_image(path)
+
+    @staticmethod
+    def get_login_image():
+        return HelpersManagement.get_login_image()
+
+    @staticmethod
     def update_scheduled_task(schedule_id, updates):
         return HelpersManagement.update_scheduled_task(schedule_id, updates)
 

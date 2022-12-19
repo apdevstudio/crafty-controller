@@ -331,6 +331,15 @@ class ServerHandler(BaseHandler):
                 return
 
             if import_type == "import_jar":
+                if not self.helper.is_subdir(
+                    import_server_path, self.controller.project_root
+                ):
+                    self.redirect(
+                        "/panel/error?error=Loop Error: The selected path will cause"
+                        " an infinite copy loop. Make sure Crafty's directory is not"
+                        " in your server path."
+                    )
+                    return
                 good_path = self.controller.verify_jar_server(
                     import_server_path, import_server_jar
                 )
@@ -457,6 +466,9 @@ class ServerHandler(BaseHandler):
             server = bleach.clean(self.get_argument("server", ""))
             server_name = bleach.clean(self.get_argument("server_name", ""))
             port = bleach.clean(self.get_argument("port", ""))
+
+            if not port:
+                port = 19132
             if int(port) < 1 or int(port) > 65535:
                 self.redirect(
                     "/panel/error?error=Constraint Error: "
@@ -477,6 +489,15 @@ class ServerHandler(BaseHandler):
                 return
 
             if import_type == "import_jar":
+                if self.helper.is_subdir(
+                    import_server_path, self.controller.project_root
+                ):
+                    self.redirect(
+                        "/panel/error?error=Loop Error: The selected path will cause"
+                        " an infinite copy loop. Make sure Crafty's directory is not"
+                        " in your server path."
+                    )
+                    return
                 good_path = self.controller.verify_jar_server(
                     import_server_path, import_server_exe
                 )

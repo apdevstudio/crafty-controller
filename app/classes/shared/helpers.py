@@ -376,6 +376,7 @@ class Helpers:
 
         return default_return
 
+
     def set_settings(self, data):
         try:
             with open(self.settings_file, "w", encoding="utf-8") as f:
@@ -408,6 +409,18 @@ class Helpers:
 
         return data
 
+    @staticmethod
+    def is_subdir(server_path, root_dir):
+        server_path = os.path.realpath(server_path)
+        root_dir = os.path.realpath(root_dir)
+
+        relative = os.path.relpath(server_path, root_dir)
+
+        if relative.startswith(os.pardir):
+            return False
+        return True
+
+>>>>>>> app/classes/shared/helpers.py
     def set_setting(self, key, new_value):
         try:
             with open(self.settings_file, "r", encoding="utf-8") as f:
