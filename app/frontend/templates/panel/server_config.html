@@ -164,10 +164,11 @@
                     <input type="number" class="form-control" name="server_port" id="server_port"
                       value="{{ data['server_stats']['server_id']['server_port']  }}" step="1" max="65566" min="1"
                       required>
-                    <span data-html="true" class="port-hint text-center" title="<i class='fa fa-info-circle'></i> " ,
+                    <span data-html="true" class="port-hint text-center"
+                      title="<i class='fal fa-exclamation-triangle'></i> " ,
                       data-content="{{
-                        translate('serverConfig', 'statsHint1' , data['lang'])}} <br> <br> <strong>{{ translate('serverConfig', 'statsHint2', data['lang'])}}</strong>"
-                      , data-placement="right"></span>
+                        translate('serverConfig', 'statsHint1' , data['lang'])}} <br> <br> <strong>{{ translate('serverConfig', 'statsHint2', data['lang'])}}</strong>" ,
+                      data-placement="right"></span>
                   </div>
                   {% end %}
 
