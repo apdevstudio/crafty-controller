@@ -808,9 +808,15 @@ class PanelHandler(BaseHandler):
                 user_roles_list = self.controller.users.get_user_roles_names(
                     user.user_id
                 )
-                user_servers = self.controller.servers.get_authorized_servers(
-                    user.user_id
-                )
+                try:
+                    user_servers = self.controller.servers.get_authorized_servers(
+                        user.user_id
+                    )
+                except:
+                    return self.redirect(
+                        "/panel/error?error=Cannot load panel config"
+                        " while servers are unloaded"
+                    )
                 servers = []
                 for server in user_servers:
                     if server.name not in servers:
@@ -1554,7 +1560,10 @@ class PanelHandler(BaseHandler):
                 return
             if java_selection:
                 try:
-                    execution_list = shlex.split(execution_command)
+                    if self.helper.is_os_windows():
+                        execution_list = shlex.split(execution_command, posix=False)
+                    else:
+                        execution_list = shlex.split(execution_command, posix=True)
                 except ValueError:
                     self.redirect(
                         "/panel/error?error=Invalid execution command. Java path"
@@ -1606,7 +1615,6 @@ class PanelHandler(BaseHandler):
                 if Helpers.validate_traversal(
                     self.helper.get_servers_root_dir(), server_path
                 ):
-                    server_obj.path = server_path
                     server_obj.log_path = log_path
                 if Helpers.validate_traversal(
                     self.helper.get_servers_root_dir(), executable
@@ -1618,7 +1626,6 @@ class PanelHandler(BaseHandler):
                 server_obj.executable_update_url = executable_update_url
                 server_obj.show_status = show_status
             else:
-                server_obj.path = server_obj.path
                 server_obj.log_path = server_obj.log_path
                 server_obj.executable = server_obj.executable
                 server_obj.execution_command = execution_command
