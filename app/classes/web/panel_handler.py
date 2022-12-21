@@ -1560,7 +1560,10 @@ class PanelHandler(BaseHandler):
                 return
             if java_selection:
                 try:
-                    execution_list = shlex.split(execution_command)
+                    if self.helper.is_os_windows():
+                        execution_list = shlex.split(execution_command, posix=False)
+                    else:
+                        execution_list = shlex.split(execution_command, posix=True)
                 except ValueError:
                     self.redirect(
                         "/panel/error?error=Invalid execution command. Java path"
