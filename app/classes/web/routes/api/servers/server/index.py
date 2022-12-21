@@ -90,7 +90,8 @@ class ApiServersServerIndexHandler(BaseApiHandler):
         server_obj = self.controller.servers.get_server_obj(server_id)
         for key in data:
             # If we don't validate the input there could be security issues
-            setattr(server_obj, key, data[key])
+            if key != "path":
+                setattr(server_obj, key, data[key])
         self.controller.servers.update_server(server_obj)
 
         self.controller.management.add_to_audit_log(
