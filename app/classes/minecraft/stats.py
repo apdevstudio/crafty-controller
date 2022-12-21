@@ -86,7 +86,7 @@ class Stats:
     def get_node_stats(self) -> NodeStatsReturnDict:
         try:
             cpu_freq = psutil.cpu_freq()
-        except NotImplementedError:
+        except (NotImplementedError, FileNotFoundError):
             cpu_freq = None
         if cpu_freq is None:
             cpu_freq = psutil._common.scpufreq(current=-1, min=-1, max=-1)
