@@ -11,7 +11,7 @@ TBD
 - Remove Pathlib from sub path check ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/507))
 - Fix root dir selection in Upload Zip Import ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/508))
 ### Tweaks
-TBD
+- Make server directories non-configurable ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/511))
 ### Lang
 TBD
 <br><br>
