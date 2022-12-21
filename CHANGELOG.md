@@ -1,5 +1,25 @@
 # Changelog
-## --- [4.0.17] - 2022/11/30
+## --- [4.0.19] - 2022/TBD
+### New features
+TBD
+### Bug fixes
+- Fix port tooltip not showing on dash while server online. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/503))
+- Fix '+' char in path causing any file operation to fail. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/502))
+- Fix colours on public pages. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/504))
+- Fix bug where public background was not sent to public pages...like the error page resulting in an error...ironic...I know. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/505))
+- Be sure a user cannot server import crafty dir. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/506))
+- Remove Pathlib from sub path check ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/507))
+- Fix root dir selection in Upload Zip Import ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/508))
+- Fix stats error on mac M1 chips ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/512))
+- Fix window path escape on java override ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/513))
+### Tweaks
+- Make server directories non-configurable ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/511))
+- Add popover to server port to detail it's purpose ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/514))
+### Lang
+TBD
+<br><br>
+
+## --- [4.0.17/4.0.18] - 2022/11/30
 ### New features
 - Automate forge install process through Crafty server creation for Forge server version 1.16 and greater. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/495))
 - Tooltip for server port on dashboard. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/496))
@@ -7,8 +27,10 @@
 ### Bug fixes
 - Fix no port on bedrock server creation. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/493))
 ### Tweaks
-- Docker🐋 | Update image base to Ubuntu 22.04 Jammy ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/497))<br>
+- Docker🐋 | Update image base to Ubuntu 22.04 Jammy. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/497))<br>
 *(OpenJDK16 Removed, no jammy backport)*
+### Hotfix (4.0.18)
+- Apply custom login backgrounds on all public pages. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/499))
 <br><br>
 
 ## --- [4.0.16] - 2022/10/23

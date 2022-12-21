@@ -7,6 +7,7 @@ import json
 import logging
 import threading
 import shlex
+import urllib.parse
 import bleach
 import requests
 import tornado.web
@@ -289,6 +290,7 @@ class PanelHandler(BaseHandler):
         page_data: t.Dict[str, t.Any] = {
             # todo: make this actually pull and compare version data
             "update_available": self.helper.update_available,
+            "background": self.controller.cached_login,
             "serverTZ": tz,
             "version_data": self.helper.get_version_string(),
             "failed_servers": self.controller.servers.failed_servers,
@@ -806,9 +808,15 @@ class PanelHandler(BaseHandler):
                 user_roles_list = self.controller.users.get_user_roles_names(
                     user.user_id
                 )
-                user_servers = self.controller.servers.get_authorized_servers(
-                    user.user_id
-                )
+                try:
+                    user_servers = self.controller.servers.get_authorized_servers(
+                        user.user_id
+                    )
+                except:
+                    return self.redirect(
+                        "/panel/error?error=Cannot load panel config"
+                        " while servers are unloaded"
+                    )
                 servers = []
                 for server in user_servers:
                     if server.name not in servers:
@@ -1386,9 +1394,10 @@ class PanelHandler(BaseHandler):
             template = "panel/activity_logs.html"
 
         elif page == "download_file":
-            file = Helpers.get_os_understandable_path(self.get_argument("path", ""))
-            name = self.get_argument("name", "")
-
+            file = Helpers.get_os_understandable_path(
+                urllib.parse.unquote(self.get_argument("path", ""))
+            )
+            name = urllib.parse.unquote(self.get_argument("name", ""))
             server_id = self.check_server_id()
             if server_id is None:
                 return
@@ -1551,7 +1560,10 @@ class PanelHandler(BaseHandler):
                 return
             if java_selection:
                 try:
-                    execution_list = shlex.split(execution_command)
+                    if self.helper.is_os_windows():
+                        execution_list = shlex.split(execution_command, posix=False)
+                    else:
+                        execution_list = shlex.split(execution_command, posix=True)
                 except ValueError:
                     self.redirect(
                         "/panel/error?error=Invalid execution command. Java path"
@@ -1603,7 +1615,6 @@ class PanelHandler(BaseHandler):
                 if Helpers.validate_traversal(
                     self.helper.get_servers_root_dir(), server_path
                 ):
-                    server_obj.path = server_path
                     server_obj.log_path = log_path
                 if Helpers.validate_traversal(
                     self.helper.get_servers_root_dir(), executable
@@ -1615,7 +1626,6 @@ class PanelHandler(BaseHandler):
                 server_obj.executable_update_url = executable_update_url
                 server_obj.show_status = show_status
             else:
-                server_obj.path = server_obj.path
                 server_obj.log_path = server_obj.log_path
                 server_obj.executable = server_obj.executable
                 server_obj.execution_command = execution_command
