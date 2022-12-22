@@ -10,6 +10,7 @@ import logging.config
 import subprocess
 import html
 import urllib.request
+import glob
 
 # TZLocal is set as a hidden import on win pipeline
 from tzlocal import get_localzone
@@ -580,7 +581,7 @@ class ServerInstance:
                 # Process has exited. Lets do some work to setup the new
                 # run command.
                 # Let's grab the server object we're going to update.
-                server_obj = HelperServers.get_server_obj(self.server_id)
+                server_obj: Servers = HelperServers.get_server_obj(self.server_id)
 
                 # The forge install is done so we can delete that install file.
                 os.remove(os.path.join(server_obj.path, server_obj.executable))
@@ -588,48 +589,93 @@ class ServerInstance:
                 # We need to grab the exact forge version number.
                 # We know we can find it here in the run.sh/bat script.
                 try:
-                    run_file_path = ""
-                    if self.helper.is_os_windows():
-                        run_file_path = os.path.join(server_obj.path, "run.bat")
-                    else:
-                        run_file_path = os.path.join(server_obj.path, "run.sh")
 
-                    if Helpers.check_file_perms(run_file_path) and os.path.isfile(
-                        run_file_path
-                    ):
-                        run_file = open(run_file_path, "r", encoding="utf-8")
-                        run_file_text = run_file.read()
-                    else:
-                        Console.error(
-                            "ERROR ! Forge install can't read the scripts files."
-                            " Aborting ..."
+                    # Getting the forge version from the executable command
+                    version = re.findall(
+                        r"forge-([0-9\.]+)((?:)|(?:-([0-9\.]+)-[a-zA-Z]+)).jar",
+                        server_obj.execution_command,
+                    )
+                    version_param = version[0][0].split(".")
+                    version_major = int(version_param[0])
+                    version_minor = int(version_param[1])
+
+                    # Checking which version we are with
+                    if version_major <= 1 and version_minor < 17:
+                        # OLD VERSION < 1.17
+
+                        # Retrieving the executable jar filename
+                        file_path = glob.glob(
+                            f"{server_obj.path}/forge-{version[0][0]}*.jar"
+                        )[0]
+                        file_name = re.findall(
+                            r"(forge[-0-9.]+.jar)",
+                            file_path,
+                        )[0]
+
+                        # Let's set the proper server executable
+                        server_obj.executable = os.path.join(file_name)
+
+                        # Get memory values
+                        memory_values = re.findall(
+                            r"-Xms([A-Z0-9\.]+) -Xmx([A-Z0-9\.]+)",
+                            server_obj.execution_command,
                         )
-                        return
 
-                    # We get the server command parameters from forge script
-                    server_command = re.findall(
-                        r"java @([a-zA-Z0-9_\.]+)"
-                        r" @([a-z.\/\-]+)([0-9.\-]+)\/\b([a-z_0-9]+\.txt)\b( .{2,4})?",
-                        run_file_text,
-                    )[0]
+                        # Now lets set up the new run command.
+                        # This is based off the run.sh/bat that
+                        # Forge uses in 1.17 and <
+                        execution_command = (
+                            f"java -Xms{memory_values[0][0]} -Xmx{memory_values[0][1]}"
+                            f' -jar "{file_name}" nogui'
+                        )
+                        server_obj.execution_command = execution_command
+                        Console.debug("SUCCESS! Forge install completed")
 
-                    version = server_command[2]
-                    executable_path = f"{server_command[1]}{server_command[2]}/"
+                    else:
+                        # NEW VERSION >= 1.17
 
-                    # Let's set the proper server executable
-                    server_obj.executable = os.path.join(
-                        f"{executable_path}forge-{version}-server.jar"
-                    )
-                    # Now lets set up the new run command.
-                    # This is based off the run.sh/bat that
-                    # Forge uses in 1.17 and <
-                    execution_command = (
-                        f"java @{server_command[0]}"
-                        f" @{executable_path}{server_command[3]} nogui"
-                        " {server_command[4]}"
-                    )
-                    server_obj.execution_command = execution_command
-                    Console.debug("SUCCESS! Forge install completed")
+                        run_file_path = ""
+                        if self.helper.is_os_windows():
+                            run_file_path = os.path.join(server_obj.path, "run.bat")
+                        else:
+                            run_file_path = os.path.join(server_obj.path, "run.sh")
+
+                        if Helpers.check_file_perms(run_file_path) and os.path.isfile(
+                            run_file_path
+                        ):
+                            run_file = open(run_file_path, "r", encoding="utf-8")
+                            run_file_text = run_file.read()
+                        else:
+                            Console.error(
+                                "ERROR ! Forge install can't read the scripts files."
+                                " Aborting ..."
+                            )
+                            return
+
+                        # We get the server command parameters from forge script
+                        server_command = re.findall(
+                            r"java @([a-zA-Z0-9_\.]+)"
+                            r" @([a-z.\/\-]+)([0-9.\-]+)\/\b([a-z_0-9]+\.txt)\b( .{2,4})?",
+                            run_file_text,
+                        )[0]
+
+                        version = server_command[2]
+                        executable_path = f"{server_command[1]}{server_command[2]}/"
+
+                        # Let's set the proper server executable
+                        server_obj.executable = os.path.join(
+                            f"{executable_path}forge-{version}-server.jar"
+                        )
+                        # Now lets set up the new run command.
+                        # This is based off the run.sh/bat that
+                        # Forge uses in 1.17 and <
+                        execution_command = (
+                            f"java @{server_command[0]}"
+                            f" @{executable_path}{server_command[3]} nogui"
+                            " {server_command[4]}"
+                        )
+                        server_obj.execution_command = execution_command
+                        Console.debug("SUCCESS! Forge install completed")
                 except:
                     logger.debug("Could not find run file.")
                     # TODO Use regex to get version and rebuild simple execution
