@@ -606,9 +606,6 @@
   function send_command(server_id, command) {
     /* this getCookie function is in base.html */
     const token = getCookie("_xsrf");
-    setTimeout(warn('WebSockets are required for Crafty to work. This websocket connection has been closed. Are you using a reverse proxy?',
-      'https://wiki.craftycontrol.com/en/4/docs/Reverse%20Proxy%20Examples',
-      'wssError'), 5);
     $.ajax({
       type: "POST",
       headers: { 'X-XSRFToken': token },
@@ -667,7 +664,7 @@
       parentEl.classList.add(className);
     }
 
-    document.querySelector('.warnings').appendChild(parentEl);
+    document.querySelector('.dynamicMsg').appendChild(parentEl);
   }
 
   function send_kill(server_id) {
@@ -821,11 +818,16 @@
       send_command(server_id, 'start_server');
       bootbox.alert({
         backdrop: true,
-        title: '{% raw translate("dashboard", "sendingCommand", data["lang"]) %}',
+        title: '<span class="dynamicMsg">{% raw translate("dashboard", "sendingCommand", data["lang"]) %}</span>',
         message: '<div align="center"><i class="fas fa-spin fa-spinner"></i> &nbsp; {% raw translate("dashboard", "bePatientStart", data["lang"]) %} </div>'
       });
+      setTimeout(finishTimeout, 60000);
     });
-
+    function finishTimeout() {
+      console.log("TIMEOUT FINISHED")
+      warn("It seems this is taking a while...it's possible you're using UBlock or a similar ad blocker and it's causing some of our connections to not make it to the server. Try disabling your ad blocker.",
+        null, 'wssError');
+    }
     $(".stop_button").click(function () {
       console.log("stopping server");
       server_id = $(this).attr("data-id");
