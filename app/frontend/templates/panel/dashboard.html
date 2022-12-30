@@ -824,7 +824,6 @@
       setTimeout(finishTimeout, 60000);
     });
     function finishTimeout() {
-      console.log("TIMEOUT FINISHED")
       warn("It seems this is taking a while...it's possible you're using UBlock or a similar ad blocker and it's causing some of our connections to not make it to the server. Try disabling your ad blocker.",
         null, 'wssError');
     }
