@@ -541,9 +541,6 @@ class TasksManager:
 
     def schedule_watcher(self, event):
         if not event.exception:
-            task = self.controller.management.get_scheduled_task_model(
-                int(event.job_id)
-            )
             if str(event.job_id).isnumeric():
                 task = self.controller.management.get_scheduled_task_model(
                     int(event.job_id)
