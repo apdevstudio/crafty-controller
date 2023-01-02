@@ -17,6 +17,7 @@ TBD
 ### Tweaks
 - Make server directories non-configurable ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/511))
 - Add popover to server port to detail it's purpose ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/514))
+- Add server start timeout w/ WS Warning ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/518))
 ### Lang
 TBD
 <br><br>
