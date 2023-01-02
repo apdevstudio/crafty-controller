@@ -192,7 +192,7 @@ class ServerJars:
                 with open(path, "wb") as output:
                     shutil.copyfileobj(r.raw, output)
                     # If this is the newer forge version we will run the installer
-                    if server == "forge" and int(version.split(".")[1]) > 15:
+                    if server == "forge":
                         ServersController.finish_import(server_id, True)
                     else:
                         ServersController.finish_import(server_id)
