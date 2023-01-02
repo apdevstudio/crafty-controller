@@ -655,7 +655,8 @@ class ServerInstance:
                         # We get the server command parameters from forge script
                         server_command = re.findall(
                             r"java @([a-zA-Z0-9_\.]+)"
-                            r" @([a-z.\/\-]+)([0-9.\-]+)\/\b([a-z_0-9]+\.txt)\b( .{2,4})?",
+                            r" @([a-z.\/\-]+)([0-9.\-]+)"
+                            r"\/\b([a-z_0-9]+\.txt)\b( .{2,4})?",
                             run_file_text,
                         )[0]
 
