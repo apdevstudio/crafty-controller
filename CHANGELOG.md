@@ -14,6 +14,7 @@ TBD
 - Fix window path escape on java override ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/513))
 - Fix Forge import stalling on 1.17 Forge servers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/515))
 - Fix issue with server config for SU Accounts ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/516))
+- Fix Nested reaction tasks ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/521))
 ### Tweaks
 - Make server directories non-configurable ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/511))
 - Add popover to server port to detail it's purpose ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/514))

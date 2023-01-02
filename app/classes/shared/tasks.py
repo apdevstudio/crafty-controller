@@ -556,7 +556,7 @@ class TasksManager:
                 if task.one_time:
                     self.remove_job(task.schedule_id)
                     logger.info("one time task detected. Deleting...")
-                else:
+                elif task.interval_type != "reaction":
                     self.controller.management.update_scheduled_task(
                         task.schedule_id,
                         {
