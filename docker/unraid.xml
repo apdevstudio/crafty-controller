@@ -2,15 +2,15 @@
 <Container version="2">
   <Beta>False</Beta>
   <Name>Crafty-4</Name>
-  <Registry>https://registry.gitlab.com/crafty-controller/</Registry>
-  <Repository>crafty-controller/crafty-4:latest</Repository>
+  <Repository>registry.gitlab.com/crafty-controller/crafty-4/Repository>
+  <Registry>registry.gitlab.com/crafty-controller/crafty-4</Registry>
   <Network>bridge</Network>
   <MyIP/>
   <Shell>sh</Shell>
   <Privileged>false</Privileged>
   <Support>https://discord.gg/9VJPhCE</Support>
   <Project>https://craftycontrol.com/</Project>
-  <License>GNU GLP V3</License>
+  <License>GNU GPL V3</License>
   <Branch>
     <Tag>latest</Tag>
     <TagDescription>Latest version of Crafty, which should be used for production purposes as it is the most stable</TagDescription>
