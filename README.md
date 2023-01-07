@@ -1,5 +1,5 @@
 [![Crafty Logo](app/frontend/static/assets/images/logo_long.svg)](https://craftycontrol.com)
-# Crafty Controller 4.0.18
+# Crafty Controller 4.0.19
 > Python based Control Panel for your Minecraft Server
 
 ## What is Crafty Controller?
@@ -48,7 +48,7 @@ As the Dockerfile uses the permission structure of `crafty:root` **internally** 
 ### - Using the registry image 🌎
 The provided image supports both `arm64` and `amd64` out the box, if you have issues though you can build it yourself with the `compose` file in `docker/`.
 
-The image is located at: `registry.gitlab.com/crafty-controller/crafty-4:latest`
+The image is located at: `registry.gitlab.com/crafty-controller/crafty-4:latest` or `arcadiatechnology/crafty-4`
 | Branch             | Status                                                                |
 | ----------------- | ------------------------------------------------------------------ |
 | :latest | [![pipeline status](https://gitlab.com/crafty-controller/crafty-4/badges/master/pipeline.svg)](https://gitlab.com/crafty-controller/crafty-4/-/commits/master) |

@@ -272,7 +272,7 @@ class Helpers:
     @staticmethod
     def check_internet():
         try:
-            requests.get("https://google.com", timeout=1)
+            requests.get("https://ntp.org", timeout=1)
             return True
         except Exception:
             return False
@@ -375,6 +375,17 @@ class Helpers:
             )
 
         return default_return
+
+    @staticmethod
+    def is_subdir(server_path, root_dir):
+        server_path = os.path.realpath(server_path)
+        root_dir = os.path.realpath(root_dir)
+
+        relative = os.path.relpath(server_path, root_dir)
+
+        if relative.startswith(os.pardir):
+            return False
+        return True
 
     def set_setting(self, key, new_value):
         try:

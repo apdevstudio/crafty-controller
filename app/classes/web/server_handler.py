@@ -331,6 +331,15 @@ class ServerHandler(BaseHandler):
                 return
 
             if import_type == "import_jar":
+                if not self.helper.is_subdir(
+                    import_server_path, self.controller.project_root
+                ):
+                    self.redirect(
+                        "/panel/error?error=Loop Error: The selected path will cause"
+                        " an infinite copy loop. Make sure Crafty's directory is not"
+                        " in your server path."
+                    )
+                    return
                 good_path = self.controller.verify_jar_server(
                     import_server_path, import_server_jar
                 )
@@ -480,6 +489,15 @@ class ServerHandler(BaseHandler):
                 return
 
             if import_type == "import_jar":
+                if self.helper.is_subdir(
+                    import_server_path, self.controller.project_root
+                ):
+                    self.redirect(
+                        "/panel/error?error=Loop Error: The selected path will cause"
+                        " an infinite copy loop. Make sure Crafty's directory is not"
+                        " in your server path."
+                    )
+                    return
                 good_path = self.controller.verify_jar_server(
                     import_server_path, import_server_exe
                 )
