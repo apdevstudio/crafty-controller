@@ -1,7 +1,16 @@
 # Changelog
-## --- [4.0.19] - 2022/TBD
+## --- [4.0.20] - 2022/TBD
 ### New features
 TBD
+### Bug fixes
+TBD
+### Tweaks
+TBD
+### Lang
+TBD
+<br><br>
+
+## --- [4.0.19] - 2022/01/07
 ### Bug fixes
 - Fix port tooltip not showing on dash while server online. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/503))
 - Fix '+' char in path causing any file operation to fail. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/502))
@@ -12,11 +21,18 @@ TBD
 - Fix root dir selection in Upload Zip Import ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/508))
 - Fix stats error on mac M1 chips ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/512))
 - Fix window path escape on java override ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/513))
+- Fix Forge import stalling on 1.17 Forge servers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/515))
+- Fix issue with server config for SU Accounts ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/516))
+- Fix Nested reaction tasks ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/521))
+- Remove legacy unzip code causing issues with single file zip files ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/522))
 ### Tweaks
 - Make server directories non-configurable ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/511))
 - Add popover to server port to detail it's purpose ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/514))
+- Add server start timeout w/ WS Warning ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/518))
+- Replace google ping for ntp for internet checks in locked-down countries ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/524))
+- Add pushing to DockerHub registry (`arcadiatechnology/crafty-4`) ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/526))
 ### Lang
-TBD
+- Added Czech translation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/519))
 <br><br>
 
 ## --- [4.0.17/4.0.18] - 2022/11/30

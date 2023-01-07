@@ -817,6 +817,7 @@ class Controller:
             user_id,
             server_type="minecraft-bedrock",
         )
+        ServersController.set_import(new_id)
         self.import_helper.import_bedrock_zip_server(
             temp_dir, new_server_dir, full_jar_path, port, new_id
         )

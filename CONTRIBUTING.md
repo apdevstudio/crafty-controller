@@ -2,7 +2,7 @@
 *Don't Panic!*<br><br>
 
 First off, thank you for choosing Crafty Controller! <br>
-We hope you've been enjoying the beta so far and are absolutely thrilled that you are looking to contribute!
+We hope you've been enjoying Crafty so far and are absolutely thrilled that you are looking to contribute!
 
 The following guide will show you how to easily and safely contribute to our current workflow. There are a few components that need to be taken into account and processes that need followed before we can merge your code into our repository.
 <br><br>

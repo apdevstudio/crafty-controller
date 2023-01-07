@@ -298,14 +298,7 @@ class FileHelpers:
             try:
                 with zipfile.ZipFile(zip_path, "r") as zip_ref:
                     zip_ref.extractall(temp_dir)
-                for i in enumerate(zip_ref.filelist):
-                    if len(zip_ref.filelist) > 1 or not zip_ref.filelist[
-                        i
-                    ].filename.endswith("/"):
-                        break
-
-                full_root_path = temp_dir
-
+                    full_root_path = temp_dir
                 for item in os.listdir(full_root_path):
                     if os.path.isdir(os.path.join(full_root_path, item)):
                         try:
