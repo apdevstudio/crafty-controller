@@ -16,7 +16,7 @@ TBD
 - Make server directories non-configurable ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/511))
 - Add popover to server port to detail it's purpose ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/514))
 ### Lang
-TBD
+- Added Czech translation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/519))
 <br><br>
 
 ## --- [4.0.17/4.0.18] - 2022/11/30
