@@ -21,6 +21,7 @@ TBD
 - Add popover to server port to detail it's purpose ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/514))
 - Add server start timeout w/ WS Warning ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/518))
 - Replace google ping for ntp for internet checks in locked-down countries ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/524))
+- Add pushing to DockerHub registry ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/526))
 ### Lang
 TBD
 <br><br>

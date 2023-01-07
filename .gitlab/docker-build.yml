@@ -29,6 +29,7 @@ docker-build-dev:
     - docker run --rm --privileged aptman/qus -- -r
     - docker run --rm --privileged aptman/qus -s -- -p aarch64 x86_64
     - echo $CI_BUILD_TOKEN | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - echo $DOCKERHUB_TOKEN | docker login -u "$DOCKERHUB_USER" --password-stdin $DOCKERHUB_REGISTRY
   script:
     - |
       tag=":$CI_COMMIT_REF_SLUG"
@@ -45,6 +46,7 @@ docker-build-dev:
       --build-arg "BUILD_REF=${CI_COMMIT_SHA}"
       --build-arg "CRAFTY_VER=${VERSION}"
       --tag "$CI_REGISTRY_IMAGE${tag}"
+      --tag "arcadiatechnology/crafty-4${tag}"
       --platform linux/arm64/v8,linux/amd64
       --push .
   after_script:
@@ -83,6 +85,7 @@ docker-build-prod:
     - docker run --rm --privileged aptman/qus -- -r
     - docker run --rm --privileged aptman/qus -s -- -p aarch64 x86_64
     - echo $CI_BUILD_TOKEN | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - echo $DOCKERHUB_TOKEN | docker login -u "$DOCKERHUB_USER" --password-stdin $DOCKERHUB_REGISTRY
   script:
     - |
       VERSION="${MAJOR}.${MINOR}.${SUB}"
@@ -99,6 +102,8 @@ docker-build-prod:
       --build-arg "CRAFTY_VER=${VERSION}"
       --tag "$CI_REGISTRY_IMAGE:$VERSION"
       --tag "$CI_REGISTRY_IMAGE:latest"
+      --tag "arcadiatechnology/crafty-4:$VERSION"
+      --tag "arcadiatechnology/crafty-4:latest"
       --platform linux/arm64/v8,linux/amd64
       --push .
   after_script:
