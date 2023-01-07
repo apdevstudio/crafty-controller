@@ -272,7 +272,7 @@ class Helpers:
     @staticmethod
     def check_internet():
         try:
-            requests.get("https://google.com", timeout=1)
+            requests.get("https://ntp.org", timeout=1)
             return True
         except Exception:
             return False
