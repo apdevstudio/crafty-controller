@@ -1,7 +1,5 @@
 # Changelog
-## --- [4.0.19] - 2022/TBD
-### New features
-TBD
+## --- [4.0.19] - 2022/01/07
 ### Bug fixes
 - Fix port tooltip not showing on dash while server online. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/503))
 - Fix '+' char in path causing any file operation to fail. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/502))
