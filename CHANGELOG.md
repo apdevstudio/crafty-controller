@@ -23,7 +23,7 @@ TBD
 - Replace google ping for ntp for internet checks in locked-down countries ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/524))
 - Add pushing to DockerHub registry (`arcadiatechnology/crafty-4`) ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/526))
 ### Lang
-TBD
+- Added Czech translation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/519))
 <br><br>
 
 ## --- [4.0.17/4.0.18] - 2022/11/30
