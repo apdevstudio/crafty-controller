@@ -2,8 +2,8 @@
 <Container version="2">
   <Beta>False</Beta>
   <Name>Crafty-4</Name>
-  <Repository>registry.gitlab.com/crafty-controller/crafty-4/Repository>
-  <Registry>registry.gitlab.com/crafty-controller/crafty-4</Registry>
+  <Repository>arcadiatechnology/crafty-4</Repository>
+  <Registry>https://hub.docker.com/r/arcadiatechnology/crafty-4</Registry>
   <Network>bridge</Network>
   <MyIP/>
   <Shell>sh</Shell>
@@ -21,11 +21,7 @@
 </Branch>
 <Screenshot>https://wiki.craftycontrol.com/uploads/en/crafty%204%20dashboard%20with%20one%20server.jpeg</Screenshot>
 <Screenshot>https://wiki.craftycontrol.com/uploads/en/crafty%204%20server%20setup%20details.png</Screenshot>
-  <Overview>Crafty 4 is the next iteration of our Minecraft Server Wrapper / Controller / Launcher. Boasting a clean new look, rebuilt from the ground up. Crafty 4 brings a whole host of new features such as Bedrock support. With SteamCMD support on the way!&#xD;
-Default login Credentrails are username: "admin" password: "crafty"&#xD;
-Crafty 4 is the successor of Crafty Controller, the Docker image is no longer maintained on DockerHub. (now on GitLab)&#xD;
-For official support join the Discord: https://discord.gg/9VJPhCE&#xD;
-For migration from 3.x please refer to the documentation: https://wiki.craftycontrol.com/en/4/&#xD;
+  <Overview>Crafty 4 is the next iteration of our Minecraft Server Wrapper / Controller / Launcher. [br]Boasting a clean new look, rebuilt from the ground up. [br] [br] Crafty 4 brings a whole host of new features such as Bedrock support. [br] With SteamCMD support on the way![br] **Default login Credentrails are username: "admin" password: "crafty". **  [br]Crafty 4 is the successor of Crafty Controller. [br]For official support join the Discord server https://discord.gg/9VJPhCE [br] For migration from 3.x please refer to the documentation: https://wiki.craftycontrol.com/en/4/
 </Overview>
   <Category>GameServers: Other:</Category>
   <WebUI>https://[IP]:[PORT:8443]/</WebUI>
