@@ -331,7 +331,7 @@ class ServerHandler(BaseHandler):
                 return
 
             if import_type == "import_jar":
-                if not self.helper.is_subdir(
+                if self.helper.is_subdir(
                     import_server_path, self.controller.project_root
                 ):
                     self.redirect(
