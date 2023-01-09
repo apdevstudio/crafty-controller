@@ -34,8 +34,8 @@
                     }}</h4>
                   {% if data['user_data']['hints'] %}
                   <span class="too_small" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" ,
-                    data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
-                    data-placement="top"></span>
+                        data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
+                        data-placement="top"></span>
                   {% end %}
                   <!-- TODO: Translate the following -->
                   <div><a class="nav-link" href="/panel/add_user"><i class="fas fa-plus-circle"></i> &nbsp; {{
@@ -134,8 +134,8 @@
                     data['lang']) }}</h4>
                   {% if data['user_data']['hints'] %}
                   <span class="too_small2" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" ,
-                    data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
-                    data-placement="top"></span>
+                        data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
+                        data-placement="top"></span>
                   {% end %}
                   <div><a class="nav-link" href="/panel/add_role"><i class="fas fa-plus-circle"></i> &nbsp; {{
                       translate('panelConfig', 'newRole', data['lang']) }}</a></div>
@@ -230,64 +230,77 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-sm-6 grid-margin stretch-card">
+            <div class="col-md-12 col-lg-12 grid-margin stretch-card">
               <div class="card">
+                <div class="card-header header-sm d-flex justify-content-between align-items-center">
+                  <h4>{{ translate('panelConfig', 'customLoginPage', data['lang']) }}</h4>
+                </div>
                 <div class="card-body">
-
-                  <h4>{{ translate('panelConfig', 'loginImage', data['lang']) }}</h4>
-                  <br />
-                  <p class="card-description">
-
-                  <form name="zip" method="post" class="server-wizard" onSubmit="wait_msg(true)">
-                    {% raw xsrf_form_html() %}
-                    <input type="hidden" value="import_zip" name="create_type">
-
-                    <div class="row">
-                      <div class="col-sm-12">
-
-                        <div class="col-sm-12">
-                          <div class="form-group">
-                            <label for="server">{{ translate('panelConfig', 'backgroundUpload', data['lang'])
-                              }}</label><br>
-                            <span id="upload_input">
-                              <input type="file" multiple="false" class="form-control" id="file" name="file" required
-                                style="width: 70%;">
-                              <button type="button" class="btn btn-info" id="upload-button" onclick="sendFile()"
-                                disabled>UPLOAD</button>
-                            </span>
-                          </div>
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <h4>{{ translate('panelConfig', 'loginImage', data['lang']) }}</h4>
+                      <hr>
+                      <form class="form-inline" name="zip" method="post" class="server-wizard" onSubmit="wait_msg(true)">
+                        {% raw xsrf_form_html() %}
+                        <input type="hidden" value="import_zip" name="create_type">
+                        <div class="form-group">
+                          <span id="upload_input"><input type="file" class="form-control-file" id="file" name="file" multiple="false" required></span>
                         </div>
+                        <div class="form-group">
+                          <button type="button" class="btn btn-info" id="upload-button" onclick="sendFile()" disabled>UPLOAD</button>
+                        </div>
+                      </form>
+                      <hr>
+                      <hr />
+                      <h4>{{ translate('panelConfig', 'loginBackground', data['lang']) }}</h4>
+                      <form id="try_photo_form">
+                        <select class="form-select form-control form-control-lg select-css" id="try_photo" name="try_photo"
+                                form="try_photo" onchange="updateBackgroundSelect()">
+                          {% for image in data["backgrounds"] %}
+                          <option value="{{image}}">{{image}}</option>
+                          {% end %}
+                        </select>
+                        <button class="btn btn-outline-danger delete-photo" type="button">{{ translate('panelConfig',
+                          'delete', data['lang']) }}</button>
+                      </form>
+                    </div>
+                    <div class="col-sm-6">
+                      <div>
+                        <h6>{{ translate('panelConfig', 'preview', data['lang']) }}:</h6>
+                        <form>
+                          <div class="form-group row">
+                            <label for="photo" class="col-sm-6 col-form-label">Selected Background Image</label>
+                            <div class="col-sm-6">
+                              <select class="form-select form-control form-control-lg select-css form-control-plaintext" id="photo" name="photo"
+                                      form="photo_form" onchange="updateBackgroundPreview()">
+                                {% for image in data["backgrounds"] %}
+                                <option value="{{image}}">{{image}}</option>
+                                {% end %}
+                              </select>
+                            </div>
+                          </div>
+                          <div id="photo_loading" class="form-group" hidden>
+                            <div class="progress">
+                              <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div>
+                            </div>
+                          </div>
+                          <div class="form-group row">
+                            <label class="col-sm-3" for="formControlRange">{{ translate('panelConfig', 'loginOpacity', data['lang']) }}</label>
+                            <div class="col-sm-9">
+                              <input type="range" class="form-control-range" id="modal_opacity" name="modal_opacity">
+                            </div>
+                          </div>
+                          <img id="bg-preview" src="../../static/assets/images/auth/{{ data['background'] }}" class="img-fluid" alt="Responsive image">
+                          <div class="form-group">
+                            <button class="btn btn-outline-success select-photo" type="button">{{ translate('panelConfig',
+                              'select', data['lang']) }}</button>
+                            <button class="btn btn-outline-danger delete-photo" type="button">{{ translate('panelConfig',
+                              'delete', data['lang']) }}</button>
+                          </div>
+                        </form>
                       </div>
                     </div>
-                </div>
-                </form>
-                </p>
-              </div>
-            </div>
-            <div class="col-sm-6 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4>{{ translate('panelConfig', 'loginBackground', data['lang']) }}</h4><br /><br><br />
-                  <form id="photo_form">
-                    <select class="form-select form-control form-control-lg select-css" id="photo" name="photo"
-                      form="photo_form">
-                      {% for image in data["backgrounds"] %}
-                      <option value="{{image}}">{{image}}</option>
-                      {% end %}
-                    </select>
-                    <div>
-                      <br>
-                      <h6>{{ translate('panelConfig', 'preview', data['lang']) }}:</h6>
-                      <img style="width: 200px; height: 113px;"
-                        src="../../static/assets/images/auth/{{ data['background'] }}">
-                    </div>
-                    <br />
-                    <br />
-                    <button class="btn btn-outline-success select-photo" type="button">{{ translate('panelConfig',
-                      'select', data['lang']) }}</button>
-                    <button class="btn btn-outline-danger delete-photo" type="button">{{ translate('panelConfig',
-                      'delete', data['lang']) }}</button>
-                  </form>
+                  </div>
                 </div>
               </div>
             </div>
@@ -404,10 +417,25 @@
     });
   })
 
+  function updateBackgroundSelect() {
+    $("#photo").val($("#try_photo").val()).change();
+  }
+
+  function updateBackgroundPreview() {
+    var img = document.getElementById('bg-preview');
+    if ($("#photo").val() == "login_1.jpg") {
+      var src_path = "../../static/assets/images/auth/".concat($("#photo").val());
+    }
+    else {
+      var src_path = "../../static/assets/images/auth/custom/".concat($("#photo").val());
+    }
+    img.src = src_path;
+  }
+
   var file;
   function sendFile() {
     file = $("#file")[0].files[0]
-    document.getElementById("upload_input").innerHTML = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>'
+    document.getElementById("upload_input").innerHTML = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>';
     let xmlHttpRequest = new XMLHttpRequest();
     let token = getCookie("_xsrf")
     let fileName = file.name
