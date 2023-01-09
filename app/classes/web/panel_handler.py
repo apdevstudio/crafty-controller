@@ -897,6 +897,13 @@ class PanelHandler(BaseHandler):
 
             template = "panel/panel_config.html"
 
+        elif page == "config_json":
+            with open(self.helper.settings_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            page_data["config-json"] = data
+
+            template = "panel/config_json.html"
+
         elif page == "add_user":
             page_data["new_user"] = True
             page_data["user"] = {}

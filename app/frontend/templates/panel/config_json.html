@@ -1,0 +1,229 @@
+{% extends ../base.html %}
+
+{% block meta %}
+{% end %}
+
+{% block title %}Crafty Controller - {{ translate('panelConfig', 'pageTitle', data['lang']) }}{% end %}
+
+{% block content %}
+
+<div class="content-wrapper">
+  {% if data['superuser'] %}
+  <ul class="nav nav-tabs col-md-12 tab-simple-styled " role="tablist">
+    <li class="nav-item term-nav-item">
+      <a class="nav-link" href="/panel/panel_config" role="tab" aria-selected="false">
+        <i class="fas fa-file-signature"></i>Panel Config</a>
+    </li>
+    <li class="nav-item term-nav-item">
+      <a class="nav-link active" href="/panel/config_json" role="tab" aria-selected="false">
+        <i class="fas fa-file-signature"></i>Config.json</a>
+    </li>
+  </ul>
+  {% end %}
+
+  <!-- Page Title Header Starts-->
+  <div class="row page-title-header">
+    <div class="col-12">
+      <div class="page-header">
+        <!-- TODO: Translate the following -->
+        <h4 class="page-title">Config.json</h4>
+      </div>
+    </div>
+
+  </div>
+  <!-- Page Title Header Ends-->
+
+  <div class="row">
+    <div class="col-md-12 grid-margin">
+      <div class="card">
+        <div class="card-body">
+          <form class="forms-sample" method="post" action="/panel/config-json">
+            {% for item in data['config-json'].items() %}
+            <label for="{{item[0]}}">{{item[0]}}
+              <small class="text-muted ml-1">
+              </small> </label>
+            {% if isinstance(item[1], bool) %}
+
+            {% if item[1] == True %}
+            <div style="margin-left: 30px;">
+              <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True" checked>
+               <label for="True">True</label><br>
+              <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False">
+               <label for="False">False</label><br>
+            </div>
+            {% else %}
+            <div style="margin-left: 30px;">
+              <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True">
+               <label for="True">True</label><br>
+              <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False" checked>
+               <label for="False">False</label><br>
+            </div>
+            {% end %}
+            {% elif isinstance(item[1], int) %}
+            <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
+              step="2" min="0" required>
+            {% else %}
+            <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}" step="2"
+              min="0" required>
+            {% end %}
+            {% end %}
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<style>
+  .popover-body {
+    color: white !important;
+    ;
+  }
+
+  input[type="radio"] {
+    -ms-transform: scale(1.5);
+    /* IE 9 */
+    -webkit-transform: scale(1.5);
+    /* Chrome, Safari, Opera */
+    transform: scale(1.5);
+  }
+</style>
+<!-- content-wrapper ends -->
+
+{% end %}
+
+{% block js %}
+<script>
+  $(document).ready(function () {
+    $('[data-toggle="popover"]').popover();
+    if ($(window).width() < 1000) {
+      $('.too_small').popover("show");
+      $('.too_small2').popover("show");
+    }
+
+  });
+  $(window).ready(function () {
+    $('body').click(function () {
+      $('.too_small').popover("hide");
+      $('.too_small2').popover("hide");
+    });
+  });
+  $(window).resize(function () {
+    // This will execute whenever the window is resized
+    if ($(window).width() < 1000) {
+      $('.too_small').popover("show");
+    }
+    else {
+      $('.too_small').popover("hide");
+    } // New width
+    if ($(window).width() < 1000) {
+      $('.too_small2').popover("show");
+    }
+    else {
+      $('.too_small2').popover("hide");
+    } // New width
+  });
+  $('#file').change(function () {
+    console.log("File changed");
+    if ($('#file').val()) {
+      $('#upload-button').prop("disabled", false);
+      console.log("File changed good");
+    }
+  });
+</script>
+<script>
+
+  $(document).ready(function () {
+    console.log('ready for JS!')
+
+  });
+
+  $(".show_button").click(function () {
+    console.log("showing key");
+    api_key = $(this).attr("data-id");
+    bootbox.alert({
+      backdrop: true,
+      title: '',
+      message: api_key,
+    });
+  });
+
+  $('.clear-comm').click(function () {
+    var token = getCookie("_xsrf")
+    $.ajax({
+      type: "POST",
+      headers: { 'X-XSRFToken': token },
+      url: '/ajax/clear_comm',
+      success: function (data) {
+      },
+    });
+  })
+
+  $('.delete-photo').click(function () {
+    var token = getCookie("_xsrf")
+    let photo = $('#photo').find(":selected").val();
+    $.ajax({
+      type: "POST",
+      headers: { 'X-XSRFToken': token },
+      url: '/ajax/delete_photo?photo=' + photo,
+      success: function (data) {
+        location.reload();
+      },
+    });
+  })
+
+  $('.select-photo').click(function () {
+    var token = getCookie("_xsrf")
+    let photo = $('#photo').find(":selected").val();
+    $.ajax({
+      type: "POST",
+      headers: { 'X-XSRFToken': token },
+      url: '/ajax/select_photo?photo=' + photo,
+      success: function (data) {
+        window.location.reload();
+      },
+    });
+  })
+
+  var file;
+  function sendFile() {
+    file = $("#file")[0].files[0]
+    document.getElementById("upload_input").innerHTML = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>'
+    let xmlHttpRequest = new XMLHttpRequest();
+    let token = getCookie("_xsrf")
+    let fileName = file.name
+    let target = '/upload'
+    let mimeType = file.type
+    let size = file.size
+    let type = 'background'
+
+    xmlHttpRequest.open('POST', target, true);
+    xmlHttpRequest.setRequestHeader('X-Content-Type', mimeType);
+    xmlHttpRequest.setRequestHeader('X-XSRFToken', token);
+    xmlHttpRequest.setRequestHeader('X-Content-Length', size);
+    xmlHttpRequest.setRequestHeader('X-Content-Disposition', 'attachment; filename="' + fileName + '"');
+    xmlHttpRequest.setRequestHeader('X-Content-Upload-Type', type);
+    xmlHttpRequest.setRequestHeader('X-FileName', fileName);
+    xmlHttpRequest.addEventListener('load', (event) => {
+      if (event.target.responseText == 'success') {
+        console.log('Upload for file', file.name, 'was successful!')
+        document.getElementById("upload_input").innerHTML = '<div class="card-header header-sm d-flex justify-content-between align-items-center"><span id="file-uploaded" style="color: gray;">' + fileName + '</span> 🔒</div>';
+        setTimeout(function () {
+          window.location.reload();
+        }, 2000);
+      }
+      else {
+        alert('Upload failed with response: ' + event.target.responseText);
+        doUpload = false;
+      }
+    }, false);
+    xmlHttpRequest.addEventListener('error', (e) => {
+      console.error('Error while uploading file', file.name + '.', 'Event:', e)
+    }, false);
+    xmlHttpRequest.send(file);
+  }
+</script>
+
+{% end %}
