@@ -1720,6 +1720,27 @@ class PanelHandler(BaseHandler):
             self.tasks_manager.reload_schedule_from_db()
             self.redirect(f"/panel/server_detail?id={server_id}&subpage=backup")
 
+        elif page == "config_json":
+            try:
+                data = {}
+                with open(self.helper.settings_file, "r", encoding="utf-8") as f:
+                    print("open")
+                    keys = json.load(f).keys()
+                for key in keys:
+                    print(self.get_argument(key))
+                    data[key] = self.get_argument(key)
+                print("data:", data)
+                """
+                with open(self.helper.settings_file, "w", encoding="utf-8") as f:
+                    json.dump(data, f, indent=4)
+"""
+            except Exception as e:
+                logger.critical(
+                    f"Config File Error: Unable to read {self.helper.settings_file} due to {e}"
+                )
+
+            self.redirect("/panel/config_json")
+
         if page == "new_schedule":
             server_id = self.check_server_id()
             if not server_id:

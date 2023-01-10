@@ -37,36 +37,47 @@
     <div class="col-md-12 grid-margin">
       <div class="card">
         <div class="card-body">
-          <form class="forms-sample" method="post" action="/panel/config-json">
+          <form id="config-form" class="forms-sample" method="post" action="/panel/config_json">
+            {% raw xsrf_form_html() %}
             {% for item in data['config-json'].items() %}
+            <br />
+            <br />
             <label for="{{item[0]}}">{{item[0]}}
               <small class="text-muted ml-1">
               </small> </label>
-            {% if isinstance(item[1], bool) %}
+            {% if isinstance(item[1], list) %}
+            <ul>
+              {% for li in item[1] %}
+              <input style="color: black;" form="config-form" class="form-control" type="text" value="{{li}}"
+                name="{{item[0]}}" readonly><br />
+              {% end %}
+            </ul>
+            {% elif isinstance(item[1], bool) %}
 
             {% if item[1] == True %}
             <div style="margin-left: 30px;">
               <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True" checked>
                <label for="True">True</label><br>
               <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False">
-               <label for="False">False</label><br>
+               <label for="False">False</label>
             </div>
             {% else %}
             <div style="margin-left: 30px;">
               <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True">
                <label for="True">True</label><br>
               <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False" checked>
-               <label for="False">False</label><br>
+               <label for="False">False</label>
             </div>
             {% end %}
             {% elif isinstance(item[1], int) %}
             <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
-              step="2" min="0" required>
+              step="1" min="0" required>
             {% else %}
             <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}" step="2"
               min="0" required>
             {% end %}
             {% end %}
+            <button type="submit">Submit</button>
           </form>
         </div>
       </div>
