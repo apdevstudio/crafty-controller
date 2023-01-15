@@ -46,10 +46,10 @@
               <small class="text-muted ml-1">
               </small> </label>
             {% if isinstance(item[1], list) %}
-            <ul>
+            <ul id="list-{{item[0]}}" class="list">
               {% for li in item[1] %}
-              <input style="color: black;" form="config-form" class="form-control" type="text" value="{{li}}"
-                name="{{item[0]}}" readonly><br />
+              <li data-name="list-{{item[0]}}" style="color: white; margin-left: 20px;" selected readonly>{{li}}</li>
+              <br />
               {% end %}
             </ul>
             {% elif isinstance(item[1], bool) %}
@@ -107,6 +107,15 @@
 
 {% block js %}
 <script>
+  $('#config-form').submit(function (e) {
+    e.preventDefault();
+    let lists = document.getElementsByClassName("list");
+    for (i = 0; i < lists.length; i++) {
+      let items = document.querySelectorAll('[data-name=${lists[i]}]');
+      console.log(Array.from(items.innerHTML));
+    }
+
+  });
   $(document).ready(function () {
     $('[data-toggle="popover"]').popover();
     if ($(window).width() < 1000) {
