@@ -46,12 +46,9 @@
               <small class="text-muted ml-1">
               </small> </label>
             {% if isinstance(item[1], list) %}
-            <ul>
-              {% for li in item[1] %}
-              <input style="color: black;" form="config-form" class="form-control" type="text" value="{{li}}"
-                name="{{item[0]}}" readonly><br />
-              {% end %}
-            </ul>
+            <br>
+            <textarea value="{{','.join(item[1])}}" type="text" name="{{item[0]}}"
+              class="list">{{','.join(item[1])}}</textarea>
             {% elif isinstance(item[1], bool) %}
 
             {% if item[1] == True %}
@@ -107,6 +104,43 @@
 
 {% block js %}
 <script>
+  $("#config-form").submit(function (e) {
+    let uuid = uuidv4();
+    var token = getCookie("_xsrf")
+    e.preventDefault();
+    let class_list = document.getElementsByClassName("list");
+    let form_json = convertFormToJSON($("#config-form"));
+    for (let i = 0; i < class_list.length; i++) {
+      let str = String($(class_list.item(i)).val())
+      form_json[$(class_list.item(i)).attr("name")] = uuid + "," + str.replace(/\s/g, '');
+    };
+    form_json['uuid'] = uuid;
+    $.ajax({
+      type: "POST",
+      headers: { 'X-XSRFToken': token },
+      dataType: "json",
+      url: '/panel/config_json',
+      data: form_json,
+      success: function (data) {
+        window.location.reload();
+      },
+    });
+  });
+
+  function uuidv4() {
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+  }
+  function convertFormToJSON(form) {
+    const array = $(form).serializeArray(); // Encodes the set of form elements as an array of names and values.
+    const json = {};
+    $.each(array, function () {
+      json[this.name] = this.value || "";
+    });
+    return json;
+  }
+
   $(document).ready(function () {
     $('[data-toggle="popover"]').popover();
     if ($(window).width() < 1000) {

@@ -1724,19 +1724,30 @@ class PanelHandler(BaseHandler):
             try:
                 data = {}
                 with open(self.helper.settings_file, "r", encoding="utf-8") as f:
-                    print("open")
                     keys = json.load(f).keys()
+                this_uuid = self.get_argument("uuid")
                 for key in keys:
-                    print(self.get_argument(key))
-                    data[key] = self.get_argument(key)
-                print("data:", data)
-                """
+                    arg_data = self.get_argument(key)
+                    if arg_data.startswith(this_uuid):
+                        arg_data = arg_data.split(",")
+                        arg_data.pop(0)
+                        data[key] = arg_data
+                    else:
+                        try:
+                            data[key] = int(arg_data)
+                        except:
+                            if arg_data == "True":
+                                data[key] = True
+                            elif arg_data == "False":
+                                data[key] = False
+                            else:
+                                data[key] = arg_data
                 with open(self.helper.settings_file, "w", encoding="utf-8") as f:
                     json.dump(data, f, indent=4)
-"""
             except Exception as e:
                 logger.critical(
-                    f"Config File Error: Unable to read {self.helper.settings_file} due to {e}"
+                    "Config File Error: Unable to read "
+                    f"{self.helper.settings_file} due to {e}"
                 )
 
             self.redirect("/panel/config_json")
