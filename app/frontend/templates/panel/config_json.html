@@ -107,15 +107,7 @@
 
 {% block js %}
 <script>
-  $('#config-form').submit(function (e) {
-    e.preventDefault();
-    let lists = document.getElementsByClassName("list");
-    for (i = 0; i < lists.length; i++) {
-      let items = document.querySelectorAll('[data-name=${lists[i]}]');
-      console.log(Array.from(items.innerHTML));
-    }
 
-  });
   $(document).ready(function () {
     $('[data-toggle="popover"]').popover();
     if ($(window).width() < 1000) {
