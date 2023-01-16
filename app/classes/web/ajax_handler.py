@@ -440,15 +440,8 @@ class AjaxHandler(BaseHandler):
                     for schedule in self.controller.management.get_schedules_by_server(
                         server_id
                     ):
-                        self.controller.management.create_scheduled_task(
-                            new_server_id,
-                            schedule.action,
-                            schedule.interval,
-                            schedule.interval_type,
-                            schedule.start_time,
-                            schedule.command,
-                            schedule.name,
-                            schedule.enabled,
+                        self.tasks_manager.update_job(
+                            schedule.schedule_id, {"server_id": new_server_id}
                         )
                     # preserve execution command
                     new_server_obj = self.controller.servers.get_server_obj(

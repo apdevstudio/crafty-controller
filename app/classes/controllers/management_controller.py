@@ -78,6 +78,10 @@ class ManagementController:
         command,
         name,
         enabled=True,
+        one_time=False,
+        cron_string="* * * * *",
+        parent=None,
+        delay=0,
     ):
         return HelpersManagement.create_scheduled_task(
             server_id,
@@ -87,7 +91,11 @@ class ManagementController:
             start_time,
             command,
             name,
-            enabled,
+            enabled=True,
+            one_time=False,
+            cron_string="* * * * *",
+            parent=None,
+            delay=0,
         )
 
     @staticmethod
