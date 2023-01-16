@@ -46,43 +46,36 @@
               <small class="text-muted ml-1">
               </small> </label>
             {% if isinstance(item[1], list) %}
-            <<<<<<< HEAD <br>
-              <textarea value="{{','.join(item[1])}}" type="text" name="{{item[0]}}"
-                class="list">{{','.join(item[1])}}</textarea>
-              =======
-              <ul id="list-{{item[0]}}" class="list">
-                {% for li in item[1] %}
-                <li data-name="list-{{item[0]}}" style="color: white; margin-left: 20px;" selected readonly>{{li}}</li>
-                <br />
-                {% end %}
-              </ul>
-              >>>>>>> 99ccfb222840ed1c7d871763887d7108e178710d
-              {% elif isinstance(item[1], bool) %}
+            <br>
+            <textarea value="{{','.join(item[1])}}" type="text" name="{{item[0]}}"
+              class="list">{{','.join(item[1])}}</textarea>
+            </ul>
+            {% elif isinstance(item[1], bool) %}
 
-              {% if item[1] == True %}
-              <div style="margin-left: 30px;">
-                <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True" checked>
-                 <label for="True">True</label><br>
-                <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False">
-                 <label for="False">False</label>
-              </div>
-              {% else %}
-              <div style="margin-left: 30px;">
-                <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True">
-                 <label for="True">True</label><br>
-                <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False" checked>
-                 <label for="False">False</label>
-              </div>
-              {% end %}
-              {% elif isinstance(item[1], int) %}
-              <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
-                step="1" min="0" required>
-              {% else %}
-              <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
-                step="2" min="0" required>
-              {% end %}
-              {% end %}
-              <button type="submit">Submit</button>
+            {% if item[1] == True %}
+            <div style="margin-left: 30px;">
+              <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True" checked>
+               <label for="True">True</label><br>
+              <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False">
+               <label for="False">False</label>
+            </div>
+            {% else %}
+            <div style="margin-left: 30px;">
+              <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True">
+               <label for="True">True</label><br>
+              <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False" checked>
+               <label for="False">False</label>
+            </div>
+            {% end %}
+            {% elif isinstance(item[1], int) %}
+            <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
+              step="1" min="0" required>
+            {% else %}
+            <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}" step="2"
+              min="0" required>
+            {% end %}
+            {% end %}
+            <button class="btn btn-success" type="submit">Submit</button>
           </form>
         </div>
       </div>
@@ -129,7 +122,8 @@
       dataType: "json",
       url: '/panel/config_json',
       data: form_json,
-      success: function (data) {
+      success: function () {
+        console.log("in reload")
         window.location.reload();
       },
     });
