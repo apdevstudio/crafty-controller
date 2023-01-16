@@ -91,11 +91,11 @@ class ManagementController:
             start_time,
             command,
             name,
-            enabled=True,
-            one_time=False,
-            cron_string="* * * * *",
-            parent=None,
-            delay=0,
+            enabled,
+            one_time,
+            cron_string,
+            parent,
+            delay,
         )
 
     @staticmethod
