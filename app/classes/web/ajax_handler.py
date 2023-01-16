@@ -463,7 +463,6 @@ class AjaxHandler(BaseHandler):
                         item_path = self.helper.wtol_path(item)
                         bu_path = os.path.relpath(item_path, loop_backup_path)
                         bu_path = os.path.join(new_server_obj.path, bu_path)
-                        print(bu_path)
                         excluded_dirs.append(bu_path)
                     self.controller.management.set_backup_config(
                         new_server_id,
@@ -524,7 +523,6 @@ class AjaxHandler(BaseHandler):
                         item_path = self.helper.wtol_path(item)
                         bu_path = os.path.relpath(item_path, loop_backup_path)
                         bu_path = os.path.join(new_server_obj.path, bu_path)
-                        print(bu_path)
                         excluded_dirs.append(bu_path)
                     self.controller.management.set_backup_config(
                         new_server_id,
