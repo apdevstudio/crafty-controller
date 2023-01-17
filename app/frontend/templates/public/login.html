@@ -36,8 +36,9 @@
         <div class="row w-100">
           <div class="col-lg-4 mx-auto">
 
-            <div class="auto-form-wrapper login-modal">
-              <div class="text-center">
+            <div id="login-form-background" class="auto-form-wrapper login-modal">
+              <div id="login_opacity" data-value="{{ data['login_opacity'] }}" hidden></div>
+              <div class="text-center auto-form-logo">
                 <img src="/static/assets/images/logo_long.svg">
               </div>
               <style>
@@ -78,16 +79,16 @@
                     <label class="label">{{ translate('login', 'username', data['lang']) }}</label>
                     <div class="input-group">
                       <input type="text" class="form-control login-text-input login-input"
-                        placeholder="{{ translate('login', 'username', data['lang']) }}" name="username" id="username"
-                        required="true">
+                             placeholder="{{ translate('login', 'username', data['lang']) }}" name="username" id="username"
+                             required="true">
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="label">{{ translate('login', 'password', data['lang']) }}</label>
                     <div class="input-group">
                       <input type="password" class="form-control login-text-input login-input"
-                        placeholder="{{ translate('login', 'password', data['lang']) }}" name="password" id="password"
-                        required="true">
+                             placeholder="{{ translate('login', 'password', data['lang']) }}" name="password" id="password"
+                             required="true">
                     </div>
                   </div>
                   <div class="form-group">
@@ -133,6 +134,13 @@
   <script src="/static/assets/js/shared/settings.js"></script>
   <script src="/static/assets/js/shared/todolist.js"></script>
   <!-- endinject -->
+  <script>
+    $(document).ready(function () {
+      let login_opacity_div = document.getElementById('login_opacity');
+      let opacity = login_opacity_div.getAttribute('data-value');
+      document.getElementById('login-form-background').style.background = 'rgb(34, 36, 55, ' + (opacity / 100) + ')';
+    });
+  </script>
 </body>
 
 </html>

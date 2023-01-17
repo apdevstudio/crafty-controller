@@ -234,6 +234,7 @@
         "loginBackground": "Login Background Image",
         "loginOpacity": "Select the Login Window Opacity",
         "select": "Select",
+        "apply": "Apply",
         "selectImage": "Select an image",
         "preview": "Preview"
     },

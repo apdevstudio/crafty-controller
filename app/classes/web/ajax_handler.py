@@ -356,6 +356,8 @@ class AjaxHandler(BaseHandler):
         elif page == "select_photo":
             if exec_user["superuser"]:
                 photo = self.get_argument("photo", None)
+                opacity = self.get_argument("opacity", 100)
+                self.controller.management.set_login_opacity(int(opacity))
                 if photo == "login_1.jpg":
                     self.controller.management.set_login_image("login_1.jpg")
                     self.controller.cached_login = f"{photo}"
