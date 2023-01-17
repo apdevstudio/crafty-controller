@@ -302,9 +302,12 @@
                                   #login-form-preview {
                                     display: flex;
                                     position: absolute;
+                                    overflow: hidden;
                                     top: 50%;
                                     left: 50%;
-                                    transform: perspective(1px) translateX(-50%) translateY(-50%);
+                                    transform: translateX(-50%) translateY(-50%);
+                                    max-width: 90%;
+                                    max-height: 90%;
                                   }
 
                                   .auto-form-wrapper {
