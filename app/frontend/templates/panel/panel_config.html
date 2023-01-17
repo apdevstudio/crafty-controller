@@ -291,14 +291,22 @@
                               <input type="range" class="form-control-range" id="modal_opacity" name="modal_opacity" onchange="previewOpacity()" min="0" max="100" value="{{ data['login_opacity'] }}">
                             </div>
                           </div>
-                          <div id="login_preview" style="position: static;">
+                          <div id="login_preview" style="position: relative;">
                             <img id="bg-preview" src="../../static/assets/images/auth/{{ data['background'] }}" class="img-fluid" alt="Responsive image">
-                            <div id="login-form-preview" style="position: absolute; top: 10rem; left: 10rem; size-adjust: 10%;">
+                            <div id="login-form-preview">
                               <div id="login-form-background" class="auto-form-wrapper login-modal">
                                 <div class="text-center auto-form-logo">
                                   <img src="/static/assets/images/logo_long.svg">
                                 </div>
                                 <style>
+                                  #login-form-preview {
+                                    display: flex;
+                                    position: absolute;
+                                    top: 50%;
+                                    left: 50%;
+                                    transform: perspective(1px) translateX(-50%) translateY(-50%);
+                                  }
+
                                   .auto-form-wrapper {
                                     background: rgb(34, 36, 55, 1);
                                     padding: 2rem 2rem 0.5rem;
@@ -306,7 +314,6 @@
                                     -webkit-box-shadow: 0 -25px 37.7px 11.3px rgb(8 143 220 / 7%);
                                     box-shadow: 0 -25px 37.7px 11.3px rgb(8 143 220 / 7%);
                                     color: #fff;
-                                    size-adjust: 2%;
                                   }
 
                                   /*.auto-form-logo {
@@ -319,7 +326,7 @@
 
                                   .login-modal {
                                     border-radius: 0.4rem !important;
-                                    box-shadow: 0 1rem 1rem 0 hsla(0, 0%, 0%, 0.2) !important;
+                                    box-shadow: 0 8px 12px 0 hsla(0, 0%, 0%, 0.2) !important;
                                   }
 
                                   .login-text-input {
@@ -335,13 +342,13 @@
 
                                   .login-input {
                                     border-radius: 0.4rem !important;
-                                    box-shadow: 0 8rem 12rem 0 hsla(0, 0%, 0%, 0.2);
+                                    box-shadow: 0 8px 12px 0 hsla(0, 0%, 0%, 0.2);
                                     transition: all 0.3s ease-in-out;
                                   }
 
                                   .login-input:hover,
                                   .login-input:focus {
-                                    box-shadow: 0 12rem 16rem 0 hsla(0, 0%, 0%, 0.4);
+                                    box-shadow: 0 12px 16px 0 hsla(0, 0%, 0%, 0.4);
                                   }
                                 </style>
 
