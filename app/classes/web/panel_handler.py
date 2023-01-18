@@ -902,6 +902,20 @@ class PanelHandler(BaseHandler):
                 with open(self.helper.settings_file, "r", encoding="utf-8") as f:
                     data = json.load(f)
                 page_data["config-json"] = data
+                page_data["availables_languages"] = []
+                page_data["all_languages"] = []
+
+                for file in sorted(
+                    os.listdir(
+                        os.path.join(self.helper.root_dir, "app", "translations")
+                    )
+                ):
+                    if file.endswith(".json"):
+                        if file.split(".")[0] not in self.helper.get_setting(
+                            "disabled_language_files"
+                        ):
+                            page_data["availables_languages"].append(file.split(".")[0])
+                        page_data["all_languages"].append(file.split(".")[0])
 
                 template = "panel/config_json.html"
 
@@ -961,7 +975,9 @@ class PanelHandler(BaseHandler):
                 os.listdir(os.path.join(self.helper.root_dir, "app", "translations"))
             ):
                 if file.endswith(".json"):
-                    if file not in self.helper.get_setting("disabled_language_files"):
+                    if file.split(".")[0] not in self.helper.get_setting(
+                        "disabled_language_files"
+                    ):
                         if file != str(page_data["languages"][0] + ".json"):
                             page_data["languages"].append(file.split(".")[0])
 
@@ -1172,7 +1188,9 @@ class PanelHandler(BaseHandler):
                 os.listdir(os.path.join(self.helper.root_dir, "app", "translations"))
             ):
                 if file.endswith(".json"):
-                    if file not in self.helper.get_setting("disabled_language_files"):
+                    if file.split(".")[0] not in self.helper.get_setting(
+                        "disabled_language_files"
+                    ):
                         if file != str(page_data["languages"][0] + ".json"):
                             page_data["languages"].append(file.split(".")[0])
 
