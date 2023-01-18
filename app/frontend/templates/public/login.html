@@ -23,7 +23,7 @@
 </head>
 <style>
   .auth.auth-bg-1 {
-    background: url("../../static/assets/images/auth/{{data['background']}}"),
+    background: url("../../static/assets/images/auth/{% raw data['background'] %}"),
     url("../../static/assets/images/auth/login-1.jpg");
     background-size: cover;
   }
@@ -79,16 +79,16 @@
                     <label class="label">{{ translate('login', 'username', data['lang']) }}</label>
                     <div class="input-group">
                       <input type="text" class="form-control login-text-input login-input"
-                             placeholder="{{ translate('login', 'username', data['lang']) }}" name="username" id="username"
-                             required="true">
+                        placeholder="{{ translate('login', 'username', data['lang']) }}" name="username" id="username"
+                        required="true">
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="label">{{ translate('login', 'password', data['lang']) }}</label>
                     <div class="input-group">
                       <input type="password" class="form-control login-text-input login-input"
-                             placeholder="{{ translate('login', 'password', data['lang']) }}" name="password" id="password"
-                             required="true">
+                        placeholder="{{ translate('login', 'password', data['lang']) }}" name="password" id="password"
+                        required="true">
                     </div>
                   </div>
                   <div class="form-group">

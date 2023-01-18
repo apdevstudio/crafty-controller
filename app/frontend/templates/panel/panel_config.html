@@ -34,8 +34,8 @@
                     }}</h4>
                   {% if data['user_data']['hints'] %}
                   <span class="too_small" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" ,
-                        data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
-                        data-placement="top"></span>
+                    data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
+                    data-placement="top"></span>
                   {% end %}
                   <!-- TODO: Translate the following -->
                   <div><a class="nav-link" href="/panel/add_user"><i class="fas fa-plus-circle"></i> &nbsp; {{
@@ -134,8 +134,8 @@
                     data['lang']) }}</h4>
                   {% if data['user_data']['hints'] %}
                   <span class="too_small2" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" ,
-                        data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
-                        data-placement="top"></span>
+                    data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
+                    data-placement="top"></span>
                   {% end %}
                   <div><a class="nav-link" href="/panel/add_role"><i class="fas fa-plus-circle"></i> &nbsp; {{
                       translate('panelConfig', 'newRole', data['lang']) }}</a></div>
@@ -244,18 +244,20 @@
                         {% raw xsrf_form_html() %}
                         <input type="hidden" value="import_zip" name="create_type">
                         <div class="col form-group">
-                          <span id="upload_input"><input type="file" class="form-control-file" id="file" name="file" multiple="false" required></span>
+                          <span id="upload_input"><input type="file" class="form-control-file" id="file" name="file"
+                              multiple="false" required></span>
                         </div>
                         <div class="col form-group">
-                          <button type="button" class="btn btn-info" id="upload-button" onclick="sendFile()" disabled>UPLOAD</button>
+                          <button type="button" class="btn btn-info" id="upload-button" onclick="sendFile()"
+                            disabled>UPLOAD</button>
                         </div>
                       </form>
                       <hr>
                       <hr />
                       <h4>{{ translate('panelConfig', 'loginBackground', data['lang']) }}</h4>
                       <form id="try_photo_form">
-                        <select class="form-select form-control form-control-lg select-css" id="try_photo" name="try_photo"
-                                form="try_photo" onchange="updateBackgroundSelect()">
+                        <select class="form-select form-control form-control-lg select-css" id="try_photo"
+                          name="try_photo" form="try_photo" onchange="updateBackgroundSelect()">
                           {% for image in data["backgrounds"] %}
                           <option value="{{image}}">{{image}}</option>
                           {% end %}
@@ -271,8 +273,8 @@
                           <div class="form-group row">
                             <label for="photo" class="col-sm-6 col-form-label">Selected Background Image</label>
                             <div class="col-sm-6">
-                              <select class="form-select form-control form-control-lg select-css form-control-plaintext" id="photo" name="photo"
-                                      form="photo_form" onchange="updateBackgroundPreview()">
+                              <select class="form-select form-control form-control-lg select-css form-control-plaintext"
+                                id="photo" name="photo" form="photo_form" onchange="updateBackgroundPreview()">
                                 {% for image in data["backgrounds"] %}
                                 <option value="{{image}}">{{image}}</option>
                                 {% end %}
@@ -281,18 +283,23 @@
                           </div>
                           <div id="photo_loading" class="form-group" hidden>
                             <div class="progress">
-                              <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div>
+                              <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i
+                                  class="fa-solid fa-spinner"></i></div>
                             </div>
                           </div>
                           <div class="form-group row">
-                            <label class="col-sm-3" for="formControlRange">{{ translate('panelConfig', 'loginOpacity', data['lang']) }}</label>
+                            <label class="col-sm-3" for="formControlRange">{{ translate('panelConfig', 'loginOpacity',
+                              data['lang']) }}</label>
                             <label class="col-sm-1" id="opacityValue">{{ data['login_opacity'] }}%</label>
                             <div class="range col-sm-8">
-                              <input type="range" class="form-control-range" id="modal_opacity" name="modal_opacity" onchange="previewOpacity()" min="0" max="100" value="{{ data['login_opacity'] }}">
+                              <input type="range" class="form-control-range" id="modal_opacity" name="modal_opacity"
+                                onchange="previewOpacity()" min="0" max="100" value="{{ data['login_opacity'] }}">
                             </div>
                           </div>
                           <div id="login_preview" style="position: relative;">
-                            <img id="bg-preview" src="../../static/assets/images/auth/{{ data['background'] }}" class="img-fluid" alt="Responsive image">
+                            <img id="bg-preview" src="../../static/assets/images/auth/{{ data['background'] }}"
+                              class="img-fluid" alt="Responsive image">
                             <div id="login-form-preview">
                               <div id="login-form-background" class="auto-form-wrapper login-modal">
                                 <div class="text-center auto-form-logo">
@@ -356,21 +363,25 @@
                                 </style>
 
                                 <div id="login_form_data">
-                                  <input type="hidden" name="_xsrf" value="2|1d603267|809fb6bd82f677d440e484dde7c3a310|1671726040" disabled>
+                                  <input type="hidden" name="_xsrf"
+                                    value="2|1d603267|809fb6bd82f677d440e484dde7c3a310|1671726040" disabled>
                                   <div class="form-group">
                                     <label class="label">Username</label>
                                     <div class="input-group">
-                                      <input type="text" class="form-control login-text-input login-input" placeholder="Username" name="username" id="username" required="true" disabled>
+                                      <input type="text" class="form-control login-text-input login-input"
+                                        placeholder="Username" name="username" id="username" required="true" disabled>
                                     </div>
                                   </div>
                                   <div class="form-group">
                                     <label class="label">Password</label>
                                     <div class="input-group">
-                                      <input type="password" class="form-control login-text-input login-input" placeholder="Password" name="password" id="password" required="true" disabled>
+                                      <input type="password" class="form-control login-text-input login-input"
+                                        placeholder="Password" name="password" id="password" required="true" disabled>
                                     </div>
                                   </div>
                                   <div class="form-group">
-                                    <button class="login-input btn btn-primary submit-btn btn-block" disabled>Log In</button>
+                                    <button class="login-input btn btn-primary submit-btn btn-block" disabled>Log
+                                      In</button>
                                   </div>
 
                                   <fieldset style="color: red; text-align: center;">
@@ -384,7 +395,8 @@
                                     <a href="#" class="text-small forgot-password" disabled>Forgot Password</a>
                                   </div>
                                   <div class="text-block text-center my-3">
-                                    <span class="text-small font-weight-semibold"><a href="https://craftycontrol.com/">Crafty Control
+                                    <span class="text-small font-weight-semibold"><a
+                                        href="https://craftycontrol.com/">Crafty Control
                                         4.0.20</a> </span>
                                   </div>
                                 </div>
@@ -392,9 +404,11 @@
                             </div>
                           </div>
                           <div class="form-group">
-                            <button class="btn btn-outline-success select-photo" type="button">{{ translate('panelConfig',
+                            <button class="btn btn-outline-success select-photo" type="button">{{
+                              translate('panelConfig',
                               'apply', data['lang']) }}</button>
-                            <button class="btn btn-outline-danger delete-photo" type="button">{{ translate('panelConfig',
+                            <button class="btn btn-outline-danger delete-photo" type="button">{{
+                              translate('panelConfig',
                               'cancel', data['lang']) }}</button>
                           </div>
                         </form>
@@ -508,10 +522,12 @@
     var token = getCookie("_xsrf")
     let photo = $('#photo').find(":selected").val();
     let opacity = $('#modal_opacity').val();
+    let enc_photo = encodeURIComponent(photo);
+
     $.ajax({
       type: "POST",
       headers: { 'X-XSRFToken': token },
-      url: '/ajax/select_photo?photo=' + photo + '&opacity=' + opacity,
+      url: '/ajax/select_photo?photo=' + enc_photo + '&opacity=' + opacity,
       success: function (data) {
         window.location.reload();
       },
