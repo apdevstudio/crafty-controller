@@ -254,17 +254,6 @@
                       </form>
                       <hr>
                       <hr />
-                      <h4>{{ translate('panelConfig', 'loginBackground', data['lang']) }}</h4>
-                      <form id="try_photo_form">
-                        <select class="form-select form-control form-control-lg select-css" id="try_photo"
-                          name="try_photo" form="try_photo" onchange="updateBackgroundSelect()">
-                          {% for image in data["backgrounds"] %}
-                          <option value="{{image}}">{{image}}</option>
-                          {% end %}
-                        </select>
-                        <button class="btn btn-outline-danger delete-photo" type="button">{{ translate('panelConfig',
-                          'delete', data['lang']) }}</button>
-                      </form>
                     </div>
                     <div class="col-lg-6">
                       <div>
@@ -409,7 +398,7 @@
                               'apply', data['lang']) }}</button>
                             <button class="btn btn-outline-danger delete-photo" type="button">{{
                               translate('panelConfig',
-                              'cancel', data['lang']) }}</button>
+                              'delete', data['lang']) }}</button>
                           </div>
                         </form>
                       </div>
@@ -511,7 +500,7 @@
     $.ajax({
       type: "POST",
       headers: { 'X-XSRFToken': token },
-      url: '/ajax/delete_photo?photo=' + photo,
+      url: '/ajax/delete_photo?photo=' + encodeURIComponent(photo),
       success: function (data) {
         location.reload();
       },

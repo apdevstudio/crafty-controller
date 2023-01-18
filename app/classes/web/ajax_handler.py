@@ -368,7 +368,7 @@ class AjaxHandler(BaseHandler):
 
         elif page == "delete_photo":
             if exec_user["superuser"]:
-                photo = self.get_argument("photo", None)
+                photo = urllib.parse.unquote(self.get_argument("photo", None))
                 if photo and photo != "login_1.jpg":
                     os.remove(
                         os.path.join(
