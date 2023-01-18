@@ -69,10 +69,12 @@
                 $(this).removeAttr('selected').prop('selected', false);
             });">Enable all Languages</button>
 
-              <textarea id="disabled_lang" name="{{item[0]}}" class="form-control list hidden" rows="{{ len(data['all_languages']) }}" value="{{','.join(item[1])}}" hidden>{{','.join(item[1])}}</textarea>
+              <textarea id="disabled_lang" name="{{item[0]}}" class="form-control list hidden"
+                rows="{{ len(data['all_languages']) }}" value="{{','.join(item[1])}}"
+                hidden>{{','.join(item[1])}}</textarea>
               {% elif isinstance(item[1], list) %}
               <textarea value="{{','.join(item[1])}}" type="text" name="{{item[0]}}"
-                        class="form-control list">{{','.join(item[1])}}</textarea>
+                class="form-control list">{{','.join(item[1])}}</textarea>
               {% elif isinstance(item[1], bool) %}
               {% if item[1] == True %}
               <div style="margin-left: 30px;">
@@ -91,14 +93,14 @@
               {% end %}
               {% elif isinstance(item[1], int) %}
               <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
-                     step="1" min="0" required>
+                step="1" min="0" required>
               {% else %}
-              <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}" step="2"
-                     min="0" required>
+              <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
+                step="2" min="0" required>
               {% end %}
             </div>
             {% end %}
-            <button class="btn btn-success" type="submit">Submit</button>
+            <button class="btn btn-success" type="submit">Submit</button>&nbsp;<span id="submit-status"></span>
           </form>
         </div>
       </div>
@@ -133,6 +135,7 @@
     var token = getCookie("_xsrf")
     e.preventDefault();
 
+    $("#submit-status").html('<i class="fa fa-spinner fa-spin"></i>');
     /* Convert multiple select to text list */
     let selected_Lang = $('#lang_select').val();
     $('#disabled_lang').val(selected_Lang);
@@ -147,12 +150,11 @@
     $.ajax({
       type: "POST",
       headers: { 'X-XSRFToken': token },
-      dataType: "json",
+      dataType: "text",
       url: '/panel/config_json',
       data: form_json,
-      success: function () {
-        console.log("in reload")
-        window.location.reload();
+      success: function (data) {
+        $("#submit-status").html('<i class="fa fa-check"></i>');
       },
     });
   });
