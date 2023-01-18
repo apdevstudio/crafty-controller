@@ -46,7 +46,7 @@
                 <small class="text-muted ml-1">
                 </small> </label>
               {% if item[0] == 'language' %}
-              <select name="{{item[0]}}" class="custom-select">
+              <select name="{{item[0]}}" class="form-control">
                 {% for lang in data['availables_languages'] %}
                 {% if lang == item[1] %}
                 <option selected>{{lang}}</option>
