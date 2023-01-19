@@ -91,7 +91,7 @@ class TasksManager:
     def command_watcher(self):
         while True:
             # select any commands waiting to be processed
-            if not self.controller.management.command_queue.empty() > 0:
+            if not self.controller.management.command_queue.empty():
                 cmd = self.controller.management.command_queue.get()
                 try:
                     svr = self.controller.servers.get_server_instance_by_id(
