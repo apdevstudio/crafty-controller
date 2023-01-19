@@ -13,7 +13,7 @@ from peewee import (
 from playhouse.shortcuts import model_to_dict
 
 from app.classes.models.base_model import BaseModel
-from app.classes.models.users import Users, HelperUsers
+from app.classes.models.users import HelperUsers
 from app.classes.models.servers import Servers
 from app.classes.models.server_permissions import PermissionsServers
 from app.classes.shared.main_models import DatabaseShortcuts
