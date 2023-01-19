@@ -60,7 +60,7 @@
               </select>
               {% elif item[0] == 'disabled_language_files' %}
               <select id="lang_select" class="selectpicker show-tick" data-icon-base="fas" data-tick-icon="fa-check"
-                multiple>
+                multiple data-style="btn-outline-light">
                 {% for lang in data['all_languages'] %}
                 {% if lang in item[1] %}
                 <option selected>{{lang}}</option>
