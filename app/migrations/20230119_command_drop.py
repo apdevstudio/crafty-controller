@@ -25,7 +25,7 @@ def rollback(migrator, database, **kwargs):
         executed = BooleanField(default=False)
 
         class Meta:
-            table_name = "user_crafty"
+            table_name = "commands"
             database = db
 
     migrator.create_table(Commands)
