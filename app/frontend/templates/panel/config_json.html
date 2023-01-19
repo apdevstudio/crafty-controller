@@ -6,6 +6,9 @@
 {% block title %}Crafty Controller - {{ translate('panelConfig', 'pageTitle', data['lang']) }}{% end %}
 
 {% block content %}
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/css/bootstrap-select.min.css">
+
 
 <div class="content-wrapper">
   {% if data['superuser'] %}
@@ -44,7 +47,7 @@
             <div class="form-group">
               <label class="form" for="{{item[0]}}">{{item[0]}}
                 <small class="text-muted ml-1">
-                </small> </label>
+                </small> </label><br />
               {% if item[0] == 'language' %}
               <select name="{{item[0]}}" class="form-control">
                 {% for lang in data['availables_languages'] %}
@@ -56,7 +59,8 @@
                 {% end %}
               </select>
               {% elif item[0] == 'disabled_language_files' %}
-              <select id="lang_select" class="form-control" size="{{ len(data['all_languages']) }}" multiple>
+              <select id="lang_select" class="selectpicker show-tick" data-icon-base="fas" data-tick-icon="fa-check"
+                multiple>
                 {% for lang in data['all_languages'] %}
                 {% if lang in item[1] %}
                 <option selected>{{lang}}</option>
@@ -66,7 +70,7 @@
                 {% end %}
               </select>
               <button type="button" class="btn btn-outline-primary" onclick="$('option', $('#lang_select')).each(function(element) {
-                $(this).removeAttr('selected').prop('selected', false);
+                $(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')
             });">Enable all Languages</button>
 
               <textarea id="disabled_lang" name="{{item[0]}}" class="form-control list hidden"
@@ -111,6 +115,10 @@
 </div>
 
 <style>
+  .dropdown-menu.inner {
+    display: inline-block !important;
+  }
+
   .popover-body {
     color: white !important;
     ;
@@ -213,8 +221,8 @@
 <script>
 
   $(document).ready(function () {
-    console.log('ready for JS!')
-
+    console.log('ready for JS!');
+    $('.selectpicker').selectpicker("refresh");
   });
 
   $(".show_button").click(function () {
@@ -302,5 +310,6 @@
     xmlHttpRequest.send(file);
   }
 </script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/js/bootstrap-select.min.js">
+</script>
 {% end %}
