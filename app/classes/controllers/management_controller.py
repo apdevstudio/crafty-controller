@@ -30,9 +30,6 @@ class ManagementController:
     # **********************************************************************************
     #                                   Commands Methods
     # **********************************************************************************
-    @staticmethod
-    def get_unactioned_commands():
-        return HelpersManagement.get_unactioned_commands()
 
     def send_command(self, user_id, server_id, remote_ip, command):
         server_name = HelperServers.get_server_friendly_name(server_id)
@@ -50,10 +47,6 @@ class ManagementController:
 
     def queue_command(self, command_data):
         self.command_queue.put(command_data)
-
-    @staticmethod
-    def mark_command_complete(command_id=None):
-        return HelpersManagement.mark_command_complete(command_id)
 
     # **********************************************************************************
     #                                   Audit_Log Methods

@@ -69,22 +69,6 @@ class HostStats(BaseModel):
 
 
 # **********************************************************************************
-#                                   Commands Class
-# **********************************************************************************
-class Commands(BaseModel):
-    command_id = AutoField()
-    created = DateTimeField(default=datetime.datetime.now)
-    server_id = ForeignKeyField(Servers, backref="server", index=True)
-    user = ForeignKeyField(Users, backref="user", index=True)
-    source_ip = CharField(default="127.0.0.1")
-    command = CharField(default="")
-    executed = BooleanField(default=False)
-
-    class Meta:
-        table_name = "commands"
-
-
-# **********************************************************************************
 #                                   Webhooks Class
 # **********************************************************************************
 class Webhooks(BaseModel):
@@ -149,33 +133,6 @@ class HelpersManagement:
         # pylint: disable=no-member
         query = HostStats.select().order_by(HostStats.id.desc()).get()
         return model_to_dict(query)
-
-    # **********************************************************************************
-    #                                   Commands Methods
-    # **********************************************************************************
-    @staticmethod
-    def add_command(server_id, user_id, remote_ip, command):
-        Commands.insert(
-            {
-                Commands.server_id: server_id,
-                Commands.user: user_id,
-                Commands.source_ip: remote_ip,
-                Commands.command: command,
-            }
-        ).execute()
-
-    @staticmethod
-    def get_unactioned_commands():
-        query = Commands.select().where(Commands.executed == 0)
-        return query
-
-    @staticmethod
-    def mark_command_complete(command_id=None):
-        if command_id is not None:
-            logger.debug(f"Marking Command {command_id} completed")
-            Commands.update({Commands.executed: True}).where(
-                Commands.command_id == command_id
-            ).execute()
 
     # **********************************************************************************
     #                                   Audit_Log Methods
