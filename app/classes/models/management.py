@@ -473,9 +473,3 @@ class HelpersManagement:
                 f"Not removing {dir_to_del} from excluded directories - "
                 f"not in the excluded directory list for server ID {server_id}"
             )
-
-    @staticmethod
-    def clear_unexecuted_commands():
-        Commands.update({Commands.executed: True}).where(
-            Commands.executed == False  # pylint: disable=singleton-comparison
-        ).execute()
