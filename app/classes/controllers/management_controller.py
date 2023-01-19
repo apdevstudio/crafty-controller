@@ -1,4 +1,5 @@
 import logging
+import queue
 
 from app.classes.models.management import HelpersManagement
 from app.classes.models.servers import HelperServers
@@ -9,6 +10,7 @@ logger = logging.getLogger(__name__)
 class ManagementController:
     def __init__(self, management_helper):
         self.management_helper = management_helper
+        self.command_queue = queue.Queue()
 
     # **********************************************************************************
     #                                   Host_Stats Methods
@@ -42,7 +44,12 @@ class ManagementController:
             server_id,
             remote_ip,
         )
-        HelpersManagement.add_command(server_id, user_id, remote_ip, command)
+        self.queue_command(
+            {"server_id": server_id, "user_id": user_id, "command": command}
+        )
+
+    def queue_command(self, command_data):
+        self.command_queue.put(command_data)
 
     @staticmethod
     def mark_command_complete(command_id=None):
