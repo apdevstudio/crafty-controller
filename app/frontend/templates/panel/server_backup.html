@@ -108,6 +108,23 @@
                   {% end %}
                 </div>
                 <div class="form-group">
+                  <label for="command-check" class="form-check-label ml-4 mb-4"></label>
+                  {% if data['backup_config']['command'] %}
+                  <input type="checkbox" class="form-check-input" id="command-check" name="command-check" checked>Run
+                  Command Before Backup
+                  <br>
+                  <input type="text" class="form-control" name="backup_command" id="backup_command"
+                    value="{{ data['backup_config']['command'] }}" placeholder="We enter the / for you"
+                    style="display: inline-block;">
+                  {% else %}
+                  <input type="checkbox" class="form-check-input" id="command-check" name="command-check">Run Command
+                  Before Backup
+                  <br>
+                  <input type="text" class="form-control" name="backup_command" id="backup_command" value=""
+                    placeholder="We enter the / for you." style="display: none;">
+                  {% end %}
+                </div>
+                <div class="form-group">
                   <label for="server">{{ translate('serverBackups', 'exclusionsTitle', data['lang']) }} <small> - {{
                       translate('serverBackups', 'excludedChoose', data['lang']) }}</small></label>
                   <br>
@@ -344,6 +361,16 @@
     });
   }
 
+  $("#command-check").on("click", function () {
+    console.log("in command-check")
+    if ($("#command-check:checked").val()) {
+      $("#backup_command").css("display", "inline-block");
+      console.log("in if")
+    } else {
+      $("#backup_command").css("display", "none");
+      $("#backup_command").val("");
+    }
+  });
 
   $(document).ready(function () {
     try {

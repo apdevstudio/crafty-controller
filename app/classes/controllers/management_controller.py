@@ -145,9 +145,16 @@ class ManagementController:
         excluded_dirs: list = None,
         compress: bool = False,
         shutdown: bool = False,
+        command: str = "",
     ):
         return self.management_helper.set_backup_config(
-            server_id, backup_path, max_backups, excluded_dirs, compress, shutdown
+            server_id,
+            backup_path,
+            max_backups,
+            excluded_dirs,
+            compress,
+            shutdown,
+            command,
         )
 
     @staticmethod

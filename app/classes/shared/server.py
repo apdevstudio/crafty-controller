@@ -1024,6 +1024,14 @@ class ServerInstance:
             )
         time.sleep(3)
         conf = HelpersManagement.get_backup_config(self.server_id)
+        if conf["command"]:
+            if self.check_running():
+                logger.debug(
+                    "Found running server and send command option. Sending command"
+                )
+                self.send_command(conf["command"])
+            # pause to let people read message.
+            time.sleep(5)
         if conf["shutdown"]:
             logger.info(
                 "Found shutdown preference. Delaying"
