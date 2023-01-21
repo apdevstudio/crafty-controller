@@ -1024,12 +1024,12 @@ class ServerInstance:
             )
         time.sleep(3)
         conf = HelpersManagement.get_backup_config(self.server_id)
-        if conf["command"]:
+        if conf["before"]:
             if self.check_running():
                 logger.debug(
                     "Found running server and send command option. Sending command"
                 )
-                self.send_command(conf["command"])
+                self.send_command(conf["before"])
             # pause to let people read message.
             time.sleep(5)
         if conf["shutdown"]:
@@ -1113,6 +1113,14 @@ class ServerInstance:
                 self.run_threaded_server(HelperUsers.get_user_id_by_name("system"))
             time.sleep(3)
             self.last_backup_failed = False
+            if conf["after"]:
+                if self.check_running():
+                    logger.debug(
+                        "Found running server and send command option. Sending command"
+                    )
+                    self.send_command(conf["after"])
+            # pause to let people read message.
+            time.sleep(5)
         except:
             logger.exception(
                 f"Failed to create backup of server {self.name} (ID {self.server_id})"

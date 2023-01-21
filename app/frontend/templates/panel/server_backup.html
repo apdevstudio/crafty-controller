@@ -109,18 +109,35 @@
                 </div>
                 <div class="form-group">
                   <label for="command-check" class="form-check-label ml-4 mb-4"></label>
-                  {% if data['backup_config']['command'] %}
-                  <input type="checkbox" class="form-check-input" id="command-check" name="command-check" checked>Run
+                  {% if data['backup_config']['before'] %}
+                  <input type="checkbox" class="form-check-input" id="before-check" name="before-check" checked>Run
                   Command Before Backup
                   <br>
-                  <input type="text" class="form-control" name="backup_command" id="backup_command"
-                    value="{{ data['backup_config']['command'] }}" placeholder="We enter the / for you"
+                  <input type="text" class="form-control" name="backup_before" id="backup_before"
+                    value="{{ data['backup_config']['before'] }}" placeholder="We enter the / for you"
                     style="display: inline-block;">
                   {% else %}
-                  <input type="checkbox" class="form-check-input" id="command-check" name="command-check">Run Command
+                  <input type="checkbox" class="form-check-input" id="before-check" name="before-check">Run Command
                   Before Backup
                   <br>
-                  <input type="text" class="form-control" name="backup_command" id="backup_command" value=""
+                  <input type="text" class="form-control" name="backup_before" id="backup_before" value=""
+                    placeholder="We enter the / for you." style="display: none;">
+                  {% end %}
+                </div>
+                <div class="form-group">
+                  <label for="command-check" class="form-check-label ml-4 mb-4"></label>
+                  {% if data['backup_config']['after'] %}
+                  <input type="checkbox" class="form-check-input" id="after-check" name="after-check" checked>Run
+                  Command After Backup
+                  <br>
+                  <input type="text" class="form-control" name="backup_after" id="backup_after"
+                    value="{{ data['backup_config']['after'] }}" placeholder="We enter the / for you"
+                    style="display: inline-block;">
+                  {% else %}
+                  <input type="checkbox" class="form-check-input" id="after-check" name="after-check">Run Command
+                  Before Backup
+                  <br>
+                  <input type="text" class="form-control" name="backup_after" id="backup_after" value=""
                     placeholder="We enter the / for you." style="display: none;">
                   {% end %}
                 </div>
@@ -361,14 +378,20 @@
     });
   }
 
-  $("#command-check").on("click", function () {
-    console.log("in command-check")
-    if ($("#command-check:checked").val()) {
-      $("#backup_command").css("display", "inline-block");
-      console.log("in if")
+  $("#before-check").on("click", function () {
+    if ($("#before-check:checked").val()) {
+      $("#backup_before").css("display", "inline-block");
     } else {
-      $("#backup_command").css("display", "none");
-      $("#backup_command").val("");
+      $("#backup_before").css("display", "none");
+      $("#backup_before").val("");
+    }
+  });
+  $("#after-check").on("click", function () {
+    if ($("#after-check:checked").val()) {
+      $("#backup_after").css("display", "inline-block");
+    } else {
+      $("#backup_after").css("display", "none");
+      $("#backup_after").val("");
     }
   });
 
