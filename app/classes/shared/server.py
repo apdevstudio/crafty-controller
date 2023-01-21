@@ -1030,9 +1030,11 @@ class ServerInstance:
                     "Found running server and send command option. Sending command"
                 )
                 self.send_command(conf["before"])
-            # pause to let people read message.
-            time.sleep(5)
+
         if conf["shutdown"]:
+            if conf["before"]:
+                # pause to let people read message.
+                time.sleep(5)
             logger.info(
                 "Found shutdown preference. Delaying"
                 + "backup start. Shutting down server."
