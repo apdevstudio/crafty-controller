@@ -7,7 +7,7 @@
 
 {% block content %}
 <link rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/css/bootstrap-select.min.css">
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/css/bootstrap-select.min.css">
 
 
 <div class="content-wrapper">
@@ -59,26 +59,27 @@
                 {% end %}
               </select>
               {% elif item[0] == 'disabled_language_files' %}
-              <select id="lang_select" class="selectpicker show-tick" data-icon-base="fas" data-tick-icon="fa-check"
-                multiple data-style="btn-outline-light">
-                {% for lang in data['all_languages'] %}
-                {% if lang in item[1] %}
-                <option selected>{{lang}}</option>
-                {% else %}
-                <option>{{lang}}</option>
-                {% end %}
-                {% end %}
-              </select>
-              <button type="button" class="btn btn-outline-primary" onclick="$('option', $('#lang_select')).each(function(element) {
+              <div class="input-group">
+                <button type="button" class="btn btn-outline-default custom-picker" onclick="$('option', $('#lang_select')).each(function(element) {
                 $(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')
             });">Enable all Languages</button>
-
-              <textarea id="disabled_lang" name="{{item[0]}}" class="form-control list hidden"
-                rows="{{ len(data['all_languages']) }}" value="{{','.join(item[1])}}"
-                hidden>{{','.join(item[1])}}</textarea>
+                <select id="lang_select" class="form-control selectpicker show-tick" data-icon-base="fas" data-tick-icon="fa-check"
+                        multiple data-style="custom-picker">
+                  {% for lang in data['all_languages'] %}
+                  {% if lang in item[1] %}
+                  <option selected>{{lang}}</option>
+                  {% else %}
+                  <option>{{lang}}</option>
+                  {% end %}
+                  {% end %}
+                </select>
+                <textarea id="disabled_lang" name="{{item[0]}}" class="form-control list hidden"
+                          rows="{{ len(data['all_languages']) }}" value="{{','.join(item[1])}}"
+                          hidden>{{','.join(item[1])}}</textarea>
+              </div>
               {% elif isinstance(item[1], list) %}
               <textarea value="{{','.join(item[1])}}" type="text" name="{{item[0]}}"
-                class="form-control list">{{','.join(item[1])}}</textarea>
+                        class="form-control list">{{','.join(item[1])}}</textarea>
               {% elif isinstance(item[1], bool) %}
               {% if item[1] == True %}
               <div style="margin-left: 30px;">
@@ -97,10 +98,10 @@
               {% end %}
               {% elif isinstance(item[1], int) %}
               <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
-                step="1" min="0" required>
+                     step="1" min="0" required>
               {% else %}
               <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
-                step="2" min="0" required>
+                     step="2" min="0" required>
               {% end %}
             </div>
             {% end %}
@@ -115,6 +116,10 @@
 </div>
 
 <style>
+  .custom-picker {
+    border: 1px solid var(--outline);
+  }
+
   .dropdown-menu.inner {
     display: inline-block !important;
   }
