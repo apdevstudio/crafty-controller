@@ -895,6 +895,7 @@ class PanelHandler(BaseHandler):
                     exec_user["user_id"]
                 )
 
+            page_data["active_link"] = "panel_config"
             template = "panel/panel_config.html"
 
         elif page == "config_json":
@@ -917,6 +918,7 @@ class PanelHandler(BaseHandler):
                             page_data["availables_languages"].append(file.split(".")[0])
                         page_data["all_languages"].append(file.split(".")[0])
 
+                page_data["active_link"] = "config_json"
                 template = "panel/config_json.html"
 
         elif page == "add_user":

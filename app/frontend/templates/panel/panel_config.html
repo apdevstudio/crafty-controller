@@ -8,28 +8,16 @@
 {% block content %}
 
 <div class="content-wrapper">
-  {% if data['superuser'] %}
-  <ul class="nav nav-tabs col-md-12 tab-simple-styled " role="tablist">
-    <li class="nav-item term-nav-item">
-      <a class="nav-link active" href="/panel/panel_config" role="tab" aria-selected="false">
-        <i class="fas fa-file-signature"></i>Panel Config</a>
-    </li>
-    <li class="nav-item term-nav-item">
-      <a class="nav-link" href="/panel/config_json" role="tab" aria-selected="false">
-        <i class="fas fa-file-signature"></i>Config.json</a>
-    </li>
-  </ul>
-  {% end %}
-
   <!-- Page Title Header Starts-->
   <div class="row page-title-header">
     <div class="col-12">
       <div class="page-header">
-        <!-- TODO: Translate the following -->
-        <h4 class="page-title">{{ translate('panelConfig', 'pageTitle', data['lang']) }}</h4>
+        <h4 class="page-title">
+          {{ translate('panelConfig', 'title', data['lang']) }}
+          <br />
+        </h4>
       </div>
     </div>
-
   </div>
   <!-- Page Title Header Ends-->
 
@@ -38,6 +26,23 @@
       <div class="card">
         <div class="card-body">
 
+
+          {% if data['superuser'] %}
+          {% include "parts/crafty_config_list.html %}
+          {% end %}
+
+          <!-- Page Title Header Starts-->
+          <div class="row page-title-header">
+            <div class="col-12">
+              <div class="page-header">
+                <!-- TODO: Translate the following -->
+                <h4 class="page-title">{{ translate('panelConfig', 'pageTitle', data['lang']) }}</h4>
+              </div>
+            </div>
+
+          </div>
+          <!-- Page Title Header Ends-->
+
           <div class="row">
             <div class="col-md-12 col-lg-12 grid-margin stretch-card">
               <div class="card">
@@ -45,9 +50,7 @@
                   <h4 class="card-title"><i class="fas fa-users"></i> {{ translate('panelConfig', 'users', data['lang'])
                     }}</h4>
                   {% if data['user_data']['hints'] %}
-                  <span class="too_small" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" ,
-                    data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
-                    data-placement="top"></span>
+                  <span class="too_small" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" , data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" , data-placement="top"></span>
                   {% end %}
                   <!-- TODO: Translate the following -->
                   <div><a class="nav-link" href="/panel/add_user"><i class="fas fa-plus-circle"></i> &nbsp; {{
@@ -145,9 +148,7 @@
                   <h4 class="card-title"><i class="fas fa-user-tag"></i> {{ translate('panelConfig', 'roles',
                     data['lang']) }}</h4>
                   {% if data['user_data']['hints'] %}
-                  <span class="too_small2" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" ,
-                    data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
-                    data-placement="top"></span>
+                  <span class="too_small2" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" , data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" , data-placement="top"></span>
                   {% end %}
                   <div><a class="nav-link" href="/panel/add_role"><i class="fas fa-plus-circle"></i> &nbsp; {{
                       translate('panelConfig', 'newRole', data['lang']) }}</a></div>
@@ -262,10 +263,8 @@
                             <label for="server">{{ translate('panelConfig', 'backgroundUpload', data['lang'])
                               }}</label><br>
                             <span id="upload_input">
-                              <input type="file" multiple="false" class="form-control" id="file" name="file" required
-                                style="width: 70%;">
-                              <button type="button" class="btn btn-info" id="upload-button" onclick="sendFile()"
-                                disabled>UPLOAD</button>
+                              <input type="file" multiple="false" class="form-control" id="file" name="file" required style="width: 70%;">
+                              <button type="button" class="btn btn-info" id="upload-button" onclick="sendFile()" disabled>UPLOAD</button>
                             </span>
                           </div>
                         </div>
@@ -281,8 +280,7 @@
                 <div class="card-body">
                   <h4>{{ translate('panelConfig', 'loginBackground', data['lang']) }}</h4><br /><br><br />
                   <form id="photo_form">
-                    <select class="form-select form-control form-control-lg select-css" id="photo" name="photo"
-                      form="photo_form">
+                    <select class="form-select form-control form-control-lg select-css" id="photo" name="photo" form="photo_form">
                       {% for image in data["backgrounds"] %}
                       <option value="{{image}}">{{image}}</option>
                       {% end %}
@@ -290,8 +288,7 @@
                     <div>
                       <br>
                       <h6>{{ translate('panelConfig', 'preview', data['lang']) }}:</h6>
-                      <img style="width: 200px; height: 113px;"
-                        src="../../static/assets/images/auth/{{ data['background'] }}">
+                      <img style="width: 200px; height: 113px;" src="../../static/assets/images/auth/{{ data['background'] }}">
                     </div>
                     <br />
                     <br />

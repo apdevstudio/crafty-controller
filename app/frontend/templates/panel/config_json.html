@@ -6,33 +6,20 @@
 {% block title %}Crafty Controller - {{ translate('panelConfig', 'pageTitle', data['lang']) }}{% end %}
 
 {% block content %}
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/css/bootstrap-select.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/css/bootstrap-select.min.css">
 
 
 <div class="content-wrapper">
-  {% if data['superuser'] %}
-  <ul class="nav nav-tabs col-md-12 tab-simple-styled " role="tablist">
-    <li class="nav-item term-nav-item">
-      <a class="nav-link" href="/panel/panel_config" role="tab" aria-selected="false">
-        <i class="fas fa-file-signature"></i>Panel Config</a>
-    </li>
-    <li class="nav-item term-nav-item">
-      <a class="nav-link active" href="/panel/config_json" role="tab" aria-selected="false">
-        <i class="fas fa-file-signature"></i>Config.json</a>
-    </li>
-  </ul>
-  {% end %}
-
   <!-- Page Title Header Starts-->
   <div class="row page-title-header">
     <div class="col-12">
       <div class="page-header">
-        <!-- TODO: Translate the following -->
-        <h4 class="page-title">Config.json</h4>
+        <h4 class="page-title">
+          {{ translate('panelConfig', 'title', data['lang']) }}
+          <br />
+        </h4>
       </div>
     </div>
-
   </div>
   <!-- Page Title Header Ends-->
 
@@ -40,6 +27,23 @@
     <div class="col-md-12 grid-margin">
       <div class="card">
         <div class="card-body">
+
+          {% if data['superuser'] %}
+          {% include "parts/crafty_config_list.html %}
+          {% end %}
+
+          <!-- Page Title Header Starts-->
+          <div class="row page-title-header">
+            <div class="col-12">
+              <div class="page-header">
+                <!-- TODO: Translate the following -->
+                <h4 class="page-title">Config.json</h4>
+              </div>
+            </div>
+
+          </div>
+          <!-- Page Title Header Ends-->
+
           <form id="config-form" class="forms-sample" method="post" action="/panel/config_json">
             {% raw xsrf_form_html() %}
 
@@ -63,8 +67,7 @@
                 <button type="button" class="btn btn-outline-default custom-picker" onclick="$('option', $('#lang_select')).each(function(element) {
                 $(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')
             });">Enable all Languages</button>
-                <select id="lang_select" class="form-control selectpicker show-tick" data-icon-base="fas" data-tick-icon="fa-check"
-                        multiple data-style="custom-picker">
+                <select id="lang_select" class="form-control selectpicker show-tick" data-icon-base="fas" data-tick-icon="fa-check" multiple data-style="custom-picker">
                   {% for lang in data['all_languages'] %}
                   {% if lang in item[1] %}
                   <option selected>{{lang}}</option>
@@ -73,13 +76,10 @@
                   {% end %}
                   {% end %}
                 </select>
-                <textarea id="disabled_lang" name="{{item[0]}}" class="form-control list hidden"
-                          rows="{{ len(data['all_languages']) }}" value="{{','.join(item[1])}}"
-                          hidden>{{','.join(item[1])}}</textarea>
+                <textarea id="disabled_lang" name="{{item[0]}}" class="form-control list hidden" rows="{{ len(data['all_languages']) }}" value="{{','.join(item[1])}}" hidden>{{','.join(item[1])}}</textarea>
               </div>
               {% elif isinstance(item[1], list) %}
-              <textarea value="{{','.join(item[1])}}" type="text" name="{{item[0]}}"
-                        class="form-control list">{{','.join(item[1])}}</textarea>
+              <textarea value="{{','.join(item[1])}}" type="text" name="{{item[0]}}" class="form-control list">{{','.join(item[1])}}</textarea>
               {% elif isinstance(item[1], bool) %}
               {% if item[1] == True %}
               <div style="margin-left: 30px;">
@@ -97,11 +97,9 @@
               </div>
               {% end %}
               {% elif isinstance(item[1], int) %}
-              <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
-                     step="1" min="0" required>
+              <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}" step="1" min="0" required>
               {% else %}
-              <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
-                     step="2" min="0" required>
+              <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}" step="2" min="0" required>
               {% end %}
             </div>
             {% end %}

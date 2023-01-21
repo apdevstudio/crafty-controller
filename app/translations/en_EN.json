@@ -233,7 +233,8 @@
         "loginBackground": "Login Background Image",
         "select": "Select",
         "selectImage": "Select an image",
-        "preview": "Preview"
+        "preview": "Preview",
+        "title": "Crafty Configuration"
     },
     "rolesConfig": {
         "config": "Role Config",
