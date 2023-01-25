@@ -175,7 +175,6 @@ class ServerInstance:
         self.name = server_name
         self.settings = server_data_obj
 
-        self.stats_helper.init_database(server_id)
         self.record_server_stats()
 
         # build our server run command
