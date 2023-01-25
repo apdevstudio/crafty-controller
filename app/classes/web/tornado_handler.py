@@ -147,7 +147,6 @@ class Webserver:
         }
         handlers = [
             (r"/", DefaultHandler, handler_args),
-            (r"/public/(.*)", PublicHandler, handler_args),
             (r"/panel/(.*)", PanelHandler, handler_args),
             (r"/server/(.*)", ServerHandler, handler_args),
             (r"/ajax/(.*)", AjaxHandler, handler_args),
@@ -168,6 +167,8 @@ class Webserver:
             (r"/api/v1/users/delete_user", DeleteUser, handler_args),
             # API Routes V2
             *api_handlers(handler_args),
+            # Using this one at the end to catch all the other requests to Public Handler
+            (r"/(.*)", PublicHandler, handler_args),
         ]
 
         app = tornado.web.Application(
@@ -179,21 +180,14 @@ class Webserver:
             xsrf_cookies=True,
             autoreload=False,
             log_function=self.log_function,
-            login_url="/public/login",
+            login_url="/login",
             default_handler_class=PublicHandler,
             static_handler_class=CustomStaticHandler,
             serve_traceback=debug_errors,
         )
         http_handers = [
             (r"/", HTTPHandler, handler_args),
-            (r"/public/(.*)", HTTPHandlerPage, handler_args),
-            (r"/panel/(.*)", HTTPHandlerPage, handler_args),
-            (r"/server/(.*)", HTTPHandlerPage, handler_args),
-            (r"/ajax/(.*)", HTTPHandlerPage, handler_args),
-            (r"/api/stats/servers", HTTPHandlerPage, handler_args),
-            (r"/api/stats/node", HTTPHandlerPage, handler_args),
-            (r"/ws", HTTPHandlerPage, handler_args),
-            (r"/upload", HTTPHandlerPage, handler_args),
+            (r"/(.+)", HTTPHandlerPage, handler_args),
         ]
         http_app = tornado.web.Application(
             http_handers,
@@ -205,7 +199,7 @@ class Webserver:
             autoreload=False,
             log_function=self.log_function,
             default_handler_class=HTTPHandler,
-            login_url="/public/login",
+            login_url="/login",
             serve_traceback=debug_errors,
         )
 

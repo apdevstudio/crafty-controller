@@ -61,15 +61,15 @@ class PublicHandler(BaseHandler):
             self.clear_cookie("token")
             # self.clear_cookie("user")
             # self.clear_cookie("user_data")
-            self.redirect("/public/login")
+            self.redirect("/login")
             return
 
         # if we have no page, let's go to login
         else:
             if self.request.query:
-                self.redirect("/public/login?" + self.request.query)
+                self.redirect("/login?" + self.request.query)
             else:
-                self.redirect("/public/login")
+                self.redirect("/login")
             return
 
         self.render(
@@ -96,9 +96,9 @@ class PublicHandler(BaseHandler):
 
         if page == "login":
 
-            next_page = "/public/login"
+            next_page = "/login"
             if self.request.query:
-                next_page = "/public/login?" + self.request.query
+                next_page = "/login?" + self.request.query
 
             entered_username = bleach.clean(self.get_argument("username"))
             entered_password = bleach.clean(self.get_argument("password"))
@@ -113,11 +113,9 @@ class PublicHandler(BaseHandler):
                 # self.clear_cookie("user_data")
                 self.clear_cookie("token")
                 if self.request.query:
-                    self.redirect(
-                        f"/public/login?error_msg={error_msg}&{self.request.query}"
-                    )
+                    self.redirect(f"/login?error_msg={error_msg}&{self.request.query}")
                 else:
-                    self.redirect(f"/public/login?error_msg={error_msg}")
+                    self.redirect(f"/login?error_msg={error_msg}")
                 return
 
             # if we don't have a user
@@ -127,11 +125,9 @@ class PublicHandler(BaseHandler):
                 # self.clear_cookie("user_data")
                 self.clear_cookie("token")
                 if self.request.query:
-                    self.redirect(
-                        f"/public/login?error_msg={error_msg}&{self.request.query}"
-                    )
+                    self.redirect(f"/login?error_msg={error_msg}&{self.request.query}")
                 else:
-                    self.redirect(f"/public/login?error_msg={error_msg}")
+                    self.redirect(f"/login?error_msg={error_msg}")
                 return
 
             # if they are disabled
@@ -144,11 +140,9 @@ class PublicHandler(BaseHandler):
                 # self.clear_cookie("user_data")
                 self.clear_cookie("token")
                 if self.request.query:
-                    self.redirect(
-                        f"/public/login?error_msg={error_msg}&{self.request.query}"
-                    )
+                    self.redirect(f"/login?error_msg={error_msg}&{self.request.query}")
                 else:
-                    self.redirect(f"/public/login?error_msg={error_msg}")
+                    self.redirect(f"/login?error_msg={error_msg}")
                 return
 
             login_result = self.helper.verify_pass(entered_password, user_data.password)
@@ -187,13 +181,11 @@ class PublicHandler(BaseHandler):
                     user_data.user_id, "Tried to log in", 0, self.get_remote_ip()
                 )
                 if self.request.query:
-                    self.redirect(
-                        f"/public/login?error_msg={error_msg}&{self.request.query}"
-                    )
+                    self.redirect(f"/login?error_msg={error_msg}&{self.request.query}")
                 else:
-                    self.redirect(f"/public/login?error_msg={error_msg}")
+                    self.redirect(f"/login?error_msg={error_msg}")
         else:
             if self.request.query:
-                self.redirect("/public/login?" + self.request.query)
+                self.redirect("/login?" + self.request.query)
             else:
-                self.redirect("/public/login")
+                self.redirect("/login")
