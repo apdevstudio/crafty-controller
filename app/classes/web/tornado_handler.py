@@ -167,7 +167,8 @@ class Webserver:
             (r"/api/v1/users/delete_user", DeleteUser, handler_args),
             # API Routes V2
             *api_handlers(handler_args),
-            # Using this one at the end to catch all the other requests to Public Handler
+            # Using this one at the end
+            # to catch all the other requests to Public Handler
             (r"/(.*)", PublicHandler, handler_args),
         ]
 
