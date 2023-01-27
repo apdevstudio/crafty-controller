@@ -5,6 +5,7 @@
 ### Bug fixes
 - Fix local java server imports. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/529))
 - Fix Schedule Restore | Add Backup Config Preservation. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/533))
+- Rework `/public` Route. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/538))
 ### Tweaks
 - Added further login screen customisation settings. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/531))
 - Set backup filename to use same time as schedule. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/534))

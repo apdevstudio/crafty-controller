@@ -71,25 +71,25 @@
                 }
               </style>
               {% if data['query'] %}
-              <form action="/public/login?{{ data['query'] }}" method="post">
+              <form action="/login?{{ data['query'] }}" method="post">
                 {% else %}
-                <form action="/public/login" method="post">
+                <form action="/login" method="post">
                   {% end %}
                   {% raw xsrf_form_html() %}
                   <div class="form-group">
                     <label class="label">{{ translate('login', 'username', data['lang']) }}</label>
                     <div class="input-group">
                       <input type="text" class="form-control login-text-input login-input"
-                        placeholder="{{ translate('login', 'username', data['lang']) }}" name="username" id="username"
-                        required="true">
+                             placeholder="{{ translate('login', 'username', data['lang']) }}" name="username" id="username"
+                             required="true">
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="label">{{ translate('login', 'password', data['lang']) }}</label>
                     <div class="input-group">
                       <input type="password" class="form-control login-text-input login-input"
-                        placeholder="{{ translate('login', 'password', data['lang']) }}" name="password" id="password"
-                        required="true">
+                             placeholder="{{ translate('login', 'password', data['lang']) }}" name="password" id="password"
+                             required="true">
                     </div>
                   </div>
                   <div class="form-group">
