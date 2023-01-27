@@ -116,6 +116,8 @@ class Backups(BaseModel):
     server_id = ForeignKeyField(Servers, backref="backups_server")
     compress = BooleanField(default=False)
     shutdown = BooleanField(default=False)
+    before = CharField(default="")
+    after = CharField(default="")
 
     class Meta:
         table_name = "backups"
@@ -343,6 +345,8 @@ class HelpersManagement:
                 "server_id": row.server_id_id,
                 "compress": row.compress,
                 "shutdown": row.shutdown,
+                "before": row.before,
+                "after": row.after,
             }
         except IndexError:
             conf = {
@@ -352,6 +356,8 @@ class HelpersManagement:
                 "server_id": server_id,
                 "compress": False,
                 "shutdown": False,
+                "before": "",
+                "after": "",
             }
         return conf
 
@@ -367,6 +373,8 @@ class HelpersManagement:
         excluded_dirs: list = None,
         compress: bool = False,
         shutdown: bool = False,
+        before: str = "",
+        after: str = "",
     ):
         logger.debug(f"Updating server {server_id} backup config with {locals()}")
         if Backups.select().where(Backups.server_id == server_id).exists():
@@ -379,6 +387,8 @@ class HelpersManagement:
                 "server_id": server_id,
                 "compress": False,
                 "shutdown": False,
+                "before": "",
+                "after": "",
             }
             new_row = True
         if max_backups is not None:
@@ -388,6 +398,8 @@ class HelpersManagement:
             conf["excluded_dirs"] = dirs_to_exclude
         conf["compress"] = compress
         conf["shutdown"] = shutdown
+        conf["before"] = before
+        conf["after"] = after
         if not new_row:
             with self.database.atomic():
                 if backup_path is not None:

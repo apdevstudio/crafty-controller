@@ -1682,6 +1682,8 @@ class PanelHandler(BaseHandler):
             compress = self.get_argument("compress", False)
             shutdown = self.get_argument("shutdown", False)
             check_changed = self.get_argument("changed")
+            before = self.get_argument("backup_before", "")
+            after = self.get_argument("backup_after", "")
             if str(check_changed) == str(1):
                 checked = self.get_body_arguments("root_path")
             else:
@@ -1705,6 +1707,8 @@ class PanelHandler(BaseHandler):
                 excluded_dirs=checked,
                 compress=bool(compress),
                 shutdown=bool(shutdown),
+                before=before,
+                after=after,
             )
 
             self.controller.management.add_to_audit_log(

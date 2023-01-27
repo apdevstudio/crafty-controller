@@ -1,7 +1,7 @@
 # Changelog
 ## --- [4.0.20] - 2022/TBD
 ### New features
-TBD
+- Add option to run command before backup. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/536))
 ### Bug fixes
 - Fix local java server imports. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/529))
 - Fix Schedule Restore | Add Backup Config Preservation. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/533))
