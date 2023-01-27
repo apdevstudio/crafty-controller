@@ -78,6 +78,7 @@ class Helpers:
         self.websocket_helper = WebSocketHelper(self)
         self.translation = Translation(self)
         self.update_available = False
+        self.ignored_names = ["crafty_managed.txt", "db_stats"]
 
     @staticmethod
     def auto_installer_fix(ex):
@@ -947,8 +948,7 @@ class Helpers:
 
         return data
 
-    @staticmethod
-    def generate_tree(folder, output=""):
+    def generate_tree(self, folder, output=""):
         dir_list = []
         unsorted_files = []
         file_list = os.listdir(folder)
@@ -960,13 +960,12 @@ class Helpers:
         file_list = sorted(dir_list, key=str.casefold) + sorted(
             unsorted_files, key=str.casefold
         )
-        ignored_names = ["crafty_managed.txt", "db_stats"]
         for raw_filename in file_list:
             filename = html.escape(raw_filename)
             rel = os.path.join(folder, raw_filename)
             dpath = os.path.join(folder, filename)
             if os.path.isdir(rel):
-                if filename not in ignored_names:
+                if filename not in self.ignored_names:
                     output += f"""<li class="tree-item" data-path="{dpath}">
                         \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" class="tree-caret tree-ctx-item tree-folder">
                         <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" data-name="{filename}" onclick="getDirView(event)">
@@ -977,7 +976,7 @@ class Helpers:
                         </div><li>
                         \n"""
             else:
-                if filename not in ignored_names:
+                if filename not in self.ignored_names:
                     output += f"""<li
                     class="d-block tree-ctx-item tree-file tree-item"
                     data-path="{dpath}"
@@ -986,8 +985,7 @@ class Helpers:
                     <i class="far fa-file"></i></span>{filename}</li>"""
         return output
 
-    @staticmethod
-    def generate_dir(folder, output=""):
+    def generate_dir(self, folder, output=""):
 
         dir_list = []
         unsorted_files = []
@@ -1000,14 +998,13 @@ class Helpers:
         file_list = sorted(dir_list, key=str.casefold) + sorted(
             unsorted_files, key=str.casefold
         )
-        ignored_names = ["crafty_managed.txt", "db_stats"]
         output += f"""<ul class="tree-nested d-block" id="{folder}ul">"""
         for raw_filename in file_list:
             filename = html.escape(raw_filename)
             dpath = os.path.join(folder, filename)
             rel = os.path.join(folder, raw_filename)
             if os.path.isdir(rel):
-                if filename not in ignored_names:
+                if filename not in self.ignored_names:
                     output += f"""<li class="tree-item" data-path="{dpath}">
                         \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" class="tree-caret tree-ctx-item tree-folder">
                         <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" data-name="{filename}" onclick="getDirView(event)">
@@ -1017,7 +1014,7 @@ class Helpers:
                         </span>
                         </div><li>"""
             else:
-                if filename not in ignored_names:
+                if filename not in self.ignored_names:
                     output += f"""<li
                     class="d-block tree-ctx-item tree-file tree-item"
                     data-path="{dpath}"
