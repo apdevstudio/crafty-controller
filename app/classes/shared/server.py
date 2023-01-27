@@ -131,13 +131,13 @@ class ServerInstance:
         self.stats_helper = HelperServerStats(self.server_id)
         self.last_backup_failed = False
         try:
-            tz = get_localzone()
+            self.tz = get_localzone()
         except ZoneInfoNotFoundError:
             logger.error(
                 "Could not capture time zone from system. Falling back to Europe/London"
             )
-            tz = "Europe/London"
-        self.server_scheduler = BackgroundScheduler(timezone=str(tz))
+            self.tz = "Europe/London"
+        self.server_scheduler = BackgroundScheduler(timezone=str(self.tz))
         self.server_scheduler.start()
         self.backup_thread = threading.Thread(
             target=self.a_backup_server, daemon=True, name=f"backup_{self.name}"
@@ -1037,7 +1037,7 @@ class ServerInstance:
         try:
             backup_filename = (
                 f"{self.settings['backup_path']}/"
-                f"{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
+                f"{datetime.datetime.now().astimezone(self.tz).strftime('%Y-%m-%d_%H-%M-%S')}"  # pylint: disable=line-too-long
             )
             logger.info(
                 f"Creating backup of server '{self.settings['server_name']}'"
