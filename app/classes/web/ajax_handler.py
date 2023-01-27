@@ -355,7 +355,9 @@ class AjaxHandler(BaseHandler):
 
         elif page == "select_photo":
             if exec_user["superuser"]:
-                photo = self.get_argument("photo", None)
+                photo = urllib.parse.unquote(self.get_argument("photo", ""))
+                opacity = self.get_argument("opacity", 100)
+                self.controller.management.set_login_opacity(int(opacity))
                 if photo == "login_1.jpg":
                     self.controller.management.set_login_image("login_1.jpg")
                     self.controller.cached_login = f"{photo}"
@@ -366,7 +368,7 @@ class AjaxHandler(BaseHandler):
 
         elif page == "delete_photo":
             if exec_user["superuser"]:
-                photo = self.get_argument("photo", None)
+                photo = urllib.parse.unquote(self.get_argument("photo", None))
                 if photo and photo != "login_1.jpg":
                     os.remove(
                         os.path.join(

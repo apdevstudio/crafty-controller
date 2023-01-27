@@ -44,6 +44,7 @@ class AuditLog(BaseModel):
 class CraftySettings(BaseModel):
     secret_api_key = CharField(default="")
     login_photo = CharField(default="login_1.jpg")
+    login_opacity = IntegerField(default=100)
 
     class Meta:
         table_name = "crafty_settings"
@@ -255,6 +256,9 @@ class HelpersManagement:
         )
         return settings[0].secret_api_key
 
+    # **********************************************************************************
+    #                                  Config Methods
+    # **********************************************************************************
     @staticmethod
     def get_login_image():
         settings = CraftySettings.select(CraftySettings.login_photo).where(
@@ -265,6 +269,19 @@ class HelpersManagement:
     @staticmethod
     def set_login_image(photo):
         CraftySettings.update({CraftySettings.login_photo: photo}).where(
+            CraftySettings.id == 1
+        ).execute()
+
+    @staticmethod
+    def get_login_opacity():
+        settings = CraftySettings.select(CraftySettings.login_opacity).where(
+            CraftySettings.id == 1
+        )
+        return settings[0].login_opacity
+
+    @staticmethod
+    def set_login_opacity(opacity):
+        CraftySettings.update({CraftySettings.login_opacity: opacity}).where(
             CraftySettings.id == 1
         ).execute()
 

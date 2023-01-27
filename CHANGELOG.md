@@ -5,7 +5,7 @@ TBD
 ### Bug fixes
 - Fix local java server imports. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/529))
 ### Tweaks
-TBD
+- Added further login screen customisation settings. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/531))
 ### Lang
 TBD
 <br><br>
