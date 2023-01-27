@@ -159,3 +159,14 @@ class ManagementController:
 
     def del_excluded_backup_dir(self, server_id: int, dir_to_del: str):
         self.management_helper.del_excluded_backup_dir(server_id, dir_to_del)
+
+    # **********************************************************************************
+    #                                   Crafty Methods
+    # **********************************************************************************
+    @staticmethod
+    def get_master_server_dir():
+        return HelpersManagement.get_master_server_dir()
+
+    @staticmethod
+    def set_master_server_dir(server_dir):
+        HelpersManagement.set_master_server_dir(server_dir)

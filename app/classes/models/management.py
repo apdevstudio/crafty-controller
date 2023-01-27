@@ -44,6 +44,7 @@ class AuditLog(BaseModel):
 class CraftySettings(BaseModel):
     secret_api_key = CharField(default="")
     login_photo = CharField(default="login_1.jpg")
+    master_server_dir = CharField(default="")
 
     class Meta:
         table_name = "crafty_settings"
@@ -265,6 +266,19 @@ class HelpersManagement:
     @staticmethod
     def set_login_image(photo):
         CraftySettings.update({CraftySettings.login_photo: photo}).where(
+            CraftySettings.id == 1
+        ).execute()
+
+    @staticmethod
+    def get_master_server_dir():
+        settings = CraftySettings.select(CraftySettings.master_server_dir).where(
+            CraftySettings.id == 1
+        )
+        return settings[0].master_server_dir
+
+    @staticmethod
+    def set_master_server_dir(server_dir):
+        CraftySettings.update({CraftySettings.master_server_dir: server_dir}).where(
             CraftySettings.id == 1
         ).execute()
 

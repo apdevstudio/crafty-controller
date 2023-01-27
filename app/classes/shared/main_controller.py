@@ -972,3 +972,7 @@ class Controller:
     @staticmethod
     def clear_support_status():
         HelperUsers.clear_support_status()
+
+    def set_master_server_dir(self, server_dir):
+        self.helper.servers_dir = server_dir
+        HelpersManagement.set_master_server_dir(server_dir)
