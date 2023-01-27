@@ -40,6 +40,7 @@ class PublicHandler(BaseHandler):
             "lang_page": self.helper.get_lang_page(self.helper.get_setting("language")),
             "query": "",
             "background": self.controller.cached_login,
+            "login_opacity": self.controller.management.get_login_opacity(),
         }
 
         if self.request.query:
