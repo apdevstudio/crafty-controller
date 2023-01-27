@@ -23,9 +23,10 @@
 </head>
 <style>
   .auth.auth-bg-1 {
-    background: url("../../static/assets/images/auth/{{data['background']}}"),
+    background: url("../../static/assets/images/auth/{% raw data['background'] %}"),
     url("../../static/assets/images/auth/login-1.jpg");
     background-size: cover;
+    background-position: center;
   }
 </style>
 
@@ -36,8 +37,9 @@
         <div class="row w-100">
           <div class="col-lg-4 mx-auto">
 
-            <div class="auto-form-wrapper login-modal">
-              <div class="text-center">
+            <div id="login-form-background" class="auto-form-wrapper login-modal">
+              <div id="login_opacity" data-value="{{ data['login_opacity'] }}" hidden></div>
+              <div class="text-center auto-form-logo">
                 <img src="/static/assets/images/logo_long.svg">
               </div>
               <style>
@@ -133,6 +135,13 @@
   <script src="/static/assets/js/shared/settings.js"></script>
   <script src="/static/assets/js/shared/todolist.js"></script>
   <!-- endinject -->
+  <script>
+    $(document).ready(function () {
+      let login_opacity_div = document.getElementById('login_opacity');
+      let opacity = login_opacity_div.getAttribute('data-value');
+      document.getElementById('login-form-background').style.background = 'rgb(34, 36, 55, ' + (opacity / 100) + ')';
+    });
+  </script>
 </body>
 
 </html>
