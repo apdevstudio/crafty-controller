@@ -348,11 +348,6 @@ class AjaxHandler(BaseHandler):
 
             server.backup_server()
 
-        elif page == "clear_comms":
-            if exec_user["superuser"]:
-                self.controller.clear_unexecuted_commands()
-                return
-
         elif page == "select_photo":
             if exec_user["superuser"]:
                 photo = urllib.parse.unquote(self.get_argument("photo", ""))

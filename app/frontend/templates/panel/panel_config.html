@@ -221,11 +221,6 @@
                   <h4 class="card-title"><i class="fas fa-user-tag"></i> {{ translate('panelConfig', 'adminControls',
                     data['lang']) }}</h4>
                 </div>
-                <div class="card-body">
-                  <button type="button" class="btn btn-outline-danger clear-comm">{{ translate('panelConfig',
-                    'clearComms', data['lang']) }}</button>
-
-                </div>
               </div>
             </div>
           </div>
@@ -482,17 +477,6 @@
       message: api_key,
     });
   });
-
-  $('.clear-comm').click(function () {
-    var token = getCookie("_xsrf")
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      url: '/ajax/clear_comm',
-      success: function (data) {
-      },
-    });
-  })
 
   $('.delete-photo').click(function () {
     var token = getCookie("_xsrf")
