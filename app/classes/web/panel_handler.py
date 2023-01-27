@@ -291,6 +291,7 @@ class PanelHandler(BaseHandler):
             # todo: make this actually pull and compare version data
             "update_available": self.helper.update_available,
             "background": self.controller.cached_login,
+            "login_opacity": self.controller.management.get_login_opacity(),
             "serverTZ": tz,
             "version_data": self.helper.get_version_string(),
             "failed_servers": self.controller.servers.failed_servers,
@@ -883,6 +884,9 @@ class PanelHandler(BaseHandler):
                             if item not in page_data["backgrounds"]:
                                 page_data["backgrounds"].append(item)
                         page_data["background"] = self.controller.cached_login
+                        page_data[
+                            "login_opacity"
+                        ] = self.controller.management.get_login_opacity()
             else:
                 page_data["managed_users"] = self.controller.users.get_managed_users(
                     exec_user["user_id"]

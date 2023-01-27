@@ -1,4 +1,5 @@
 import logging
+import queue
 
 from app.classes.models.management import HelpersManagement
 from app.classes.models.servers import HelperServers
@@ -9,6 +10,26 @@ logger = logging.getLogger(__name__)
 class ManagementController:
     def __init__(self, management_helper):
         self.management_helper = management_helper
+        self.command_queue = queue.Queue()
+
+    # **********************************************************************************
+    #                                   Config Methods
+    # **********************************************************************************
+    @staticmethod
+    def set_login_image(path):
+        HelpersManagement.set_login_image(path)
+
+    @staticmethod
+    def get_login_image():
+        return HelpersManagement.get_login_image()
+
+    @staticmethod
+    def set_login_opacity(opacity):
+        return HelpersManagement.set_login_opacity(opacity)
+
+    @staticmethod
+    def get_login_opacity():
+        return HelpersManagement.get_login_opacity()
 
     # **********************************************************************************
     #                                   Host_Stats Methods
@@ -28,9 +49,6 @@ class ManagementController:
     # **********************************************************************************
     #                                   Commands Methods
     # **********************************************************************************
-    @staticmethod
-    def get_unactioned_commands():
-        return HelpersManagement.get_unactioned_commands()
 
     def send_command(self, user_id, server_id, remote_ip, command):
         server_name = HelperServers.get_server_friendly_name(server_id)
@@ -42,11 +60,12 @@ class ManagementController:
             server_id,
             remote_ip,
         )
-        HelpersManagement.add_command(server_id, user_id, remote_ip, command)
+        self.queue_command(
+            {"server_id": server_id, "user_id": user_id, "command": command}
+        )
 
-    @staticmethod
-    def mark_command_complete(command_id=None):
-        return HelpersManagement.mark_command_complete(command_id)
+    def queue_command(self, command_data):
+        self.command_queue.put(command_data)
 
     # **********************************************************************************
     #                                   Audit_Log Methods
@@ -78,6 +97,10 @@ class ManagementController:
         command,
         name,
         enabled=True,
+        one_time=False,
+        cron_string="* * * * *",
+        parent=None,
+        delay=0,
     ):
         return HelpersManagement.create_scheduled_task(
             server_id,
@@ -88,19 +111,15 @@ class ManagementController:
             command,
             name,
             enabled,
+            one_time,
+            cron_string,
+            parent,
+            delay,
         )
 
     @staticmethod
     def delete_scheduled_task(schedule_id):
         return HelpersManagement.delete_scheduled_task(schedule_id)
-
-    @staticmethod
-    def set_login_image(path):
-        HelpersManagement.set_login_image(path)
-
-    @staticmethod
-    def get_login_image():
-        return HelpersManagement.get_login_image()
 
     @staticmethod
     def update_scheduled_task(schedule_id, updates):
