@@ -11,6 +11,25 @@ class ManagementController:
         self.management_helper = management_helper
 
     # **********************************************************************************
+    #                                   Config Methods
+    # **********************************************************************************
+    @staticmethod
+    def set_login_image(path):
+        HelpersManagement.set_login_image(path)
+
+    @staticmethod
+    def get_login_image():
+        return HelpersManagement.get_login_image()
+
+    @staticmethod
+    def set_login_opacity(opacity):
+        return HelpersManagement.set_login_opacity(opacity)
+
+    @staticmethod
+    def get_login_opacity():
+        return HelpersManagement.get_login_opacity()
+
+    # **********************************************************************************
     #                                   Host_Stats Methods
     # **********************************************************************************
     @staticmethod
@@ -101,14 +120,6 @@ class ManagementController:
     @staticmethod
     def delete_scheduled_task(schedule_id):
         return HelpersManagement.delete_scheduled_task(schedule_id)
-
-    @staticmethod
-    def set_login_image(path):
-        HelpersManagement.set_login_image(path)
-
-    @staticmethod
-    def get_login_image():
-        return HelpersManagement.get_login_image()
 
     @staticmethod
     def update_scheduled_task(schedule_id, updates):
