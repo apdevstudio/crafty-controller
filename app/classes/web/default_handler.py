@@ -17,5 +17,5 @@ class DefaultHandler(BaseHandler):
             )
         else:
             self.redirect(
-                "/login",
+                "/panel/dashboard",
             )
