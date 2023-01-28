@@ -291,6 +291,7 @@ class PanelHandler(BaseHandler):
             # todo: make this actually pull and compare version data
             "update_available": self.helper.update_available,
             "background": self.controller.cached_login,
+            "login_opacity": self.controller.management.get_login_opacity(),
             "serverTZ": tz,
             "version_data": self.helper.get_version_string(),
             "failed_servers": self.controller.servers.failed_servers,
@@ -857,32 +858,6 @@ class PanelHandler(BaseHandler):
                         page_data["roles"] = self.controller.roles.get_all_roles()
                         page_data["auth-servers"][user.user_id] = super_auth_servers
                         page_data["managed_users"] = []
-                        page_data["backgrounds"] = []
-                        cached_split = self.controller.cached_login.split("/")
-
-                        if len(cached_split) == 1:
-                            page_data["backgrounds"].append(
-                                self.controller.cached_login
-                            )
-                        else:
-                            page_data["backgrounds"].append(cached_split[1])
-                        if "login_1.jpg" not in page_data["backgrounds"]:
-                            page_data["backgrounds"].append("login_1.jpg")
-                        self.helper.ensure_dir_exists(
-                            os.path.join(
-                                self.controller.project_root,
-                                "app/frontend/static/assets/images/auth/custom",
-                            )
-                        )
-                        for item in os.listdir(
-                            os.path.join(
-                                self.controller.project_root,
-                                "app/frontend/static/assets/images/auth/custom",
-                            )
-                        ):
-                            if item not in page_data["backgrounds"]:
-                                page_data["backgrounds"].append(item)
-                        page_data["background"] = self.controller.cached_login
             else:
                 page_data["managed_users"] = self.controller.users.get_managed_users(
                     exec_user["user_id"]
@@ -920,6 +895,39 @@ class PanelHandler(BaseHandler):
 
                 page_data["active_link"] = "config_json"
                 template = "panel/config_json.html"
+
+        elif page == "custom_login":
+            if exec_user["superuser"]:
+                page_data["backgrounds"] = []
+                cached_split = self.controller.cached_login.split("/")
+
+                if len(cached_split) == 1:
+                    page_data["backgrounds"].append(self.controller.cached_login)
+                else:
+                    page_data["backgrounds"].append(cached_split[1])
+                if "login_1.jpg" not in page_data["backgrounds"]:
+                    page_data["backgrounds"].append("login_1.jpg")
+                self.helper.ensure_dir_exists(
+                    os.path.join(
+                        self.controller.project_root,
+                        "app/frontend/static/assets/images/auth/custom",
+                    )
+                )
+                for item in os.listdir(
+                    os.path.join(
+                        self.controller.project_root,
+                        "app/frontend/static/assets/images/auth/custom",
+                    )
+                ):
+                    if item not in page_data["backgrounds"]:
+                        page_data["backgrounds"].append(item)
+                page_data["background"] = self.controller.cached_login
+                page_data[
+                    "login_opacity"
+                ] = self.controller.management.get_login_opacity()
+
+                page_data["active_link"] = "custom_login"
+                template = "panel/custom_login.html"
 
         elif page == "add_user":
             page_data["new_user"] = True
@@ -1706,6 +1714,8 @@ class PanelHandler(BaseHandler):
             compress = self.get_argument("compress", False)
             shutdown = self.get_argument("shutdown", False)
             check_changed = self.get_argument("changed")
+            before = self.get_argument("backup_before", "")
+            after = self.get_argument("backup_after", "")
             if str(check_changed) == str(1):
                 checked = self.get_body_arguments("root_path")
             else:
@@ -1729,6 +1739,8 @@ class PanelHandler(BaseHandler):
                 excluded_dirs=checked,
                 compress=bool(compress),
                 shutdown=bool(shutdown),
+                before=before,
+                after=after,
             )
 
             self.controller.management.add_to_audit_log(
