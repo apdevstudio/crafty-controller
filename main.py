@@ -140,6 +140,14 @@ if __name__ == "__main__":
         installer.default_settings()
     else:
         Console.debug("Existing install detected")
+    Console.info("Checking for reset secret flag")
+    if helper.get_setting("reset_secrets_on_next_boot"):
+        Console.info("Found Reset")
+        management_helper.set_secret_api_key(str(helper.random_string_generator(64)))
+        management_helper.set_cookie_secret(str(helper.random_string_generator(32)))
+        helper.set_setting("reset_secrets_on_next_boot", False)
+    else:
+        Console.info("No flag found. Secrets are staying")
     file_helper = FileHelpers(helper)
     import_helper = ImportHelpers(helper, file_helper)
     # now the tables are created, we can load the tasks_manager and server controller
@@ -147,17 +155,6 @@ if __name__ == "__main__":
     Console.info("Checking for remote changes to config.json")
     controller.get_config_diff()
     Console.info("Remote change complete.")
-
-    Console.info("Checking for reset secret flag")
-    if helper.get_setting("reset_secrets_on_next_boot"):
-        Console.info("Found Reset")
-        controller.management.set_crafty_api_key(
-            str(helper.random_string_generator(64))
-        )
-        controller.management.set_cookie_secret(str(helper.random_string_generator(32)))
-        helper.set_setting("reset_secrets_on_next_boot", False)
-    else:
-        Console.info("No flag found. Secrets are staying")
 
     import3 = Import3(helper, controller)
     tasks_manager = TasksManager(helper, controller)
