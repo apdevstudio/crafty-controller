@@ -697,7 +697,7 @@
     });
   }
 
-  async function sendFile(file, path, serverId, left, onProgress) {
+  async function sendFile(file, path, serverId, left, i, onProgress) {
     let xmlHttpRequest = new XMLHttpRequest();
     let token = getCookie("_xsrf")
     let fileName = file.name
@@ -746,7 +746,9 @@
           }
           setTreeViewContext();
         }
-        return true;
+        $(`#upload-progress-bar-${i + 1}`).removeClass("progress-bar-striped");
+        $(`#upload-progress-bar-${i + 1}`).addClass("bg-success");
+        $(`#upload-progress-bar-${i + 1}`).html('<i style="color: black;" class="fas fa-box-check"></i>')
       }
       else {
         alert('Upload failed with response: ' + event.target.responseText);
@@ -822,7 +824,7 @@
                 `;
                 $('#upload-progress-bar-parent').append(progressHtml);
 
-                response = await sendFile(files.files[i], path, serverId, nFiles - i - 1, (progress) => {
+                await sendFile(files.files[i], path, serverId, nFiles - i - 1, i, (progress) => {
                   $(`#upload-progress-bar-${i + 1}`).attr('aria-valuenow', progress)
                   $(`#upload-progress-bar-${i + 1}`).css('width', progress + '%')
                 });
