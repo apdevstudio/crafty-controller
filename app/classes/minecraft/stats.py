@@ -6,7 +6,7 @@ import datetime
 import base64
 import typing as t
 
-from app.classes.minecraft.mc_ping import ping
+from app.classes.minecraft.ping import ping
 from app.classes.models.management import HostStats
 from app.classes.models.servers import HelperServers
 from app.classes.shared.null_writer import NullWriter

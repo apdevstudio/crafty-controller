@@ -19,7 +19,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.base import JobLookupError
 
 from app.classes.minecraft.stats import Stats
-from app.classes.minecraft.mc_ping import ping, ping_bedrock
+from app.classes.minecraft.ping import ping, ping_raknet
 from app.classes.models.servers import HelperServers, Servers
 from app.classes.models.server_stats import HelperServerStats
 from app.classes.models.management import HelpersManagement
@@ -1484,7 +1484,7 @@ class ServerInstance:
 
         logger.debug(f"Pinging server '{server}' on {internal_ip}:{server_port}")
         if HelperServers.get_server_type_by_id(server_id) == "minecraft-bedrock":
-            int_mc_ping = ping_bedrock(internal_ip, int(server_port))
+            int_mc_ping = ping_raknet(internal_ip, int(server_port))
         else:
             try:
                 int_mc_ping = ping(internal_ip, int(server_port))
@@ -1613,7 +1613,7 @@ class ServerInstance:
 
         logger.debug(f"Pinging server '{self.name}' on {internal_ip}:{server_port}")
         if HelperServers.get_server_type_by_id(server_id) == "minecraft-bedrock":
-            int_mc_ping = ping_bedrock(internal_ip, int(server_port))
+            int_mc_ping = ping_raknet(internal_ip, int(server_port))
         else:
             int_mc_ping = ping(internal_ip, int(server_port))
 

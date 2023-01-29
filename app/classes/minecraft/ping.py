@@ -8,7 +8,7 @@ import logging.config
 import uuid
 import random
 
-from app.classes.minecraft.bedrock_ping import BedrockPing
+from app.classes.minecraft.raknet_ping import RaknetPing
 from app.classes.shared.console import Console
 
 logger = logging.getLogger(__name__)
@@ -176,7 +176,7 @@ def ping(ip, port):
 
 
 # For the rest of requests see wiki.vg/Protocol
-def ping_bedrock(ip, port):
+def ping_raknet(ip, port):
     rand = random.Random()
     try:
         # pylint: disable=consider-using-f-string
@@ -185,7 +185,7 @@ def ping_bedrock(ip, port):
     except:
         client_guid = 0
     try:
-        brp = BedrockPing(ip, port, client_guid)
+        brp = RaknetPing(ip, port, client_guid)
         return brp.ping()
     except:
         logger.debug("Unable to get RakNet stats")
