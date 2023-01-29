@@ -244,6 +244,41 @@ class Controller:
                 exec_user["user_id"], "support_status_update", results
             )
 
+    def get_config_diff(self):
+        master_config = Helpers.get_master_config()
+        try:
+            user_config = self.helper.get_all_settings()
+        except:
+            # Call helper to set updated config.
+            Console.warning("No Config found. Setting Default Config.json")
+            user_config = master_config
+            keys = list(user_config.keys())
+            keys.sort()
+            sorted_data = {i: user_config[i] for i in keys}
+            self.helper.set_settings(user_config)
+            return
+        items_to_del = []
+
+        # Iterate through user's config.json and check for
+        # Keys/values that need to be removed
+        for key in user_config:
+            if key not in master_config.keys():
+                items_to_del.append(key)
+
+        # Remove key/values from user config that were staged
+        for item in items_to_del[:]:
+            del user_config[item]
+
+        # Add new keys to user config.
+        for key, value in master_config.items():
+            if key not in user_config.keys():
+                user_config[key] = value
+        # Call helper to set updated config.
+        keys = list(user_config.keys())
+        keys.sort()
+        sorted_data = {i: user_config[i] for i in keys}
+        self.helper.set_settings(sorted_data)
+
     def send_log_status(self):
         try:
             return self.log_stats

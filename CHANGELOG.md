@@ -2,11 +2,16 @@
 ## --- [4.0.20] - 2022/TBD
 ### New features
 - Add option to run command before backup. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/536))
+- Make Config.json editable from panel. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/532))
+- Managed config.json refector (See MR for details). ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/485))
 ### Bug fixes
 - Fix local java server imports. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/529))
 - Fix Schedule Restore | Add Backup Config Preservation. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/533))
 - Rework `/public` Route. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/538))
 ### Tweaks
+- Hide stats DB directory from files tree. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/530))
+- Make it so file tree doesn't reload on upload/delete. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/541))
+- Add upload completed feedback to file upload. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/541))
 - Added further login screen customisation settings. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/531))
 - Set backup filename to use same time as schedule. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/534))
 - Move Schedules to from DB to Queue Datatype. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/535))
