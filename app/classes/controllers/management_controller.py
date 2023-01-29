@@ -46,6 +46,14 @@ class ManagementController:
     def get_crafty_api_key():
         return HelpersManagement.get_secret_api_key()
 
+    @staticmethod
+    def set_cookie_secret(key):
+        HelpersManagement.set_cookie_secret(key)
+
+    @staticmethod
+    def add_crafty_row():
+        HelpersManagement.create_crafty_row()
+
     # **********************************************************************************
     #                                   Commands Methods
     # **********************************************************************************

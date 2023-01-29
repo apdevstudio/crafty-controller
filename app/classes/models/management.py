@@ -43,6 +43,7 @@ class AuditLog(BaseModel):
 # **********************************************************************************
 class CraftySettings(BaseModel):
     secret_api_key = CharField(default="")
+    cookie_secret = CharField(default="")
     login_photo = CharField(default="login_1.jpg")
     login_opacity = IntegerField(default=100)
 
@@ -205,8 +206,21 @@ class HelpersManagement:
                 return
 
     @staticmethod
+    def create_crafty_row():
+        CraftySettings.insert(
+            {
+                CraftySettings.secret_api_key: "",
+                CraftySettings.cookie_secret: "",
+                CraftySettings.login_photo: "login_1.jpg",
+                CraftySettings.login_opacity: 100,
+            }
+        ).execute()
+
+    @staticmethod
     def set_secret_api_key(key):
-        CraftySettings.insert(secret_api_key=key).execute()
+        CraftySettings.update({CraftySettings.secret_api_key: key}).where(
+            CraftySettings.id == 1
+        ).execute()
 
     @staticmethod
     def get_secret_api_key():
@@ -214,6 +228,19 @@ class HelpersManagement:
             CraftySettings.id == 1
         )
         return settings[0].secret_api_key
+
+    @staticmethod
+    def get_cookie_secret():
+        settings = CraftySettings.select(CraftySettings.cookie_secret).where(
+            CraftySettings.id == 1
+        )
+        return settings[0].cookie_secret
+
+    @staticmethod
+    def set_cookie_secret(key):
+        CraftySettings.update({CraftySettings.cookie_secret: key}).where(
+            CraftySettings.id == 1
+        ).execute()
 
     # **********************************************************************************
     #                                  Config Methods

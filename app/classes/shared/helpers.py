@@ -403,8 +403,6 @@ class Helpers:
             "https_port": 8443,
             "language": "en_EN",
             "cookie_expire": 30,
-            "cookie_secret": "random",
-            "apikey_secret": "random",
             "show_errors": True,
             "history_max_age": 7,
             "stats_update_frequency": 30,
@@ -418,6 +416,7 @@ class Helpers:
             "keywords": ["help", "chunk"],
             "allow_nsfw_profile_pictures": False,
             "enable_user_self_delete": False,
+            "reset_secrets_on_boot": False,
         }
 
     def get_all_settings(self):
