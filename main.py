@@ -149,7 +149,7 @@ if __name__ == "__main__":
     Console.info("Remote change complete.")
 
     Console.info("Checking for reset secret flag")
-    if helper.get_setting("reset_secrets_on_boot"):
+    if helper.get_setting("reset_secrets_on_next_boot"):
         Console.info("Found Reset")
         controller.management.set_crafty_api_key(
             str(helper.random_string_generator(64))
