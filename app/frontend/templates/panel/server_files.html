@@ -697,7 +697,7 @@
     });
   }
 
-  function sendFile(file, path, serverId, left, onProgress) {
+  async function sendFile(file, path, serverId, left, onProgress) {
     let xmlHttpRequest = new XMLHttpRequest();
     let token = getCookie("_xsrf")
     let fileName = file.name
@@ -719,7 +719,23 @@
       onProgress(Math.floor(event.loaded / event.total * 100)), false);
     xmlHttpRequest.addEventListener('load', (event) => {
       if (event.target.responseText == 'success') {
-        console.log('Upload for file', file.name, 'was successful!')
+        console.log('Upload for file', file.name, 'was successful!');
+        par_el = document.getElementById(path + "ul");
+        let name = file.name;
+        console.log(par_el)
+        let full_path = path + '/' + name
+        var items = par_el.getElementsByTagName("li");
+        let flag = false;
+        for (var k = 0; k < items.length; ++k) {
+          if ($(items[k]).attr("data-name") == name) {
+            console.log("FLAGGED")
+            flag = true;
+          }
+        }
+        if (!flag) {
+          $(par_el).append('<li id=' + '"' + full_path.toString() + 'li' + '"' + 'class="tree-ctx-item tree-file tree-item" data-path=' + '"' + full_path.toString() + '"' + ' data-name=' + '"' + name.toString() + '"' + ' onclick="clickOnFile(event)" ><span style="margin-right: 6px;"><i class="far fa-file"></i></span>' + name + '</li>');
+        }
+        return true;
       }
       else {
         alert('Upload failed with response: ' + event.target.responseText);
@@ -735,7 +751,7 @@
   let uploadWaitDialog;
   let doUpload = true;
 
-  function uploadFilesE(event) {
+  async function uploadFilesE(event) {
     path = event.target.parentElement.getAttribute('data-path');
     $(function () {
       var uploadHtml = "<div>" +
@@ -795,7 +811,7 @@
                 `;
                 $('#upload-progress-bar-parent').append(progressHtml);
 
-                sendFile(files.files[i], path, serverId, nFiles - i - 1, (progress) => {
+                response = await sendFile(files.files[i], path, serverId, nFiles - i - 1, (progress) => {
                   $(`#upload-progress-bar-${i + 1}`).attr('aria-valuenow', progress)
                   $(`#upload-progress-bar-${i + 1}`).css('width', progress + '%')
                 });
@@ -996,7 +1012,6 @@
   function hideUploadBox() {
     if (!uploadWaitDialog) return;
     uploadWaitDialog.modal('hide');
-    getTreeView();
   }
 
   function createFileE(event) {
@@ -1074,7 +1089,8 @@
       callback: function (result) {
         if (!result) return;
         deleteFile(path, function () {
-          getTreeView()
+          el = document.getElementById(path + "li");
+          $(el).remove();
           document.getElementById('files-tree-nav').style.display = 'none';
         });
       }
@@ -1102,7 +1118,8 @@
       callback: function (result) {
         if (!result) return;
         deleteDir(path, function () {
-          getTreeView()
+          el = document.getElementById(path + "li");
+          $(el).remove();
           document.getElementById('files-tree-nav').style.display = 'none';
         });
       }
