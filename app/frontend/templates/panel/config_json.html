@@ -48,7 +48,11 @@
             {% raw xsrf_form_html() %}
 
             {% for item in data['config-json'].items() %}
+            {% if item[0] == "reset_secrets_on_next_boot" %}
+            <div class="form-group" style="background: rgba(243, 21, 6, 0.3); outline: 1px solid red; padding: 10px;">
+            {% else %}
             <div class="form-group">
+            {% end %}
               <label class="form" for="{{item[0]}}">{{item[0]}}
                 <small class="text-muted ml-1">
                 </small> </label><br />
@@ -81,21 +85,19 @@
               {% elif isinstance(item[1], list) %}
               <textarea value="{{','.join(item[1])}}" type="text" name="{{item[0]}}" class="form-control list">{{','.join(item[1])}}</textarea>
               {% elif isinstance(item[1], bool) %}
-              {% if item[1] == True %}
               <div style="margin-left: 30px;">
+              {% if item[1] == True %}
                 <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True" checked>
                  <label for="True">True</label><br>
                 <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False">
                  <label for="False">False</label>
-              </div>
               {% else %}
-              <div style="margin-left: 30px;">
                 <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True">
                  <label for="True">True</label><br>
                 <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False" checked>
                  <label for="False">False</label>
-              </div>
               {% end %}
+              </div>
               {% elif isinstance(item[1], int) %}
               <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}" step="1" min="0" required>
               {% else %}

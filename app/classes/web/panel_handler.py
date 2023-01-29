@@ -1774,8 +1774,11 @@ class PanelHandler(BaseHandler):
                                 data[key] = False
                             else:
                                 data[key] = arg_data
+                keys = list(data.keys())
+                keys.sort()
+                sorted_data = {i: data[i] for i in keys}
                 with open(self.helper.settings_file, "w", encoding="utf-8") as f:
-                    json.dump(data, f, indent=4)
+                    json.dump(sorted_data, f, indent=4)
             except Exception as e:
                 logger.critical(
                     "Config File Error: Unable to read "

@@ -377,6 +377,64 @@ class Helpers:
 
         return default_return
 
+    def set_settings(self, data):
+        try:
+            with open(self.settings_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4)
+
+        except Exception as e:
+            logger.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+            Console.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+            return False
+
+        return True
+
+    @staticmethod
+    def get_master_config():
+        # Make changes for users' local config.json files here. As of 4.0.20
+        # Config.json was removed from the repo to make it easier for users
+        # To make non-breaking changes to the file.
+        return {
+            "http_port": 8000,
+            "https_port": 8443,
+            "language": "en_EN",
+            "cookie_expire": 30,
+            "show_errors": True,
+            "history_max_age": 7,
+            "stats_update_frequency": 30,
+            "delete_default_json": False,
+            "show_contribute_link": True,
+            "virtual_terminal_lines": 70,
+            "max_log_lines": 700,
+            "max_audit_entries": 300,
+            "disabled_language_files": [],
+            "stream_size_GB": 1,
+            "keywords": ["help", "chunk"],
+            "allow_nsfw_profile_pictures": False,
+            "enable_user_self_delete": False,
+            "reset_secrets_on_next_boot": False,
+        }
+
+    def get_all_settings(self):
+        try:
+            with open(self.settings_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+
+        except Exception as e:
+            data = {}
+            logger.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+            Console.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+
+        return data
+
     @staticmethod
     def is_subdir(server_path, root_dir):
         server_path = os.path.realpath(server_path)

@@ -14,6 +14,7 @@ from app.classes.shared.import3 import Import3
 from app.classes.shared.console import Console
 from app.classes.shared.helpers import Helpers
 from app.classes.models.users import HelperUsers
+from app.classes.models.management import HelpersManagement
 from app.classes.shared.import_helper import ImportHelpers
 
 console = Console()
@@ -53,6 +54,9 @@ def do_intro():
     """
 
     Console.magenta(intro)
+    if not helper.check_file_exists(helper.settings_file):
+        Console.debug("No settings file detected. Creating one.")
+        helper.set_settings(Helpers.get_master_config())
 
 
 def setup_logging(debug=True):
@@ -121,7 +125,8 @@ if __name__ == "__main__":
 
     # do our installer stuff
     user_helper = HelperUsers(database, helper)
-    installer = DatabaseBuilder(database, helper, user_helper)
+    management_helper = HelpersManagement(database, helper)
+    installer = DatabaseBuilder(database, helper, user_helper, management_helper)
     FRESH_INSTALL = installer.is_fresh_install()
 
     if FRESH_INSTALL:
@@ -135,10 +140,22 @@ if __name__ == "__main__":
         installer.default_settings()
     else:
         Console.debug("Existing install detected")
+    Console.info("Checking for reset secret flag")
+    if helper.get_setting("reset_secrets_on_next_boot"):
+        Console.info("Found Reset")
+        management_helper.set_secret_api_key(str(helper.random_string_generator(64)))
+        management_helper.set_cookie_secret(str(helper.random_string_generator(32)))
+        helper.set_setting("reset_secrets_on_next_boot", False)
+    else:
+        Console.info("No flag found. Secrets are staying")
     file_helper = FileHelpers(helper)
     import_helper = ImportHelpers(helper, file_helper)
     # now the tables are created, we can load the tasks_manager and server controller
     controller = Controller(database, helper, file_helper, import_helper)
+    Console.info("Checking for remote changes to config.json")
+    controller.get_config_diff()
+    Console.info("Remote change complete.")
+
     import3 = Import3(helper, controller)
     tasks_manager = TasksManager(helper, controller)
     tasks_manager.start_webserver()

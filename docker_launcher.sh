@@ -18,16 +18,6 @@ if [ ! "$(ls -A --ignore=.gitkeep ./app/config)" ]; then
 else
     # Keep version file up to date with image
     cp -f ./app/config_original/version.json ./app/config/version.json
-
-    # Compare if user's config is different from image, and show differences.
-    echo "\033[36mWrapper | \033[35m🏗️  Checking for config.json changes..."
-    cp -f ./app/config_original/config.json ./app/config/config_image_template
-    if [ "$(diff -q ./app/config/config.json ./app/config/config_image_template)" ]; then
-        echo "\033[36mWrapper | \033[33m👷 We've found differences in your local config, please review!,"
-        echo "\033[36m        | \033[33m   (This could be an outdated config.json)"
-    else
-        echo "\033[36mWrapper | \033[32m✅ Config good! Proceeding..."
-    fi
 fi
 
 
