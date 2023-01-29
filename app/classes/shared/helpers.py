@@ -411,7 +411,7 @@ class Helpers:
             "virtual_terminal_lines": 70,
             "max_log_lines": 700,
             "max_audit_entries": 300,
-            "disabled_language_files": ["lol_EN.json", ""],
+            "disabled_language_files": [],
             "stream_size_GB": 1,
             "keywords": ["help", "chunk"],
             "allow_nsfw_profile_pictures": False,

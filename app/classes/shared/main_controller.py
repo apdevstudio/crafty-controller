@@ -251,7 +251,11 @@ class Controller:
         except:
             # Call helper to set updated config.
             Console.warning("No Config found. Setting Default Config.json")
-            self.helper.set_settings(master_config)
+            user_config = master_config
+            keys = list(user_config.keys())
+            keys.sort()
+            sorted_data = {i: user_config[i] for i in keys}
+            self.helper.set_settings(user_config)
             return
         items_to_del = []
 
@@ -270,7 +274,10 @@ class Controller:
             if key not in user_config.keys():
                 user_config[key] = value
         # Call helper to set updated config.
-        self.helper.set_settings(user_config)
+        keys = list(user_config.keys())
+        keys.sort()
+        sorted_data = {i: user_config[i] for i in keys}
+        self.helper.set_settings(sorted_data)
 
     def send_log_status(self):
         try:
