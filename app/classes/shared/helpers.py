@@ -416,7 +416,7 @@ class Helpers:
             "keywords": ["help", "chunk"],
             "allow_nsfw_profile_pictures": False,
             "enable_user_self_delete": False,
-            "reset_secrets_on_boot": False,
+            "reset_secrets_on_next_boot": False,
         }
 
     def get_all_settings(self):
