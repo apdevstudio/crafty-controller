@@ -3,6 +3,7 @@
 ### New features
 - Add option to run command before backup. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/536))
 - Make Config.json editable from panel. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/532))
+- Managed config.json refector (See MR for details). ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/485))
 ### Bug fixes
 - Fix local java server imports. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/529))
 - Fix Schedule Restore | Add Backup Config Preservation. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/533))
