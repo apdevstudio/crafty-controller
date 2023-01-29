@@ -7,6 +7,7 @@
 - Fix Schedule Restore | Add Backup Config Preservation. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/533))
 - Rework `/public` Route. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/538))
 ### Tweaks
+- Hide stats DB directory from files tree. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/530))
 - Added further login screen customisation settings. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/531))
 - Set backup filename to use same time as schedule. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/534))
 - Move Schedules to from DB to Queue Datatype. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/535))
