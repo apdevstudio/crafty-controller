@@ -966,7 +966,7 @@ class Helpers:
             dpath = os.path.join(folder, filename)
             if os.path.isdir(rel):
                 if filename not in self.ignored_names:
-                    output += f"""<li id="{dpath}li" class="tree-item" 
+                    output += f"""<li id="{dpath}li" class="tree-item"
                         data-path="{dpath}">
                         \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" 
                         class="tree-caret tree-ctx-item tree-folder">
@@ -1008,7 +1008,7 @@ class Helpers:
             rel = os.path.join(folder, raw_filename)
             if os.path.isdir(rel):
                 if filename not in self.ignored_names:
-                    output += f"""<li id="{dpath}li" class="tree-item" 
+                    output += f"""<li id="{dpath}li" class="tree-item"
                         data-path="{dpath}">
                         \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" 
                         class="tree-caret tree-ctx-item tree-folder">
