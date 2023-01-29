@@ -966,9 +966,12 @@ class Helpers:
             dpath = os.path.join(folder, filename)
             if os.path.isdir(rel):
                 if filename not in self.ignored_names:
-                    output += f"""<li class="tree-item" data-path="{dpath}">
-                        \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" class="tree-caret tree-ctx-item tree-folder">
-                        <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" data-name="{filename}" onclick="getDirView(event)">
+                    output += f"""<li id="{dpath}li" class="tree-item"
+                        data-path="{dpath}">
+                        \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" 
+                        class="tree-caret tree-ctx-item tree-folder">
+                        <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" 
+                        data-name="{filename}" onclick="getDirView(event)">
                         <i style="color: var(--info);" class="far fa-folder"></i>
                         <i style="color: var(--info);" class="far fa-folder-open"></i>
                         {filename}
@@ -977,7 +980,7 @@ class Helpers:
                         \n"""
             else:
                 if filename not in self.ignored_names:
-                    output += f"""<li
+                    output += f"""<li id="{dpath}li"
                     class="d-block tree-ctx-item tree-file tree-item"
                     data-path="{dpath}"
                     data-name="{filename}"
@@ -1005,9 +1008,12 @@ class Helpers:
             rel = os.path.join(folder, raw_filename)
             if os.path.isdir(rel):
                 if filename not in self.ignored_names:
-                    output += f"""<li class="tree-item" data-path="{dpath}">
-                        \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" class="tree-caret tree-ctx-item tree-folder">
-                        <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" data-name="{filename}" onclick="getDirView(event)">
+                    output += f"""<li id="{dpath}li" class="tree-item"
+                        data-path="{dpath}">
+                        \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" 
+                        class="tree-caret tree-ctx-item tree-folder">
+                        <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" 
+                        data-name="{filename}" onclick="getDirView(event)">
                         <i style="color: var(--info);" class="far fa-folder"></i>
                         <i style="color: var(--info);" class="far fa-folder-open"></i>
                         {filename}
@@ -1015,7 +1021,7 @@ class Helpers:
                         </div><li>"""
             else:
                 if filename not in self.ignored_names:
-                    output += f"""<li
+                    output += f"""<li id="{dpath}li"
                     class="d-block tree-ctx-item tree-file tree-item"
                     data-path="{dpath}"
                     data-name="{filename}"

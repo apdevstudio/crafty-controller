@@ -697,7 +697,7 @@
     });
   }
 
-  function sendFile(file, path, serverId, left, onProgress) {
+  async function sendFile(file, path, serverId, left, i, onProgress) {
     let xmlHttpRequest = new XMLHttpRequest();
     let token = getCookie("_xsrf")
     let fileName = file.name
@@ -719,7 +719,36 @@
       onProgress(Math.floor(event.loaded / event.total * 100)), false);
     xmlHttpRequest.addEventListener('load', (event) => {
       if (event.target.responseText == 'success') {
-        console.log('Upload for file', file.name, 'was successful!')
+        console.log('Upload for file', file.name, 'was successful!');
+        let caught = false;
+        try {
+          var par_el = document.getElementById(path + "ul");
+          var items = par_el.children;
+        } catch {
+          caught = true;
+          var par_el = document.getElementById("files-tree");
+          var items = par_el.children;
+        }
+        let name = file.name;
+        console.log(par_el)
+        let full_path = path + '/' + name
+        let flag = false;
+        for (var k = 0; k < items.length; ++k) {
+          if ($(items[k]).attr("data-name") == name) {
+            flag = true;
+          }
+        }
+        if (!flag) {
+          if (caught) {
+            $(par_el).append('<li id=' + '"' + full_path.toString() + 'li' + '"' + 'class="d-block tree-ctx-item tree-file tree-item" data-path=' + '"' + full_path.toString() + '"' + ' data-name=' + '"' + name.toString() + '"' + ' onclick="clickOnFile(event)" ><span style="margin-right: 6px;"><i class="far fa-file"></i></span>' + name + '</li>');
+          } else {
+            $(par_el).append('<li id=' + '"' + full_path.toString() + 'li' + '"' + 'class="tree-ctx-item tree-file tree-item" data-path=' + '"' + full_path.toString() + '"' + ' data-name=' + '"' + name.toString() + '"' + ' onclick="clickOnFile(event)" ><span style="margin-right: 6px;"><i class="far fa-file"></i></span>' + name + '</li>');
+          }
+          setTreeViewContext();
+        }
+        $(`#upload-progress-bar-${i + 1}`).removeClass("progress-bar-striped");
+        $(`#upload-progress-bar-${i + 1}`).addClass("bg-success");
+        $(`#upload-progress-bar-${i + 1}`).html('<i style="color: black;" class="fas fa-box-check"></i>')
       }
       else {
         alert('Upload failed with response: ' + event.target.responseText);
@@ -735,7 +764,7 @@
   let uploadWaitDialog;
   let doUpload = true;
 
-  function uploadFilesE(event) {
+  async function uploadFilesE(event) {
     path = event.target.parentElement.getAttribute('data-path');
     $(function () {
       var uploadHtml = "<div>" +
@@ -795,7 +824,7 @@
                 `;
                 $('#upload-progress-bar-parent').append(progressHtml);
 
-                sendFile(files.files[i], path, serverId, nFiles - i - 1, (progress) => {
+                await sendFile(files.files[i], path, serverId, nFiles - i - 1, i, (progress) => {
                   $(`#upload-progress-bar-${i + 1}`).attr('aria-valuenow', progress)
                   $(`#upload-progress-bar-${i + 1}`).css('width', progress + '%')
                 });
@@ -996,7 +1025,6 @@
   function hideUploadBox() {
     if (!uploadWaitDialog) return;
     uploadWaitDialog.modal('hide');
-    getTreeView();
   }
 
   function createFileE(event) {
@@ -1074,7 +1102,8 @@
       callback: function (result) {
         if (!result) return;
         deleteFile(path, function () {
-          getTreeView()
+          el = document.getElementById(path + "li");
+          $(el).remove();
           document.getElementById('files-tree-nav').style.display = 'none';
         });
       }
@@ -1102,7 +1131,8 @@
       callback: function (result) {
         if (!result) return;
         deleteDir(path, function () {
-          getTreeView()
+          el = document.getElementById(path + "li");
+          $(el).remove();
           document.getElementById('files-tree-nav').style.display = 'none';
         });
       }
