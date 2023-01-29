@@ -1,0 +1,318 @@
+{% extends ../base.html %}
+
+{% block meta %}
+{% end %}
+
+{% block title %}Crafty Controller - {{ translate('panelConfig', 'pageTitle', data['lang']) }}{% end %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/css/bootstrap-select.min.css">
+
+
+<div class="content-wrapper">
+  <!-- Page Title Header Starts-->
+  <div class="row page-title-header">
+    <div class="col-12">
+      <div class="page-header">
+        <h4 class="page-title">
+          {{ translate('panelConfig', 'title', data['lang']) }}
+          <br />
+        </h4>
+      </div>
+    </div>
+  </div>
+  <!-- Page Title Header Ends-->
+
+  <div class="row">
+    <div class="col-md-12 grid-margin">
+      <div class="card">
+        <div class="card-body">
+
+          {% if data['superuser'] %}
+          {% include "parts/crafty_config_list.html %}
+          {% end %}
+
+          <!-- Page Title Header Starts-->
+          <div class="row page-title-header">
+            <div class="col-12">
+              <div class="page-header">
+                <!-- TODO: Translate the following -->
+                <h4 class="page-title">Config.json</h4>
+              </div>
+            </div>
+
+          </div>
+          <!-- Page Title Header Ends-->
+
+          <form id="config-form" class="forms-sample" method="post" action="/panel/config_json">
+            {% raw xsrf_form_html() %}
+
+            {% for item in data['config-json'].items() %}
+            <div class="form-group">
+              <label class="form" for="{{item[0]}}">{{item[0]}}
+                <small class="text-muted ml-1">
+                </small> </label><br />
+              {% if item[0] == 'language' %}
+              <select name="{{item[0]}}" class="form-control">
+                {% for lang in data['availables_languages'] %}
+                {% if lang == item[1] %}
+                <option selected>{{lang}}</option>
+                {% else %}
+                <option>{{lang}}</option>
+                {% end %}
+                {% end %}
+              </select>
+              {% elif item[0] == 'disabled_language_files' %}
+              <div class="input-group">
+                <button type="button" class="btn btn-outline-default custom-picker" onclick="$('option', $('#lang_select')).each(function(element) {
+                $(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')
+            });">Enable all Languages</button>
+                <select id="lang_select" class="form-control selectpicker show-tick" data-icon-base="fas" data-tick-icon="fa-check" multiple data-style="custom-picker">
+                  {% for lang in data['all_languages'] %}
+                  {% if lang in item[1] %}
+                  <option selected>{{lang}}</option>
+                  {% else %}
+                  <option>{{lang}}</option>
+                  {% end %}
+                  {% end %}
+                </select>
+                <textarea id="disabled_lang" name="{{item[0]}}" class="form-control list hidden" rows="{{ len(data['all_languages']) }}" value="{{','.join(item[1])}}" hidden>{{','.join(item[1])}}</textarea>
+              </div>
+              {% elif isinstance(item[1], list) %}
+              <textarea value="{{','.join(item[1])}}" type="text" name="{{item[0]}}" class="form-control list">{{','.join(item[1])}}</textarea>
+              {% elif isinstance(item[1], bool) %}
+              {% if item[1] == True %}
+              <div style="margin-left: 30px;">
+                <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True" checked>
+                 <label for="True">True</label><br>
+                <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False">
+                 <label for="False">False</label>
+              </div>
+              {% else %}
+              <div style="margin-left: 30px;">
+                <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True">
+                 <label for="True">True</label><br>
+                <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False" checked>
+                 <label for="False">False</label>
+              </div>
+              {% end %}
+              {% elif isinstance(item[1], int) %}
+              <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}" step="1" min="0" required>
+              {% else %}
+              <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}" step="2" min="0" required>
+              {% end %}
+            </div>
+            {% end %}
+            <button class="btn btn-success" type="submit">Submit</button>&nbsp;<span id="submit-status"></span>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<style>
+  .custom-picker {
+    border: 1px solid var(--outline);
+  }
+
+  .dropdown-menu.inner {
+    display: inline-block !important;
+  }
+
+  .popover-body {
+    color: white !important;
+    ;
+  }
+
+  input[type="radio"] {
+    -ms-transform: scale(1.5);
+    /* IE 9 */
+    -webkit-transform: scale(1.5);
+    /* Chrome, Safari, Opera */
+    transform: scale(1.5);
+  }
+</style>
+<!-- content-wrapper ends -->
+
+{% end %}
+
+{% block js %}
+<script>
+  $("#config-form").submit(function (e) {
+    let uuid = uuidv4();
+    var token = getCookie("_xsrf")
+    e.preventDefault();
+
+    $("#submit-status").html('<i class="fa fa-spinner fa-spin"></i>');
+    /* Convert multiple select to text list */
+    let selected_Lang = $('#lang_select').val();
+    $('#disabled_lang').val(selected_Lang);
+
+    let class_list = document.getElementsByClassName("list");
+    let form_json = convertFormToJSON($("#config-form"));
+    for (let i = 0; i < class_list.length; i++) {
+      let str = String($(class_list.item(i)).val())
+      form_json[$(class_list.item(i)).attr("name")] = uuid + "," + str.replace(/\s/g, '');
+    };
+    form_json['uuid'] = uuid;
+    $.ajax({
+      type: "POST",
+      headers: { 'X-XSRFToken': token },
+      dataType: "text",
+      url: '/panel/config_json',
+      data: form_json,
+      success: function (data) {
+        $("#submit-status").html('<i class="fa fa-check"></i>');
+      },
+    });
+  });
+
+  function uuidv4() {
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+  }
+  function convertFormToJSON(form) {
+    const array = $(form).serializeArray(); // Encodes the set of form elements as an array of names and values.
+    const json = {};
+    $.each(array, function () {
+      json[this.name] = this.value || "";
+    });
+    return json;
+  }
+
+  $(document).ready(function () {
+    $('[data-toggle="popover"]').popover();
+    if ($(window).width() < 1000) {
+      $('.too_small').popover("show");
+      $('.too_small2').popover("show");
+    }
+
+  });
+  $(window).ready(function () {
+    $('body').click(function () {
+      $('.too_small').popover("hide");
+      $('.too_small2').popover("hide");
+    });
+  });
+  $(window).resize(function () {
+    // This will execute whenever the window is resized
+    if ($(window).width() < 1000) {
+      $('.too_small').popover("show");
+    }
+    else {
+      $('.too_small').popover("hide");
+    } // New width
+    if ($(window).width() < 1000) {
+      $('.too_small2').popover("show");
+    }
+    else {
+      $('.too_small2').popover("hide");
+    } // New width
+  });
+  $('#file').change(function () {
+    console.log("File changed");
+    if ($('#file').val()) {
+      $('#upload-button').prop("disabled", false);
+      console.log("File changed good");
+    }
+  });
+</script>
+<script>
+
+  $(document).ready(function () {
+    console.log('ready for JS!');
+    $('.selectpicker').selectpicker("refresh");
+  });
+
+  $(".show_button").click(function () {
+    console.log("showing key");
+    api_key = $(this).attr("data-id");
+    bootbox.alert({
+      backdrop: true,
+      title: '',
+      message: api_key,
+    });
+  });
+
+  $('.clear-comm').click(function () {
+    var token = getCookie("_xsrf")
+    $.ajax({
+      type: "POST",
+      headers: { 'X-XSRFToken': token },
+      url: '/ajax/clear_comm',
+      success: function (data) {
+      },
+    });
+  })
+
+  $('.delete-photo').click(function () {
+    var token = getCookie("_xsrf")
+    let photo = $('#photo').find(":selected").val();
+    $.ajax({
+      type: "POST",
+      headers: { 'X-XSRFToken': token },
+      url: '/ajax/delete_photo?photo=' + photo,
+      success: function (data) {
+        location.reload();
+      },
+    });
+  })
+
+  $('.select-photo').click(function () {
+    var token = getCookie("_xsrf")
+    let photo = $('#photo').find(":selected").val();
+    $.ajax({
+      type: "POST",
+      headers: { 'X-XSRFToken': token },
+      url: '/ajax/select_photo?photo=' + photo,
+      success: function (data) {
+        window.location.reload();
+      },
+    });
+  })
+
+  var file;
+  function sendFile() {
+    file = $("#file")[0].files[0]
+    document.getElementById("upload_input").innerHTML = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>'
+    let xmlHttpRequest = new XMLHttpRequest();
+    let token = getCookie("_xsrf")
+    let fileName = file.name
+    let target = '/upload'
+    let mimeType = file.type
+    let size = file.size
+    let type = 'background'
+
+    xmlHttpRequest.open('POST', target, true);
+    xmlHttpRequest.setRequestHeader('X-Content-Type', mimeType);
+    xmlHttpRequest.setRequestHeader('X-XSRFToken', token);
+    xmlHttpRequest.setRequestHeader('X-Content-Length', size);
+    xmlHttpRequest.setRequestHeader('X-Content-Disposition', 'attachment; filename="' + fileName + '"');
+    xmlHttpRequest.setRequestHeader('X-Content-Upload-Type', type);
+    xmlHttpRequest.setRequestHeader('X-FileName', fileName);
+    xmlHttpRequest.addEventListener('load', (event) => {
+      if (event.target.responseText == 'success') {
+        console.log('Upload for file', file.name, 'was successful!')
+        document.getElementById("upload_input").innerHTML = '<div class="card-header header-sm d-flex justify-content-between align-items-center"><span id="file-uploaded" style="color: gray;">' + fileName + '</span> 🔒</div>';
+        setTimeout(function () {
+          window.location.reload();
+        }, 2000);
+      }
+      else {
+        alert('Upload failed with response: ' + event.target.responseText);
+        doUpload = false;
+      }
+    }, false);
+    xmlHttpRequest.addEventListener('error', (e) => {
+      console.error('Error while uploading file', file.name + '.', 'Event:', e)
+    }, false);
+    xmlHttpRequest.send(file);
+  }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/js/bootstrap-select.min.js">
+</script>
+{% end %}
