@@ -9,6 +9,8 @@
 - Rework `/public` Route. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/538))
 ### Tweaks
 - Hide stats DB directory from files tree. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/530))
+- Make it so file tree doesn't reload on upload/delete. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/541))
+- Add upload completed feedback to file upload. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/541))
 - Added further login screen customisation settings. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/531))
 - Set backup filename to use same time as schedule. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/534))
 - Move Schedules to from DB to Queue Datatype. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/535))
