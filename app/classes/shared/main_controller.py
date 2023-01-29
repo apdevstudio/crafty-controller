@@ -966,9 +966,5 @@ class Controller:
         self.servers.remove_server(server_id)
 
     @staticmethod
-    def clear_unexecuted_commands():
-        HelpersManagement.clear_unexecuted_commands()
-
-    @staticmethod
     def clear_support_status():
         HelperUsers.clear_support_status()

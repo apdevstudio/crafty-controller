@@ -291,6 +291,7 @@ class PanelHandler(BaseHandler):
             # todo: make this actually pull and compare version data
             "update_available": self.helper.update_available,
             "background": self.controller.cached_login,
+            "login_opacity": self.controller.management.get_login_opacity(),
             "serverTZ": tz,
             "version_data": self.helper.get_version_string(),
             "failed_servers": self.controller.servers.failed_servers,
@@ -883,6 +884,9 @@ class PanelHandler(BaseHandler):
                             if item not in page_data["backgrounds"]:
                                 page_data["backgrounds"].append(item)
                         page_data["background"] = self.controller.cached_login
+                        page_data[
+                            "login_opacity"
+                        ] = self.controller.management.get_login_opacity()
             else:
                 page_data["managed_users"] = self.controller.users.get_managed_users(
                     exec_user["user_id"]
@@ -1678,6 +1682,8 @@ class PanelHandler(BaseHandler):
             compress = self.get_argument("compress", False)
             shutdown = self.get_argument("shutdown", False)
             check_changed = self.get_argument("changed")
+            before = self.get_argument("backup_before", "")
+            after = self.get_argument("backup_after", "")
             if str(check_changed) == str(1):
                 checked = self.get_body_arguments("root_path")
             else:
@@ -1701,6 +1707,8 @@ class PanelHandler(BaseHandler):
                 excluded_dirs=checked,
                 compress=bool(compress),
                 shutdown=bool(shutdown),
+                before=before,
+                after=after,
             )
 
             self.controller.management.add_to_audit_log(

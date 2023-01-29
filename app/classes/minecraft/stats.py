@@ -300,7 +300,7 @@ class Stats:
             server_icon = base64.encodebytes(ping_obj["icon"])
         except Exception as e:
             server_icon = False
-            logger.info(
+            logger.debug(
                 "Unable to read the server icon due to the following error:", exc_info=e
             )
         ping_data = {
