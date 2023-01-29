@@ -843,6 +843,7 @@ class Controller:
             user_id,
             server_type="minecraft-bedrock",
         )
+        ServersController.set_import(new_id)
         self.import_helper.import_bedrock_zip_server(
             temp_dir, new_server_dir, full_jar_path, port, new_id
         )
@@ -991,10 +992,6 @@ class Controller:
             logger.info("No scheduled jobs exist. Continuing.")
         # remove the server from the DB
         self.servers.remove_server(server_id)
-
-    @staticmethod
-    def clear_unexecuted_commands():
-        HelpersManagement.clear_unexecuted_commands()
 
     @staticmethod
     def clear_support_status():

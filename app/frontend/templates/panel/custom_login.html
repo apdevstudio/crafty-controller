@@ -1,0 +1,391 @@
+{% extends ../base.html %}
+
+{% block meta %}
+{% end %}
+
+{% block title %}Crafty Controller - {{ translate('customLogin', 'pageTitle', data['lang']) }}{% end %}
+
+{% block content %}
+
+<div class="content-wrapper">
+  <!-- Page Title Header Starts-->
+  <div class="row page-title-header">
+    <div class="col-12">
+      <div class="page-header">
+        <h4 class="page-title">
+          {{ translate('panelConfig', 'title', data['lang']) }}
+          <br />
+        </h4>
+      </div>
+    </div>
+  </div>
+  <!-- Page Title Header Ends-->
+
+  <div class="row">
+    <div class="col-md-12 grid-margin">
+      <div class="card">
+        <div class="card-body">
+
+
+          {% if data['superuser'] %}
+          {% include "parts/crafty_config_list.html %}
+          {% end %}
+
+          <!-- Page Title Header Starts-->
+          <div class="row page-title-header">
+            <div class="col-12">
+              <div class="page-header">
+                <!-- TODO: Translate the following -->
+                <h4 class="page-title">{{ translate('customLogin', 'customLoginPage', data['lang']) }}</h4>
+              </div>
+            </div>
+
+          </div>
+          <!-- Page Title Header Ends-->
+
+          <div class="row">
+            <div class="col-md-12 col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-12">
+                      <h4>{{ translate('customLogin', 'loginImage', data['lang']) }}</h4>
+                      <hr>
+                      <form class="form-row" name="zip" method="post" class="server-wizard" onSubmit="wait_msg(true)">
+                        {% raw xsrf_form_html() %}
+                        <input type="hidden" value="import_zip" name="create_type">
+                        <div class="col form-group">
+                          <span id="upload_input"><input type="file" class="form-control-file" id="file" name="file"
+                                   multiple="false" required></span>
+                        </div>
+                        <div class="col form-group">
+                          <button type="button" class="btn btn-info" id="upload-button" onclick="sendFile()"
+                                  disabled>UPLOAD</button>
+                        </div>
+                      </form>
+                      <hr>
+                      <hr />
+                    </div>
+                    <div class="col-12">
+                      <div>
+                        <h6>{{ translate('customLogin', 'preview', data['lang']) }}:</h6>
+                        <form id="photo_form">
+                          <div class="form-group row">
+                            <label for="photo" class="col-sm-6 col-form-label">Selected Background Image</label>
+                            <div class="col-sm-6">
+                              <select class="form-select form-control form-control-lg select-css form-control-plaintext"
+                                      id="photo" name="photo" form="photo_form" onchange="updateBackgroundPreview()">
+                                {% for image in data["backgrounds"] %}
+                                <option value="{{image}}">{{image}}</option>
+                                {% end %}
+                              </select>
+                            </div>
+                          </div>
+                          <div id="photo_loading" class="form-group" hidden>
+                            <div class="progress">
+                              <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                   aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i
+                                   class="fa-solid fa-spinner"></i></div>
+                            </div>
+                          </div>
+                          <div class="form-group row">
+                            <label class="col-sm-3" for="formControlRange">{{ translate('customLogin', 'loginOpacity',
+                              data['lang']) }}</label>
+                            <label class="col-sm-1" id="opacityValue">{{ data['login_opacity'] }}%</label>
+                            <div class="range col-sm-8">
+                              <input type="range" class="form-control-range" id="modal_opacity" name="modal_opacity"
+                                     onchange="previewOpacity()" min="0" max="100" value="{{ data['login_opacity'] }}">
+                            </div>
+                          </div>
+                          <div id="login_preview" style="position: relative;">
+                            <img id="bg-preview" src="../../static/assets/images/auth/{{ data['background'] }}"
+                                 class="img-fluid" alt="Responsive image">
+                            <div id="login-form-preview">
+                              <div id="login-form-background" class="auto-form-wrapper login-modal">
+                                <div class="text-center auto-form-logo">
+                                  <img src="/static/assets/images/logo_long.svg">
+                                </div>
+                                <style>
+                                  #login-form-preview {
+                                    display: flex;
+                                    position: absolute;
+                                    overflow: hidden;
+                                    top: 50%;
+                                    left: 50%;
+                                    transform: translateX(-50%) translateY(-50%);
+                                    max-width: 90%;
+                                    max-height: 90%;
+                                  }
+
+                                  .auto-form-wrapper {
+                                    background: rgb(34, 36, 55, 1);
+                                    padding: 2rem 2rem 0.5rem;
+                                    border-radius: 4px;
+                                    -webkit-box-shadow: 0 -25px 37.7px 11.3px rgb(8 143 220 / 7%);
+                                    box-shadow: 0 -25px 37.7px 11.3px rgb(8 143 220 / 7%);
+                                    color: #fff;
+                                  }
+
+                                  /*.auto-form-logo {
+                                    background: #222437;
+                                    padding: 0rem;
+                                    margin: 0.5rem 0rem;
+                                    border-radius: 0.2rem;
+                                    color: #fff;
+                                  }*/
+
+                                  .login-modal {
+                                    border-radius: 0.4rem !important;
+                                    box-shadow: 0 8px 12px 0 hsla(0, 0%, 0%, 0.2) !important;
+                                  }
+
+                                  .login-text-input {
+                                    border: none !important;
+                                    background-color: hsl(234, 30%, 45%);
+                                    color: var(--white) !important;
+                                  }
+
+                                  .login-text-input:hover,
+                                  .login-text-input:focus {
+                                    background-color: hsl(234, 30%, 39%) !important;
+                                  }
+
+                                  .login-input {
+                                    border-radius: 0.4rem !important;
+                                    box-shadow: 0 8px 12px 0 hsla(0, 0%, 0%, 0.2);
+                                    transition: all 0.3s ease-in-out;
+                                  }
+
+                                  .login-input:hover,
+                                  .login-input:focus {
+                                    box-shadow: 0 12px 16px 0 hsla(0, 0%, 0%, 0.4);
+                                  }
+                                </style>
+
+                                <div id="login_form_data">
+                                  <input type="hidden" name="_xsrf"
+                                         value="2|1d603267|809fb6bd82f677d440e484dde7c3a310|1671726040" disabled>
+                                  <div class="form-group">
+                                    <label class="label">Username</label>
+                                    <div class="input-group">
+                                      <input type="text" class="form-control login-text-input login-input"
+                                             placeholder="Username" name="username" id="username" required="true" disabled>
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label class="label">Password</label>
+                                    <div class="input-group">
+                                      <input type="password" class="form-control login-text-input login-input"
+                                             placeholder="Password" name="password" id="password" required="true" disabled>
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <button class="login-input btn btn-primary submit-btn btn-block" disabled>Log
+                                      In</button>
+                                  </div>
+
+                                  <fieldset style="color: red; text-align: center;">
+                                    <span></span>
+                                  </fieldset>
+
+                                  <div class="form-group d-flex justify-content-between">
+                                    <div class="form-check form-check-flat mt-0">
+                                      &nbsp;
+                                    </div>
+                                    <a href="#" class="text-small forgot-password" disabled>Forgot Password</a>
+                                  </div>
+                                  <div class="text-block text-center my-3">
+                                    <span class="text-small font-weight-semibold"><a
+                                         href="https://craftycontrol.com/">Crafty Control
+                                        4.0.20</a> </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <button class="btn btn-outline-success select-photo" type="button">{{
+                              translate('customLogin',
+                              'apply', data['lang']) }}</button>
+                            <button class="btn btn-outline-danger delete-photo" type="button">{{
+                              translate('customLogin',
+                              'delete', data['lang']) }}</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<style>
+  .popover-body {
+    color: white !important;
+    ;
+  }
+</style>
+<!-- content-wrapper ends -->
+
+{% end %}
+
+{% block js %}
+<script>
+  $(document).ready(function () {
+    $('[data-toggle="popover"]').popover();
+    if ($(window).width() < 1000) {
+      $('.too_small').popover("show");
+      $('.too_small2').popover("show");
+    }
+
+  });
+  $(window).ready(function () {
+    $('body').click(function () {
+      $('.too_small').popover("hide");
+      $('.too_small2').popover("hide");
+    });
+  });
+  $(window).resize(function () {
+    // This will execute whenever the window is resized
+    if ($(window).width() < 1000) {
+      $('.too_small').popover("show");
+    }
+    else {
+      $('.too_small').popover("hide");
+    } // New width
+    if ($(window).width() < 1000) {
+      $('.too_small2').popover("show");
+    }
+    else {
+      $('.too_small2').popover("hide");
+    } // New width
+  });
+  $('#file').change(function () {
+    console.log("File changed");
+    if ($('#file').val()) {
+      $('#upload-button').prop("disabled", false);
+      console.log("File changed good");
+    }
+  });
+</script>
+<script>
+
+  $(document).ready(function () {
+    console.log('ready for JS!')
+
+  });
+
+  $(".show_button").click(function () {
+    console.log("showing key");
+    api_key = $(this).attr("data-id");
+    bootbox.alert({
+      backdrop: true,
+      title: '',
+      message: api_key,
+    });
+  });
+
+  $('.delete-photo').click(function () {
+    var token = getCookie("_xsrf")
+    let photo = $('#photo').find(":selected").val();
+    $.ajax({
+      type: "POST",
+      headers: { 'X-XSRFToken': token },
+      url: '/ajax/delete_photo?photo=' + encodeURIComponent(photo),
+      success: function (data) {
+        location.reload();
+      },
+    });
+  })
+
+  $('.select-photo').click(function () {
+    var token = getCookie("_xsrf")
+    let photo = $('#photo').find(":selected").val();
+    let opacity = $('#modal_opacity').val();
+    let enc_photo = encodeURIComponent(photo);
+
+    $.ajax({
+      type: "POST",
+      headers: { 'X-XSRFToken': token },
+      url: '/ajax/select_photo?photo=' + enc_photo + '&opacity=' + opacity,
+      success: function (data) {
+        window.location.reload();
+      },
+    });
+  })
+
+  $(document).ready(function () {
+    let opacity = parseInt($("#modal_opacity").val());
+    document.getElementById('login-form-background').style.background = 'rgb(34, 36, 55, ' + (opacity / 100) + ')';
+  });
+
+  function previewOpacity() {
+    let opacity = parseInt($("#modal_opacity").val())
+    console.debug("Selected Opacity = " + opacity + "%");
+    document.getElementById('opacityValue').innerHTML = (opacity) + "%";
+    document.getElementById('login-form-background').style.background = 'rgb(34, 36, 55, ' + (opacity / 100) + ')';
+  }
+
+  function updateBackgroundSelect() {
+    $("#photo").val($("#try_photo").val()).change();
+  }
+
+  function updateBackgroundPreview() {
+    var img = document.getElementById('bg-preview');
+    if ($("#photo").val() == "login_1.jpg") {
+      var src_path = "../../static/assets/images/auth/".concat($("#photo").val());
+    }
+    else {
+      var src_path = "../../static/assets/images/auth/custom/".concat($("#photo").val());
+    }
+    img.src = src_path;
+  }
+
+  var file;
+  function sendFile() {
+    file = $("#file")[0].files[0]
+    document.getElementById("upload_input").innerHTML = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>';
+    let xmlHttpRequest = new XMLHttpRequest();
+    let token = getCookie("_xsrf")
+    let fileName = file.name
+    let target = '/upload'
+    let mimeType = file.type
+    let size = file.size
+    let type = 'background'
+
+    xmlHttpRequest.open('POST', target, true);
+    xmlHttpRequest.setRequestHeader('X-Content-Type', mimeType);
+    xmlHttpRequest.setRequestHeader('X-XSRFToken', token);
+    xmlHttpRequest.setRequestHeader('X-Content-Length', size);
+    xmlHttpRequest.setRequestHeader('X-Content-Disposition', 'attachment; filename="' + fileName + '"');
+    xmlHttpRequest.setRequestHeader('X-Content-Upload-Type', type);
+    xmlHttpRequest.setRequestHeader('X-FileName', fileName);
+    xmlHttpRequest.addEventListener('load', (event) => {
+      if (event.target.responseText == 'success') {
+        console.log('Upload for file', file.name, 'was successful!')
+        document.getElementById("upload_input").innerHTML = '<div class="card-header header-sm d-flex justify-content-between align-items-center"><span id="file-uploaded" style="color: gray;">' + fileName + '</span> 🔒</div>';
+        setTimeout(function () {
+          window.location.reload();
+        }, 2000);
+      }
+      else {
+        alert('Upload failed with response: ' + event.target.responseText);
+        doUpload = false;
+      }
+    }, false);
+    xmlHttpRequest.addEventListener('error', (e) => {
+      console.error('Error while uploading file', file.name + '.', 'Event:', e)
+    }, false);
+    xmlHttpRequest.send(file);
+  }
+</script>
+
+{% end %}

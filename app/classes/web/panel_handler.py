@@ -291,6 +291,7 @@ class PanelHandler(BaseHandler):
             # todo: make this actually pull and compare version data
             "update_available": self.helper.update_available,
             "background": self.controller.cached_login,
+            "login_opacity": self.controller.management.get_login_opacity(),
             "serverTZ": tz,
             "version_data": self.helper.get_version_string(),
             "failed_servers": self.controller.servers.failed_servers,
@@ -857,32 +858,6 @@ class PanelHandler(BaseHandler):
                         page_data["roles"] = self.controller.roles.get_all_roles()
                         page_data["auth-servers"][user.user_id] = super_auth_servers
                         page_data["managed_users"] = []
-                        page_data["backgrounds"] = []
-                        cached_split = self.controller.cached_login.split("/")
-
-                        if len(cached_split) == 1:
-                            page_data["backgrounds"].append(
-                                self.controller.cached_login
-                            )
-                        else:
-                            page_data["backgrounds"].append(cached_split[1])
-                        if "login_1.jpg" not in page_data["backgrounds"]:
-                            page_data["backgrounds"].append("login_1.jpg")
-                        self.helper.ensure_dir_exists(
-                            os.path.join(
-                                self.controller.project_root,
-                                "app/frontend/static/assets/images/auth/custom",
-                            )
-                        )
-                        for item in os.listdir(
-                            os.path.join(
-                                self.controller.project_root,
-                                "app/frontend/static/assets/images/auth/custom",
-                            )
-                        ):
-                            if item not in page_data["backgrounds"]:
-                                page_data["backgrounds"].append(item)
-                        page_data["background"] = self.controller.cached_login
             else:
                 page_data["managed_users"] = self.controller.users.get_managed_users(
                     exec_user["user_id"]
@@ -895,7 +870,64 @@ class PanelHandler(BaseHandler):
                     exec_user["user_id"]
                 )
 
+            page_data["active_link"] = "panel_config"
             template = "panel/panel_config.html"
+
+        elif page == "config_json":
+            if exec_user["superuser"]:
+                with open(self.helper.settings_file, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                page_data["config-json"] = data
+                page_data["availables_languages"] = []
+                page_data["all_languages"] = []
+
+                for file in sorted(
+                    os.listdir(
+                        os.path.join(self.helper.root_dir, "app", "translations")
+                    )
+                ):
+                    if file.endswith(".json"):
+                        if file.split(".")[0] not in self.helper.get_setting(
+                            "disabled_language_files"
+                        ):
+                            page_data["availables_languages"].append(file.split(".")[0])
+                        page_data["all_languages"].append(file.split(".")[0])
+
+                page_data["active_link"] = "config_json"
+                template = "panel/config_json.html"
+
+        elif page == "custom_login":
+            if exec_user["superuser"]:
+                page_data["backgrounds"] = []
+                cached_split = self.controller.cached_login.split("/")
+
+                if len(cached_split) == 1:
+                    page_data["backgrounds"].append(self.controller.cached_login)
+                else:
+                    page_data["backgrounds"].append(cached_split[1])
+                if "login_1.jpg" not in page_data["backgrounds"]:
+                    page_data["backgrounds"].append("login_1.jpg")
+                self.helper.ensure_dir_exists(
+                    os.path.join(
+                        self.controller.project_root,
+                        "app/frontend/static/assets/images/auth/custom",
+                    )
+                )
+                for item in os.listdir(
+                    os.path.join(
+                        self.controller.project_root,
+                        "app/frontend/static/assets/images/auth/custom",
+                    )
+                ):
+                    if item not in page_data["backgrounds"]:
+                        page_data["backgrounds"].append(item)
+                page_data["background"] = self.controller.cached_login
+                page_data[
+                    "login_opacity"
+                ] = self.controller.management.get_login_opacity()
+
+                page_data["active_link"] = "custom_login"
+                template = "panel/custom_login.html"
 
         elif page == "add_user":
             page_data["new_user"] = True
@@ -953,7 +985,9 @@ class PanelHandler(BaseHandler):
                 os.listdir(os.path.join(self.helper.root_dir, "app", "translations"))
             ):
                 if file.endswith(".json"):
-                    if file not in self.helper.get_setting("disabled_language_files"):
+                    if file.split(".")[0] not in self.helper.get_setting(
+                        "disabled_language_files"
+                    ):
                         if file != str(page_data["languages"][0] + ".json"):
                             page_data["languages"].append(file.split(".")[0])
 
@@ -1164,7 +1198,9 @@ class PanelHandler(BaseHandler):
                 os.listdir(os.path.join(self.helper.root_dir, "app", "translations"))
             ):
                 if file.endswith(".json"):
-                    if file not in self.helper.get_setting("disabled_language_files"):
+                    if file.split(".")[0] not in self.helper.get_setting(
+                        "disabled_language_files"
+                    ):
                         if file != str(page_data["languages"][0] + ".json"):
                             page_data["languages"].append(file.split(".")[0])
 
@@ -1521,10 +1557,6 @@ class PanelHandler(BaseHandler):
             server_obj = self.controller.servers.get_server_obj(server_id)
             shutdown_timeout = self.get_argument("shutdown_timeout", 60)
             if superuser:
-                server_path = self.get_argument("server_path", None)
-                if Helpers.is_os_windows():
-                    server_path.replace(" ", "^ ")
-                    server_path = Helpers.wtol_path(server_path)
                 log_path = self.get_argument("log_path", "")
                 if log_path:
                     if Helpers.is_os_windows():
@@ -1613,7 +1645,7 @@ class PanelHandler(BaseHandler):
             server_obj.shutdown_timeout = shutdown_timeout
             if superuser:
                 if Helpers.validate_traversal(
-                    self.helper.get_servers_root_dir(), server_path
+                    self.helper.get_servers_root_dir(), server_obj.path
                 ):
                     server_obj.log_path = log_path
                 if Helpers.validate_traversal(
@@ -1682,6 +1714,8 @@ class PanelHandler(BaseHandler):
             compress = self.get_argument("compress", False)
             shutdown = self.get_argument("shutdown", False)
             check_changed = self.get_argument("changed")
+            before = self.get_argument("backup_before", "")
+            after = self.get_argument("backup_after", "")
             if str(check_changed) == str(1):
                 checked = self.get_body_arguments("root_path")
             else:
@@ -1705,6 +1739,8 @@ class PanelHandler(BaseHandler):
                 excluded_dirs=checked,
                 compress=bool(compress),
                 shutdown=bool(shutdown),
+                before=before,
+                after=after,
             )
 
             self.controller.management.add_to_audit_log(
@@ -1715,6 +1751,38 @@ class PanelHandler(BaseHandler):
             )
             self.tasks_manager.reload_schedule_from_db()
             self.redirect(f"/panel/server_detail?id={server_id}&subpage=backup")
+
+        elif page == "config_json":
+            try:
+                data = {}
+                with open(self.helper.settings_file, "r", encoding="utf-8") as f:
+                    keys = json.load(f).keys()
+                this_uuid = self.get_argument("uuid")
+                for key in keys:
+                    arg_data = self.get_argument(key)
+                    if arg_data.startswith(this_uuid):
+                        arg_data = arg_data.split(",")
+                        arg_data.pop(0)
+                        data[key] = arg_data
+                    else:
+                        try:
+                            data[key] = int(arg_data)
+                        except:
+                            if arg_data == "True":
+                                data[key] = True
+                            elif arg_data == "False":
+                                data[key] = False
+                            else:
+                                data[key] = arg_data
+                with open(self.helper.settings_file, "w", encoding="utf-8") as f:
+                    json.dump(data, f, indent=4)
+            except Exception as e:
+                logger.critical(
+                    "Config File Error: Unable to read "
+                    f"{self.helper.settings_file} due to {e}"
+                )
+
+            self.redirect("/panel/config_json")
 
         if page == "new_schedule":
             server_id = self.check_server_id()

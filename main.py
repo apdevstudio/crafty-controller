@@ -219,7 +219,6 @@ if __name__ == "__main__":
         Console.debug(f"Execution Mode: {running_mode}")
         Console.debug(f"Application path  : '{application_path}'")
 
-        controller.clear_unexecuted_commands()
         controller.clear_support_status()
 
     crafty_prompt = MainPrompt(
