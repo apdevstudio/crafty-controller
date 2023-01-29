@@ -155,7 +155,7 @@ if __name__ == "__main__":
             str(helper.random_string_generator(64))
         )
         controller.management.set_cookie_secret(str(helper.random_string_generator(32)))
-        helper.set_setting("reset_secrets_on_boot", False)
+        helper.set_setting("reset_secrets_on_next_boot", False)
     else:
         Console.info("No flag found. Secrets are staying")
 
