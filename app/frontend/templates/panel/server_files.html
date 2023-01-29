@@ -720,20 +720,31 @@
     xmlHttpRequest.addEventListener('load', (event) => {
       if (event.target.responseText == 'success') {
         console.log('Upload for file', file.name, 'was successful!');
-        par_el = document.getElementById(path + "ul");
+        let caught = false;
+        try {
+          var par_el = document.getElementById(path + "ul");
+          var items = par_el.children;
+        } catch {
+          caught = true;
+          var par_el = document.getElementById("files-tree");
+          var items = par_el.children;
+        }
         let name = file.name;
         console.log(par_el)
         let full_path = path + '/' + name
-        var items = par_el.getElementsByTagName("li");
         let flag = false;
         for (var k = 0; k < items.length; ++k) {
           if ($(items[k]).attr("data-name") == name) {
-            console.log("FLAGGED")
             flag = true;
           }
         }
         if (!flag) {
-          $(par_el).append('<li id=' + '"' + full_path.toString() + 'li' + '"' + 'class="tree-ctx-item tree-file tree-item" data-path=' + '"' + full_path.toString() + '"' + ' data-name=' + '"' + name.toString() + '"' + ' onclick="clickOnFile(event)" ><span style="margin-right: 6px;"><i class="far fa-file"></i></span>' + name + '</li>');
+          if (caught) {
+            $(par_el).append('<li id=' + '"' + full_path.toString() + 'li' + '"' + 'class="d-block tree-ctx-item tree-file tree-item" data-path=' + '"' + full_path.toString() + '"' + ' data-name=' + '"' + name.toString() + '"' + ' onclick="clickOnFile(event)" ><span style="margin-right: 6px;"><i class="far fa-file"></i></span>' + name + '</li>');
+          } else {
+            $(par_el).append('<li id=' + '"' + full_path.toString() + 'li' + '"' + 'class="tree-ctx-item tree-file tree-item" data-path=' + '"' + full_path.toString() + '"' + ' data-name=' + '"' + name.toString() + '"' + ' onclick="clickOnFile(event)" ><span style="margin-right: 6px;"><i class="far fa-file"></i></span>' + name + '</li>');
+          }
+          setTreeViewContext();
         }
         return true;
       }
