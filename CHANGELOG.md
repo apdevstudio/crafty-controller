@@ -1,5 +1,5 @@
 # Changelog
-## --- [4.0.20] - 2022/TBD
+## --- [4.0.20] - 2022/01/29
 ### New features
 - Add option to run command before backup. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/536))
 - Make Config.json editable from panel. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/532))
@@ -17,8 +17,6 @@
 - Move Schedules to from DB to Queue Datatype. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/535))
 - Move raknet icon failure to a debug log. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/537))
 - Add Default redirection to Dashboard if the user is connected. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/540))
-### Lang
-TBD
 <br><br>
 
 ## --- [4.0.19] - 2022/01/07
