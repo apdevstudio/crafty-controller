@@ -245,38 +245,14 @@ class Controller:
             )
 
     def get_config_diff(self):
-        master_config = {
-            "config_ver": 1,
-            "http_port": 8000,
-            "https_port": 8443,
-            "language": "en_EN",
-            "cookie_expire": 30,
-            "cookie_secret": "random",
-            "apikey_secret": "random",
-            "show_errors": True,
-            "history_max_age": 7,
-            "stats_update_frequency": 30,
-            "delete_default_json": False,
-            "show_contribute_link": True,
-            "virtual_terminal_lines": 70,
-            "max_log_lines": 700,
-            "max_audit_entries": 300,
-            "disabled_language_files": ["lol_EN.json", ""],
-            "stream_size_GB": 1,
-            "keywords": ["help", "chunk"],
-            "allow_nsfw_profile_pictures": False,
-            "enable_user_self_delete": False,
-        }
-        user_config = self.helper.get_all_settings()
-        # Check user's config version
+        master_config = Helpers.get_master_config()
         try:
-            # If they are on the same version there is no need to remove this.
-            if user_config["config_ver"] == master_config["config_ver"]:
-                return user_config
-            else:
-                user_config["config_ver"] = master_config["config_ver"]
+            user_config = self.helper.get_all_settings()
         except:
-            logger.debug("No config version found")
+            # Call helper to set updated config.
+            Console.warning("No Config found. Setting Default Config.json")
+            self.helper.set_settings(master_config)
+            return
         items_to_del = []
 
         # Iterate through user's config.json and check for
@@ -293,7 +269,6 @@ class Controller:
         for key, value in master_config.items():
             if key not in user_config.keys():
                 user_config[key] = value
-
         # Call helper to set updated config.
         self.helper.set_settings(user_config)
 

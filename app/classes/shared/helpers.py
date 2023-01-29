@@ -392,6 +392,33 @@ class Helpers:
 
         return True
 
+    @staticmethod
+    def get_master_config():
+        # Make changes for users' local config.json files here. As of 4.0.20
+        # Config.json was removed from the repo to make it easier for users
+        # To make non-breaking changes to the file.
+        return {
+            "http_port": 8000,
+            "https_port": 8443,
+            "language": "en_EN",
+            "cookie_expire": 30,
+            "cookie_secret": "random",
+            "apikey_secret": "random",
+            "show_errors": True,
+            "history_max_age": 7,
+            "stats_update_frequency": 30,
+            "delete_default_json": False,
+            "show_contribute_link": True,
+            "virtual_terminal_lines": 70,
+            "max_log_lines": 700,
+            "max_audit_entries": 300,
+            "disabled_language_files": ["lol_EN.json", ""],
+            "stream_size_GB": 1,
+            "keywords": ["help", "chunk"],
+            "allow_nsfw_profile_pictures": False,
+            "enable_user_self_delete": False,
+        }
+
     def get_all_settings(self):
         try:
             with open(self.settings_file, "r", encoding="utf-8") as f:
