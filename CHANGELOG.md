@@ -1,5 +1,16 @@
 # Changelog
-## --- [4.0.20] - 2022/01/29
+## --- [4.0.21] - 2023/TBD
+### New features
+TBD
+### Bug fixes
+TBD
+### Tweaks
+TBD
+### Lang
+TBD
+<br><br>
+
+## --- [4.0.20] - 2023/01/29
 ### New features
 - Add option to run command before backup. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/536))
 - Make Config.json editable from panel. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/532))
@@ -19,7 +30,7 @@
 - Add Default redirection to Dashboard if the user is connected. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/540))
 <br><br>
 
-## --- [4.0.19] - 2022/01/07
+## --- [4.0.19] - 2023/01/07
 ### Bug fixes
 - Fix port tooltip not showing on dash while server online. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/503))
 - Fix '+' char in path causing any file operation to fail. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/502))
