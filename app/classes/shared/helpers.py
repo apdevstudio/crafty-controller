@@ -78,6 +78,7 @@ class Helpers:
         self.websocket_helper = WebSocketHelper(self)
         self.translation = Translation(self)
         self.update_available = False
+        self.ignored_names = ["crafty_managed.txt", "db_stats"]
 
     @staticmethod
     def auto_installer_fix(ex):
@@ -375,6 +376,64 @@ class Helpers:
             )
 
         return default_return
+
+    def set_settings(self, data):
+        try:
+            with open(self.settings_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4)
+
+        except Exception as e:
+            logger.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+            Console.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+            return False
+
+        return True
+
+    @staticmethod
+    def get_master_config():
+        # Make changes for users' local config.json files here. As of 4.0.20
+        # Config.json was removed from the repo to make it easier for users
+        # To make non-breaking changes to the file.
+        return {
+            "http_port": 8000,
+            "https_port": 8443,
+            "language": "en_EN",
+            "cookie_expire": 30,
+            "show_errors": True,
+            "history_max_age": 7,
+            "stats_update_frequency": 30,
+            "delete_default_json": False,
+            "show_contribute_link": True,
+            "virtual_terminal_lines": 70,
+            "max_log_lines": 700,
+            "max_audit_entries": 300,
+            "disabled_language_files": [],
+            "stream_size_GB": 1,
+            "keywords": ["help", "chunk"],
+            "allow_nsfw_profile_pictures": False,
+            "enable_user_self_delete": False,
+            "reset_secrets_on_next_boot": False,
+        }
+
+    def get_all_settings(self):
+        try:
+            with open(self.settings_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+
+        except Exception as e:
+            data = {}
+            logger.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+            Console.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+
+        return data
 
     @staticmethod
     def is_subdir(server_path, root_dir):
@@ -947,8 +1006,7 @@ class Helpers:
 
         return data
 
-    @staticmethod
-    def generate_tree(folder, output=""):
+    def generate_tree(self, folder, output=""):
         dir_list = []
         unsorted_files = []
         file_list = os.listdir(folder)
@@ -965,18 +1023,22 @@ class Helpers:
             rel = os.path.join(folder, raw_filename)
             dpath = os.path.join(folder, filename)
             if os.path.isdir(rel):
-                output += f"""<li class="tree-item" data-path="{dpath}">
-                    \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" class="tree-caret tree-ctx-item tree-folder">
-                    <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" data-name="{filename}" onclick="getDirView(event)">
-                      <i style="color: var(--info);" class="far fa-folder"></i>
-                      <i style="color: var(--info);" class="far fa-folder-open"></i>
-                      {filename}
-                      </span>
-                    </div><li>
-                    \n"""
+                if filename not in self.ignored_names:
+                    output += f"""<li id="{dpath}li" class="tree-item"
+                        data-path="{dpath}">
+                        \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" 
+                        class="tree-caret tree-ctx-item tree-folder">
+                        <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" 
+                        data-name="{filename}" onclick="getDirView(event)">
+                        <i style="color: var(--info);" class="far fa-folder"></i>
+                        <i style="color: var(--info);" class="far fa-folder-open"></i>
+                        {filename}
+                        </span>
+                        </div><li>
+                        \n"""
             else:
-                if filename != "crafty_managed.txt":
-                    output += f"""<li
+                if filename not in self.ignored_names:
+                    output += f"""<li id="{dpath}li"
                     class="d-block tree-ctx-item tree-file tree-item"
                     data-path="{dpath}"
                     data-name="{filename}"
@@ -984,8 +1046,7 @@ class Helpers:
                     <i class="far fa-file"></i></span>{filename}</li>"""
         return output
 
-    @staticmethod
-    def generate_dir(folder, output=""):
+    def generate_dir(self, folder, output=""):
 
         dir_list = []
         unsorted_files = []
@@ -1004,17 +1065,21 @@ class Helpers:
             dpath = os.path.join(folder, filename)
             rel = os.path.join(folder, raw_filename)
             if os.path.isdir(rel):
-                output += f"""<li class="tree-item" data-path="{dpath}">
-                    \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" class="tree-caret tree-ctx-item tree-folder">
-                    <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" data-name="{filename}" onclick="getDirView(event)">
-                      <i style="color: var(--info);" class="far fa-folder"></i>
-                      <i style="color: var(--info);" class="far fa-folder-open"></i>
-                      {filename}
-                      </span>
-                    </div><li>"""
+                if filename not in self.ignored_names:
+                    output += f"""<li id="{dpath}li" class="tree-item"
+                        data-path="{dpath}">
+                        \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" 
+                        class="tree-caret tree-ctx-item tree-folder">
+                        <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" 
+                        data-name="{filename}" onclick="getDirView(event)">
+                        <i style="color: var(--info);" class="far fa-folder"></i>
+                        <i style="color: var(--info);" class="far fa-folder-open"></i>
+                        {filename}
+                        </span>
+                        </div><li>"""
             else:
-                if filename != "crafty_managed.txt":
-                    output += f"""<li
+                if filename not in self.ignored_names:
+                    output += f"""<li id="{dpath}li"
                     class="d-block tree-ctx-item tree-file tree-item"
                     data-path="{dpath}"
                     data-name="{filename}"

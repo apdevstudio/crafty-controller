@@ -13,7 +13,7 @@ from peewee import (
 from playhouse.shortcuts import model_to_dict
 
 from app.classes.models.base_model import BaseModel
-from app.classes.models.users import Users, HelperUsers
+from app.classes.models.users import HelperUsers
 from app.classes.models.servers import Servers
 from app.classes.models.server_permissions import PermissionsServers
 from app.classes.shared.main_models import DatabaseShortcuts
@@ -43,7 +43,9 @@ class AuditLog(BaseModel):
 # **********************************************************************************
 class CraftySettings(BaseModel):
     secret_api_key = CharField(default="")
+    cookie_secret = CharField(default="")
     login_photo = CharField(default="login_1.jpg")
+    login_opacity = IntegerField(default=100)
     master_server_dir = CharField(default="")
 
     class Meta:
@@ -67,22 +69,6 @@ class HostStats(BaseModel):
 
     class Meta:
         table_name = "host_stats"
-
-
-# **********************************************************************************
-#                                   Commands Class
-# **********************************************************************************
-class Commands(BaseModel):
-    command_id = AutoField()
-    created = DateTimeField(default=datetime.datetime.now)
-    server_id = ForeignKeyField(Servers, backref="server", index=True)
-    user = ForeignKeyField(Users, backref="user", index=True)
-    source_ip = CharField(default="127.0.0.1")
-    command = CharField(default="")
-    executed = BooleanField(default=False)
-
-    class Meta:
-        table_name = "commands"
 
 
 # **********************************************************************************
@@ -132,6 +118,8 @@ class Backups(BaseModel):
     server_id = ForeignKeyField(Servers, backref="backups_server")
     compress = BooleanField(default=False)
     shutdown = BooleanField(default=False)
+    before = CharField(default="")
+    after = CharField(default="")
 
     class Meta:
         table_name = "backups"
@@ -150,33 +138,6 @@ class HelpersManagement:
         # pylint: disable=no-member
         query = HostStats.select().order_by(HostStats.id.desc()).get()
         return model_to_dict(query)
-
-    # **********************************************************************************
-    #                                   Commands Methods
-    # **********************************************************************************
-    @staticmethod
-    def add_command(server_id, user_id, remote_ip, command):
-        Commands.insert(
-            {
-                Commands.server_id: server_id,
-                Commands.user: user_id,
-                Commands.source_ip: remote_ip,
-                Commands.command: command,
-            }
-        ).execute()
-
-    @staticmethod
-    def get_unactioned_commands():
-        query = Commands.select().where(Commands.executed == 0)
-        return query
-
-    @staticmethod
-    def mark_command_complete(command_id=None):
-        if command_id is not None:
-            logger.debug(f"Marking Command {command_id} completed")
-            Commands.update({Commands.executed: True}).where(
-                Commands.command_id == command_id
-            ).execute()
 
     # **********************************************************************************
     #                                   Audit_Log Methods
@@ -246,8 +207,21 @@ class HelpersManagement:
                 return
 
     @staticmethod
+    def create_crafty_row():
+        CraftySettings.insert(
+            {
+                CraftySettings.secret_api_key: "",
+                CraftySettings.cookie_secret: "",
+                CraftySettings.login_photo: "login_1.jpg",
+                CraftySettings.login_opacity: 100,
+            }
+        ).execute()
+
+    @staticmethod
     def set_secret_api_key(key):
-        CraftySettings.insert(secret_api_key=key).execute()
+        CraftySettings.update({CraftySettings.secret_api_key: key}).where(
+            CraftySettings.id == 1
+        ).execute()
 
     @staticmethod
     def get_secret_api_key():
@@ -256,6 +230,22 @@ class HelpersManagement:
         )
         return settings[0].secret_api_key
 
+    @staticmethod
+    def get_cookie_secret():
+        settings = CraftySettings.select(CraftySettings.cookie_secret).where(
+            CraftySettings.id == 1
+        )
+        return settings[0].cookie_secret
+
+    @staticmethod
+    def set_cookie_secret(key):
+        CraftySettings.update({CraftySettings.cookie_secret: key}).where(
+            CraftySettings.id == 1
+        ).execute()
+
+    # **********************************************************************************
+    #                                  Config Methods
+    # **********************************************************************************
     @staticmethod
     def get_login_image():
         settings = CraftySettings.select(CraftySettings.login_photo).where(
@@ -266,6 +256,19 @@ class HelpersManagement:
     @staticmethod
     def set_login_image(photo):
         CraftySettings.update({CraftySettings.login_photo: photo}).where(
+            CraftySettings.id == 1
+        ).execute()
+
+    @staticmethod
+    def get_login_opacity():
+        settings = CraftySettings.select(CraftySettings.login_opacity).where(
+            CraftySettings.id == 1
+        )
+        return settings[0].login_opacity
+
+    @staticmethod
+    def set_login_opacity(opacity):
+        CraftySettings.update({CraftySettings.login_opacity: opacity}).where(
             CraftySettings.id == 1
         ).execute()
 
@@ -383,6 +386,8 @@ class HelpersManagement:
                 "server_id": row.server_id_id,
                 "compress": row.compress,
                 "shutdown": row.shutdown,
+                "before": row.before,
+                "after": row.after,
             }
         except IndexError:
             conf = {
@@ -392,6 +397,8 @@ class HelpersManagement:
                 "server_id": server_id,
                 "compress": False,
                 "shutdown": False,
+                "before": "",
+                "after": "",
             }
         return conf
 
@@ -407,6 +414,8 @@ class HelpersManagement:
         excluded_dirs: list = None,
         compress: bool = False,
         shutdown: bool = False,
+        before: str = "",
+        after: str = "",
     ):
         logger.debug(f"Updating server {server_id} backup config with {locals()}")
         if Backups.select().where(Backups.server_id == server_id).exists():
@@ -419,6 +428,8 @@ class HelpersManagement:
                 "server_id": server_id,
                 "compress": False,
                 "shutdown": False,
+                "before": "",
+                "after": "",
             }
             new_row = True
         if max_backups is not None:
@@ -428,6 +439,8 @@ class HelpersManagement:
             conf["excluded_dirs"] = dirs_to_exclude
         conf["compress"] = compress
         conf["shutdown"] = shutdown
+        conf["before"] = before
+        conf["after"] = after
         if not new_row:
             with self.database.atomic():
                 if backup_path is not None:
@@ -487,9 +500,3 @@ class HelpersManagement:
                 f"Not removing {dir_to_del} from excluded directories - "
                 f"not in the excluded directory list for server ID {server_id}"
             )
-
-    @staticmethod
-    def clear_unexecuted_commands():
-        Commands.update({Commands.executed: True}).where(
-            Commands.executed == False  # pylint: disable=singleton-comparison
-        ).execute()

@@ -348,14 +348,11 @@ class AjaxHandler(BaseHandler):
 
             server.backup_server()
 
-        elif page == "clear_comms":
-            if exec_user["superuser"]:
-                self.controller.clear_unexecuted_commands()
-                return
-
         elif page == "select_photo":
             if exec_user["superuser"]:
-                photo = self.get_argument("photo", None)
+                photo = urllib.parse.unquote(self.get_argument("photo", ""))
+                opacity = self.get_argument("opacity", 100)
+                self.controller.management.set_login_opacity(int(opacity))
                 if photo == "login_1.jpg":
                     self.controller.management.set_login_image("login_1.jpg")
                     self.controller.cached_login = f"{photo}"
@@ -366,7 +363,7 @@ class AjaxHandler(BaseHandler):
 
         elif page == "delete_photo":
             if exec_user["superuser"]:
-                photo = self.get_argument("photo", None)
+                photo = urllib.parse.unquote(self.get_argument("photo", None))
                 if photo and photo != "login_1.jpg":
                     os.remove(
                         os.path.join(
@@ -440,15 +437,8 @@ class AjaxHandler(BaseHandler):
                     for schedule in self.controller.management.get_schedules_by_server(
                         server_id
                     ):
-                        self.controller.management.create_scheduled_task(
-                            new_server_id,
-                            schedule.action,
-                            schedule.interval,
-                            schedule.interval_type,
-                            schedule.start_time,
-                            schedule.command,
-                            schedule.name,
-                            schedule.enabled,
+                        self.tasks_manager.update_job(
+                            schedule.schedule_id, {"server_id": new_server_id}
                         )
                     # preserve execution command
                     new_server_obj = self.controller.servers.get_server_obj(
@@ -456,6 +446,29 @@ class AjaxHandler(BaseHandler):
                     )
                     new_server_obj.execution_command = server_data["execution_command"]
                     self.controller.servers.update_server(new_server_obj)
+
+                    # preserve backup config
+                    backup_config = self.controller.management.get_backup_config(
+                        server_id
+                    )
+                    excluded_dirs = []
+                    server_obj = self.controller.servers.get_server_obj(server_id)
+                    loop_backup_path = self.helper.wtol_path(server_obj.path)
+                    for item in self.controller.management.get_excluded_backup_dirs(
+                        server_id
+                    ):
+                        item_path = self.helper.wtol_path(item)
+                        bu_path = os.path.relpath(item_path, loop_backup_path)
+                        bu_path = os.path.join(new_server_obj.path, bu_path)
+                        excluded_dirs.append(bu_path)
+                    self.controller.management.set_backup_config(
+                        new_server_id,
+                        new_server_obj.backup_path,
+                        backup_config["max_backups"],
+                        excluded_dirs,
+                        backup_config["compress"],
+                        backup_config["shutdown"],
+                    )
                     # remove old server's tasks
                     try:
                         self.tasks_manager.remove_all_server_tasks(server_id)
@@ -484,15 +497,8 @@ class AjaxHandler(BaseHandler):
                     for schedule in self.controller.management.get_schedules_by_server(
                         server_id
                     ):
-                        self.controller.management.create_scheduled_task(
-                            new_server_id,
-                            schedule.action,
-                            schedule.interval,
-                            schedule.interval_type,
-                            schedule.start_time,
-                            schedule.command,
-                            schedule.name,
-                            schedule.enabled,
+                        self.tasks_manager.update_job(
+                            schedule.schedule_id, {"server_id": new_server_id}
                         )
                     # preserve execution command
                     new_server_obj = self.controller.servers.get_server_obj(
@@ -500,6 +506,29 @@ class AjaxHandler(BaseHandler):
                     )
                     new_server_obj.execution_command = server_data["execution_command"]
                     self.controller.servers.update_server(new_server_obj)
+
+                    # preserve backup config
+                    backup_config = self.controller.management.get_backup_config(
+                        server_id
+                    )
+                    excluded_dirs = []
+                    server_obj = self.controller.servers.get_server_obj(server_id)
+                    loop_backup_path = self.helper.wtol_path(server_obj.path)
+                    for item in self.controller.management.get_excluded_backup_dirs(
+                        server_id
+                    ):
+                        item_path = self.helper.wtol_path(item)
+                        bu_path = os.path.relpath(item_path, loop_backup_path)
+                        bu_path = os.path.join(new_server_obj.path, bu_path)
+                        excluded_dirs.append(bu_path)
+                    self.controller.management.set_backup_config(
+                        new_server_id,
+                        new_server_obj.backup_path,
+                        backup_config["max_backups"],
+                        excluded_dirs,
+                        backup_config["compress"],
+                        backup_config["shutdown"],
+                    )
                     try:
                         self.tasks_manager.remove_all_server_tasks(server_id)
                     except:

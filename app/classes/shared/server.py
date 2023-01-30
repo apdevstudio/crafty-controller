@@ -131,13 +131,13 @@ class ServerInstance:
         self.stats_helper = HelperServerStats(self.server_id)
         self.last_backup_failed = False
         try:
-            tz = get_localzone()
+            self.tz = get_localzone()
         except ZoneInfoNotFoundError:
             logger.error(
                 "Could not capture time zone from system. Falling back to Europe/London"
             )
-            tz = "Europe/London"
-        self.server_scheduler = BackgroundScheduler(timezone=str(tz))
+            self.tz = "Europe/London"
+        self.server_scheduler = BackgroundScheduler(timezone=str(self.tz))
         self.server_scheduler.start()
         self.backup_thread = threading.Thread(
             target=self.a_backup_server, daemon=True, name=f"backup_{self.name}"
@@ -175,7 +175,6 @@ class ServerInstance:
         self.name = server_name
         self.settings = server_data_obj
 
-        self.stats_helper.init_database(server_id)
         self.record_server_stats()
 
         # build our server run command
@@ -1024,7 +1023,17 @@ class ServerInstance:
             )
         time.sleep(3)
         conf = HelpersManagement.get_backup_config(self.server_id)
+        if conf["before"]:
+            if self.check_running():
+                logger.debug(
+                    "Found running server and send command option. Sending command"
+                )
+                self.send_command(conf["before"])
+
         if conf["shutdown"]:
+            if conf["before"]:
+                # pause to let people read message.
+                time.sleep(5)
             logger.info(
                 "Found shutdown preference. Delaying"
                 + "backup start. Shutting down server."
@@ -1037,7 +1046,7 @@ class ServerInstance:
         try:
             backup_filename = (
                 f"{self.settings['backup_path']}/"
-                f"{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
+                f"{datetime.datetime.now().astimezone(self.tz).strftime('%Y-%m-%d_%H-%M-%S')}"  # pylint: disable=line-too-long
             )
             logger.info(
                 f"Creating backup of server '{self.settings['server_name']}'"
@@ -1105,6 +1114,14 @@ class ServerInstance:
                 self.run_threaded_server(HelperUsers.get_user_id_by_name("system"))
             time.sleep(3)
             self.last_backup_failed = False
+            if conf["after"]:
+                if self.check_running():
+                    logger.debug(
+                        "Found running server and send command option. Sending command"
+                    )
+                    self.send_command(conf["after"])
+            # pause to let people read message.
+            time.sleep(5)
         except:
             logger.exception(
                 f"Failed to create backup of server {self.name} (ID {self.server_id})"
