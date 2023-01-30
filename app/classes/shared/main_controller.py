@@ -1005,5 +1005,55 @@ class Controller:
         HelperUsers.clear_support_status()
 
     def set_master_server_dir(self, server_dir):
+        # This method should only be used on a first run basis if the server dir is ""
         self.helper.servers_dir = server_dir
         HelpersManagement.set_master_server_dir(server_dir)
+
+    def update_master_server_dir(self, server_dir, user_id):
+        if self.management.get_master_server_dir() == server_dir:
+            logger.info(
+                "Admin tried to change server dir to current server dir. Canceling..."
+            )
+            return
+        if self.helper.is_subdir(server_dir, self.management.get_master_server_dir()):
+            logger.info(
+                "Admin tried to change server dir to be inside a sub directory of the"
+                " current server dir. This will result in a copy loop."
+            )
+        self.helper.servers_dir = server_dir
+
+        if not self.helper.ensure_dir_exists(os.path.join(server_dir, "servers")):
+            self.helper.websocket_helper.broadcast_user(
+                user_id,
+                "send_start_error",
+                {
+                    "error": "Crafty failed to move server dir. "
+                    "It seems Crafty lacks permission to write to "
+                    "the new directory."
+                },
+            )
+            return
+
+        HelpersManagement.set_master_server_dir(server_dir)
+        servers = self.servers.get_all_defined_servers()
+        for server in servers:
+            server_path = server.get("path")
+            new_server_path = os.path.join(
+                server_dir, "servers", server.get("server_uuid")
+            )
+            if os.path.isdir(server_path):
+                self.file_helper.move_dir(
+                    server_path,
+                    new_server_path,
+                )
+            server_obj = self.servers.get_server_obj(server.get("server_id"))
+            server_obj.path = new_server_path
+            failed = False
+            for s in self.servers.failed_servers:
+                if int(s["server_id"]) == int(server.get("server_id")):
+                    failed = True
+            if not failed:
+                self.servers.update_server(server_obj)
+            else:
+                self.servers.update_unloaded_server(server_obj)
+        self.servers.init_all_servers()

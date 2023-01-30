@@ -50,7 +50,9 @@
                   <h4 class="card-title"><i class="fas fa-users"></i> {{ translate('panelConfig', 'users', data['lang'])
                     }}</h4>
                   {% if data['user_data']['hints'] %}
-                  <span class="too_small" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" , data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" , data-placement="top"></span>
+                  <span class="too_small" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" ,
+                    data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
+                    data-placement="top"></span>
                   {% end %}
                   <!-- TODO: Translate the following -->
                   <div><a class="nav-link" href="/panel/add_user"><i class="fas fa-plus-circle"></i> &nbsp; {{
@@ -148,7 +150,9 @@
                   <h4 class="card-title"><i class="fas fa-user-tag"></i> {{ translate('panelConfig', 'roles',
                     data['lang']) }}</h4>
                   {% if data['user_data']['hints'] %}
-                  <span class="too_small2" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" , data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" , data-placement="top"></span>
+                  <span class="too_small2" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" ,
+                    data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
+                    data-placement="top"></span>
                   {% end %}
                   <div><a class="nav-link" href="/panel/add_role"><i class="fas fa-plus-circle"></i> &nbsp; {{
                       translate('panelConfig', 'newRole', data['lang']) }}</a></div>
@@ -234,6 +238,16 @@
                   <h4 class="card-title"><i class="fas fa-user-tag"></i> {{ translate('panelConfig', 'adminControls',
                     data['lang']) }}</h4>
                 </div>
+                <br>
+                <form id="server-path">
+                  <label for="global_server_path">Global Server Path <small class="text-muted ml-1"> - Where Crafty
+                      stores all of your servers.</small>
+                  </label>
+                  <input type="text" id="global_server_path" class="form-control" name="global_server_path"
+                    placeholder="/var/opt/servers" value="{{data['servers_dir']}}">
+
+                  <button class="btn btn-success" type="submit">Submit</button>&nbsp;<span id="submit-status"></span>
+                </form>
               </div>
             </div>
           </div>
@@ -258,6 +272,30 @@
 
 {% block js %}
 <script>
+
+  $("#server-path").submit(function (e) {
+    var token = getCookie("_xsrf")
+    e.preventDefault();
+
+    $("#submit-status").html('<i class="fa fa-spinner fa-spin"></i>');
+
+    let path = $("#global_server_path").val();
+    let encoded = encodeURIComponent(path);
+    console.log(path)
+    $.ajax({
+      type: "POST",
+      headers: { 'X-XSRFToken': token },
+      dataType: "text",
+      url: '/ajax/update_server_dir',
+      data: {
+        "server_dir": encoded,
+      },
+      success: function (data) {
+        $("#submit-status").html('<i class="fa fa-check"></i>');
+      },
+    });
+  });
+
   $(document).ready(function () {
     $('[data-toggle="popover"]').popover();
     if ($(window).width() < 1000) {

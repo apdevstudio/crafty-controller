@@ -841,6 +841,9 @@ class PanelHandler(BaseHandler):
             page_data["auth-servers"] = auth_servers
             page_data["role-servers"] = auth_role_servers
             page_data["user-roles"] = user_roles
+            page_data[
+                "servers_dir"
+            ] = self.controller.management.get_master_server_dir()
 
             page_data["users"] = self.controller.users.user_query(exec_user["user_id"])
             page_data["roles"] = self.controller.users.user_role_query(
