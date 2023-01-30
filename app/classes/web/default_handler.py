@@ -17,6 +17,5 @@ class DefaultHandler(BaseHandler):
             )
         else:
             self.redirect(
-                "/public/login",
-                # translate=self.translator.translate,
+                "/panel/dashboard",
             )
