@@ -6,6 +6,7 @@ import platform
 import shutil
 import time
 import logging
+import threading
 from peewee import DoesNotExist
 
 # TZLocal is set as a hidden import on win pipeline
@@ -1010,6 +1011,22 @@ class Controller:
         HelpersManagement.set_master_server_dir(server_dir)
 
     def update_master_server_dir(self, server_dir, user_id):
+        move_thread = threading.Thread(
+            name="dir_move",
+            target=self.t_update_master_server_dir,
+            daemon=True,
+            args=(
+                server_dir,
+                user_id,
+            ),
+        )
+        move_thread.start()
+        return
+
+    def t_update_master_server_dir(self, server_dir, user_id):
+        self.helper.websocket_helper.broadcast_page(
+            "/panel/panel_config", "move_status", "Checking dir"
+        )
         if self.management.get_master_server_dir() == server_dir:
             logger.info(
                 "Admin tried to change server dir to current server dir. Canceling..."
@@ -1021,7 +1038,9 @@ class Controller:
                 " current server dir. This will result in a copy loop."
             )
         self.helper.servers_dir = server_dir
-
+        self.helper.websocket_helper.broadcast_page(
+            "/panel/panel_config", "move_status", "Checking permissions"
+        )
         if not self.helper.ensure_dir_exists(os.path.join(server_dir, "servers")):
             self.helper.websocket_helper.broadcast_user(
                 user_id,
@@ -1042,6 +1061,11 @@ class Controller:
                 server_dir, "servers", server.get("server_uuid")
             )
             if os.path.isdir(server_path):
+                self.helper.websocket_helper.broadcast_page(
+                    "/panel/panel_config",
+                    "move_status",
+                    f"Moving {server.get('server_name')}",
+                )
                 self.file_helper.move_dir(
                     server_path,
                     new_server_path,
@@ -1057,3 +1081,8 @@ class Controller:
             else:
                 self.servers.update_unloaded_server(server_obj)
         self.servers.init_all_servers()
+        self.helper.websocket_helper.broadcast_page(
+            "/panel/panel_config",
+            "move_status",
+            "done",
+        )
