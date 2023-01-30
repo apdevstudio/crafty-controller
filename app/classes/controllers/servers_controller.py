@@ -101,9 +101,8 @@ class ServersController(metaclass=Singleton):
         server_instance: ServerInstance = ServersController().get_server_instance_by_id(
             server_obj.server_id
         )
-        print("before update", server_instance.server_path)
         server_instance.update_server_instance()
-        print("after update", server_instance.server_path)
+
         return ret
 
     def get_history_stats(self, server_id, days):
