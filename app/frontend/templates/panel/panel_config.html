@@ -241,8 +241,9 @@
                 <br>
                 <form id="server-path">
                   <div class="form-group">
-                    <label for="global_server_path">Global Server Path <small class="text-muted ml-1"> - Where Crafty
-                        stores all of your servers.</small></label>
+                    <label for="global_server_path">{{ translate('panelConfig', 'globalServer',
+                      data['lang']) }}<small class="text-muted ml-1"> - {{ translate('panelConfig', 'globalExplain',
+                        data['lang']) }}</small></label>
                     <div class="input-group">
                       <input type="text" id="global_server_path" class="form-control" name="global_server_path"
                         placeholder="/var/opt/servers" value="{{data['servers_dir']}}" directory>
