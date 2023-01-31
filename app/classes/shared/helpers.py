@@ -899,7 +899,6 @@ class Helpers:
 
         # directory already exists - non-blocking error
         except FileExistsError:
-            pass
             return True
         except PermissionError as e:
             logger.critical(f"Check generated exception due to permssion error: {e}")

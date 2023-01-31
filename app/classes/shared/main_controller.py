@@ -1021,7 +1021,6 @@ class Controller:
             ),
         )
         move_thread.start()
-        return
 
     def t_update_master_server_dir(self, server_dir, user_id):
         self.helper.websocket_helper.broadcast_page(
