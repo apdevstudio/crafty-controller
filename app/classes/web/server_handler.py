@@ -183,7 +183,7 @@ class ServerHandler(BaseHandler):
             "version_data": "version_data_here",  # TODO
             "user_data": exec_user,
             "show_contribute": self.helper.get_setting("show_contribute_link", True),
-            # "background": self.controller.cached_login,
+            "background": self.controller.cached_login,
             "lang": self.controller.users.get_user_lang_by_id(exec_user["user_id"]),
             "lang_page": Helpers.get_lang_page(
                 self.controller.users.get_user_lang_by_id(exec_user["user_id"])
