@@ -159,7 +159,7 @@ class UploadHandler(BaseHandler):
 
             if not superuser:
                 return self.finish_json(
-                    413,
+                    401,
                     {
                         "status": "error",
                         "error": "UNAUTHORIZED ACCESS",
@@ -175,7 +175,7 @@ class UploadHandler(BaseHandler):
             ):
 
                 return self.finish_json(
-                    413,
+                    415,
                     {
                         "status": "error",
                         "error": "TYPE ERROR",
