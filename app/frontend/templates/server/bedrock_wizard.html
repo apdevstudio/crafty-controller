@@ -594,7 +594,15 @@
         document.getElementById("lower_half").style.visibility = "visible";
       }
       else {
-        alert('Upload failed with response: ' + event.target.responseText);
+        let response_text = JSON.parse(event.target.responseText);
+        var x = document.querySelector('.bootbox');
+        console.log(JSON.parse(event.target.responseText).info)
+        bootbox.alert({
+          message: JSON.parse(event.target.responseText).info,
+          callback: function () {
+            window.location.reload();
+          }
+        });
         doUpload = false;
       }
     }, false);

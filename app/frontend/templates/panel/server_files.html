@@ -760,7 +760,22 @@
         $(`#upload-progress-bar-${i + 1}`).html('<i style="color: black;" class="fas fa-box-check"></i>')
       }
       else {
-        alert('Upload failed with response: ' + event.target.responseText);
+        let response_text = JSON.parse(event.target.responseText);
+        var x = document.querySelector('.bootbox');
+        if (x) {
+          x.remove()
+        }
+        var x = document.querySelector('.modal-content');
+        if (x) {
+          x.remove()
+        }
+        console.log(JSON.parse(event.target.responseText).info)
+        bootbox.alert({
+          message: JSON.parse(event.target.responseText).info,
+          callback: function () {
+            window.location.reload();
+          }
+        });
         doUpload = false;
       }
     }, false);
