@@ -705,6 +705,15 @@
     let mimeType = file.type
     let size = file.size
 
+    xmlHttpRequest.upload.addEventListener('progress', function (e) {
+
+      if (e.loaded <= size) {
+        var percent = Math.round(e.loaded / size * 100);
+        $(`#upload-progress-bar-${i + 1}`).css('width', percent + '%');
+        $(`#upload-progress-bar-${i + 1}`).html(percent + '%');
+      }
+    });
+
     xmlHttpRequest.open('POST', target, true);
     xmlHttpRequest.setRequestHeader('X-Content-Type', mimeType);
     xmlHttpRequest.setRequestHeader('X-XSRFToken', token);
@@ -826,7 +835,7 @@
 
                 await sendFile(files.files[i], path, serverId, nFiles - i - 1, i, (progress) => {
                   $(`#upload-progress-bar-${i + 1}`).attr('aria-valuenow', progress)
-                  $(`#upload-progress-bar-${i + 1}`).css('width', progress + '%')
+                  $(`#upload-progress-bar-${i + 1}`).css('width', progress + '%');
                 });
               }
               hideUploadBox();
