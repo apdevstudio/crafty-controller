@@ -235,6 +235,7 @@
     "customLogin": {
         "customLoginPage": "Customise the Login Page",
         "loginImage": "Upload a background image for the login screen.",
+        "labelLoginImage": "Choose your Login Background",
         "backgroundUpload": "Background Upload",
         "loginBackground": "Login Background Image",
         "loginOpacity": "Select the Login Window Opacity",
@@ -527,6 +528,7 @@
         "importServerButton": "Import Server!",
         "importZip": "Import from a Zip File",
         "uploadZip": "Upload Zip File For Server Import",
+        "labelZipFile": "Choose your Zip File",
         "maxMem": "Maximum Memory",
         "minMem": "Minimum Memory",
         "myNewServer": "My New Server",
