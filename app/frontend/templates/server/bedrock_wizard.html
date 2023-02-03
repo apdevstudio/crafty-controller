@@ -346,11 +346,12 @@
 
                 <div class="col-sm-12">
                   <div class="form-group">
-                    <label for="server">Server Upload </label><br>
+                    <label for="server">{{ translate('serverWizard', 'serverUpload', data['lang']) }}</label><br>
                     <span id="upload_input">
                       <input type="file" multiple="false" class="form-control" id="file" name="file" required
                         style="width: 70%;">
-                      <button type="button" class="btn btn-info" onclick="sendFile()">UPLOAD</button>
+                      <button type="button" class="btn btn-info" onclick="sendFile()">{{ translate('serverWizard',
+                        'uploadButton', data['lang']) }}</button>
                     </span>
                   </div>
                 </div>
