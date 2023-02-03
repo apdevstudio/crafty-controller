@@ -157,6 +157,7 @@
                   }
                 }
               </style>
+              <i style="cursor: pointer;" id="check-toggle" class="fas fa-minus-square"></i>
               <ul class="tree-view">
                 <li>
                   <div id="root_dir" class="tree-ctx-item" data-path="{{ data['server_stats']['server_id']['path'] }}">
@@ -914,6 +915,9 @@
             document.getElementById(path + "span").classList.add('tree-caret-down');
             document.getElementById(path).innerHTML += text;
             document.getElementById(path).classList.add("clicked");
+            if ($("#check-toggle").hasClass("on")) {
+              $(".show-check").css("display", "");
+            }
           } catch {
             console.log("Bad")
           }
@@ -1163,6 +1167,11 @@
     target.classList.add('btn-primary');
   }
 
+  $("#check-toggle").click(function () {
+    $('input:checkbox').removeAttr('checked');
+    $(".show-check").toggle();
+    $("#check-toggle").toggleClass("on");
+  });
 
 
 </script>

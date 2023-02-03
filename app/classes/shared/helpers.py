@@ -1027,7 +1027,7 @@ class Helpers:
                     output += f"""<li id="{dpath}li" class="tree-item"
                         data-path="{dpath}">
                         \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" 
-                        class="tree-caret tree-ctx-item tree-folder">
+                        class="tree-caret tree-ctx-item tree-folder"><input style="display: none;" class="show-check" type="checkbox" data-path="{dpath}" >
                         <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" 
                         data-name="{filename}" onclick="getDirView(event)">
                         <i style="color: var(--info);" class="far fa-folder"></i>
@@ -1042,7 +1042,7 @@ class Helpers:
                     class="d-block tree-ctx-item tree-file tree-item"
                     data-path="{dpath}"
                     data-name="{filename}"
-                    onclick="clickOnFile(event)"><span style="margin-right: 6px;">
+                    onclick="clickOnFile(event)"><span style="margin-right: 6px;"><input style="display: none;" class="show-check" type="checkbox" data-path="{dpath}" >
                     <i class="far fa-file"></i></span>{filename}</li>"""
         return output
 
@@ -1069,7 +1069,7 @@ class Helpers:
                     output += f"""<li id="{dpath}li" class="tree-item"
                         data-path="{dpath}">
                         \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" 
-                        class="tree-caret tree-ctx-item tree-folder">
+                        class="tree-caret tree-ctx-item tree-folder"><input style="display: none;" class="show-check" type="checkbox" data-path="{dpath}" >
                         <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" 
                         data-name="{filename}" onclick="getDirView(event)">
                         <i style="color: var(--info);" class="far fa-folder"></i>
@@ -1083,7 +1083,7 @@ class Helpers:
                     class="d-block tree-ctx-item tree-file tree-item"
                     data-path="{dpath}"
                     data-name="{filename}"
-                    onclick="clickOnFile(event)"><span style="margin-right: 6px;">
+                    onclick="clickOnFile(event)"><span style="margin-right: 6px;"><input style="display: none;" class="show-check" type="checkbox" data-path="{dpath}" >
                     <i class="far fa-file"></i></span>{filename}</li>"""
         output += "</ul>\n"
         return output
