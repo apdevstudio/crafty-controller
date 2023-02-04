@@ -28,7 +28,12 @@
 
 
           {% if data['superuser'] %}
-          {% include "parts/crafty_config_list.html %}
+          <span class="d-none d-sm-block">
+            {% include "parts/crafty_config_list.html %}
+          </span>
+          <span class="d-block d-sm-none">
+            {% include "parts/m_crafty_config_list.html %}
+          </span>
           {% end %}
 
           <!-- Page Title Header Starts-->
