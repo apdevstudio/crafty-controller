@@ -405,7 +405,7 @@ class Helpers:
             "cookie_expire": 30,
             "show_errors": True,
             "history_max_age": 7,
-            "stats_update_frequency": 30,
+            "stats_update_frequency_seconds": 30,
             "delete_default_json": False,
             "show_contribute_link": True,
             "virtual_terminal_lines": 70,
@@ -417,6 +417,7 @@ class Helpers:
             "allow_nsfw_profile_pictures": False,
             "enable_user_self_delete": False,
             "reset_secrets_on_next_boot": False,
+            "dir_size_poll_freq_minutes": 5,
         }
 
     def get_all_settings(self):

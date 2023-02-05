@@ -635,7 +635,9 @@ class TasksManager:
             logger.error(f"Task failed with error: {event.exception}")
 
     def start_stats_recording(self):
-        stats_update_frequency = self.helper.get_setting("stats_update_frequency")
+        stats_update_frequency = self.helper.get_setting(
+            "stats_update_frequency_seconds"
+        )
         logger.info(
             f"Stats collection frequency set to {stats_update_frequency} seconds"
         )
