@@ -332,7 +332,12 @@ class PanelHandler(BaseHandler):
             else None,
             "superuser": superuser,
         }
-
+        try:
+            page_data["hosts_data"]["disk_json"] = json.loads(
+                page_data["hosts_data"]["disk_json"].replace("'", '"')
+            )
+        except:
+            page_data["hosts_data"]["disk_json"] = {}
         if page == "unauthorized":
             template = "panel/denied.html"
 
