@@ -71,7 +71,7 @@
                 <div class="input-group">
                   <button type="button" class="btn btn-outline-default custom-picker" onclick="$('option', $('#lang_select')).each(function(element) {
                 $(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')
-            });">Enable all Languages</button>
+            });">{{ translate('panelConfig', 'enableLang', data['lang']) }}</button>
                   <select id="lang_select" class="form-control selectpicker show-tick" data-icon-base="fas"
                     data-tick-icon="fa-check" multiple data-style="custom-picker">
                     {% for lang in data['all_languages'] %}
@@ -90,7 +90,7 @@
                 <div class="input-group">
                   <button type="button" class="btn btn-outline-default custom-picker" onclick="$('option', $('#mount_select')).each(function(element) {
                 $(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')
-            });">Disable All Mounts</button>
+            });">{{ translate('panelConfig', 'noMounts', data['lang']) }}</button>
                   <select id="mount_select" class="form-control selectpicker show-tick" data-icon-base="fas"
                     data-tick-icon="fa-check" multiple data-style="custom-picker">
                     {% for mount in data['all_partitions'] %}

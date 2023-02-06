@@ -230,7 +230,9 @@
         "superConfirmTitle": "Enable superuser? Are you sure?",
         "user": "User",
         "users": "Users",
-        "title": "Crafty Configuration"
+        "title": "Crafty Configuration",
+        "enableLang": "Enable All Languages",
+        "noMounts": "Show no Mounts on Dash"
     },
     "customLogin": {
         "customLoginPage": "Customise the Login Page",
