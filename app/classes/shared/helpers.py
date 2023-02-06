@@ -417,6 +417,7 @@ class Helpers:
             "allow_nsfw_profile_pictures": False,
             "enable_user_self_delete": False,
             "reset_secrets_on_next_boot": False,
+            "monitored_mounts": [],
         }
 
     def get_all_settings(self):

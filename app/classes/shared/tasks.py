@@ -702,6 +702,7 @@ class TasksManager:
                                 "disk_usage": json.loads(
                                     host_stats.get("disk_json").replace("'", '"')
                                 ),
+                                "mounts": self.helper.get_setting("monitored_mounts"),
                             },
                         )
                     except:
