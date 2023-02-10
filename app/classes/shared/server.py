@@ -12,9 +12,10 @@ import html
 import urllib.request
 import glob
 
+from zoneinfo import ZoneInfo
+
 # TZLocal is set as a hidden import on win pipeline
 from tzlocal import get_localzone
-from zoneinfo import ZoneInfo
 from tzlocal.utils import ZoneInfoNotFoundError
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.base import JobLookupError
