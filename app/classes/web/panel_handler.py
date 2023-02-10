@@ -1586,7 +1586,7 @@ class PanelHandler(BaseHandler):
             logs_delete_after = int(float(self.get_argument("logs_delete_after", "0")))
             java_selection = self.get_argument("java_selection", None)
             # make sure there is no whitespace
-            ignored_exits = " ".join(self.get_argument("ignored_exits", "").split())
+            ignored_exits = self.get_argument("ignored_exits", "").replace(" ", "")
             # subpage = self.get_argument('subpage', None)
 
             server_id = self.check_server_id()

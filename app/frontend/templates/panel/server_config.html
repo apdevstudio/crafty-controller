@@ -188,9 +188,7 @@
                     <label for="ignored_exits">{{ translate('serverConfig', 'ignoredExits', data['lang']) }}
                       <small class="text-muted ml-1"> - {{ translate('serverConfig', 'ignoredExitsExplain',
                         data['lang'])
-                        }}&nbsp;
-                        {{ data['server_stats']['server_id']['ignored_exits'] }}&nbsp;{{ translate('serverConfig',
-                        'timeoutExplain2', data['lang']) }}
+                        }}
                       </small> </label>
                     <input type="text" class="form-control" name="ignored_exits" id="ignored_exits"
                       value="{{ data['server_stats']['server_id']['ignored_exits']  }}">
