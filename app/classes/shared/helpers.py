@@ -7,6 +7,7 @@ import tempfile
 import time
 import uuid
 import string
+import psutil
 import base64
 import socket
 import secrets
@@ -417,7 +418,7 @@ class Helpers:
             "allow_nsfw_profile_pictures": False,
             "enable_user_self_delete": False,
             "reset_secrets_on_next_boot": False,
-            "monitored_mounts": [],
+            "monitored_mounts": Helpers.get_all_mounts(),
         }
 
     def get_all_settings(self):
@@ -435,6 +436,14 @@ class Helpers:
             )
 
         return data
+
+    @staticmethod
+    def get_all_mounts():
+        mounts = []
+        for item in psutil.disk_partitions(all=False):
+            mounts.append(item.mountpoint)
+
+        return mounts
 
     @staticmethod
     def is_subdir(server_path, root_dir):

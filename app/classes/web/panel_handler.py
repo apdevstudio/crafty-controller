@@ -887,9 +887,7 @@ class PanelHandler(BaseHandler):
                 page_data["config-json"] = data
                 page_data["availables_languages"] = []
                 page_data["all_languages"] = []
-                page_data["all_partitions"] = []
-                for item in psutil.disk_partitions(all=False):
-                    page_data["all_partitions"].append(item.mountpoint)
+                page_data["all_partitions"] = self.helper.get_all_mounts()
 
                 for file in sorted(
                     os.listdir(
