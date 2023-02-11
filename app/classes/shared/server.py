@@ -730,26 +730,26 @@ class ServerInstance:
             self.server_thread.join()
 
     def stop_server(self):
-        if self.settings["stop_command"]:
-            self.send_command(self.settings["stop_command"])
-            if self.settings["crash_detection"]:
-                # remove crash detection watcher
-                logger.info(f"Removing crash watcher for server {self.name}")
-                try:
-                    self.server_scheduler.remove_job("c_" + str(self.server_id))
-                except:
-                    logger.error(
-                        f"Removing crash watcher for server {self.name} failed. "
-                        f"Assuming it was never started."
-                    )
-        else:
-            # windows will need to be handled separately for Ctrl+C
-            self.process.terminate()
         running = self.check_running()
         if not running:
             logger.info(f"Can't stop server {self.name} if it's not running")
             Console.info(f"Can't stop server {self.name} if it's not running")
             return
+        if self.settings["crash_detection"]:
+            # remove crash detection watcher
+            logger.info(f"Removing crash watcher for server {self.name}")
+            try:
+                self.server_scheduler.remove_job("c_" + str(self.server_id))
+            except:
+                logger.error(
+                    f"Removing crash watcher for server {self.name} failed. "
+                    f"Assuming it was never started."
+                )
+        if self.settings["stop_command"]:
+            self.send_command(self.settings["stop_command"])
+        else:
+            # windows will need to be handled separately for Ctrl+C
+            self.process.terminate()
         i = 0
 
         # caching the name and pid number
@@ -919,7 +919,7 @@ class ServerInstance:
         if running:
             return
         # check the exit code -- This could be a fix for /stop
-        if self.process.returncode == 0:
+        if str(self.process.returncode) in self.settings["ignored_exits"].split(","):
             logger.warning(
                 f"Process {self.process.pid} exited with code "
                 f"{self.process.returncode}. This is considered a clean exit"
