@@ -297,7 +297,9 @@
         "shutdown": "Shutdown server for duration of backup",
         "size": "Size",
         "storageLocation": "Storage Location",
-        "storageLocationDesc": "Where do you want to store backups?"
+        "storageLocationDesc": "Where do you want to store backups?",
+        "before": "Run command before backup",
+        "after": "Run command after backup"
     },
     "serverConfig": {
         "bePatientDelete": "Please be patient while we remove your server from the Crafty panel. This screen will close in a few moments.",
