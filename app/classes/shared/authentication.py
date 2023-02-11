@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 class Authentication:
     def __init__(self, helper):
         self.helper = helper
-        self.secret = "my secret"
         try:
             self.secret = ManagementController.get_crafty_api_key()
             if self.secret == "":
