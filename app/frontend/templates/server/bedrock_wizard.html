@@ -563,7 +563,7 @@
   var file;
   function sendFile() {
     file = $("#file")[0].files[0]
-    document.getElementById("upload_input").innerHTML = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>'
+    document.getElementById("upload_input").innerHTML = '<div class="progress"><div id="upload-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>'
     let xmlHttpRequest = new XMLHttpRequest();
     let token = getCookie("_xsrf")
     let fileName = encodeURIComponent(file.name)
@@ -571,6 +571,15 @@
     let mimeType = file.type
     let size = file.size
     let type = 'server_import'
+
+    xmlHttpRequest.upload.addEventListener('progress', function (e) {
+
+      if (e.loaded <= size) {
+        var percent = Math.round(e.loaded / size * 100);
+        $(`#upload-progress-bar`).css('width', percent + '%');
+        $(`#upload-progress-bar`).html(percent + '%');
+      }
+    });
 
     xmlHttpRequest.open('POST', target, true);
     xmlHttpRequest.setRequestHeader('X-Content-Type', mimeType);
@@ -586,7 +595,15 @@
         document.getElementById("lower_half").style.visibility = "visible";
       }
       else {
-        alert('Upload failed with response: ' + event.target.responseText);
+        let response_text = JSON.parse(event.target.responseText);
+        var x = document.querySelector('.bootbox');
+        console.log(JSON.parse(event.target.responseText).info)
+        bootbox.alert({
+          message: JSON.parse(event.target.responseText).info,
+          callback: function () {
+            window.location.reload();
+          }
+        });
         doUpload = false;
       }
     }, false);
