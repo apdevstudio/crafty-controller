@@ -1013,7 +1013,7 @@ class Helpers:
         for item in file_list:
             if os.path.isdir(os.path.join(folder, item)):
                 dir_list.append(item)
-            elif str(item) != "crafty.sqlite":
+            elif str(item) != self.ignored_names:
                 unsorted_files.append(item)
         file_list = sorted(dir_list, key=str.casefold) + sorted(
             unsorted_files, key=str.casefold
@@ -1054,7 +1054,7 @@ class Helpers:
         for item in file_list:
             if os.path.isdir(os.path.join(folder, item)):
                 dir_list.append(item)
-            elif str(item) != "crafty.sqlite":
+            elif str(item) != self.ignored_names:
                 unsorted_files.append(item)
         file_list = sorted(dir_list, key=str.casefold) + sorted(
             unsorted_files, key=str.casefold
