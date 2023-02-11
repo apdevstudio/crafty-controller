@@ -1,13 +1,14 @@
 # Changelog
 ## --- [4.0.21] - 2023/TBD
 ### New features
-TBD
+- Add better feedback for uploads with a progress bar ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/546))
 ### Bug fixes
-TBD
+- Fix exception related to page data on server start ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/544))
 ### Tweaks
-TBD
+- Cleanup authentication helpers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/545))
+- Optimize file upload progress WS ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/546))
 ### Lang
-TBD
+- Add additional translations to backups page strings ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/543))
 <br><br>
 
 ## --- [4.0.20] - 2023/01/29

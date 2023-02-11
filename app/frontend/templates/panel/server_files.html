@@ -705,6 +705,15 @@
     let mimeType = file.type
     let size = file.size
 
+    xmlHttpRequest.upload.addEventListener('progress', function (e) {
+
+      if (e.loaded <= size) {
+        var percent = Math.round(e.loaded / size * 100);
+        $(`#upload-progress-bar-${i + 1}`).css('width', percent + '%');
+        $(`#upload-progress-bar-${i + 1}`).html(percent + '%');
+      }
+    });
+
     xmlHttpRequest.open('POST', target, true);
     xmlHttpRequest.setRequestHeader('X-Content-Type', mimeType);
     xmlHttpRequest.setRequestHeader('X-XSRFToken', token);
@@ -751,7 +760,22 @@
         $(`#upload-progress-bar-${i + 1}`).html('<i style="color: black;" class="fas fa-box-check"></i>')
       }
       else {
-        alert('Upload failed with response: ' + event.target.responseText);
+        let response_text = JSON.parse(event.target.responseText);
+        var x = document.querySelector('.bootbox');
+        if (x) {
+          x.remove()
+        }
+        var x = document.querySelector('.modal-content');
+        if (x) {
+          x.remove()
+        }
+        console.log(JSON.parse(event.target.responseText).info)
+        bootbox.alert({
+          message: JSON.parse(event.target.responseText).info,
+          callback: function () {
+            window.location.reload();
+          }
+        });
         doUpload = false;
       }
     }, false);
@@ -788,7 +812,7 @@
               var height = files.files.length * 50;
 
               var waitMessage = '<p class="text-center mb-0">' +
-                '<i class="fa fa-spin fa-cog"></i>' +
+                '<i class="fa fa-spin fa-cog"></i>&nbsp;' +
                 "{{ translate('serverFiles', 'waitUpload', data['lang']) }}" + '<br>' +
                 '<strong>' + "{{ translate('serverFiles', 'stayHere', data['lang']) }}" + '</strong>' +
                 '</p>' +
@@ -826,7 +850,7 @@
 
                 await sendFile(files.files[i], path, serverId, nFiles - i - 1, i, (progress) => {
                   $(`#upload-progress-bar-${i + 1}`).attr('aria-valuenow', progress)
-                  $(`#upload-progress-bar-${i + 1}`).css('width', progress + '%')
+                  $(`#upload-progress-bar-${i + 1}`).css('width', progress + '%');
                 });
               }
               hideUploadBox();
