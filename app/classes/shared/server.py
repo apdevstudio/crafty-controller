@@ -12,6 +12,8 @@ import html
 import urllib.request
 import glob
 
+from zoneinfo import ZoneInfo
+
 # TZLocal is set as a hidden import on win pipeline
 from tzlocal import get_localzone
 from tzlocal.utils import ZoneInfoNotFoundError
@@ -136,7 +138,7 @@ class ServerInstance:
             logger.error(
                 "Could not capture time zone from system. Falling back to Europe/London"
             )
-            self.tz = "Europe/London"
+            self.tz = ZoneInfo("Europe/London")
         self.server_scheduler = BackgroundScheduler(timezone=str(self.tz))
         self.server_scheduler.start()
         self.backup_thread = threading.Thread(
