@@ -7,7 +7,7 @@ TBD
 ### Tweaks
 TBD
 ### Lang
-TBD
+- Add additional translations to backups page strings ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/543))
 <br><br>
 
 ## --- [4.0.20] - 2023/01/29
