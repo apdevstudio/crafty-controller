@@ -7,7 +7,6 @@ import tempfile
 import time
 import uuid
 import string
-import psutil
 import base64
 import socket
 import secrets

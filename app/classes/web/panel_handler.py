@@ -12,7 +12,6 @@ import bleach
 import requests
 import tornado.web
 import tornado.escape
-import psutil
 from tornado import iostream
 
 # TZLocal is set as a hidden import on win pipeline
