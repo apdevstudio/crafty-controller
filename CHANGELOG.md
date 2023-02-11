@@ -4,6 +4,7 @@
 - Add better feedback for uploads with a progress bar ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/546))
 ### Bug fixes
 - Fix exception related to page data on server start ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/544))
+- Fix logical issue with uploading dynamic files ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/555))
 ### Tweaks
 - Cleanup authentication helpers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/545))
 - Optimize file upload progress WS ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/546))
