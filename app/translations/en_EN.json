@@ -299,7 +299,9 @@
         "shutdown": "Shutdown server for duration of backup",
         "size": "Size",
         "storageLocation": "Storage Location",
-        "storageLocationDesc": "Where do you want to store backups?"
+        "storageLocationDesc": "Where do you want to store backups?",
+        "before": "Run command before backup",
+        "after": "Run command after backup"
     },
     "serverConfig": {
         "bePatientDelete": "Please be patient while we remove your server from the Crafty panel. This screen will close in a few moments.",
@@ -354,7 +356,9 @@
         "timeoutExplain1": "How long Crafty will wait for your server to shutdown after executing the",
         "timeoutExplain2": "command before it forces the process down.",
         "statsHint1": "The port your server is running on should go here. This is just how Crafty opens a connection to your server for stats.",
-        "statsHint2": "This does not change the port of your server. You must still change the port in your server config file."
+        "statsHint2": "This does not change the port of your server. You must still change the port in your server config file.",
+        "ignoredExits": "Ignored Crash Exit Codes",
+        "ignoredExitsExplain": "Exit codes Crafty's Crash detection should ignore as a normal 'stop' (separated by commas)"
     },
     "serverConfigHelp": {
         "desc": "Here is where you can change the configuration of your server",
