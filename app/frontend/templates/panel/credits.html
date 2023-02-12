@@ -24,7 +24,8 @@
 
   <div class="card">
     <div class="card-header header-sm d-flex justify-content-between align-items-center">
-      <h4 class="card-title"><i class="far fa-code"></i> &nbsp;{{ translate('credits', 'developmentTeam', data['lang'])
+      <h4 class="card-title"><i class="fa-solid fa-code-merge"></i> &nbsp;{{ translate('credits', 'developmentTeam',
+        data['lang'])
         }}</h4>
     </div>
     <div class="card-body">
@@ -184,7 +185,8 @@
 
   <div class="card">
     <div class="card-header header-sm d-flex justify-content-between align-items-center">
-      <h4 class="card-title"><i class="far fa-server"></i> &nbsp;{{ translate('credits', 'retiredStaff', data['lang'])
+      <h4 class="card-title"><i class="fa-solid fa-thumbtack"></i> &nbsp;{{ translate('credits', 'retiredStaff',
+        data['lang'])
         }}</h4>
     </div>
 
@@ -320,7 +322,7 @@
     <div class="col-lg-6 grid-margin stretch-card">
       <div class="card">
         <div class="card-header header-sm d-flex justify-content-between align-items-center">
-          <h4 class="card-title"><i class="far fa-language"></i> {{ translate('credits', 'translationTitle',
+          <h4 class="card-title"><i class="fa fa-language"></i> {{ translate('credits', 'translationTitle',
             data['lang']) }}</h4>
         </div>
         <div class="card-body">
@@ -342,11 +344,13 @@
                 <td class="pb-0">
                   <div class="row">
                     {% for language in data['translations'][person] %}
-                      {% if language['status'] %}
-                        <span class="btn btn-sm btn-inverse-success mr-2" style="margin-bottom: 12px;">{{ language['name'] }}</span>
-                      {% else %}
-                        <span class="btn btn-sm btn-inverse-secondary mr-2" style="margin-bottom: 12px;">{{ language['name'] }}</span>
-                      {% end %}
+                    {% if language['status'] %}
+                    <span class="btn btn-sm btn-inverse-success mr-2" style="margin-bottom: 12px;">{{ language['name']
+                      }}</span>
+                    {% else %}
+                    <span class="btn btn-sm btn-inverse-secondary mr-2" style="margin-bottom: 12px;">{{ language['name']
+                      }}</span>
+                    {% end %}
                     {% end %}
                   </div>
                 </td>

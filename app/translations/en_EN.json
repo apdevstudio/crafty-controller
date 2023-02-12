@@ -222,6 +222,8 @@
         "newRole": "Add New Role",
         "newUser": "Add New User",
         "pageTitle": "Panel Config",
+        "json": "Config.json",
+        "custom": "Customize Crafty",
         "role": "Role",
         "roles": "Roles",
         "roleUsers": "Role Users",
@@ -552,7 +554,9 @@
         "serverType": "Server Type",
         "serverSelect": "Server Select",
         "serverVersion": "Server Version",
+        "serverUpload": "Upload Zipped Server",
         "sizeInGB": "Size in GB",
+        "uploadButton": "Upload",
         "zipPath": "Server Path"
     },
     "sidebar": {
