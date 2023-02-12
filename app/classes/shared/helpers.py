@@ -988,6 +988,15 @@ class Helpers:
         return os.name == "nt"
 
     @staticmethod
+    def is_env_docker():
+        path = "/proc/self/cgroup"
+        return (
+            os.path.exists("/.dockerenv")
+            or os.path.isfile(path)
+            and any("docker" in line for line in open(path, encoding="utf-8"))
+        )
+
+    @staticmethod
     def wtol_path(w_path):
         l_path = w_path.replace("\\", "/")
         return l_path
