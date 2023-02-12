@@ -590,6 +590,12 @@ class AjaxHandler(BaseHandler):
             if not superuser:
                 self.redirect("/panel/error?error=Not a super user")
                 return
+            if self.helper.is_env_docker():
+                self.redirect(
+                    "/panel/error?error=This feature is not"
+                    " supported on docker environments"
+                )
+                return
             new_dir = urllib.parse.unquote(self.get_argument("server_dir"))
             self.controller.update_master_server_dir(new_dir, exec_user["user_id"])
             return

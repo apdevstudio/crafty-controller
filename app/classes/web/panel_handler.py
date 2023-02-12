@@ -290,6 +290,7 @@ class PanelHandler(BaseHandler):
         page_data: t.Dict[str, t.Any] = {
             # todo: make this actually pull and compare version data
             "update_available": self.helper.update_available,
+            "docker": self.helper.is_env_docker(),
             "background": self.controller.cached_login,
             "login_opacity": self.controller.management.get_login_opacity(),
             "serverTZ": tz,
