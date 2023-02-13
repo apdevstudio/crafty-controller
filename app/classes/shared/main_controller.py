@@ -1023,6 +1023,7 @@ class Controller:
         move_thread.start()
 
     def t_update_master_server_dir(self, server_dir, user_id):
+        server_dir = self.helper.wtol_path(server_dir)
         self.helper.websocket_helper.broadcast_page(
             "/panel/panel_config", "move_status", "Checking dir"
         )
@@ -1051,7 +1052,9 @@ class Controller:
                 },
             )
             return
-
+        current_master = self.helper.wtol_path(
+            HelpersManagement.get_master_server_dir()
+        )
         HelpersManagement.set_master_server_dir(server_dir)
         servers = self.servers.get_all_defined_servers()
         for server in servers:
@@ -1070,6 +1073,14 @@ class Controller:
                     new_server_path,
                 )
             server_obj = self.servers.get_server_obj(server.get("server_id"))
+            if current_master in server["executable"]:
+                server_obj.executable = str(server["executable"]).replace(
+                    current_master, server_dir
+                )
+            if current_master in server["execution_command"]:
+                server_obj.executable = str(server["execution_command"]).replace(
+                    current_master, server_dir
+                )
             server_obj.path = new_server_path
             failed = False
             for s in self.servers.failed_servers:
