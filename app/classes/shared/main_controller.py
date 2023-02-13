@@ -1027,17 +1027,31 @@ class Controller:
         self.helper.websocket_helper.broadcast_page(
             "/panel/panel_config", "move_status", "Checking dir"
         )
-        if self.management.get_master_server_dir() == server_dir:
+        current_master = self.helper.wtol_path(
+            HelpersManagement.get_master_server_dir()
+        )
+        if current_master == server_dir:
             logger.info(
                 "Admin tried to change server dir to current server dir. Canceling..."
             )
+            self.helper.websocket_helper.broadcast_page(
+                "/panel/panel_config",
+                "move_status",
+                "done",
+            )
             return
-        if self.helper.is_subdir(server_dir, self.management.get_master_server_dir()):
+        if self.helper.is_subdir(server_dir, current_master):
             logger.info(
                 "Admin tried to change server dir to be inside a sub directory of the"
                 " current server dir. This will result in a copy loop."
             )
-        self.helper.servers_dir = server_dir
+            self.helper.websocket_helper.broadcast_page(
+                "/panel/panel_config",
+                "move_status",
+                "done",
+            )
+            return
+
         self.helper.websocket_helper.broadcast_page(
             "/panel/panel_config", "move_status", "Checking permissions"
         )
@@ -1052,11 +1066,12 @@ class Controller:
                 },
             )
             return
-        current_master = self.helper.wtol_path(
-            HelpersManagement.get_master_server_dir()
-        )
+        # set the cached serve dir
+        self.helper.servers_dir = server_dir
+        # set DB server dir
         HelpersManagement.set_master_server_dir(server_dir)
         servers = self.servers.get_all_defined_servers()
+        # move the servers
         for server in servers:
             server_path = server.get("path")
             new_server_path = os.path.join(
@@ -1068,17 +1083,29 @@ class Controller:
                     "move_status",
                     f"Moving {server.get('server_name')}",
                 )
-                self.file_helper.move_dir(
-                    server_path,
-                    new_server_path,
-                )
+                try:
+                    self.file_helper.move_dir(
+                        server_path,
+                        new_server_path,
+                    )
+                except FileExistsError as e:
+                    logger.error(f"Failed to move server with error: {e}")
+
             server_obj = self.servers.get_server_obj(server.get("server_id"))
+
+            # reset executable path
             if current_master in server["executable"]:
                 server_obj.executable = str(server["executable"]).replace(
                     current_master, server_dir
                 )
+            # reset run command path
             if current_master in server["execution_command"]:
-                server_obj.executable = str(server["execution_command"]).replace(
+                server_obj.execution_command = str(server["execution_command"]).replace(
+                    current_master, server_dir
+                )
+            # reset log path
+            if current_master in server["log_path"]:
+                server_obj.log_path = str(server["log_path"]).replace(
                     current_master, server_dir
                 )
             server_obj.path = new_server_path
