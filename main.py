@@ -229,7 +229,7 @@ if __name__ == "__main__":
         controller.set_project_root(application_path)
         master_server_dir = controller.management.get_master_server_dir()
         if master_server_dir == "":
-            Console.warning("Could not find master server path. Setting default")
+            logger.debug("Could not find master server path. Setting default")
             controller.set_master_server_dir(
                 os.path.join(controller.project_root, "servers")
             )
