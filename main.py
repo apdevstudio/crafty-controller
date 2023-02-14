@@ -102,6 +102,9 @@ if __name__ == "__main__":
 
     setup_logging(debug=args.verbose)
 
+    if args.verbose:
+        Console.level = "debug"
+
     # setting up the logger object
     logger = logging.getLogger(__name__)
     Console.cyan(f"Logging set to: {logger.level}")
