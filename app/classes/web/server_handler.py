@@ -404,6 +404,14 @@ class ServerHandler(BaseHandler):
                 jar_type, server_type, server_version = server_parts
                 # TODO: add server type check here and call the correct server
                 # add functions if not a jar
+                if server_type == "forge" and not self.helper.detect_java():
+                    translation = self.helper.translation.translate(
+                        "error",
+                        "installerJava",
+                        self.controller.users.get_user_lang_by_id(exec_user["user_id"]),
+                    ).format(server_name)
+                    self.redirect(f"/panel/error?error={translation}")
+                    return
                 new_server_id = self.controller.create_jar_server(
                     jar_type,
                     server_type,
