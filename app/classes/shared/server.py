@@ -445,7 +445,7 @@ class ServerInstance:
                 )
             except Exception as ex:
                 # Checks for java on initial fail
-                if os.system("java -version") == 32512:
+                if not self.helper.detect_java():
                     if user_id:
                         self.helper.websocket_helper.broadcast_user(
                             user_id,
