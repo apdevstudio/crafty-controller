@@ -941,7 +941,6 @@ class Controller:
     def remove_server(self, server_id, files):
         counter = 0
         for server in self.servers.servers_list:
-
             # if this is the droid... im mean server we are looking for...
             if str(server["server_id"]) == str(server_id):
                 server_data = self.servers.get_server_data(server_id)

@@ -596,7 +596,6 @@ class Helpers:
 
         # open our file
         with open(file_name, "r", encoding="utf-8") as f:
-
             # seek
             f.seek(0, 2)
 
@@ -761,7 +760,6 @@ class Helpers:
 
     @staticmethod
     def get_file_contents(path: str, lines=100):
-
         contents = ""
 
         if os.path.exists(path) and os.path.isfile(path):
@@ -782,12 +780,10 @@ class Helpers:
             return False
 
     def create_session_file(self, ignore=False):
-
         if ignore and os.path.exists(self.session_file):
             os.remove(self.session_file)
 
         if os.path.exists(self.session_file):
-
             file_data = self.get_file_contents(self.session_file)
             try:
                 data = json.loads(file_data)
@@ -895,7 +891,6 @@ class Helpers:
             logger.critical(f"Check generated exception due to permssion error: {e}")
 
     def create_self_signed_cert(self, cert_dir=None):
-
         if cert_dir is None:
             cert_dir = os.path.join(self.config_dir, "web", "certs")
 
@@ -1047,7 +1042,6 @@ class Helpers:
         return output
 
     def generate_dir(self, folder, output=""):
-
         dir_list = []
         unsorted_files = []
         file_list = os.listdir(folder)
