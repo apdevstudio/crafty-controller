@@ -76,7 +76,7 @@ class Authentication:
 
         output = self.check(token)
         if output is None:
-            raise Exception("Invalid token")
+            raise ValueError("Invalid token")
         return output
 
     def check_bool(self, token) -> bool:
