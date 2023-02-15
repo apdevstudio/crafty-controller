@@ -123,7 +123,7 @@ def ping(ip, port):
             try:
                 k = sock.recv(1)
                 if not k:
-                    raise Exception()
+                    raise ValueError()
             except:
                 return 0
             k = k[0]

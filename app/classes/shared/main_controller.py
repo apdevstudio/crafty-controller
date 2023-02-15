@@ -347,7 +347,7 @@ class Controller:
             elif root_create_data["create_type"] == "import_zip":
                 # TODO: Copy files from the zip file to the new server directory
                 server_file = create_data["jarfile"]
-                raise Exception("Not yet implemented")
+                raise NotImplementedError("Not yet implemented")
             _create_server_properties_if_needed(
                 create_data["server_properties_port"],
             )
@@ -379,7 +379,7 @@ class Controller:
                     logger.error(f"Server import failed with error: {ex}")
             elif root_create_data["create_type"] == "import_zip":
                 # TODO: Copy files from the zip file to the new server directory
-                raise Exception("Not yet implemented")
+                raise NotImplementedError("Not yet implemented")
 
             _create_server_properties_if_needed(0, True)
 
@@ -401,7 +401,7 @@ class Controller:
                     logger.error(f"Server import failed with error: {ex}")
             elif root_create_data["create_type"] == "import_zip":
                 # TODO: Copy files from the zip file to the new server directory
-                raise Exception("Not yet implemented")
+                raise NotImplementedError("Not yet implemented")
 
             _create_server_properties_if_needed(0, True)
 
