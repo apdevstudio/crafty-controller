@@ -59,7 +59,6 @@ class Webserver:
 
     @staticmethod
     def log_function(handler):
-
         info = {
             "Status_Code": handler.get_status(),
             "Method": handler.request.method,
@@ -103,7 +102,6 @@ class Webserver:
                     logger.debug("Applied asyncio patch")
 
     def run_tornado(self):
-
         # let's verify we have an SSL cert
         self.helper.create_self_signed_cert()
 

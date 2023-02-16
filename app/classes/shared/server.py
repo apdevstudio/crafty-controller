@@ -592,7 +592,6 @@ class ServerInstance:
                 # We need to grab the exact forge version number.
                 # We know we can find it here in the run.sh/bat script.
                 try:
-
                     # Getting the forge version from the executable command
                     version = re.findall(
                         r"forge-([0-9\.]+)((?:)|(?:-([0-9\.]+)-[a-zA-Z]+)).jar",
@@ -852,7 +851,6 @@ class ServerInstance:
         return True
 
     def crash_detected(self, name):
-
         # clear the old scheduled watcher task
         self.server_scheduler.remove_job(f"c_{self.server_id}")
         # remove the stats polling job since server is stopped
@@ -914,7 +912,6 @@ class ServerInstance:
         return self.process.pid if self.process is not None else None
 
     def detect_crash(self):
-
         logger.info(f"Detecting possible crash for server: {self.name} ")
 
         running = self.check_running()
@@ -937,7 +934,6 @@ class ServerInstance:
         self.stats_helper.sever_crashed()
         # if we haven't tried to restart more 3 or more times
         if self.restart_count <= 3:
-
             # start the server if needed
             server_restarted = self.crash_detected(self.name)
 
@@ -1463,7 +1459,6 @@ class ServerInstance:
                     Console.critical("Can't broadcast server status to websocket")
 
     def get_servers_stats(self):
-
         server_stats = {}
 
         logger.info("Getting Stats for Server " + self.name + " ...")
@@ -1550,7 +1545,6 @@ class ServerInstance:
         return server_stats
 
     def get_server_players(self):
-
         server = HelperServers.get_server_data_by_id(self.server_id)
 
         logger.info(f"Getting players for server {server}")
@@ -1571,7 +1565,6 @@ class ServerInstance:
         return []
 
     def get_raw_server_stats(self, server_id):
-
         try:
             server = HelperServers.get_server_obj(server_id)
         except:
@@ -1720,7 +1713,6 @@ class ServerInstance:
         return server_stats
 
     def record_server_stats(self):
-
         server_stats = self.get_servers_stats()
         self.stats_helper.insert_server_stats(server_stats)
 

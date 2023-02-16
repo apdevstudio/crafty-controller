@@ -19,7 +19,6 @@ class Server:
         self.description = data.get("description")
         # print(self.description)
         if isinstance(self.description, dict):
-
             # cat server
             if "translate" in self.description:
                 self.description = self.description["translate"]

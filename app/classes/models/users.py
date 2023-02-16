@@ -21,6 +21,7 @@ from app.classes.models.roles import Roles, HelperRoles
 
 logger = logging.getLogger(__name__)
 
+
 # **********************************************************************************
 #                                   Users Class
 # **********************************************************************************
@@ -57,6 +58,7 @@ PUBLIC_USER_ATTRS: t.Final = [
     "superuser",
     "lang",  # maybe remove?
 ]
+
 
 # **********************************************************************************
 #                                   API Keys Class
