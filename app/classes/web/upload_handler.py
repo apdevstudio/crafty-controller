@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 
 @tornado.web.stream_request_body
 class UploadHandler(BaseHandler):
-
     # noinspection PyAttributeOutsideInit
     def initialize(
         self,
@@ -173,7 +172,6 @@ class UploadHandler(BaseHandler):
             if not self.request.headers.get("X-Content-Type", None).startswith(
                 "image/"
             ):
-
                 return self.finish_json(
                     415,
                     {

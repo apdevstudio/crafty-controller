@@ -94,7 +94,7 @@ class Helpers:
         try:
             # Get tags from Gitlab, select the latest and parse the semver
             response = get(
-                "https://gitlab.com/api/v4/projects/20430749/repository/tags"
+                "https://gitlab.com/api/v4/projects/20430749/repository/tags", timeout=1
             )
             if response.status_code == 200:
                 remote_version = pkg_version.parse(json.loads(response.text)[0]["name"])
@@ -131,7 +131,7 @@ class Helpers:
         try:
             # Get minecraft server download page
             # (hopefully the don't change the structure)
-            download_page = get(url, headers=headers)
+            download_page = get(url, headers=headers, timeout=1)
 
             # Search for our string targets
             win_download_url = re.search(target_win, download_page.text).group(0)
@@ -281,7 +281,7 @@ class Helpers:
     @staticmethod
     def check_port(server_port):
         try:
-            ip = get("https://api.ipify.org").content.decode("utf8")
+            ip = get("https://api.ipify.org", timeout=1).content.decode("utf8")
         except:
             ip = "google.com"
         a_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -596,7 +596,6 @@ class Helpers:
 
         # open our file
         with open(file_name, "r", encoding="utf-8") as f:
-
             # seek
             f.seek(0, 2)
 
@@ -752,7 +751,7 @@ class Helpers:
                 use_ssl=True,
             )  # + "?d=404"
             try:
-                if requests.head(url).status_code != 404:
+                if requests.head(url, timeout=1).status_code != 404:
                     profile_url = url
             except Exception as e:
                 logger.debug(f"Could not pull resource from Gravatar with error {e}")
@@ -761,7 +760,6 @@ class Helpers:
 
     @staticmethod
     def get_file_contents(path: str, lines=100):
-
         contents = ""
 
         if os.path.exists(path) and os.path.isfile(path):
@@ -782,12 +780,10 @@ class Helpers:
             return False
 
     def create_session_file(self, ignore=False):
-
         if ignore and os.path.exists(self.session_file):
             os.remove(self.session_file)
 
         if os.path.exists(self.session_file):
-
             file_data = self.get_file_contents(self.session_file)
             try:
                 data = json.loads(file_data)
@@ -895,7 +891,6 @@ class Helpers:
             logger.critical(f"Check generated exception due to permssion error: {e}")
 
     def create_self_signed_cert(self, cert_dir=None):
-
         if cert_dir is None:
             cert_dir = os.path.join(self.config_dir, "web", "certs")
 
@@ -1047,7 +1042,6 @@ class Helpers:
         return output
 
     def generate_dir(self, folder, output=""):
-
         dir_list = []
         unsorted_files = []
         file_list = os.listdir(folder)

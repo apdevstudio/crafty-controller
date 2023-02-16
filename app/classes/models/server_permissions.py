@@ -16,6 +16,7 @@ from app.classes.shared.permission_helper import PermissionHelper
 
 logger = logging.getLogger(__name__)
 
+
 # **********************************************************************************
 #                                  Role Servers Class
 # **********************************************************************************

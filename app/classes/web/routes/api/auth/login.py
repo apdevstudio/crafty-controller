@@ -26,7 +26,6 @@ login_schema = {
 
 class ApiAuthLoginHandler(BaseApiHandler):
     def post(self):
-
         try:
             data = json.loads(self.request.body)
         except json.decoder.JSONDecodeError as e:

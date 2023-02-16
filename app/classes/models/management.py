@@ -20,6 +20,7 @@ from app.classes.shared.main_models import DatabaseShortcuts
 
 logger = logging.getLogger(__name__)
 
+
 # **********************************************************************************
 #                                   Audit_Log Class
 # **********************************************************************************

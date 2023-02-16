@@ -163,10 +163,9 @@ class ServersController(metaclass=Singleton):
                 return server["server_obj"]
 
         logger.warning(f"Unable to find server object for server id {server_id}")
-        raise Exception(f"Unable to find server object for server id {server_id}")
+        raise ValueError(f"Unable to find server object for server id {server_id}")
 
     def init_all_servers(self):
-
         servers = self.get_all_defined_servers()
         self.failed_servers = []
 
@@ -227,7 +226,6 @@ class ServersController(metaclass=Singleton):
             )
 
     def check_server_loaded(self, server_id_to_check: int):
-
         logger.info(f"Checking to see if we already registered {server_id_to_check}")
 
         for server in self.servers_list:
