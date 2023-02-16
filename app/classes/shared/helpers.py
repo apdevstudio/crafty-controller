@@ -435,12 +435,20 @@ class Helpers:
 
         return data
 
-    @staticmethod
-    def is_subdir(server_path, root_dir):
+    def is_subdir(self, server_path, root_dir):
         server_path = os.path.realpath(server_path)
         root_dir = os.path.realpath(root_dir)
 
-        relative = os.path.relpath(server_path, root_dir)
+        if self.is_os_windows():
+            try:
+                relative = os.path.relpath(server_path, root_dir)
+            except:
+                # Windows will crash out if two paths are on different
+                # Drives We can happily return false if this is the case.
+                # Since two different drives will not be relative to eachother.
+                return False
+        else:
+            relative = os.path.relpath(server_path, root_dir)
 
         if relative.startswith(os.pardir):
             return False
@@ -883,12 +891,14 @@ class Helpers:
         try:
             os.makedirs(path)
             logger.debug(f"Created Directory : {path}")
+            return True
 
         # directory already exists - non-blocking error
         except FileExistsError:
-            pass
+            return True
         except PermissionError as e:
             logger.critical(f"Check generated exception due to permssion error: {e}")
+            return False
 
     def create_self_signed_cert(self, cert_dir=None):
         if cert_dir is None:
@@ -971,6 +981,15 @@ class Helpers:
     @staticmethod
     def is_os_windows():
         return os.name == "nt"
+
+    @staticmethod
+    def is_env_docker():
+        path = "/proc/self/cgroup"
+        return (
+            os.path.exists("/.dockerenv")
+            or os.path.isfile(path)
+            and any("docker" in line for line in open(path, encoding="utf-8"))
+        )
 
     @staticmethod
     def wtol_path(w_path):

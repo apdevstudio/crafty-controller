@@ -102,6 +102,7 @@ class ServersController(metaclass=Singleton):
             server_obj.server_id
         )
         server_instance.update_server_instance()
+
         return ret
 
     def get_history_stats(self, server_id, days):

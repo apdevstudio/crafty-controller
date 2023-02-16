@@ -158,6 +158,8 @@ class ServerInstance:
         self.jar_update_url = server_data.executable_update_url
         self.name = server_data.server_name
         self.server_object = server_data
+        self.stats_helper.select_database()
+        self.reload_server_settings()
 
     def reload_server_settings(self):
         server_data = HelperServers.get_server_data_by_id(self.server_id)
