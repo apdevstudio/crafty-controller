@@ -179,6 +179,7 @@
         "internet": "We have detected the machine running Crafty has no connection to the internet. Client connections to the server may be limited.",
         "no-file": "We can't seem to locate the requested file. Double check the path. Does Crafty have proper permissions?",
         "noJava": "Server {} failed to start with error code: We have detected Java is not installed. Please install java then start the server.",
+        "installerJava": "Failed to install {} : Forge Server Installs require Java. We have detected Java is not installed. Please install java then install the server.",
         "not-downloaded": "We can't seem to find your executable file. Has it finished downloading? Are the permissions set to executable?",
         "portReminder": "We have detected this is the first time {} has been run. Make sure to forward port {} through your router/firewall to make this remotely accessible from the internet.",
         "start-error": "Server {} failed to start with error code: {}",
@@ -232,7 +233,11 @@
         "superConfirmTitle": "Enable superuser? Are you sure?",
         "user": "User",
         "users": "Users",
-        "title": "Crafty Configuration"
+        "title": "Crafty Configuration",
+        "enableLang": "Enable All Languages",
+        "noMounts": "Show no Mounts on Dash",
+        "globalServer": "Global Servers Directory",
+        "globalExplain": "Where Crafty stores all your server files. (We will append the path with /servers/[uuid of server])"
     },
     "customLogin": {
         "customLoginPage": "Customise the Login Page",

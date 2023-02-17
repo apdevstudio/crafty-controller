@@ -539,7 +539,7 @@
     * @param {boolean} saved
   */
   const setSaveStatus = (saved) => {
-    document.getElementById('save_status').innerHTML = `<i class="fal ${saved ? "fa-file-check" : "fa-file"}"></i>`;
+    document.getElementById('save_status').innerHTML = `<i class="${saved ? "fa-solid fa-file-circle-check" : "fa-regular fa-file"}"></i>`;
     document.getElementById('save_status').style.color = saved ? '#2fb689' : 'gray';
   }
   ['change', 'undo', 'redo'].forEach(event => editor.on(event, (event) => setSaveStatus(serverFileContent === editor.session.getValue())))
