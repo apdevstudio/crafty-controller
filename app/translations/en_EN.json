@@ -233,6 +233,8 @@
         "user": "User",
         "users": "Users",
         "title": "Crafty Configuration",
+        "enableLang": "Enable All Languages",
+        "noMounts": "Show no Mounts on Dash",
         "globalServer": "Global Servers Directory",
         "globalExplain": "Where Crafty stores all your server files. (We will append the path with /servers/[uuid of server])"
     },
