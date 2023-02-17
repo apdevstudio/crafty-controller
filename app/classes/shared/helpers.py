@@ -15,6 +15,7 @@ import html
 import zipfile
 import pathlib
 import ctypes
+import shutil
 import subprocess
 import itertools
 from datetime import datetime
@@ -143,6 +144,22 @@ class Helpers:
             return linux_download_url
         except Exception as e:
             logger.error(f"Unable to resolve remote bedrock download url! \n{e}")
+        return False
+
+    def detect_java(self):
+        if len(self.find_java_installs()) > 0:
+            return True
+
+        # We'll use this as a fallback for systems
+        # That do not properly setup reg keys or
+        # Update alternatives
+        if self.is_os_windows():
+            if shutil.which("java.exe"):
+                return True
+        else:
+            if shutil.which("java"):
+                return True
+
         return False
 
     @staticmethod
