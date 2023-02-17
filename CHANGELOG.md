@@ -3,6 +3,9 @@
 ### New features
 - Add better feedback for uploads with a progress bar ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/546))
 - Add ignored exit codes for crash detection ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/553))
+- Allow users to change the directory where Crafty Stores Servers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/539)) <br>
+    *(Only for non-docker, docker users should change host volume mount)*
+- Add host storage display option to the dashboard ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/551))
 ### Bug fixes
 - Fix exception related to page data on server start ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/544))
 - Fix logical issue with uploading dynamic files ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/555))

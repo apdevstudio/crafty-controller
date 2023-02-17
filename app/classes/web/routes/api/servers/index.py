@@ -631,7 +631,6 @@ class ApiServersIndexHandler(BaseApiHandler):
         self.finish_json(200, {"status": "ok", "data": auth_data[0]})
 
     def post(self):
-
         auth_data = self.authenticate_user()
         if not auth_data:
             return

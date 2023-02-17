@@ -79,7 +79,6 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
     # pylint: disable=arguments-renamed
     @staticmethod
     def on_message(raw_message):
-
         logger.debug(f"Got message from WebSocket connection {raw_message}")
         message = json.loads(raw_message)
         logger.debug(f"Event Type: {message['event']}, Data: {message['data']}")
