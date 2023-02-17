@@ -11,6 +11,7 @@
 - Fix logical issue with uploading dynamic files ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/555))
 - Fix backups failing by correctly using tz objects ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/556))
 - Bump Cryptography/pyOpenSSL for CVE-2023-23931 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/554))
+- Fix debug logging to only display with the -v (verbose) flag ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/560))
 ### Tweaks
 - Cleanup authentication helpers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/545))
 - Optimize file upload progress WS ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/546))
