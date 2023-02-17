@@ -19,7 +19,6 @@ class Server:
         self.description = data.get("description")
         # print(self.description)
         if isinstance(self.description, dict):
-
             # cat server
             if "translate" in self.description:
                 self.description = self.description["translate"]
@@ -124,7 +123,7 @@ def ping(ip, port):
             try:
                 k = sock.recv(1)
                 if not k:
-                    raise Exception()
+                    raise ValueError()
             except:
                 return 0
             k = k[0]

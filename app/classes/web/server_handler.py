@@ -560,7 +560,6 @@ class ServerHandler(BaseHandler):
                     self.get_remote_ip(),
                 )
             else:
-
                 new_server_id = self.controller.create_bedrock_server(
                     server_name,
                     exec_user["user_id"],

@@ -10,7 +10,6 @@ class Install:
         )
 
     def do_install(self):
-
         # are we in a venv?
         if not self.is_venv():
             print("Crafty Requires a venv to install")
