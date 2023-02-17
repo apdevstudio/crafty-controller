@@ -149,20 +149,18 @@ class Helpers:
     def detect_java(self):
         if len(self.find_java_installs()) > 0:
             return True
+
+        # We'll use this as a fallback for systems
+        # That do not properly setup reg keys or
+        # Update alternatives
+        if self.is_os_windows():
+            if shutil.which("java.exe"):
+                return True
         else:
-            # We'll use this as a fallback for systems
-            # That do not properly setup reg keys or
-            # Update alternatives
-            if self.is_os_windows():
-                if shutil.which("java.exe"):
-                    return True
-                else:
-                    return False
-            else:
-                if shutil.which("java"):
-                    return True
-                else:
-                    return False
+            if shutil.which("java"):
+                return True
+
+        return False
 
     @staticmethod
     def find_java_installs():
