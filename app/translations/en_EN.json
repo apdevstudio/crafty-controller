@@ -222,6 +222,8 @@
         "newRole": "Add New Role",
         "newUser": "Add New User",
         "pageTitle": "Panel Config",
+        "json": "Config.json",
+        "custom": "Customize Crafty",
         "role": "Role",
         "roles": "Roles",
         "roleUsers": "Role Users",
@@ -232,7 +234,9 @@
         "users": "Users",
         "title": "Crafty Configuration",
         "enableLang": "Enable All Languages",
-        "noMounts": "Show no Mounts on Dash"
+        "noMounts": "Show no Mounts on Dash",
+        "globalServer": "Global Servers Directory",
+        "globalExplain": "Where Crafty stores all your server files. (We will append the path with /servers/[uuid of server])"
     },
     "customLogin": {
         "customLoginPage": "Customise the Login Page",
@@ -554,7 +558,9 @@
         "serverType": "Server Type",
         "serverSelect": "Server Select",
         "serverVersion": "Server Version",
+        "serverUpload": "Upload Zipped Server",
         "sizeInGB": "Size in GB",
+        "uploadButton": "Upload",
         "zipPath": "Server Path"
     },
     "sidebar": {

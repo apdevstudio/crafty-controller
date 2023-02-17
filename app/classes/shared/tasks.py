@@ -673,7 +673,6 @@ class TasksManager:
         host_stats = HelpersManagement.get_latest_hosts_stats()
 
         while True:
-
             if host_stats.get(
                 "cpu_usage"
             ) != HelpersManagement.get_latest_hosts_stats().get(

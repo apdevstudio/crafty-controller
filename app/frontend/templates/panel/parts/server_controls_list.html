@@ -2,14 +2,14 @@
     {% if data['permissions']['Terminal'] in data['user_permissions'] %}
     <li class="nav-item term-nav-item">
         <a class="nav-link {% if data['active_link'] == 'term' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=term" role="tab" aria-selected="false">
-        <i class="fas fa-file-signature"></i>{{ translate('serverDetails', 'terminal', data['lang']) }}</a>
+        <i class="fa-solid fa-terminal"></i>{{ translate('serverDetails', 'terminal', data['lang']) }}</a>
     </li>
     {% end %}
     <!--Bedrock servers don't have logs so we'll only show it if we know it's not a bedrock server.-->
     {% if data['permissions']['Logs'] in data['user_permissions'] and data['server_data']['type'] != 'minecraft-bedrock'%}
     <li class="nav-item term-nav-item">
         <a class="nav-link {% if data['active_link'] == 'logs' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=logs" role="tab" aria-selected="false">
-        <i class="fas fa-file-signature"></i>{{ translate('serverDetails', 'logs', data['lang']) }}</a>
+        <i class="fa-solid fa-book-open-reader"></i>{{ translate('serverDetails', 'logs', data['lang']) }}</a>
     </li>
     {% end %}
     {% if data['permissions']['Schedule'] in data['user_permissions'] %}
@@ -51,6 +51,6 @@
     {% end %}
     <li class="nav-item term-nav-item">
         <a class="nav-link {% if data['active_link'] == 'metrics' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=metrics" role="tab" aria-selected="true">
-        <i class='fas fa-chart-area'></i>{{ translate('serverDetails', 'metrics', data['lang']) }}</a>
+            <i class="fa-solid fa-chart-line"></i>{{ translate('serverDetails', 'metrics', data['lang']) }}</a>
     </li>
 </ul>

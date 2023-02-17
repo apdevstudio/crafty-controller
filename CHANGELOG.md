@@ -3,16 +3,21 @@
 ### New features
 - Add better feedback for uploads with a progress bar ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/546))
 - Add ignored exit codes for crash detection ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/553))
+- Allow users to change the directory where Crafty Stores Servers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/539)) <br>
+    *(Only for non-docker, docker users should change host volume mount)*
 ### Bug fixes
 - Fix exception related to page data on server start ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/544))
 - Fix logical issue with uploading dynamic files ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/555))
 - Fix backups failing by correctly using tz objects ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/556))
+- Bump Cryptography/pyOpenSSL for CVE-2023-23931 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/554))
 ### Tweaks
 - Cleanup authentication helpers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/545))
 - Optimize file upload progress WS ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/546))
 - Truncate sidebar servers to a max of 10 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/552))
+- Upgrade to FA 6. Add Translations ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/549))
 ### Lang
 - Add additional translations to backups page strings ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/543))
+- Add additional missing translations ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/549))
 <br><br>
 
 ## --- [4.0.20] - 2023/01/29
