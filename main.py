@@ -102,6 +102,9 @@ if __name__ == "__main__":
 
     setup_logging(debug=args.verbose)
 
+    if args.verbose:
+        Console.level = "debug"
+
     # setting up the logger object
     logger = logging.getLogger(__name__)
     Console.cyan(f"Logging set to: {logger.level}")
@@ -227,6 +230,15 @@ if __name__ == "__main__":
                 running_mode = "Interactive"
 
         controller.set_project_root(application_path)
+        master_server_dir = controller.management.get_master_server_dir()
+        if master_server_dir == "":
+            logger.debug("Could not find master server path. Setting default")
+            controller.set_master_server_dir(
+                os.path.join(controller.project_root, "servers")
+            )
+        else:
+            helper.servers_dir = master_server_dir
+
         Console.debug(f"Execution Mode: {running_mode}")
         Console.debug(f"Application path  : '{application_path}'")
 

@@ -4,6 +4,7 @@ import logging
 import threading
 import asyncio
 import datetime
+import json
 
 from tzlocal import get_localzone
 from tzlocal.utils import ZoneInfoNotFoundError
@@ -674,7 +675,6 @@ class TasksManager:
         host_stats = HelpersManagement.get_latest_hosts_stats()
 
         while True:
-
             if host_stats.get(
                 "cpu_usage"
             ) != HelpersManagement.get_latest_hosts_stats().get(
@@ -689,18 +689,37 @@ class TasksManager:
                 host_stats = HelpersManagement.get_latest_hosts_stats()
                 if len(self.helper.websocket_helper.clients) > 0:
                     # There are clients
-                    self.helper.websocket_helper.broadcast_page(
-                        "/panel/dashboard",
-                        "update_host_stats",
-                        {
-                            "cpu_usage": host_stats.get("cpu_usage"),
-                            "cpu_cores": host_stats.get("cpu_cores"),
-                            "cpu_cur_freq": host_stats.get("cpu_cur_freq"),
-                            "cpu_max_freq": host_stats.get("cpu_max_freq"),
-                            "mem_percent": host_stats.get("mem_percent"),
-                            "mem_usage": host_stats.get("mem_usage"),
-                        },
-                    )
+                    try:
+                        self.helper.websocket_helper.broadcast_page(
+                            "/panel/dashboard",
+                            "update_host_stats",
+                            {
+                                "cpu_usage": host_stats.get("cpu_usage"),
+                                "cpu_cores": host_stats.get("cpu_cores"),
+                                "cpu_cur_freq": host_stats.get("cpu_cur_freq"),
+                                "cpu_max_freq": host_stats.get("cpu_max_freq"),
+                                "mem_percent": host_stats.get("mem_percent"),
+                                "mem_usage": host_stats.get("mem_usage"),
+                                "disk_usage": json.loads(
+                                    host_stats.get("disk_json").replace("'", '"')
+                                ),
+                                "mounts": self.helper.get_setting("monitored_mounts"),
+                            },
+                        )
+                    except:
+                        self.helper.websocket_helper.broadcast_page(
+                            "/panel/dashboard",
+                            "update_host_stats",
+                            {
+                                "cpu_usage": host_stats.get("cpu_usage"),
+                                "cpu_cores": host_stats.get("cpu_cores"),
+                                "cpu_cur_freq": host_stats.get("cpu_cur_freq"),
+                                "cpu_max_freq": host_stats.get("cpu_max_freq"),
+                                "mem_percent": host_stats.get("mem_percent"),
+                                "mem_usage": host_stats.get("mem_usage"),
+                                "disk_usage": {},
+                            },
+                        )
             time.sleep(1)
 
     def check_for_updates(self):

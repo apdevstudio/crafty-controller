@@ -15,6 +15,7 @@ import html
 import zipfile
 import pathlib
 import ctypes
+import shutil
 import subprocess
 import itertools
 from datetime import datetime
@@ -94,7 +95,7 @@ class Helpers:
         try:
             # Get tags from Gitlab, select the latest and parse the semver
             response = get(
-                "https://gitlab.com/api/v4/projects/20430749/repository/tags"
+                "https://gitlab.com/api/v4/projects/20430749/repository/tags", timeout=1
             )
             if response.status_code == 200:
                 remote_version = pkg_version.parse(json.loads(response.text)[0]["name"])
@@ -131,7 +132,7 @@ class Helpers:
         try:
             # Get minecraft server download page
             # (hopefully the don't change the structure)
-            download_page = get(url, headers=headers)
+            download_page = get(url, headers=headers, timeout=1)
 
             # Search for our string targets
             win_download_url = re.search(target_win, download_page.text).group(0)
@@ -143,6 +144,22 @@ class Helpers:
             return linux_download_url
         except Exception as e:
             logger.error(f"Unable to resolve remote bedrock download url! \n{e}")
+        return False
+
+    def detect_java(self):
+        if len(self.find_java_installs()) > 0:
+            return True
+
+        # We'll use this as a fallback for systems
+        # That do not properly setup reg keys or
+        # Update alternatives
+        if self.is_os_windows():
+            if shutil.which("java.exe"):
+                return True
+        else:
+            if shutil.which("java"):
+                return True
+
         return False
 
     @staticmethod
@@ -281,7 +298,7 @@ class Helpers:
     @staticmethod
     def check_port(server_port):
         try:
-            ip = get("https://api.ipify.org").content.decode("utf8")
+            ip = get("https://api.ipify.org", timeout=1).content.decode("utf8")
         except:
             ip = "google.com"
         a_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -417,6 +434,7 @@ class Helpers:
             "allow_nsfw_profile_pictures": False,
             "enable_user_self_delete": False,
             "reset_secrets_on_next_boot": False,
+            "monitored_mounts": Helpers.get_all_mounts(),
             "dir_size_poll_freq_minutes": 5,
         }
 
@@ -437,11 +455,27 @@ class Helpers:
         return data
 
     @staticmethod
-    def is_subdir(server_path, root_dir):
+    def get_all_mounts():
+        mounts = []
+        for item in psutil.disk_partitions(all=False):
+            mounts.append(item.mountpoint)
+
+        return mounts
+
+    def is_subdir(self, server_path, root_dir):
         server_path = os.path.realpath(server_path)
         root_dir = os.path.realpath(root_dir)
 
-        relative = os.path.relpath(server_path, root_dir)
+        if self.is_os_windows():
+            try:
+                relative = os.path.relpath(server_path, root_dir)
+            except:
+                # Windows will crash out if two paths are on different
+                # Drives We can happily return false if this is the case.
+                # Since two different drives will not be relative to eachother.
+                return False
+        else:
+            relative = os.path.relpath(server_path, root_dir)
 
         if relative.startswith(os.pardir):
             return False
@@ -597,7 +631,6 @@ class Helpers:
 
         # open our file
         with open(file_name, "r", encoding="utf-8") as f:
-
             # seek
             f.seek(0, 2)
 
@@ -753,7 +786,7 @@ class Helpers:
                 use_ssl=True,
             )  # + "?d=404"
             try:
-                if requests.head(url).status_code != 404:
+                if requests.head(url, timeout=1).status_code != 404:
                     profile_url = url
             except Exception as e:
                 logger.debug(f"Could not pull resource from Gravatar with error {e}")
@@ -762,7 +795,6 @@ class Helpers:
 
     @staticmethod
     def get_file_contents(path: str, lines=100):
-
         contents = ""
 
         if os.path.exists(path) and os.path.isfile(path):
@@ -783,12 +815,10 @@ class Helpers:
             return False
 
     def create_session_file(self, ignore=False):
-
         if ignore and os.path.exists(self.session_file):
             os.remove(self.session_file)
 
         if os.path.exists(self.session_file):
-
             file_data = self.get_file_contents(self.session_file)
             try:
                 data = json.loads(file_data)
@@ -888,15 +918,16 @@ class Helpers:
         try:
             os.makedirs(path)
             logger.debug(f"Created Directory : {path}")
+            return True
 
         # directory already exists - non-blocking error
         except FileExistsError:
-            pass
+            return True
         except PermissionError as e:
             logger.critical(f"Check generated exception due to permssion error: {e}")
+            return False
 
     def create_self_signed_cert(self, cert_dir=None):
-
         if cert_dir is None:
             cert_dir = os.path.join(self.config_dir, "web", "certs")
 
@@ -979,6 +1010,15 @@ class Helpers:
         return os.name == "nt"
 
     @staticmethod
+    def is_env_docker():
+        path = "/proc/self/cgroup"
+        return (
+            os.path.exists("/.dockerenv")
+            or os.path.isfile(path)
+            and any("docker" in line for line in open(path, encoding="utf-8"))
+        )
+
+    @staticmethod
     def wtol_path(w_path):
         l_path = w_path.replace("\\", "/")
         return l_path
@@ -1027,9 +1067,9 @@ class Helpers:
                 if filename not in self.ignored_names:
                     output += f"""<li id="{dpath}li" class="tree-item"
                         data-path="{dpath}">
-                        \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" 
+                        \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}"
                         class="tree-caret tree-ctx-item tree-folder">
-                        <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" 
+                        <span id="{dpath}span" class="files-tree-title" data-path="{dpath}"
                         data-name="{filename}" onclick="getDirView(event)">
                         <i style="color: var(--info);" class="far fa-folder"></i>
                         <i style="color: var(--info);" class="far fa-folder-open"></i>
@@ -1048,7 +1088,6 @@ class Helpers:
         return output
 
     def generate_dir(self, folder, output=""):
-
         dir_list = []
         unsorted_files = []
         file_list = os.listdir(folder)
@@ -1069,9 +1108,9 @@ class Helpers:
                 if filename not in self.ignored_names:
                     output += f"""<li id="{dpath}li" class="tree-item"
                         data-path="{dpath}">
-                        \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" 
+                        \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}"
                         class="tree-caret tree-ctx-item tree-folder">
-                        <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" 
+                        <span id="{dpath}span" class="files-tree-title" data-path="{dpath}"
                         data-name="{filename}" onclick="getDirView(event)">
                         <i style="color: var(--info);" class="far fa-folder"></i>
                         <i style="color: var(--info);" class="far fa-folder-open"></i>

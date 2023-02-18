@@ -50,7 +50,9 @@
                   <h4 class="card-title"><i class="fas fa-users"></i> {{ translate('panelConfig', 'users', data['lang'])
                     }}</h4>
                   {% if data['user_data']['hints'] %}
-                  <span class="too_small" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" , data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" , data-placement="top"></span>
+                  <span class="too_small" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" ,
+                    data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
+                    data-placement="top"></span>
                   {% end %}
                   <!-- TODO: Translate the following -->
                   <div><a class="nav-link" href="/panel/add_user"><i class="fas fa-plus-circle"></i> &nbsp; {{
@@ -148,7 +150,9 @@
                   <h4 class="card-title"><i class="fas fa-user-tag"></i> {{ translate('panelConfig', 'roles',
                     data['lang']) }}</h4>
                   {% if data['user_data']['hints'] %}
-                  <span class="too_small2" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" , data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" , data-placement="top"></span>
+                  <span class="too_small2" title="{{ translate('dashboard', 'cannotSee', data['lang']) }}" ,
+                    data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
+                    data-placement="top"></span>
                   {% end %}
                   <div><a class="nav-link" href="/panel/add_role"><i class="fas fa-plus-circle"></i> &nbsp; {{
                       translate('panelConfig', 'newRole', data['lang']) }}</a></div>
@@ -226,7 +230,7 @@
               </div>
             </div>
           </div>
-          {% if data['superuser'] %}
+          {% if data['superuser'] and not data["docker"] %}
           <div class="row">
             <div class="col-md-12 col-lg-12 grid-margin stretch-card">
               <div class="card">
@@ -234,6 +238,24 @@
                   <h4 class="card-title"><i class="fas fa-user-tag"></i> {{ translate('panelConfig', 'adminControls',
                     data['lang']) }}</h4>
                 </div>
+                <br>
+                <form id="server-path">
+                  <div class="form-group">
+                    <label for="global_server_path">{{ translate('panelConfig', 'globalServer',
+                      data['lang']) }}<small class="text-muted ml-1"> - {{ translate('panelConfig', 'globalExplain',
+                        data['lang']) }}</small></label>
+                    <div class="input-group">
+                      <input type="text" id="global_server_path" class="form-control" name="global_server_path"
+                        placeholder="/var/opt/servers" value="{{data['servers_dir']}}" directory>
+                      <div class="input-group-append">
+                        <span type="button" class="btn btn-outline-default custom-picker">/servers/</span>
+                      </div>
+                    </div>
+                  </div>
+                  <button class="btn btn-success" type="submit">Submit</button>&nbsp;<span id="submit-status"></span>
+                  <br>
+                  <span id="submit-list"></span>
+                </form>
               </div>
             </div>
           </div>
@@ -247,9 +269,36 @@
 </div>
 
 <style>
+  .custom-picker {
+    border: 1px solid var(--outline);
+  }
+
   .popover-body {
     color: white !important;
     ;
+  }
+
+  .loading:after {
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: bottom;
+    -webkit-animation: ellipsis steps(4, end) 900ms infinite;
+    animation: ellipsis steps(4, end) 900ms infinite;
+    content: "\2026";
+    /* ascii code for the ellipsis character */
+    width: 0px;
+  }
+
+  @keyframes ellipsis {
+    to {
+      width: 1.25em;
+    }
+  }
+
+  @-webkit-keyframes ellipsis {
+    to {
+      width: 1.25em;
+    }
   }
 </style>
 <!-- content-wrapper ends -->
@@ -258,6 +307,40 @@
 
 {% block js %}
 <script>
+  if (webSocket) {
+    webSocket.on('move_status', function (message) {
+      if (message === "done") {
+        $("#submit-list").removeClass("loading");
+        $("#submit-list").html("");
+        $("#submit-status").html('<i class="fa fa-check"></i>');
+      } else {
+        $("#submit-status").html('<i class="fa fa-spinner fa-spin"></i>');
+        $("#submit-list").html(message);
+        $("#submit-list").addClass("loading");
+      }
+    });
+  }
+
+  $("#server-path").submit(function (e) {
+    var token = getCookie("_xsrf")
+    e.preventDefault();
+
+    $("#submit-status").html('<i class="fa fa-spinner fa-spin"></i>');
+
+    let path = $("#global_server_path").val();
+    let encoded = encodeURIComponent(path);
+    console.log(path)
+    $.ajax({
+      type: "POST",
+      headers: { 'X-XSRFToken': token },
+      dataType: "text",
+      url: '/ajax/update_server_dir',
+      data: {
+        "server_dir": encoded,
+      },
+    });
+  });
+
   $(document).ready(function () {
     $('[data-toggle="popover"]').popover();
     if ($(window).width() < 1000) {
