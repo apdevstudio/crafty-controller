@@ -1010,6 +1010,7 @@ class Controller:
         HelpersManagement.set_master_server_dir(server_dir)
 
     def update_master_server_dir(self, server_dir, user_id):
+        self.helper.dir_migration = True
         move_thread = threading.Thread(
             name="dir_move",
             target=self.t_update_master_server_dir,
@@ -1117,6 +1118,7 @@ class Controller:
             else:
                 self.servers.update_unloaded_server(server_obj)
         self.servers.init_all_servers()
+        self.helper.dir_migration = False
         self.helper.websocket_helper.broadcast_page(
             "/panel/panel_config",
             "move_status",

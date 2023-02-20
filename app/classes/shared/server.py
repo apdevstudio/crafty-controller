@@ -211,6 +211,19 @@ class ServerInstance:
 
     def run_threaded_server(self, user_id, forge_install=False):
         # start the server
+        if self.helper.dir_migration:
+            self.helper.websocket_helper.broadcast_user(
+                user_id,
+                "send_start_error",
+                {
+                    "error": self.helper.translation.translate(
+                        "error",
+                        "migration",
+                        HelperUsers.get_user_lang_by_id(user_id),
+                    )
+                },
+            )
+            return False
         self.server_thread = threading.Thread(
             target=self.start_server,
             daemon=True,
