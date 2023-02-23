@@ -1022,15 +1022,15 @@ class Controller:
         )
         move_thread.start()
 
-    def t_update_master_server_dir(self, server_dir, user_id):
-        server_dir = self.helper.wtol_path(server_dir)
+    def t_update_master_server_dir(self, new_server_path, user_id):
+        new_server_path = self.helper.wtol_path(new_server_path)
         self.helper.websocket_helper.broadcast_page(
             "/panel/panel_config", "move_status", "Checking dir"
         )
         current_master = self.helper.wtol_path(
             HelpersManagement.get_master_server_dir()
         )
-        if current_master == server_dir:
+        if current_master == new_server_path:
             logger.info(
                 "Admin tried to change server dir to current server dir. Canceling..."
             )
@@ -1040,7 +1040,7 @@ class Controller:
                 "done",
             )
             return
-        if self.helper.is_subdir(server_dir, current_master):
+        if self.helper.is_subdir(new_server_path, current_master):
             logger.info(
                 "Admin tried to change server dir to be inside a sub directory of the"
                 " current server dir. This will result in a copy loop."
@@ -1055,7 +1055,7 @@ class Controller:
         self.helper.websocket_helper.broadcast_page(
             "/panel/panel_config", "move_status", "Checking permissions"
         )
-        if not self.helper.ensure_dir_exists(os.path.join(server_dir, "servers")):
+        if not self.helper.ensure_dir_exists(os.path.join(new_server_path, "servers")):
             self.helper.websocket_helper.broadcast_user(
                 user_id,
                 "send_start_error",
@@ -1067,15 +1067,15 @@ class Controller:
             )
             return
         # set the cached serve dir
-        self.helper.servers_dir = server_dir
+        self.helper.servers_dir = new_server_path
         # set DB server dir
-        HelpersManagement.set_master_server_dir(server_dir)
+        HelpersManagement.set_master_server_dir(new_server_path)
         servers = self.servers.get_all_defined_servers()
         # move the servers
         for server in servers:
             server_path = server.get("path")
             new_server_path = os.path.join(
-                server_dir, "servers", server.get("server_uuid")
+                new_server_path, "servers", server.get("server_uuid")
             )
             if os.path.isdir(server_path):
                 self.helper.websocket_helper.broadcast_page(
@@ -1096,17 +1096,17 @@ class Controller:
             # reset executable path
             if current_master in server["executable"]:
                 server_obj.executable = str(server["executable"]).replace(
-                    current_master, server_dir
+                    current_master, new_server_path
                 )
             # reset run command path
             if current_master in server["execution_command"]:
                 server_obj.execution_command = str(server["execution_command"]).replace(
-                    current_master, server_dir
+                    current_master, new_server_path
                 )
             # reset log path
             if current_master in server["log_path"]:
                 server_obj.log_path = str(server["log_path"]).replace(
-                    current_master, server_dir
+                    current_master, new_server_path
                 )
             server_obj.path = new_server_path
             failed = False
