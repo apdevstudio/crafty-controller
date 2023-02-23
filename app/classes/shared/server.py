@@ -211,19 +211,6 @@ class ServerInstance:
 
     def run_threaded_server(self, user_id, forge_install=False):
         # start the server
-        if self.helper.dir_migration:
-            self.helper.websocket_helper.broadcast_user(
-                user_id,
-                "send_start_error",
-                {
-                    "error": self.helper.translation.translate(
-                        "error",
-                        "migration",
-                        HelperUsers.get_user_lang_by_id(user_id),
-                    )
-                },
-            )
-            return False
         self.server_thread = threading.Thread(
             target=self.start_server,
             daemon=True,
@@ -320,6 +307,22 @@ class ServerInstance:
             user_lang = self.helper.get_setting("language")
         else:
             user_lang = HelperUsers.get_user_lang_by_id(user_id)
+
+        # Checks if user is currently attempting to move global server
+        # dir
+        if self.helper.dir_migration:
+            self.helper.websocket_helper.broadcast_user(
+                user_id,
+                "send_start_error",
+                {
+                    "error": self.helper.translation.translate(
+                        "error",
+                        "migration",
+                        user_lang,
+                    )
+                },
+            )
+            return False
 
         if self.stats_helper.get_import_status() and not forge_install:
             if user_id:
