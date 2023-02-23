@@ -63,6 +63,7 @@ class Helpers:
         self.servers_dir = os.path.join(self.root_dir, "servers")
         self.backup_path = os.path.join(self.root_dir, "backups")
         self.migration_dir = os.path.join(self.root_dir, "app", "migrations")
+        self.dir_migration = False
 
         self.session_file = os.path.join(self.root_dir, "app", "config", "session.lock")
         self.settings_file = os.path.join(self.root_dir, "app", "config", "config.json")
@@ -422,7 +423,7 @@ class Helpers:
             "cookie_expire": 30,
             "show_errors": True,
             "history_max_age": 7,
-            "stats_update_frequency": 30,
+            "stats_update_frequency_seconds": 30,
             "delete_default_json": False,
             "show_contribute_link": True,
             "virtual_terminal_lines": 70,
@@ -435,6 +436,7 @@ class Helpers:
             "enable_user_self_delete": False,
             "reset_secrets_on_next_boot": False,
             "monitored_mounts": Helpers.get_all_mounts(),
+            "dir_size_poll_freq_minutes": 5,
         }
 
     def get_all_settings(self):

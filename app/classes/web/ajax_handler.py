@@ -576,6 +576,8 @@ class AjaxHandler(BaseHandler):
             return
 
         elif page == "update_server_dir":
+            if self.helper.dir_migration:
+                return
             for server in self.controller.servers.get_all_servers_stats():
                 if server["stats"]["running"]:
                     self.helper.websocket_helper.broadcast_user(

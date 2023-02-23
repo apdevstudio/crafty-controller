@@ -140,7 +140,10 @@ class ServerInstance:
             )
             self.tz = ZoneInfo("Europe/London")
         self.server_scheduler = BackgroundScheduler(timezone=str(self.tz))
+        self.dir_scheduler = BackgroundScheduler(timezone=str(self.tz))
         self.server_scheduler.start()
+        self.dir_scheduler.start()
+        self.start_dir_calc_task()
         self.backup_thread = threading.Thread(
             target=self.a_backup_server, daemon=True, name=f"backup_{self.name}"
         )
@@ -304,6 +307,22 @@ class ServerInstance:
             user_lang = self.helper.get_setting("language")
         else:
             user_lang = HelperUsers.get_user_lang_by_id(user_id)
+
+        # Checks if user is currently attempting to move global server
+        # dir
+        if self.helper.dir_migration:
+            self.helper.websocket_helper.broadcast_user(
+                user_id,
+                "send_start_error",
+                {
+                    "error": self.helper.translation.translate(
+                        "error",
+                        "migration",
+                        user_lang,
+                    )
+                },
+            )
+            return False
 
         if self.stats_helper.get_import_status() and not forge_install:
             if user_id:
@@ -1374,6 +1393,20 @@ class ServerInstance:
         for user in server_users:
             self.helper.websocket_helper.broadcast_user(user, "remove_spinner", {})
 
+    def start_dir_calc_task(self):
+        server_dt = HelperServers.get_server_data_by_id(self.server_id)
+        self.server_size = self.stats.get_server_dir_size(server_dt["path"])
+        self.dir_scheduler.add_job(
+            self.calc_dir_size,
+            "interval",
+            minutes=self.helper.get_setting("dir_size_poll_freq_minutes"),
+            id=str(self.server_id) + "_dir_poll",
+        )
+
+    def calc_dir_size(self):
+        server_dt = HelperServers.get_server_data_by_id(self.server_id)
+        self.server_size = self.stats.get_server_dir_size(server_dt["path"])
+
     # **********************************************************************************
     #                               Minecraft Servers Statistics
     # **********************************************************************************
@@ -1471,9 +1504,6 @@ class ServerInstance:
         # get our server object, settings and data dictionaries
         self.reload_server_settings()
 
-        # world data
-        server_path = server["path"]
-
         # process stats
         p_stats = Stats._try_get_process_stats(self.process, self.check_running())
 
@@ -1514,7 +1544,7 @@ class ServerInstance:
                 "mem": p_stats.get("memory_usage", 0),
                 "mem_percent": p_stats.get("mem_percentage", 0),
                 "world_name": server_name,
-                "world_size": Stats.get_world_size(server_path),
+                "world_size": self.server_size,
                 "server_port": server_port,
                 "int_ping_results": int_data,
                 "online": ping_data.get("online", False),
@@ -1532,7 +1562,7 @@ class ServerInstance:
                 "mem": p_stats.get("memory_usage", 0),
                 "mem_percent": p_stats.get("mem_percentage", 0),
                 "world_name": server_name,
-                "world_size": Stats.get_world_size(server_path),
+                "world_size": self.server_size,
                 "server_port": server_port,
                 "int_ping_results": int_data,
                 "online": False,
@@ -1600,7 +1630,6 @@ class ServerInstance:
 
         # world data
         server_name = server_dt["server_name"]
-        server_path = server_dt["path"]
 
         # process stats
         p_stats = Stats._try_get_process_stats(self.process, self.check_running())
@@ -1633,7 +1662,7 @@ class ServerInstance:
                     "mem": p_stats.get("memory_usage", 0),
                     "mem_percent": p_stats.get("mem_percentage", 0),
                     "world_name": server_name,
-                    "world_size": Stats.get_world_size(server_path),
+                    "world_size": self.server_size,
                     "server_port": server_port,
                     "int_ping_results": int_data,
                     "online": ping_data.get("online", False),
@@ -1662,7 +1691,7 @@ class ServerInstance:
                         "mem": p_stats.get("memory_usage", 0),
                         "mem_percent": p_stats.get("mem_percentage", 0),
                         "world_name": server_name,
-                        "world_size": Stats.get_world_size(server_path),
+                        "world_size": self.server_size,
                         "server_port": server_port,
                         "int_ping_results": int_data,
                         "online": ping_data["online"],
@@ -1681,7 +1710,7 @@ class ServerInstance:
                         "mem": p_stats.get("memory_usage", 0),
                         "mem_percent": p_stats.get("mem_percentage", 0),
                         "world_name": server_name,
-                        "world_size": Stats.get_world_size(server_path),
+                        "world_size": self.server_size,
                         "server_port": server_port,
                         "int_ping_results": int_data,
                         "online": False,
@@ -1700,7 +1729,7 @@ class ServerInstance:
                 "mem": p_stats.get("memory_usage", 0),
                 "mem_percent": p_stats.get("mem_percentage", 0),
                 "world_name": server_name,
-                "world_size": Stats.get_world_size(server_path),
+                "world_size": self.server_size,
                 "server_port": server_port,
                 "int_ping_results": int_data,
                 "online": False,

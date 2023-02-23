@@ -210,7 +210,7 @@ class Stats:
         return disk_data
 
     @staticmethod
-    def get_world_size(server_path):
+    def get_server_dir_size(server_path):
         total_size = 0
 
         total_size = Helpers.get_dir_size(server_path)
