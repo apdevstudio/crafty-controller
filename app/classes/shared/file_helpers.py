@@ -283,7 +283,8 @@ class FileHelpers:
         return True
 
     @staticmethod
-    def unzip_file(zip_path, single_item=False):
+    def unzip_file(zip_path, server_update=False):
+        ignored_names = ["server.properties", "permissions.json", "allowlist.json"]
         # Get directory without zipfile name
         new_dir = pathlib.Path(zip_path).parents[0]
         # make sure we're able to access the zip file
@@ -296,43 +297,30 @@ class FileHelpers:
                 with zipfile.ZipFile(zip_path, "r") as zip_ref:
                     # we'll extract this to the temp dir using zipfile module
                     zip_ref.extractall(temp_dir)
+                # we'll iterate through the top level directory moving everything
+                # out of the temp directory and into it's final home.
+                for item in os.listdir(temp_dir):
+                    # if the file is one of our ignored names we'll skip it
+                    if item in ignored_names and server_update:
+                        continue
+                    # we handle files and dirs differently or we'll crash out.
+                    if os.path.isdir(os.path.join(temp_dir, item)):
+                        try:
+                            FileHelpers.move_dir_exist(
+                                os.path.join(temp_dir, item),
+                                os.path.join(new_dir, item),
+                            )
+                        except Exception as ex:
+                            logger.error(f"ERROR IN ZIP IMPORT: {ex}")
+                    else:
 
-                # we'll check if the single item parameter was passed
-                # if it was the developer only wants one file back
-                # probably for a server executable update.
-                if not single_item:
-                    # we'll iterate through the top level directory moving everything
-                    # out of the temp directory and into it's final home.
-                    for item in os.listdir(temp_dir):
-                        # we handle files and dirs differently or we'll crash out.
-                        if os.path.isdir(os.path.join(temp_dir, item)):
-                            try:
-                                FileHelpers.move_dir_exist(
-                                    os.path.join(temp_dir, item),
-                                    os.path.join(new_dir, item),
-                                )
-                            except Exception as ex:
-                                logger.error(f"ERROR IN ZIP IMPORT: {ex}")
-                        else:
-                            try:
-                                FileHelpers.move_file(
-                                    os.path.join(temp_dir, item),
-                                    os.path.join(new_dir, item),
-                                )
-                            except Exception as ex:
-                                logger.error(f"ERROR IN ZIP IMPORT: {ex}")
-                else:
-                    # if there is a single item the correct file name should be passed
-                    # we'll just try to move that one file based on the name provided
-                    # then we'll move along.
-                    try:
-                        FileHelpers.move_file(
-                            os.path.join(temp_dir, single_item),
-                            os.path.join(new_dir, single_item),
-                        )
-                    except FileNotFoundError:
-                        logger.error("Could not unpack single file in bedrock update.")
-                        return "false"
+                        try:
+                            FileHelpers.move_file(
+                                os.path.join(temp_dir, item),
+                                os.path.join(new_dir, item),
+                            )
+                        except Exception as ex:
+                            logger.error(f"ERROR IN ZIP IMPORT: {ex}")
             except Exception as ex:
                 Console.error(ex)
         else:
