@@ -313,7 +313,6 @@ class FileHelpers:
                         except Exception as ex:
                             logger.error(f"ERROR IN ZIP IMPORT: {ex}")
                     else:
-
                         try:
                             FileHelpers.move_file(
                                 os.path.join(temp_dir, item),
