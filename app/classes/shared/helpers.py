@@ -413,6 +413,10 @@ class Helpers:
 
     @staticmethod
     def get_master_config():
+        # Let's get the mounts and only show the first one by default
+        mounts = Helpers.get_all_mounts()
+        if len(mounts) != 0:
+            mounts = mounts[0]
         # Make changes for users' local config.json files here. As of 4.0.20
         # Config.json was removed from the repo to make it easier for users
         # To make non-breaking changes to the file.
@@ -435,7 +439,7 @@ class Helpers:
             "allow_nsfw_profile_pictures": False,
             "enable_user_self_delete": False,
             "reset_secrets_on_next_boot": False,
-            "monitored_mounts": Helpers.get_all_mounts(),
+            "monitored_mounts": mounts,
             "dir_size_poll_freq_minutes": 5,
         }
 
