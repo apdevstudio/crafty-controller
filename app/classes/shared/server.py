@@ -694,7 +694,7 @@ class ServerInstance:
                         execution_command = (
                             f"java @{server_command[0]}"
                             f" @{executable_path}{server_command[3]} nogui"
-                            " {server_command[4]}"
+                            f" {server_command[4]}"
                         )
                         server_obj.execution_command = execution_command
                         Console.debug("SUCCESS! Forge install completed")
