@@ -1320,7 +1320,10 @@ class ServerInstance:
                 unzip_path = os.path.join(self.settings["path"], "bedrock_server.zip")
                 unzip_path = self.helper.wtol_path(unzip_path)
                 # unzips archive that was downloaded.
-                FileHelpers.unzip_file(unzip_path)
+                if self.helper.is_os_windows():
+                    FileHelpers.unzip_file(unzip_path, "bedrock_server.exe")
+                else:
+                    FileHelpers.unzip_file(unzip_path, "bedrock_server")
                 # adjusts permissions for execution if os is not windows
                 if not self.helper.is_os_windows():
                     os.chmod(

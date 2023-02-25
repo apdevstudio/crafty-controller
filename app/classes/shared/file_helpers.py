@@ -283,39 +283,56 @@ class FileHelpers:
         return True
 
     @staticmethod
-    def unzip_file(zip_path):
-        new_dir_list = zip_path.split("/")
-        new_dir = ""
-        for i in range(len(new_dir_list) - 1):
-            if i == 0:
-                new_dir += new_dir_list[i]
-            else:
-                new_dir += "/" + new_dir_list[i]
-
+    def unzip_file(zip_path, single_item=False):
+        # Get directory without zipfile name
+        new_dir = pathlib.Path(zip_path).parents[0]
+        # make sure we're able to access the zip file
         if Helpers.check_file_perms(zip_path) and os.path.isfile(zip_path):
+            # make sure the directory we're unzipping this to exists
             Helpers.ensure_dir_exists(new_dir)
+            # we'll make a temporary directory to unzip this to.
             temp_dir = tempfile.mkdtemp()
             try:
                 with zipfile.ZipFile(zip_path, "r") as zip_ref:
+                    # we'll extract this to the temp dir using zipfile module
                     zip_ref.extractall(temp_dir)
-                    full_root_path = temp_dir
-                for item in os.listdir(full_root_path):
-                    if os.path.isdir(os.path.join(full_root_path, item)):
-                        try:
-                            FileHelpers.move_dir_exist(
-                                os.path.join(full_root_path, item),
-                                os.path.join(new_dir, item),
-                            )
-                        except Exception as ex:
-                            logger.error(f"ERROR IN ZIP IMPORT: {ex}")
-                    else:
-                        try:
-                            FileHelpers.move_file(
-                                os.path.join(full_root_path, item),
-                                os.path.join(new_dir, item),
-                            )
-                        except Exception as ex:
-                            logger.error(f"ERROR IN ZIP IMPORT: {ex}")
+
+                # we'll check if the single item parameter was passed
+                # if it was the developer only wants one file back
+                # probably for a server executable update.
+                if not single_item:
+                    # we'll iterate through the top level directory moving everything
+                    # out of the temp directory and into it's final home.
+                    for item in os.listdir(temp_dir):
+                        # we handle files and dirs differently or we'll crash out.
+                        if os.path.isdir(os.path.join(temp_dir, item)):
+                            try:
+                                FileHelpers.move_dir_exist(
+                                    os.path.join(temp_dir, item),
+                                    os.path.join(new_dir, item),
+                                )
+                            except Exception as ex:
+                                logger.error(f"ERROR IN ZIP IMPORT: {ex}")
+                        else:
+                            try:
+                                FileHelpers.move_file(
+                                    os.path.join(temp_dir, item),
+                                    os.path.join(new_dir, item),
+                                )
+                            except Exception as ex:
+                                logger.error(f"ERROR IN ZIP IMPORT: {ex}")
+                else:
+                    # if there is a single item the correct file name should be passed
+                    # we'll just try to move that one file based on the name provided
+                    # then we'll move along.
+                    try:
+                        FileHelpers.move_file(
+                            os.path.join(temp_dir, single_item),
+                            os.path.join(new_dir, single_item),
+                        )
+                    except FileNotFoundError:
+                        logger.error("Could not unpack single file in bedrock update.")
+                        return "false"
             except Exception as ex:
                 Console.error(ex)
         else:
