@@ -441,6 +441,7 @@ class Helpers:
             "reset_secrets_on_next_boot": False,
             "monitored_mounts": mounts,
             "dir_size_poll_freq_minutes": 5,
+            "crafty_logs_delete_after_days": 14,
         }
 
     def get_all_settings(self):

@@ -751,10 +751,39 @@ class TasksManager:
                     logger.debug("Could not clear out file from import directory")
 
     def log_watcher(self):
-        self.controller.servers.check_for_old_logs()
+        self.check_for_old_logs()
         self.scheduler.add_job(
-            self.controller.servers.check_for_old_logs,
+            self.check_for_old_logs,
             "interval",
             hours=6,
             id="log-mgmt",
         )
+
+    def check_for_old_logs(self):
+        # check for server logs first
+        self.controller.servers.check_for_old_logs()
+        # check for crafty logs now
+        logs_path = os.path.join(self.controller.project_root, "logs")
+        logs_delete_after = int(
+            self.helper.get_setting("crafty_logs_delete_after_days")
+        )
+        latest_log_files = [
+            "session.log",
+            "schedule.log",
+            "tornado-access.log",
+            "session.log",
+            "commander.log",
+        ]
+
+        log_files = list(
+            filter(
+                lambda val: val not in latest_log_files,
+                os.listdir(logs_path),
+            )
+        )
+        for log_file in log_files:
+            log_file_path = os.path.join(logs_path, log_file)
+            if Helpers.check_file_exists(
+                log_file_path
+            ) and Helpers.is_file_older_than_x_days(log_file_path, logs_delete_after):
+                os.remove(log_file_path)
