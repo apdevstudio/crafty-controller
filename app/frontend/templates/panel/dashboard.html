@@ -1042,12 +1042,12 @@
       const token = getCookie("_xsrf")
 
       $.ajax({
-        type: "POST",
+        type: "PATCH",
         headers: { 'X-XSRFToken': token },
-        url: '/ajax/send_order?order=' + id_string,
-        data: {
-          order: id_string,
-        },
+        url: `/api/v2/users/@me`,
+        data: JSON.stringify({
+          server_order: id_string,
+        }),
         success: function (data) {
           console.log("got response:");
           console.log(data);
