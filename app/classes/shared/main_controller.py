@@ -1023,7 +1023,6 @@ class Controller:
         move_thread.start()
 
     def t_update_master_server_dir(self, new_server_path, user_id):
-        print("in update")
         new_server_path = self.helper.wtol_path(new_server_path)
         new_server_path = os.path.join(new_server_path, "servers")
         self.helper.websocket_helper.broadcast_page(
