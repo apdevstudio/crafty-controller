@@ -1023,7 +1023,9 @@ class Controller:
         move_thread.start()
 
     def t_update_master_server_dir(self, new_server_path, user_id):
+        print("in update")
         new_server_path = self.helper.wtol_path(new_server_path)
+        new_server_path = os.path.join(new_server_path, "servers")
         self.helper.websocket_helper.broadcast_page(
             "/panel/panel_config", "move_status", "Checking dir"
         )
@@ -1055,7 +1057,7 @@ class Controller:
         self.helper.websocket_helper.broadcast_page(
             "/panel/panel_config", "move_status", "Checking permissions"
         )
-        if not self.helper.ensure_dir_exists(os.path.join(new_server_path, "servers")):
+        if not self.helper.ensure_dir_exists(new_server_path):
             self.helper.websocket_helper.broadcast_user(
                 user_id,
                 "send_start_error",
@@ -1074,8 +1076,8 @@ class Controller:
         # move the servers
         for server in servers:
             server_path = server.get("path")
-            new_server_path = os.path.join(
-                new_server_path, "servers", server.get("server_uuid")
+            new_local_server_path = os.path.join(
+                new_server_path, server.get("server_uuid")
             )
             if os.path.isdir(server_path):
                 self.helper.websocket_helper.broadcast_page(
@@ -1086,7 +1088,7 @@ class Controller:
                 try:
                     self.file_helper.move_dir(
                         server_path,
-                        new_server_path,
+                        new_local_server_path,
                     )
                 except FileExistsError as e:
                     logger.error(f"Failed to move server with error: {e}")
@@ -1096,19 +1098,19 @@ class Controller:
             # reset executable path
             if current_master in server["executable"]:
                 server_obj.executable = str(server["executable"]).replace(
-                    current_master, new_server_path
+                    current_master, new_local_server_path
                 )
             # reset run command path
             if current_master in server["execution_command"]:
                 server_obj.execution_command = str(server["execution_command"]).replace(
-                    current_master, new_server_path
+                    current_master, new_local_server_path
                 )
             # reset log path
             if current_master in server["log_path"]:
                 server_obj.log_path = str(server["log_path"]).replace(
-                    current_master, new_server_path
+                    current_master, new_local_server_path
                 )
-            server_obj.path = new_server_path
+            server_obj.path = new_local_server_path
             failed = False
             for s in self.servers.failed_servers:
                 if int(s["server_id"]) == int(server.get("server_id")):
