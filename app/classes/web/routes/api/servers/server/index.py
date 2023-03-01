@@ -134,7 +134,15 @@ class ApiServersServerIndexHandler(BaseApiHandler):
         )
 
         self.tasks_manager.remove_all_server_tasks(server_id)
-        self.controller.remove_server(server_id, remove_files)
+        failed = False
+        for item in self.controller.servers.failed_servers[:]:
+            if item["server_id"] == int(server_id):
+                self.controller.servers.failed_servers.remove(item)
+
+        if failed:
+            self.controller.remove_unloaded_server(server_id)
+        else:
+            self.controller.remove_server(server_id, remove_files)
 
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],
