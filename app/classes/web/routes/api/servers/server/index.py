@@ -138,6 +138,7 @@ class ApiServersServerIndexHandler(BaseApiHandler):
         for item in self.controller.servers.failed_servers[:]:
             if item["server_id"] == int(server_id):
                 self.controller.servers.failed_servers.remove(item)
+                failed = True
 
         if failed:
             self.controller.remove_unloaded_server(server_id)
