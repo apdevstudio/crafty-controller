@@ -645,10 +645,13 @@
     $.ajax({
       type: "POST",
       headers: { 'X-XSRFToken': token },
-      url: '/server/command?command=' + command + '&id=' + server_id,
+      url: `/api/v2/servers/${server_id}/action/${command}`,
       success: function (data) {
         console.log("got response:");
         console.log(data);
+        if (command === "clone_server" && data.status === "ok") {
+          window.location.reload();
+        }
         /*setTimeout(function () {
           if (command != 'start_server') {
             location.reload();
@@ -701,24 +704,6 @@
     }
 
     document.querySelector('.dynamicMsg').appendChild(parentEl);
-  }
-
-  function send_kill(server_id) {
-    /* this getCookie function is in base.html */
-    const token = getCookie("_xsrf");
-
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      url: '/ajax/kill?id=' + server_id,
-      success: function (data) {
-        console.log("got response:");
-        console.log(data);
-        /*setTimeout(function () {
-          location.reload();
-        }, 10000);*/
-      }
-    });
   }
 
   function update_one_server_status(server) {
@@ -899,16 +884,10 @@
         },
         callback: function (result) {
           if (result) {
-            send_kill(server_id);
+            send_command(server_id, "kill_server");
             let dialog = bootbox.dialog({
               title: '{% raw translate("dashboard", "killing", data["lang"]) %}',
               message: '<p><i class="fa fa-spin fa-spinner"></i> Loading...</p>'
-            });
-
-            dialog.init(function () {
-              setTimeout(function () {
-                location.reload();
-              }, 15000);
             });
           }
         }
@@ -998,7 +977,13 @@
         },
         callback: function (result) {
           if (result) {
-            cloneServer(server_id);
+            send_command(server_id, 'clone_server');
+            bootbox.dialog({
+              backdrop: true,
+              title: '{% raw translate("dashboard", "sendingCommand", data["lang"]) %}',
+              message: '<div align="center"><i class="fas fa-spin fa-spinner"></i> &nbsp; {% raw translate("dashboard", "bePatientClone", data["lang"]) %} </div>',
+              closeButton: false,
+            });
           }
 
         }
@@ -1006,16 +991,6 @@
     });
 
   });
-
-  function cloneServer(server_id) {
-    send_command(server_id, 'clone_server');
-    bootbox.dialog({
-      backdrop: true,
-      title: '{% raw translate("dashboard", "sendingCommand", data["lang"]) %}',
-      message: '<div align="center"><i class="fas fa-spin fa-spinner"></i> &nbsp; {% raw translate("dashboard", "bePatientClone", data["lang"]) %} </div>',
-      closeButton: false,
-    });
-  }
 </script>
 <script src="/static/assets/vendors/js/jquery-ui.js"></script>
 <link rel="stylesheet" href="/static/assets/vendors/css/jquery-ui.css">

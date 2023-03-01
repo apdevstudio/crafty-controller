@@ -281,72 +281,11 @@ class AjaxHandler(BaseHandler):
             exec_user["user_id"], server_id
         )
 
-        if page == "send_command":
-            command = self.get_body_argument("command", default=None, strip=True)
-            server_id = self.get_argument("id", None)
-
-            if server_id is None:
-                logger.warning("Server ID not found in send_command ajax call")
-                Console.warning("Server ID not found in send_command ajax call")
-
-            srv_obj = self.controller.servers.get_server_instance_by_id(server_id)
-
-            if command == srv_obj.settings["stop_command"]:
-                logger.info(
-                    "Stop command detected as terminal input - intercepting."
-                    + f"Starting Crafty's stop process for server with id: {server_id}"
-                )
-                self.controller.management.send_command(
-                    exec_user["user_id"], server_id, self.get_remote_ip(), "stop_server"
-                )
-                command = None
-            elif command == "restart":
-                logger.info(
-                    "Restart command detected as terminal input - intercepting."
-                    + f"Starting Crafty's stop process for server with id: {server_id}"
-                )
-                self.controller.management.send_command(
-                    exec_user["user_id"],
-                    server_id,
-                    self.get_remote_ip(),
-                    "restart_server",
-                )
-                command = None
-            if command:
-                if srv_obj.check_running():
-                    srv_obj.send_command(command)
-
-            self.controller.management.add_to_audit_log(
-                exec_user["user_id"],
-                f"Sent command to "
-                f"{self.controller.servers.get_server_friendly_name(server_id)} "
-                f"terminal: {command}",
-                server_id,
-                self.get_remote_ip(),
-            )
-
-        elif page == "send_order":
+        if page == "send_order":
             self.controller.users.update_server_order(
                 exec_user["user_id"], bleach.clean(self.get_argument("order"))
             )
             return
-
-        elif page == "backup_now":
-            server_id = self.get_argument("id", None)
-            if server_id is None:
-                logger.error("Server ID is none. Canceling backup!")
-                return
-
-            server = self.controller.servers.get_server_instance_by_id(server_id)
-            self.controller.management.add_to_audit_log_raw(
-                self.controller.users.get_user_by_id(exec_user["user_id"])["username"],
-                exec_user["user_id"],
-                server_id,
-                f"Backup now executed for server {server_id} ",
-                source_ip=self.get_remote_ip(),
-            )
-
-            server.backup_server()
 
         elif page == "select_photo":
             if exec_user["superuser"]:
