@@ -321,23 +321,6 @@ class AjaxHandler(BaseHandler):
                         self.controller.cached_login = "login_1.jpg"
             return
 
-        elif page == "kill":
-            if not permissions["Commands"] in user_perms:
-                if not superuser:
-                    self.redirect("/panel/error?error=Unauthorized access to Commands")
-                    return
-            server_id = self.get_argument("id", None)
-            svr = self.controller.servers.get_server_instance_by_id(server_id)
-            try:
-                svr.kill()
-                time.sleep(5)
-                svr.cleanup_server_object()
-                svr.record_server_stats()
-            except Exception as e:
-                logger.error(
-                    f"Could not find PID for requested termsig. Full error: {e}"
-                )
-            return
         elif page == "eula":
             server_id = self.get_argument("id", None)
             svr = self.controller.servers.get_server_instance_by_id(server_id)
