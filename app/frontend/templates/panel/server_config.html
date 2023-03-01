@@ -359,7 +359,7 @@
     $.ajax({
       type: "DELETE",
       headers: { 'X-XSRFToken': token },
-      url: '/ajax/delete_server?id=' + serverId,
+      url: `/api/v2/servers/${serverId}`,
       data: {
       },
       success: function (data) {
@@ -373,7 +373,7 @@
     $.ajax({
       type: "DELETE",
       headers: { 'X-XSRFToken': token },
-      url: '/ajax/delete_server_files?id=' + serverId,
+      url: `/api/v2/servers/${serverId}?files=true`,
       data: {
       },
       success: function (data) {
@@ -393,7 +393,7 @@
     $.ajax({
       type: "POST",
       headers: { 'X-XSRFToken': token },
-      url: '/server/command?command=' + command + '&id=' + serverId,
+      url: `/api/v2/servers/${serverId}/action/${command}`,
       success: function (data) {
         console.log("got response:");
         console.log(data);
@@ -522,7 +522,7 @@
           $.ajax({
             type: "DELETE",
             headers: { 'X-XSRFToken': token },
-            url: '/ajax/delete_unloaded_server?id=' + serverId,
+            url: `/api/v2/servers/${serverId}`,
             data: {
             },
             success: function (data) {

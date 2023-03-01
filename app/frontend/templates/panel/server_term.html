@@ -179,7 +179,7 @@
     $.ajax({
       type: "POST",
       headers: { 'X-XSRFToken': token },
-      url: '/server/command?command=' + command + '&id=' + serverId,
+      url: `/api/v2/servers/${serverId}/action/${command}`,
       success: function (data) {
         console.log("got response:");
         console.log(data);
