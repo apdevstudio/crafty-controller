@@ -539,6 +539,7 @@ class PanelHandler(BaseHandler):
                         "auto_start": server_temp_obj["auto_start"],
                         "crash_detection": server_temp_obj["crash_detection"],
                         "show_status": server_temp_obj["show_status"],
+                        "ignored_exits": server_temp_obj["ignored_exits"],
                     },
                     "running": False,
                     "crashed": False,
