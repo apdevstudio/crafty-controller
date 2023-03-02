@@ -311,12 +311,12 @@
     formdata.append('command', serverCommand)
 
     console.log('sending command: ' + serverCommand)
-    let res = await fetch("/ajax/send_command?id=" + serverId, {
+    let res = await fetch(`/api/v2/servers/${serverId}/stdin`, {
       method: 'POST',
       headers: {
         'X-XSRFToken': token
       },
-      body: formdata,
+      body: serverCommand,
     });
 
     let responseData = await res.text();
