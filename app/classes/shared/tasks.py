@@ -774,16 +774,19 @@ class TasksManager:
             "session.log",
             "commander.log",
         ]
-
-        log_files = list(
-            filter(
-                lambda val: val not in latest_log_files,
-                os.listdir(logs_path),
+        # we won't delete if delete logs after is set to 0
+        if logs_delete_after != 0:
+            log_files = list(
+                filter(
+                    lambda val: val not in latest_log_files,
+                    os.listdir(logs_path),
+                )
             )
-        )
-        for log_file in log_files:
-            log_file_path = os.path.join(logs_path, log_file)
-            if Helpers.check_file_exists(
-                log_file_path
-            ) and Helpers.is_file_older_than_x_days(log_file_path, logs_delete_after):
-                os.remove(log_file_path)
+            for log_file in log_files:
+                log_file_path = os.path.join(logs_path, log_file)
+                if Helpers.check_file_exists(
+                    log_file_path
+                ) and Helpers.is_file_older_than_x_days(
+                    log_file_path, logs_delete_after
+                ):
+                    os.remove(log_file_path)
