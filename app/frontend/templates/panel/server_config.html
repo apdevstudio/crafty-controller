@@ -43,10 +43,7 @@
 
           <div class="row">
             <div class="col-md-6 col-sm-12">
-              <form class="forms-sample" method="post" id="config_form" action="/panel/server_detail">
-                {% raw xsrf_form_html() %}
-                <input type="hidden" name="id" value="{{ data['server_stats']['server_id']['server_id'] }}">
-                <input type="hidden" name="subpage" value="config">
+              <form class="forms-sample" method="post" id="config_form">
 
                 <div class="form-group">
                   <label for="server_name">{{ translate('serverConfig', 'serverName', data['lang']) }} <small
@@ -96,7 +93,7 @@
                   </label>
                   <select class="form-select form-control form-control-lg select-css" id="java_selection"
                     name="java_selection" form="config_form">
-                    <option value="">{{ translate('serverConfig',
+                    <option value="none">{{ translate('serverConfig',
                       'javaNoChange', data['lang'])}}</option>
                     {% for path in data['java_versions'] %}
                     <option value="{{path}}">{{path}}</option>
@@ -550,11 +547,86 @@
     $('.port-hint').popover("hide");
   });
 
+  async function postFormFieldsAsJson({ url, formData }) {
+    //Create an object from the form data entries
+    let formDataObject = Object.fromEntries(formData.entries());
+    // Format the plain form data as JSON
+    let formDataJsonString = JSON.stringify(formDataObject);
+
+    //Set the fetch options (headers, body)
+    let fetchOptions = {
+      //HTTP method set to POST.
+      method: "PATCH",
+      //Set the headers that specify you're sending a JSON body request and accepting JSON response
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      // POST request body as JSON string.
+      body: formDataJsonString,
+    };
+
+    //Get the response body as JSON.
+    //If the response was not OK, throw an error.
+    let res = await fetch(url, fetchOptions);
+
+    //If the response is not ok throw an error (for debugging)
+    if (!res.ok) {
+      let error = await res.text();
+      throw new Error(error);
+    }
+    //If the response was OK, return the response body.
+    return res.json();
+  }
+  function replacer(key, value) {
+    if (key != "ignored_exits") {
+      if (typeof value == "boolean") {
+        return value
+      } else {
+        return (isNaN(value) ? value : +value);
+      }
+    } else {
+      return value;
+    }
+  }
+
   $(document).ready(function () {
+    let token = getCookie("_xsrf")
     webSocket.on('remove_spinner', function () {
       document.getElementById("update-spinner").style.visibility = "hidden";
     });
+    $("#config_form").on("submit", async function (e) {
+      e.preventDefault();
+      var token = getCookie("_xsrf")
+      let configForm = document.getElementById("config_form");
 
+      let formData = new FormData(configForm);
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      //We need to make sure these are sent regardless of whether or not they're checked
+      formDataObject.show_status = $("#show_status").prop('checked');
+      formDataObject.crash_detection = $("#crash_detection").prop('checked');
+      formDataObject.auto_start = $("#auto_start").prop('checked');
+      console.log(formDataObject);
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(formDataObject, replacer);
+      formDataJsonString["ignored_exits"] = toString(formDataJsonString["ignored_exits"]);
+      console.log(formDataJsonString.ignored_exits)
+
+      console.log(formDataJsonString);
+
+      let res = await fetch(`/api/v2/servers/${serverId}`, {
+        method: 'PATCH',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: formDataJsonString,
+      });
+      let responseData = await res;
+      if (responseData.statusText === "OK") {
+        window.location.reload();
+      }
+    });
   });
 </script>
 
