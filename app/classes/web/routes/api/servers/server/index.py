@@ -88,7 +88,6 @@ class ApiServersServerIndexHandler(BaseApiHandler):
             else:
                 validate(data, basic_server_patch_schema)
         except ValidationError as e:
-            print(e)
             return self.finish_json(
                 400,
                 {
