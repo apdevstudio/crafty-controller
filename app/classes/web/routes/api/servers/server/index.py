@@ -1,6 +1,5 @@
 import logging
 import json
-import shlex
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 from playhouse.shortcuts import model_to_dict
