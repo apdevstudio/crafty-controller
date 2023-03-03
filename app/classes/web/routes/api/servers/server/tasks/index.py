@@ -99,4 +99,4 @@ class ApiServersServerTasksIndexHandler(BaseApiHandler):
         )
         self.tasks_manager.reload_schedule_from_db()
 
-        self.finish_json(200, {"status": "ok", "task_id": task_id})
+        self.finish_json(200, {"status": "ok", "data": {"schedule_id": task_id}})
