@@ -52,7 +52,33 @@ class ApiServersServerTasksTaskIndexHandler(BaseApiHandler):
         pass
 
     def delete(self, server_id: str, task_id: str):
-        pass
+        auth_data = self.authenticate_user()
+        if not auth_data:
+            return
+        if (
+            EnumPermissionsServer.SCHEDULE
+            not in self.controller.server_perms.get_user_id_permissions_list(
+                auth_data[4]["user_id"], server_id
+            )
+        ):
+            # if the user doesn't have Schedule permission, return an error
+            return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
+
+        try:
+            self.tasks_manager.remove_job(task_id)
+        except Exception:
+            return self.finish_json(
+                400, {"status": "error", "error": "NO SCHEDULE FOUND"}
+            )
+        self.controller.management.add_to_audit_log(
+            auth_data[4]["user_id"],
+            f"Edited server {server_id}: removed schedule",
+            server_id,
+            self.get_remote_ip(),
+        )
+        self.tasks_manager.reload_schedule_from_db()
+
+        return self.finish_json(200, {"status": "ok"})
 
     def patch(self, server_id: str, task_id: str):
         auth_data = self.authenticate_user()

@@ -420,6 +420,7 @@ class TasksManager:
                 )
             for item in jobs:
                 logger.info(f"JOB: {item}")
+            return task.schedule_id
 
     def remove_all_server_tasks(self, server_id):
         schedules = HelpersManagement.get_schedules_by_server(server_id)
