@@ -83,6 +83,7 @@ class ApiServersServerIndexHandler(BaseApiHandler):
             )
 
         try:
+            # prevent general users from becoming bad actors
             if auth_data[4]["superuser"]:
                 validate(data, server_patch_schema)
             else:
@@ -115,38 +116,17 @@ class ApiServersServerIndexHandler(BaseApiHandler):
         for key in data:
             # If we don't validate the input there could be security issues
             if key == "java_selection" and data[key] != "none":
-                java_flag = True
                 try:
-                    if self.helper.is_os_windows():
-                        execution_list = shlex.split(
-                            server_obj.execution_command, posix=False
-                        )
-                    else:
-                        execution_list = shlex.split(
-                            server_obj.execution_command, posix=True
-                        )
+                    command = self.helper.get_execution_java(
+                        data[key], server_obj.execution_command
+                    )
+                    setattr(server_obj, "execution_command", command)
                 except ValueError:
                     return self.finish_json(
-                        200, {"status": "error", "error": "INVALID EXECUTION COMMAND"}
+                        400, {"status": "error", "error": "INVALID EXECUTION COMMAND"}
                     )
-                if (
-                    not any(
-                        data[key] in path for path in self.helper.find_java_installs()
-                    )
-                    and data[key] != "java"
-                ):
-                    return
-                if data[key] != "java":
-                    if self.helper.is_os_windows():
-                        execution_list[0] = '"' + data[key] + '/bin/java"'
-                    else:
-                        execution_list[0] = '"' + data[key] + '"'
-                else:
-                    execution_list[0] = "java"
-                execution_command = ""
-                for item in execution_list:
-                    execution_command += item + " "
-                setattr(server_obj, "execution_command", execution_command)
+                java_flag = True
+
             if key != "path":
                 if key == "execution_command" and java_flag:
                     continue
