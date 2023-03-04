@@ -1320,7 +1320,7 @@ class ServerInstance:
                 unzip_path = os.path.join(self.settings["path"], "bedrock_server.zip")
                 unzip_path = self.helper.wtol_path(unzip_path)
                 # unzips archive that was downloaded.
-                FileHelpers.unzip_file(unzip_path)
+                FileHelpers.unzip_file(unzip_path, server_update=True)
                 # adjusts permissions for execution if os is not windows
                 if not self.helper.is_os_windows():
                     os.chmod(
@@ -1334,6 +1334,7 @@ class ServerInstance:
                 logger.critical(
                     f"Failed to download bedrock executable for update \n{e}"
                 )
+                downloaded = False
 
         if downloaded:
             logger.info("Executable updated successfully. Starting Server")
