@@ -13,6 +13,7 @@
 - Bump Cryptography/pyOpenSSL for CVE-2023-23931 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/554))
 - Fix debug logging to only display with the -v (verbose) flag ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/560))
 - Optimize world size calculation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/550))
+- Only copy bedrock_server executable on update ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/562))
 ### Tweaks
 - Cleanup authentication helpers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/545))
 - Optimize file upload progress WS ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/546))
