@@ -18,6 +18,8 @@ Discord Server - https://discord.gg/9VJPhCE
 
 Git Repository - https://gitlab.com/crafty-controller/crafty-4
 
+Docker Hub - [arcadiatechnology/crafty-4](https://hub.docker.com/r/arcadiatechnology/crafty-4)
+
 <br>
 
 ## Basic Docker Usage 🐳
