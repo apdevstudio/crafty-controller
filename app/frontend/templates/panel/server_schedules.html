@@ -440,21 +440,19 @@
     });
   });
 
-  function del_task(sch_id, id) {
+  async function del_task(sch_id, id) {
     var token = getCookie("_xsrf")
 
-    $.ajax({
-      type: "DELETE",
-      headers: { 'X-XSRFToken': token },
-      url: '/ajax/del_task?server_id=' + id + '&schedule_id=' + sch_id,
-      data: {
-        schedule_id: sch_id,
-        id: id
-      },
-      success: function (data) {
-        location.reload();
+    let res = await fetch(`/api/v2/servers/${id}/tasks/${sch_id}`, {
+      method: 'DELETE',
+      headers: {
+        'token': token,
       },
     });
+    let responseData = await res;
+    if (responseData.statusText === "OK") {
+      window.location.reload();
+    }
   }
 
 </script>
