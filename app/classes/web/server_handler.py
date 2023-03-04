@@ -183,6 +183,7 @@ class ServerHandler(BaseHandler):
             "version_data": "version_data_here",  # TODO
             "user_data": exec_user,
             "show_contribute": self.helper.get_setting("show_contribute_link", True),
+            "background": self.controller.cached_login,
             "lang": self.controller.users.get_user_lang_by_id(exec_user["user_id"]),
             "lang_page": Helpers.get_lang_page(
                 self.controller.users.get_user_lang_by_id(exec_user["user_id"])
@@ -403,6 +404,14 @@ class ServerHandler(BaseHandler):
                 jar_type, server_type, server_version = server_parts
                 # TODO: add server type check here and call the correct server
                 # add functions if not a jar
+                if server_type == "forge" and not self.helper.detect_java():
+                    translation = self.helper.translation.translate(
+                        "error",
+                        "installerJava",
+                        self.controller.users.get_user_lang_by_id(exec_user["user_id"]),
+                    ).format(server_name)
+                    self.redirect(f"/panel/error?error={translation}")
+                    return
                 new_server_id = self.controller.create_jar_server(
                     jar_type,
                     server_type,
@@ -551,7 +560,6 @@ class ServerHandler(BaseHandler):
                     self.get_remote_ip(),
                 )
             else:
-
                 new_server_id = self.controller.create_bedrock_server(
                     server_name,
                     exec_user["user_id"],

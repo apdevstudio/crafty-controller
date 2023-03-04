@@ -15,6 +15,7 @@ from app.classes.models.base_model import BaseModel
 
 logger = logging.getLogger(__name__)
 
+
 # **********************************************************************************
 #                                   Servers Model
 # **********************************************************************************
@@ -40,6 +41,7 @@ class Servers(BaseModel):
     show_status = BooleanField(default=1)
     created_by = IntegerField(default=-100)
     shutdown_timeout = IntegerField(default=60)
+    ignored_exits = CharField(default="0")
 
     class Meta:
         table_name = "servers"

@@ -290,9 +290,11 @@ class PanelHandler(BaseHandler):
         page_data: t.Dict[str, t.Any] = {
             # todo: make this actually pull and compare version data
             "update_available": self.helper.update_available,
+            "docker": self.helper.is_env_docker(),
             "background": self.controller.cached_login,
             "login_opacity": self.controller.management.get_login_opacity(),
             "serverTZ": tz,
+            "monitored": self.helper.get_setting("monitored_mounts"),
             "version_data": self.helper.get_version_string(),
             "failed_servers": self.controller.servers.failed_servers,
             "user_data": exec_user,
@@ -332,7 +334,12 @@ class PanelHandler(BaseHandler):
             else None,
             "superuser": superuser,
         }
-
+        try:
+            page_data["hosts_data"]["disk_json"] = json.loads(
+                page_data["hosts_data"]["disk_json"].replace("'", '"')
+            )
+        except:
+            page_data["hosts_data"]["disk_json"] = {}
         if page == "unauthorized":
             template = "panel/denied.html"
 
@@ -532,6 +539,7 @@ class PanelHandler(BaseHandler):
                         "auto_start": server_temp_obj["auto_start"],
                         "crash_detection": server_temp_obj["crash_detection"],
                         "show_status": server_temp_obj["show_status"],
+                        "ignored_exits": server_temp_obj["ignored_exits"],
                     },
                     "running": False,
                     "crashed": False,
@@ -841,6 +849,9 @@ class PanelHandler(BaseHandler):
             page_data["auth-servers"] = auth_servers
             page_data["role-servers"] = auth_role_servers
             page_data["user-roles"] = user_roles
+            page_data["servers_dir"], _tail = os.path.split(
+                self.controller.management.get_master_server_dir()
+            )
 
             page_data["users"] = self.controller.users.user_query(exec_user["user_id"])
             page_data["roles"] = self.controller.users.user_role_query(
@@ -880,6 +891,7 @@ class PanelHandler(BaseHandler):
                 page_data["config-json"] = data
                 page_data["availables_languages"] = []
                 page_data["all_languages"] = []
+                page_data["all_partitions"] = self.helper.get_all_mounts()
 
                 for file in sorted(
                     os.listdir(
@@ -1585,6 +1597,8 @@ class PanelHandler(BaseHandler):
             crash_detection = int(float(self.get_argument("crash_detection", "0")))
             logs_delete_after = int(float(self.get_argument("logs_delete_after", "0")))
             java_selection = self.get_argument("java_selection", None)
+            # make sure there is no whitespace
+            ignored_exits = self.get_argument("ignored_exits", "").replace(" ", "")
             # subpage = self.get_argument('subpage', None)
 
             server_id = self.check_server_id()
@@ -1669,6 +1683,7 @@ class PanelHandler(BaseHandler):
             server_obj.auto_start = auto_start
             server_obj.crash_detection = crash_detection
             server_obj.logs_delete_after = logs_delete_after
+            server_obj.ignored_exits = ignored_exits
             failed = False
             for servers in self.controller.servers.failed_servers:
                 if servers["server_id"] == int(server_id):

@@ -58,7 +58,6 @@ class MainPrompt(cmd.Cmd):
             Console.info("Unknown migration command")
 
     def do_set_passwd(self, line):
-
         try:
             username = str(line).lower()
             # If no user is found it returns None

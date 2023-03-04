@@ -539,7 +539,7 @@
     * @param {boolean} saved
   */
   const setSaveStatus = (saved) => {
-    document.getElementById('save_status').innerHTML = `<i class="fal ${saved ? "fa-file-check" : "fa-file"}"></i>`;
+    document.getElementById('save_status').innerHTML = `<i class="${saved ? "fa-solid fa-file-circle-check" : "fa-regular fa-file"}"></i>`;
     document.getElementById('save_status').style.color = saved ? '#2fb689' : 'gray';
   }
   ['change', 'undo', 'redo'].forEach(event => editor.on(event, (event) => setSaveStatus(serverFileContent === editor.session.getValue())))
@@ -705,6 +705,15 @@
     let mimeType = file.type
     let size = file.size
 
+    xmlHttpRequest.upload.addEventListener('progress', function (e) {
+
+      if (e.loaded <= size) {
+        var percent = Math.round(e.loaded / size * 100);
+        $(`#upload-progress-bar-${i + 1}`).css('width', percent + '%');
+        $(`#upload-progress-bar-${i + 1}`).html(percent + '%');
+      }
+    });
+
     xmlHttpRequest.open('POST', target, true);
     xmlHttpRequest.setRequestHeader('X-Content-Type', mimeType);
     xmlHttpRequest.setRequestHeader('X-XSRFToken', token);
@@ -722,9 +731,18 @@
         console.log('Upload for file', file.name, 'was successful!');
         let caught = false;
         try {
+          if (document.getElementById(path).classList.contains("clicked")) {
+            var expanded = true;
+          }
+        } catch {
+          var expanded = false;
+        }
+
+        try {
           var par_el = document.getElementById(path + "ul");
           var items = par_el.children;
-        } catch {
+        } catch (err) {
+          console.log(err)
           caught = true;
           var par_el = document.getElementById("files-tree");
           var items = par_el.children;
@@ -739,9 +757,9 @@
           }
         }
         if (!flag) {
-          if (caught) {
+          if (caught && expanded == false) {
             $(par_el).append('<li id=' + '"' + full_path.toString() + 'li' + '"' + 'class="d-block tree-ctx-item tree-file tree-item" data-path=' + '"' + full_path.toString() + '"' + ' data-name=' + '"' + name.toString() + '"' + ' onclick="clickOnFile(event)" ><span style="margin-right: 6px;"><i class="far fa-file"></i></span>' + name + '</li>');
-          } else {
+          } else if (expanded == true) {
             $(par_el).append('<li id=' + '"' + full_path.toString() + 'li' + '"' + 'class="tree-ctx-item tree-file tree-item" data-path=' + '"' + full_path.toString() + '"' + ' data-name=' + '"' + name.toString() + '"' + ' onclick="clickOnFile(event)" ><span style="margin-right: 6px;"><i class="far fa-file"></i></span>' + name + '</li>');
           }
           setTreeViewContext();
@@ -751,7 +769,22 @@
         $(`#upload-progress-bar-${i + 1}`).html('<i style="color: black;" class="fas fa-box-check"></i>')
       }
       else {
-        alert('Upload failed with response: ' + event.target.responseText);
+        let response_text = JSON.parse(event.target.responseText);
+        var x = document.querySelector('.bootbox');
+        if (x) {
+          x.remove()
+        }
+        var x = document.querySelector('.modal-content');
+        if (x) {
+          x.remove()
+        }
+        console.log(JSON.parse(event.target.responseText).info)
+        bootbox.alert({
+          message: JSON.parse(event.target.responseText).info,
+          callback: function () {
+            window.location.reload();
+          }
+        });
         doUpload = false;
       }
     }, false);
@@ -788,7 +821,7 @@
               var height = files.files.length * 50;
 
               var waitMessage = '<p class="text-center mb-0">' +
-                '<i class="fa fa-spin fa-cog"></i>' +
+                '<i class="fa fa-spin fa-cog"></i>&nbsp;' +
                 "{{ translate('serverFiles', 'waitUpload', data['lang']) }}" + '<br>' +
                 '<strong>' + "{{ translate('serverFiles', 'stayHere', data['lang']) }}" + '</strong>' +
                 '</p>' +
@@ -826,7 +859,7 @@
 
                 await sendFile(files.files[i], path, serverId, nFiles - i - 1, i, (progress) => {
                   $(`#upload-progress-bar-${i + 1}`).attr('aria-valuenow', progress)
-                  $(`#upload-progress-bar-${i + 1}`).css('width', progress + '%')
+                  $(`#upload-progress-bar-${i + 1}`).css('width', progress + '%');
                 });
               }
               hideUploadBox();

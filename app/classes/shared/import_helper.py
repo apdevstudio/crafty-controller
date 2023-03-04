@@ -226,7 +226,6 @@ class ImportHelpers:
         download_thread.start()
 
     def download_threaded_bedrock_server(self, path, new_id):
-
         # downloads zip from remote url
         try:
             bedrock_url = Helpers.get_latest_bedrock_url()

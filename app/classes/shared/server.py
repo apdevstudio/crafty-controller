@@ -12,6 +12,8 @@ import html
 import urllib.request
 import glob
 
+from zoneinfo import ZoneInfo
+
 # TZLocal is set as a hidden import on win pipeline
 from tzlocal import get_localzone
 from tzlocal.utils import ZoneInfoNotFoundError
@@ -136,9 +138,12 @@ class ServerInstance:
             logger.error(
                 "Could not capture time zone from system. Falling back to Europe/London"
             )
-            self.tz = "Europe/London"
+            self.tz = ZoneInfo("Europe/London")
         self.server_scheduler = BackgroundScheduler(timezone=str(self.tz))
+        self.dir_scheduler = BackgroundScheduler(timezone=str(self.tz))
         self.server_scheduler.start()
+        self.dir_scheduler.start()
+        self.start_dir_calc_task()
         self.backup_thread = threading.Thread(
             target=self.a_backup_server, daemon=True, name=f"backup_{self.name}"
         )
@@ -156,6 +161,8 @@ class ServerInstance:
         self.jar_update_url = server_data.executable_update_url
         self.name = server_data.server_name
         self.server_object = server_data
+        self.stats_helper.select_database()
+        self.reload_server_settings()
 
     def reload_server_settings(self):
         server_data = HelperServers.get_server_data_by_id(self.server_id)
@@ -301,6 +308,22 @@ class ServerInstance:
         else:
             user_lang = HelperUsers.get_user_lang_by_id(user_id)
 
+        # Checks if user is currently attempting to move global server
+        # dir
+        if self.helper.dir_migration:
+            self.helper.websocket_helper.broadcast_user(
+                user_id,
+                "send_start_error",
+                {
+                    "error": self.helper.translation.translate(
+                        "error",
+                        "migration",
+                        user_lang,
+                    )
+                },
+            )
+            return False
+
         if self.stats_helper.get_import_status() and not forge_install:
             if user_id:
                 self.helper.websocket_helper.broadcast_user(
@@ -443,7 +466,7 @@ class ServerInstance:
                 )
             except Exception as ex:
                 # Checks for java on initial fail
-                if os.system("java -version") == 32512:
+                if not self.helper.detect_java():
                     if user_id:
                         self.helper.websocket_helper.broadcast_user(
                             user_id,
@@ -588,7 +611,6 @@ class ServerInstance:
                 # We need to grab the exact forge version number.
                 # We know we can find it here in the run.sh/bat script.
                 try:
-
                     # Getting the forge version from the executable command
                     version = re.findall(
                         r"forge-([0-9\.]+)((?:)|(?:-([0-9\.]+)-[a-zA-Z]+)).jar",
@@ -672,7 +694,7 @@ class ServerInstance:
                         execution_command = (
                             f"java @{server_command[0]}"
                             f" @{executable_path}{server_command[3]} nogui"
-                            " {server_command[4]}"
+                            f" {server_command[4]}"
                         )
                         server_obj.execution_command = execution_command
                         Console.debug("SUCCESS! Forge install completed")
@@ -730,26 +752,26 @@ class ServerInstance:
             self.server_thread.join()
 
     def stop_server(self):
-        if self.settings["stop_command"]:
-            self.send_command(self.settings["stop_command"])
-            if self.settings["crash_detection"]:
-                # remove crash detection watcher
-                logger.info(f"Removing crash watcher for server {self.name}")
-                try:
-                    self.server_scheduler.remove_job("c_" + str(self.server_id))
-                except:
-                    logger.error(
-                        f"Removing crash watcher for server {self.name} failed. "
-                        f"Assuming it was never started."
-                    )
-        else:
-            # windows will need to be handled separately for Ctrl+C
-            self.process.terminate()
         running = self.check_running()
         if not running:
             logger.info(f"Can't stop server {self.name} if it's not running")
             Console.info(f"Can't stop server {self.name} if it's not running")
             return
+        if self.settings["crash_detection"]:
+            # remove crash detection watcher
+            logger.info(f"Removing crash watcher for server {self.name}")
+            try:
+                self.server_scheduler.remove_job("c_" + str(self.server_id))
+            except:
+                logger.error(
+                    f"Removing crash watcher for server {self.name} failed. "
+                    f"Assuming it was never started."
+                )
+        if self.settings["stop_command"]:
+            self.send_command(self.settings["stop_command"])
+        else:
+            # windows will need to be handled separately for Ctrl+C
+            self.process.terminate()
         i = 0
 
         # caching the name and pid number
@@ -848,7 +870,6 @@ class ServerInstance:
         return True
 
     def crash_detected(self, name):
-
         # clear the old scheduled watcher task
         self.server_scheduler.remove_job(f"c_{self.server_id}")
         # remove the stats polling job since server is stopped
@@ -910,7 +931,6 @@ class ServerInstance:
         return self.process.pid if self.process is not None else None
 
     def detect_crash(self):
-
         logger.info(f"Detecting possible crash for server: {self.name} ")
 
         running = self.check_running()
@@ -919,7 +939,7 @@ class ServerInstance:
         if running:
             return
         # check the exit code -- This could be a fix for /stop
-        if self.process.returncode == 0:
+        if str(self.process.returncode) in self.settings["ignored_exits"].split(","):
             logger.warning(
                 f"Process {self.process.pid} exited with code "
                 f"{self.process.returncode}. This is considered a clean exit"
@@ -933,7 +953,6 @@ class ServerInstance:
         self.stats_helper.sever_crashed()
         # if we haven't tried to restart more 3 or more times
         if self.restart_count <= 3:
-
             # start the server if needed
             server_restarted = self.crash_detected(self.name)
 
@@ -1301,7 +1320,7 @@ class ServerInstance:
                 unzip_path = os.path.join(self.settings["path"], "bedrock_server.zip")
                 unzip_path = self.helper.wtol_path(unzip_path)
                 # unzips archive that was downloaded.
-                FileHelpers.unzip_file(unzip_path)
+                FileHelpers.unzip_file(unzip_path, server_update=True)
                 # adjusts permissions for execution if os is not windows
                 if not self.helper.is_os_windows():
                     os.chmod(
@@ -1315,6 +1334,7 @@ class ServerInstance:
                 logger.critical(
                     f"Failed to download bedrock executable for update \n{e}"
                 )
+                downloaded = False
 
         if downloaded:
             logger.info("Executable updated successfully. Starting Server")
@@ -1373,6 +1393,20 @@ class ServerInstance:
             self.stats_helper.set_update(False)
         for user in server_users:
             self.helper.websocket_helper.broadcast_user(user, "remove_spinner", {})
+
+    def start_dir_calc_task(self):
+        server_dt = HelperServers.get_server_data_by_id(self.server_id)
+        self.server_size = self.stats.get_server_dir_size(server_dt["path"])
+        self.dir_scheduler.add_job(
+            self.calc_dir_size,
+            "interval",
+            minutes=self.helper.get_setting("dir_size_poll_freq_minutes"),
+            id=str(self.server_id) + "_dir_poll",
+        )
+
+    def calc_dir_size(self):
+        server_dt = HelperServers.get_server_data_by_id(self.server_id)
+        self.server_size = self.stats.get_server_dir_size(server_dt["path"])
 
     # **********************************************************************************
     #                               Minecraft Servers Statistics
@@ -1459,7 +1493,6 @@ class ServerInstance:
                     Console.critical("Can't broadcast server status to websocket")
 
     def get_servers_stats(self):
-
         server_stats = {}
 
         logger.info("Getting Stats for Server " + self.name + " ...")
@@ -1471,9 +1504,6 @@ class ServerInstance:
 
         # get our server object, settings and data dictionaries
         self.reload_server_settings()
-
-        # world data
-        server_path = server["path"]
 
         # process stats
         p_stats = Stats._try_get_process_stats(self.process, self.check_running())
@@ -1515,7 +1545,7 @@ class ServerInstance:
                 "mem": p_stats.get("memory_usage", 0),
                 "mem_percent": p_stats.get("mem_percentage", 0),
                 "world_name": server_name,
-                "world_size": Stats.get_world_size(server_path),
+                "world_size": self.server_size,
                 "server_port": server_port,
                 "int_ping_results": int_data,
                 "online": ping_data.get("online", False),
@@ -1533,7 +1563,7 @@ class ServerInstance:
                 "mem": p_stats.get("memory_usage", 0),
                 "mem_percent": p_stats.get("mem_percentage", 0),
                 "world_name": server_name,
-                "world_size": Stats.get_world_size(server_path),
+                "world_size": self.server_size,
                 "server_port": server_port,
                 "int_ping_results": int_data,
                 "online": False,
@@ -1546,7 +1576,6 @@ class ServerInstance:
         return server_stats
 
     def get_server_players(self):
-
         server = HelperServers.get_server_data_by_id(self.server_id)
 
         logger.info(f"Getting players for server {server}")
@@ -1567,7 +1596,6 @@ class ServerInstance:
         return []
 
     def get_raw_server_stats(self, server_id):
-
         try:
             server = HelperServers.get_server_obj(server_id)
         except:
@@ -1603,7 +1631,6 @@ class ServerInstance:
 
         # world data
         server_name = server_dt["server_name"]
-        server_path = server_dt["path"]
 
         # process stats
         p_stats = Stats._try_get_process_stats(self.process, self.check_running())
@@ -1636,7 +1663,7 @@ class ServerInstance:
                     "mem": p_stats.get("memory_usage", 0),
                     "mem_percent": p_stats.get("mem_percentage", 0),
                     "world_name": server_name,
-                    "world_size": Stats.get_world_size(server_path),
+                    "world_size": self.server_size,
                     "server_port": server_port,
                     "int_ping_results": int_data,
                     "online": ping_data.get("online", False),
@@ -1665,7 +1692,7 @@ class ServerInstance:
                         "mem": p_stats.get("memory_usage", 0),
                         "mem_percent": p_stats.get("mem_percentage", 0),
                         "world_name": server_name,
-                        "world_size": Stats.get_world_size(server_path),
+                        "world_size": self.server_size,
                         "server_port": server_port,
                         "int_ping_results": int_data,
                         "online": ping_data["online"],
@@ -1684,7 +1711,7 @@ class ServerInstance:
                         "mem": p_stats.get("memory_usage", 0),
                         "mem_percent": p_stats.get("mem_percentage", 0),
                         "world_name": server_name,
-                        "world_size": Stats.get_world_size(server_path),
+                        "world_size": self.server_size,
                         "server_port": server_port,
                         "int_ping_results": int_data,
                         "online": False,
@@ -1703,7 +1730,7 @@ class ServerInstance:
                 "mem": p_stats.get("memory_usage", 0),
                 "mem_percent": p_stats.get("mem_percentage", 0),
                 "world_name": server_name,
-                "world_size": Stats.get_world_size(server_path),
+                "world_size": self.server_size,
                 "server_port": server_port,
                 "int_ping_results": int_data,
                 "online": False,
@@ -1716,7 +1743,6 @@ class ServerInstance:
         return server_stats
 
     def record_server_stats(self):
-
         server_stats = self.get_servers_stats()
         self.stats_helper.insert_server_stats(server_stats)
 

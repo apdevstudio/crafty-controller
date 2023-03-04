@@ -68,20 +68,20 @@
 
     <li class="nav-item">
       <a class="nav-link" href="/panel/dashboard">
-        <i class="fas fa-chart-network"></i>&nbsp;
+        <i class="fa-solid fa-diagram-project"></i>&nbsp;
         <span class="menu-title">{{ translate('sidebar', 'dashboard', data['lang']) }}</span>
       </a>
     </li>
 
     <li class="nav-item">
       <a class="nav-link" data-toggle="collapse" href="#page-layouts" aria-expanded="false"
-         aria-controls="page-layouts">
+        aria-controls="page-layouts">
         <i class="fas fa-server"></i> &nbsp;
         <span class="menu-title">{{ translate('sidebar', 'servers', data['lang']) }}</span>
         <i class="menu-arrow"></i>
       </a>
       <div class="collapse" id="page-layouts">
-        <ul class="nav flex-column sub-menu">
+        <ul class="nav flex-column sub-menu" id="sidebar-servers">
           {% if data['crafty_permissions']['Server_Creation'] in data['user_crafty_permissions'] %}
           <li class="nav-item">
             <a class="nav-link" href="/server/step1"><i class="fas fa-plus-circle"></i> &nbsp; {{ translate('sidebar',
@@ -138,4 +138,9 @@
 
   </ul>
 </nav>
+<script>
+  $(document).ready(function () {
+    $('#sidebar-servers li:gt(10)').remove();
+  })
+</script>
 <!-- partial -->

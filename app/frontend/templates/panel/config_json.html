@@ -6,7 +6,8 @@
 {% block title %}Crafty Controller - {{ translate('panelConfig', 'pageTitle', data['lang']) }}{% end %}
 
 {% block content %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/css/bootstrap-select.min.css">
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/css/bootstrap-select.min.css">
 
 
 <div class="content-wrapper">
@@ -50,62 +51,87 @@
             {% for item in data['config-json'].items() %}
             {% if item[0] == "reset_secrets_on_next_boot" %}
             <div class="form-group" style="background: rgba(243, 21, 6, 0.3); outline: 1px solid red; padding: 10px;">
-            {% else %}
-            <div class="form-group">
-            {% end %}
-              <label class="form" for="{{item[0]}}">{{item[0]}}
-                <small class="text-muted ml-1">
-                </small> </label><br />
-              {% if item[0] == 'language' %}
-              <select name="{{item[0]}}" class="form-control">
-                {% for lang in data['availables_languages'] %}
-                {% if lang == item[1] %}
-                <option selected>{{lang}}</option>
-                {% else %}
-                <option>{{lang}}</option>
+              {% else %}
+              <div class="form-group">
                 {% end %}
-                {% end %}
-              </select>
-              {% elif item[0] == 'disabled_language_files' %}
-              <div class="input-group">
-                <button type="button" class="btn btn-outline-default custom-picker" onclick="$('option', $('#lang_select')).each(function(element) {
-                $(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')
-            });">Enable all Languages</button>
-                <select id="lang_select" class="form-control selectpicker show-tick" data-icon-base="fas" data-tick-icon="fa-check" multiple data-style="custom-picker">
-                  {% for lang in data['all_languages'] %}
-                  {% if lang in item[1] %}
+                <label class="form" for="{{item[0]}}">{{item[0]}}
+                  <small class="text-muted ml-1">
+                  </small> </label><br />
+                {% if item[0] == 'language' %}
+                <select name="{{item[0]}}" class="form-control">
+                  {% for lang in data['availables_languages'] %}
+                  {% if lang == item[1] %}
                   <option selected>{{lang}}</option>
                   {% else %}
                   <option>{{lang}}</option>
                   {% end %}
                   {% end %}
                 </select>
-                <textarea id="disabled_lang" name="{{item[0]}}" class="form-control list hidden" rows="{{ len(data['all_languages']) }}" value="{{','.join(item[1])}}" hidden>{{','.join(item[1])}}</textarea>
+                {% elif item[0] == 'disabled_language_files' %}
+                <div class="input-group">
+                  <button type="button" class="btn btn-outline-default custom-picker" onclick="$('option', $('#lang_select')).each(function(element) {
+                $(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')
+            });">{{ translate('panelConfig', 'enableLang', data['lang']) }}</button>
+                  <select id="lang_select" class="form-control selectpicker show-tick" data-icon-base="fas"
+                    data-tick-icon="fa-check" multiple data-style="custom-picker">
+                    {% for lang in data['all_languages'] %}
+                    {% if lang in item[1] %}
+                    <option selected>{{lang}}</option>
+                    {% else %}
+                    <option>{{lang}}</option>
+                    {% end %}
+                    {% end %}
+                  </select>
+                  <textarea id="disabled_lang" name="{{item[0]}}" class="form-control list hidden"
+                    rows="{{ len(data['all_languages']) }}" value="{{','.join(item[1])}}"
+                    hidden>{{','.join(item[1])}}</textarea>
+                </div>
+                {% elif item[0] == 'monitored_mounts'%}
+                <div class="input-group">
+                  <button type="button" class="btn btn-outline-default custom-picker" onclick="$('option', $('#mount_select')).each(function(element) {
+                $(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')
+            });">{{ translate('panelConfig', 'noMounts', data['lang']) }}</button>
+                  <select id="mount_select" class="form-control selectpicker show-tick" data-icon-base="fas"
+                    data-tick-icon="fa-check" multiple data-style="custom-picker">
+                    {% for mount in data['all_partitions'] %}
+                    {% if mount in item[1] %}
+                    <option selected>{{mount}}</option>
+                    {% else %}
+                    <option>{{mount}}</option>
+                    {% end %}
+                    {% end %}
+                  </select>
+                  <textarea id="monitored_mounts" name="{{item[0]}}" class="form-control list hidden"
+                    rows="{{ len(data['all_partitions']) }}" value="{{','.join(item[1])}}"
+                    hidden>{{','.join(item[1])}}</textarea>
+                </div>
+                {% elif isinstance(item[1], list) %}
+                <textarea value="{{','.join(item[1])}}" type="text" name="{{item[0]}}"
+                  class="form-control list">{{','.join(item[1])}}</textarea>
+                {% elif isinstance(item[1], bool) %}
+                <div style="margin-left: 30px;">
+                  {% if item[1] == True %}
+                  <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True" checked>
+                   <label for="True">True</label><br>
+                  <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False">
+                   <label for="False">False</label>
+                  {% else %}
+                  <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True">
+                   <label for="True">True</label><br>
+                  <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False" checked>
+                   <label for="False">False</label>
+                  {% end %}
+                </div>
+                {% elif isinstance(item[1], int) %}
+                <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
+                  step="1" min="0" required>
+                {% else %}
+                <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
+                  step="2" min="0" required>
+                {% end %}
               </div>
-              {% elif isinstance(item[1], list) %}
-              <textarea value="{{','.join(item[1])}}" type="text" name="{{item[0]}}" class="form-control list">{{','.join(item[1])}}</textarea>
-              {% elif isinstance(item[1], bool) %}
-              <div style="margin-left: 30px;">
-              {% if item[1] == True %}
-                <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True" checked>
-                 <label for="True">True</label><br>
-                <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False">
-                 <label for="False">False</label>
-              {% else %}
-                <input type="radio" class="form-check-input" name="{{item[0]}}" id="True" value="True">
-                 <label for="True">True</label><br>
-                <input type="radio" class="form-check-input" name="{{item[0]}}" id="False" value="False" checked>
-                 <label for="False">False</label>
               {% end %}
-              </div>
-              {% elif isinstance(item[1], int) %}
-              <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}" step="1" min="0" required>
-              {% else %}
-              <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}" step="2" min="0" required>
-              {% end %}
-            </div>
-            {% end %}
-            <button class="btn btn-success" type="submit">Submit</button>&nbsp;<span id="submit-status"></span>
+              <button class="btn btn-success" type="submit">Submit</button>&nbsp;<span id="submit-status"></span>
           </form>
         </div>
       </div>
@@ -152,6 +178,9 @@
     /* Convert multiple select to text list */
     let selected_Lang = $('#lang_select').val();
     $('#disabled_lang').val(selected_Lang);
+
+    let mounts = $('#mount_select').val();
+    $('#monitored_mounts').val(mounts);
 
     let class_list = document.getElementsByClassName("list");
     let form_json = convertFormToJSON($("#config-form"));
@@ -276,44 +305,6 @@
       },
     });
   })
-
-  var file;
-  function sendFile() {
-    file = $("#file")[0].files[0]
-    document.getElementById("upload_input").innerHTML = '<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>'
-    let xmlHttpRequest = new XMLHttpRequest();
-    let token = getCookie("_xsrf")
-    let fileName = file.name
-    let target = '/upload'
-    let mimeType = file.type
-    let size = file.size
-    let type = 'background'
-
-    xmlHttpRequest.open('POST', target, true);
-    xmlHttpRequest.setRequestHeader('X-Content-Type', mimeType);
-    xmlHttpRequest.setRequestHeader('X-XSRFToken', token);
-    xmlHttpRequest.setRequestHeader('X-Content-Length', size);
-    xmlHttpRequest.setRequestHeader('X-Content-Disposition', 'attachment; filename="' + fileName + '"');
-    xmlHttpRequest.setRequestHeader('X-Content-Upload-Type', type);
-    xmlHttpRequest.setRequestHeader('X-FileName', fileName);
-    xmlHttpRequest.addEventListener('load', (event) => {
-      if (event.target.responseText == 'success') {
-        console.log('Upload for file', file.name, 'was successful!')
-        document.getElementById("upload_input").innerHTML = '<div class="card-header header-sm d-flex justify-content-between align-items-center"><span id="file-uploaded" style="color: gray;">' + fileName + '</span> 🔒</div>';
-        setTimeout(function () {
-          window.location.reload();
-        }, 2000);
-      }
-      else {
-        alert('Upload failed with response: ' + event.target.responseText);
-        doUpload = false;
-      }
-    }, false);
-    xmlHttpRequest.addEventListener('error', (e) => {
-      console.error('Error while uploading file', file.name + '.', 'Event:', e)
-    }, false);
-    xmlHttpRequest.send(file);
-  }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/js/bootstrap-select.min.js">
 </script>

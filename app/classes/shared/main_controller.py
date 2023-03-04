@@ -6,6 +6,7 @@ import platform
 import shutil
 import time
 import logging
+import threading
 from peewee import DoesNotExist
 
 # TZLocal is set as a hidden import on win pipeline
@@ -347,7 +348,7 @@ class Controller:
             elif root_create_data["create_type"] == "import_zip":
                 # TODO: Copy files from the zip file to the new server directory
                 server_file = create_data["jarfile"]
-                raise Exception("Not yet implemented")
+                raise NotImplementedError("Not yet implemented")
             _create_server_properties_if_needed(
                 create_data["server_properties_port"],
             )
@@ -379,7 +380,7 @@ class Controller:
                     logger.error(f"Server import failed with error: {ex}")
             elif root_create_data["create_type"] == "import_zip":
                 # TODO: Copy files from the zip file to the new server directory
-                raise Exception("Not yet implemented")
+                raise NotImplementedError("Not yet implemented")
 
             _create_server_properties_if_needed(0, True)
 
@@ -401,7 +402,7 @@ class Controller:
                     logger.error(f"Server import failed with error: {ex}")
             elif root_create_data["create_type"] == "import_zip":
                 # TODO: Copy files from the zip file to the new server directory
-                raise Exception("Not yet implemented")
+                raise NotImplementedError("Not yet implemented")
 
             _create_server_properties_if_needed(0, True)
 
@@ -941,7 +942,6 @@ class Controller:
     def remove_server(self, server_id, files):
         counter = 0
         for server in self.servers.servers_list:
-
             # if this is the droid... im mean server we are looking for...
             if str(server["server_id"]) == str(server_id):
                 server_data = self.servers.get_server_data(server_id)
@@ -1003,3 +1003,125 @@ class Controller:
     @staticmethod
     def clear_support_status():
         HelperUsers.clear_support_status()
+
+    def set_master_server_dir(self, server_dir):
+        # This method should only be used on a first run basis if the server dir is ""
+        self.helper.servers_dir = server_dir
+        HelpersManagement.set_master_server_dir(server_dir)
+
+    def update_master_server_dir(self, server_dir, user_id):
+        self.helper.dir_migration = True
+        move_thread = threading.Thread(
+            name="dir_move",
+            target=self.t_update_master_server_dir,
+            daemon=True,
+            args=(
+                server_dir,
+                user_id,
+            ),
+        )
+        move_thread.start()
+
+    def t_update_master_server_dir(self, new_server_path, user_id):
+        new_server_path = self.helper.wtol_path(new_server_path)
+        new_server_path = os.path.join(new_server_path, "servers")
+        self.helper.websocket_helper.broadcast_page(
+            "/panel/panel_config", "move_status", "Checking dir"
+        )
+        current_master = self.helper.wtol_path(
+            HelpersManagement.get_master_server_dir()
+        )
+        if current_master == new_server_path:
+            logger.info(
+                "Admin tried to change server dir to current server dir. Canceling..."
+            )
+            self.helper.websocket_helper.broadcast_page(
+                "/panel/panel_config",
+                "move_status",
+                "done",
+            )
+            return
+        if self.helper.is_subdir(new_server_path, current_master):
+            logger.info(
+                "Admin tried to change server dir to be inside a sub directory of the"
+                " current server dir. This will result in a copy loop."
+            )
+            self.helper.websocket_helper.broadcast_page(
+                "/panel/panel_config",
+                "move_status",
+                "done",
+            )
+            return
+
+        self.helper.websocket_helper.broadcast_page(
+            "/panel/panel_config", "move_status", "Checking permissions"
+        )
+        if not self.helper.ensure_dir_exists(new_server_path):
+            self.helper.websocket_helper.broadcast_user(
+                user_id,
+                "send_start_error",
+                {
+                    "error": "Crafty failed to move server dir. "
+                    "It seems Crafty lacks permission to write to "
+                    "the new directory."
+                },
+            )
+            return
+        # set the cached serve dir
+        self.helper.servers_dir = new_server_path
+        # set DB server dir
+        HelpersManagement.set_master_server_dir(new_server_path)
+        servers = self.servers.get_all_defined_servers()
+        # move the servers
+        for server in servers:
+            server_path = server.get("path")
+            new_local_server_path = os.path.join(
+                new_server_path, server.get("server_uuid")
+            )
+            if os.path.isdir(server_path):
+                self.helper.websocket_helper.broadcast_page(
+                    "/panel/panel_config",
+                    "move_status",
+                    f"Moving {server.get('server_name')}",
+                )
+                try:
+                    self.file_helper.move_dir(
+                        server_path,
+                        new_local_server_path,
+                    )
+                except FileExistsError as e:
+                    logger.error(f"Failed to move server with error: {e}")
+
+            server_obj = self.servers.get_server_obj(server.get("server_id"))
+
+            # reset executable path
+            if current_master in server["executable"]:
+                server_obj.executable = str(server["executable"]).replace(
+                    current_master, new_local_server_path
+                )
+            # reset run command path
+            if current_master in server["execution_command"]:
+                server_obj.execution_command = str(server["execution_command"]).replace(
+                    current_master, new_local_server_path
+                )
+            # reset log path
+            if current_master in server["log_path"]:
+                server_obj.log_path = str(server["log_path"]).replace(
+                    current_master, new_local_server_path
+                )
+            server_obj.path = new_local_server_path
+            failed = False
+            for s in self.servers.failed_servers:
+                if int(s["server_id"]) == int(server.get("server_id")):
+                    failed = True
+            if not failed:
+                self.servers.update_server(server_obj)
+            else:
+                self.servers.update_unloaded_server(server_obj)
+        self.servers.init_all_servers()
+        self.helper.dir_migration = False
+        self.helper.websocket_helper.broadcast_page(
+            "/panel/panel_config",
+            "move_status",
+            "done",
+        )
