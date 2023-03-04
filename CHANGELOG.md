@@ -15,6 +15,7 @@
 - Optimize world size calculation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/550))
 - Only copy bedrock_server executable on update ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/562))
 - Fix bug where unloaded servers could not be deleted ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/566))
+- Fix bug where "servers" was not appended ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/567))
 ### Tweaks
 - Cleanup authentication helpers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/545))
 - Optimize file upload progress WS ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/546))
