@@ -622,10 +622,16 @@
         },
         body: formDataJsonString,
       });
-      let responseData = await res;
-      if (responseData.statusText === "OK") {
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
         window.location.reload();
-      }
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+          });
+      } 
     });
   });
 </script>

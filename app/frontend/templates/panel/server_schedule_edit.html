@@ -278,14 +278,21 @@
       let res = await fetch(`/api/v2/servers/${serverId}/tasks/`, {
         method: 'POST',
         headers: {
-          'X-XSRFToken': token
+          'X-XSRFToken': token,
+          "Content-Type": "application/json",
         },
         body: formDataJsonString,
       });
-      let responseData = await res;
-      if (responseData.statusText === "OK") {
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
         window.location.href = `/panel/server_detail?id=${serverId}&subpage=schedules`;
-      }
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+          });
+      } 
     });
 
     $("#schedule_form").on("submit", async function (e) {
@@ -315,14 +322,21 @@
       let res = await fetch(`/api/v2/servers/${serverId}/tasks/${schId}`, {
         method: 'PATCH',
         headers: {
-          'X-XSRFToken': token
+          'X-XSRFToken': token,
+          "Content-Type": "application/json", 
         },
         body: formDataJsonString,
       });
-      let responseData = await res;
-      if (responseData.statusText === "OK") {
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
         window.location.href = `/panel/server_detail?id=${serverId}&subpage=schedules`;
-      }
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+          });
+      } 
     });
 
     });

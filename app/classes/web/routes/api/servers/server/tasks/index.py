@@ -3,6 +3,7 @@
 import json
 import logging
 
+from croniter import croniter
 from jsonschema import ValidationError, validate
 from app.classes.models.server_permissions import EnumPermissionsServer
 from app.classes.web.base_api_handler import BaseApiHandler
@@ -89,6 +90,22 @@ class ApiServersServerTasksIndexHandler(BaseApiHandler):
         data["server_id"] = server_id
         if not data.get("start_time"):
             data["start_time"] = "00:00"
+
+        # validate cron string
+        if data["cron_string"] != "" and not croniter.is_valid(data["cron_string"]):
+            return self.finish_json(
+                405,
+                {
+                    "status": "error",
+                    "error": self.helper.translation.translate(
+                        "error",
+                        "cronFormat",
+                        self.controller.users.get_user_lang_by_id(
+                            auth_data[4]["user_id"]
+                        ),
+                    ),
+                },
+            )
         task_id = self.tasks_manager.schedule_job(data)
 
         self.controller.management.add_to_audit_log(
