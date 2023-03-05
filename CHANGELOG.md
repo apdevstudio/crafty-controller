@@ -1,5 +1,16 @@
 # Changelog
-## --- [4.0.21] - 2023/TBD
+## --- [4.0.22] - 2023/TBD
+### New features
+TBD
+### Bug fixes
+TBD
+### Tweaks
+TBD
+### Lang
+TBD
+<br><br>
+
+## --- [4.0.21] - 2023/03/04
 ### New features
 - Add better feedback for uploads with a progress bar ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/546))
 - Add ignored exit codes for crash detection ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/553))
