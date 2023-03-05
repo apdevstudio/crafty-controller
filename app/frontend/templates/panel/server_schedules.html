@@ -90,7 +90,7 @@
                           <p>{{schedule.command}}</p>
                         </td>
                         <td id="{{schedule.interval}}" class="action">
-                          {% if schedule.interval != '' %}
+                          {% if schedule.interval_type != '' and schedule.interval_type != 'reaction' %}
                           <p>{{ translate('serverSchedules', 'every', data['lang']) }}</p>
                           <p>{{schedule.interval}} {{schedule.interval_type}}</p>
                           {% elif schedule.interval_type == 'reaction' %}

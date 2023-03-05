@@ -35,6 +35,7 @@ task_patch_schema = {
                 "",
             ],
         },
+        "name": {"type": "string"},
         "start_time": {"type": "string", "pattern": r"\d{1,2}:\d{1,2}"},
         "command": {"type": ["string", "null"]},
         "one_time": {"type": "boolean", "default": False},
@@ -133,6 +134,7 @@ class ApiServersServerTasksTaskIndexHandler(BaseApiHandler):
         if str(data.get("parent")) == str(task_id) and data.get("parent") is not None:
             data["parent"] = None
 
+        data["server_id"] = server_id
         self.tasks_manager.update_job(task_id, data)
 
         self.controller.management.add_to_audit_log(
