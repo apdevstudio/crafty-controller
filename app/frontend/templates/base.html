@@ -539,7 +539,7 @@
     });
     $(document).ready(() => {
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/static/assets/js/service-worker.js', {scope: '/'})
+        navigator.serviceWorker.register('/static/assets/js/shared/service-worker.js', {scope: '/'})
           .then(function (registration) {
             console.log('Service Worker Registered');
           });

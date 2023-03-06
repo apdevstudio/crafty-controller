@@ -143,7 +143,7 @@
       document.getElementById('login-form-background').style.background = 'rgb(34, 36, 55, ' + (opacity / 100) + ')';
       //Register Service worker for mobile app
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/static/assets/js/service-worker.js', {scope: '/'})
+        navigator.serviceWorker.register('/static/assets/js/shared/service-worker.js', {scope: '/'})
           .then(function (registration) {
             console.log('Service Worker Registered');
           });
