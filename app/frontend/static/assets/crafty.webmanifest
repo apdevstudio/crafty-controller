@@ -1,0 +1,37 @@
+{
+  "background_color": "#222436",
+  "description": "Crafty Controller is a free and open-source Minecraft launcher and manager that allows users to start and administer Minecraft servers from a user-friendly interface.",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Crafty Controller",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Crafty",
+  "start_url": "/",
+  "theme_color": "#964df7",
+  "categories": ["utilities"],
+  "screenshots": [],
+  "icons": [
+    {
+      "src": "/static/assets/images/Crafty_4-0.png",
+      "type": "image/png",
+      "sizes": "144x144"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Crafty Controller 4",
+      "short_name": "Crafty",
+      "description": "Minecraft server manager",
+      "url": "/panel/dashboard",
+      "icons": [
+        {
+          "src": "/static/assets/images/Crafty_4-0.png",
+          "sizes": "144x144"
+        }
+      ]
+    }
+  ],
+  "lang": "en",
+  "prefer_related_applications": false
+}

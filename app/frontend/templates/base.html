@@ -18,7 +18,7 @@
     href="https://cdn.datatables.net/v/bs4/dt-1.10.22/fh-3.1.7/r-2.2.6/sc-2.0.3/sp-1.2.2/datatables.min.css" />
   <link rel="stylesheet" href="/static/assets/vendors/css/vendor.bundle.base.css">
   <link rel="stylesheet" href="/static/assets/css/crafty.css">
-  <link rel="manifest" href="crafty.json">
+  <link rel="manifest" href="/static/assets/crafty.webmanifest">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -535,6 +535,14 @@
         }, 6000);
 
       });
+    });
+    $(document).ready(() => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/static/assets/js/service-worker.js', {scope: '/'})
+          .then(function (registration) {
+            console.log('Service Worker Registered');
+          });
+      }
     });
   </script>
 

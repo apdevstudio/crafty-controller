@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="/static/assets/vendors/ti-icons/css/themify-icons.css">
   <link rel="stylesheet" href="/static/assets/vendors/typicons/typicons.css">
   <link rel="stylesheet" href="/static/assets/vendors/css/vendor.bundle.base.css">
+  <link rel="manifest" href="/static/assets/crafty.webmanifest">
   <!-- endinject -->
   <!-- Plugin css for this page -->
   <!-- End Plugin css for this page -->
@@ -140,7 +141,15 @@
       let login_opacity_div = document.getElementById('login_opacity');
       let opacity = login_opacity_div.getAttribute('data-value');
       document.getElementById('login-form-background').style.background = 'rgb(34, 36, 55, ' + (opacity / 100) + ')';
+      //Register Service worker for mobile app
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/static/assets/js/service-worker.js', {scope: '/'})
+          .then(function (registration) {
+            console.log('Service Worker Registered');
+          });
+      }
     });
+    
   </script>
 </body>
 
