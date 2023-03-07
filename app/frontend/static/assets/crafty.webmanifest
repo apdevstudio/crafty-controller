@@ -10,26 +10,29 @@
   "start_url": "/",
   "theme_color": "#222436",
   "categories": ["utilities"],
-  "screenshots": [],
   "icons": [
+    {
+      "src": "/static/assets/images/Crafty_4-0_Logo_square.ico",
+      "type": "image/x-icon",
+      "sizes":"128x128"
+    },
     {
       "src": "/static/assets/images/Crafty_4-0.png",
       "type": "image/png",
-      "sizes": "144x144"
-    }
-  ],
-  "shortcuts": [
+      "sizes": "144x144",
+      "purpose": "any"
+    },
     {
-      "name": "Crafty Controller 4",
-      "short_name": "Crafty",
-      "description": "Minecraft server manager",
-      "url": "/panel/dashboard",
-      "icons": [
-        {
-          "src": "/static/assets/images/Crafty_4-0.png",
-          "sizes": "144x144"
-        }
-      ]
+      "src": "/static/assets/images/crafty-logo-square-1024.png",
+      "type": "image/png",
+      "sizes": "1024/1024",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/assets/images/crafty-logo-square-96.png",
+      "type": "image/png",
+      "sizes": "96x96",
+      "purpose": "any"
     }
   ],
   "lang": "en",
