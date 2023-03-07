@@ -47,7 +47,6 @@ class PublicHandler(BaseHandler):
         # sensible defaults
         template = "public/404.html"
 
-
         if page == "login":
             template = "public/login.html"
 
