@@ -25,7 +25,7 @@
     {
       "src": "/static/assets/images/crafty-logo-square-1024.png",
       "type": "image/png",
-      "sizes": "1024/1024",
+      "sizes": "1024x1024",
       "purpose": "any"
     },
     {

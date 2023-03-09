@@ -12,6 +12,15 @@
   <link rel="stylesheet" href="/static/assets/vendors/ti-icons/css/themify-icons.css">
   <link rel="stylesheet" href="/static/assets/vendors/typicons/typicons.css">
   <link rel="stylesheet" href="/static/assets/vendors/css/vendor.bundle.base.css">
+
+  
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Crafty">
+  <link rel="apple-touch-icon" href="../static/assets/images/Crafty_4-0.png">
+
+
   <!-- endinject -->
   <!-- Plugin css for this page -->
   <!-- End Plugin css for this page -->
@@ -77,6 +86,21 @@
   <script src="/static/assets/js/shared/settings.js"></script>
   <script src="/static/assets/js/shared/todolist.js"></script>
   <!-- endinject -->
+  <script>
+    $(document).ready(function () {
+      let login_opacity_div = document.getElementById('login_opacity');
+      let opacity = login_opacity_div.getAttribute('data-value');
+      document.getElementById('login-form-background').style.background = 'rgb(34, 36, 55, ' + (opacity / 100) + ')';
+      //Register Service worker for mobile app
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/static/assets/js/shared/service-worker.js', {scope: '/'})
+          .then(function (registration) {
+            console.error('Service Worker Registered');
+          });
+      }
+    });
+
+  </script>
 </body>
 
 </html>
