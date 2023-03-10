@@ -580,7 +580,7 @@
   }
   function replacer(key, value) {
     if (key != "ignored_exits") {
-      if (typeof value == "boolean") {
+      if (typeof value == "boolean" || key === "executable_update_url") {
         return value
       } else {
         return (isNaN(value) ? value : +value);
@@ -628,8 +628,8 @@
       } else {
 
         bootbox.alert({
-          title: responseData.status,
-          message: responseData.error
+          title: responseData.error,
+          message: responseData.error_data
           });
       } 
     });

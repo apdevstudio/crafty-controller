@@ -22,7 +22,7 @@ server_patch_schema = {
         "auto_start_delay": {"type": "integer"},
         "crash_detection": {"type": "boolean"},
         "stop_command": {"type": "string"},
-        "executable_update_url": {"type": "string", "minLength": 1},
+        "executable_update_url": {"type": "string"},
         "server_ip": {"type": "string", "minLength": 1},
         "server_port": {"type": "integer"},
         "shutdown_timeout": {"type": "integer"},
