@@ -29,16 +29,14 @@
             {% raw xsrf_form_html() %}
             <div class="form-group">
               <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-              <input type="text" class="form-control" id="server_name" name="server_name"
-                     placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+              <input type="text" class="form-control" id="server_name" name="server_name" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
             </div>
 
             <div class="form-group">
               <div id="accordion-1">
                 <div class="card">
                   <div class="card-header p-2" id="Role-1">
-                    <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-1" aria-expanded="true"
-                       aria-controls="collapseRole-1">
+                    <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-1" aria-expanded="true" aria-controls="collapseRole-1">
                       <i class="fas fa-chevron-down"></i> {{ translate('serverWizard', 'addRole', data['lang']) }}
                       <small style="text-transform: none;"> - {{ translate('serverWizard', 'autoCreate',
                         data['lang']) }}</small>
@@ -48,8 +46,7 @@
                     <div class="card-body scroll">
                       <div class="form-group">
                         {% for r in data['roles'] %}
-                        <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}"
-                                   type="checkbox">&nbsp;
+                        <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}" type="checkbox">&nbsp;
                             {{ r['role_name'].capitalize() }}</label></span>
                         {% end %}
                       </div>
@@ -80,37 +77,31 @@
             <input type="hidden" value="import_jar" name="create_type">
             <div class="form-group">
               <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-              <input type="text" class="form-control" id="server_name" name="server_name" value=""
-                     placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+              <input type="text" class="form-control" id="server_name" name="server_name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
             </div>
             <div class="form-group">
               <label for="server">{{ translate('serverWizard', 'serverPath', data['lang']) }} <small>{{
                   translate('serverWizard', 'absoluteServerPath', data['lang']) }}</small></label>
-              <input type="text" class="form-control" id="server_path" name="server_path"
-                     placeholder="/var/opt/server" required>
+              <input type="text" class="form-control" id="server_path" name="server_path" placeholder="/var/opt/server" required>
             </div>
             <div class="form-group">
               <label for="server_jar">{{ translate('serverWizard', 'serverJar', data['lang']) }}</label>
-              <input type="text" class="form-control" id="server_jar" name="server_jar" value=""
-                     placeholder="bedrock_server" required>
+              <input type="text" class="form-control" id="server_jar" name="server_jar" value="" placeholder="bedrock_server" required>
             </div>
             <br />
-            <h4 class="card-title">{{ translate('serverWizard', 'quickSettings', data['lang']) }} <small
-                     style="text-transform: none;"> - {{ translate('serverWizard', 'quickSettingsDescription',
+            <h4 class="card-title">{{ translate('serverWizard', 'quickSettings', data['lang']) }} <small style="text-transform: none;"> - {{ translate('serverWizard', 'quickSettingsDescription',
                 data['lang']) }}</small></h4>
             <hr>
             <div class="form-group">
               <label for="port2">{{ translate('serverWizard', 'serverPort', data['lang']) }}
                 <small></small></label>
-              <input type="number" class="form-control" id="port2" name="port" value="19132" step="1" min="1"
-                     max="65535" required>
+              <input type="number" class="form-control" id="port2" name="port" value="19132" step="1" min="1" max="65535" required>
             </div>
             <div class="form-group">
               <div id="accordion-2">
                 <div class="card">
                   <div class="card-header p-2" id="Role-2">
-                    <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-2" aria-expanded="true"
-                       aria-controls="collapseRole-2">
+                    <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-2" aria-expanded="true" aria-controls="collapseRole-2">
                       <i class="fas fa-chevron-down"></i> {{ translate('serverWizard', 'addRole', data['lang']) }}
                       <small style="text-transform: none;"> - {{ translate('serverWizard', 'autoCreate',
                         data['lang']) }}</small>
@@ -120,8 +111,7 @@
                     <div class="card-body scroll">
                       <div class="form-group">
                         {% for r in data['roles'] %}
-                        <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}"
-                                   type="checkbox">&nbsp;
+                        <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}" type="checkbox">&nbsp;
                             {{ r['role_name'].capitalize() }}</label></span>
                         {% end %}
                       </div>
@@ -150,15 +140,13 @@
 
             <div class="form-group">
               <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-              <input type="text" class="form-control" id="server_name" name="server_name" value=""
-                     placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+              <input type="text" class="form-control" id="server_name" name="server_name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
             </div>
 
             <div class="form-group">
               <label for="server">{{ translate('serverWizard', 'zipPath', data['lang']) }} <small>{{
                   translate('serverWizard', 'absoluteZipPath', data['lang']) }}</small></label>
-              <input type="text" class="form-control" id="server_path" name="server_path"
-                     placeholder="/var/opt/server.zip" required>
+              <input type="text" class="form-control" id="server_path" name="server_path" placeholder="/var/opt/server.zip" required>
             </div>
 
             <div class="form-group">
@@ -170,8 +158,7 @@
             </div>
             <div class="form-group">
               <label for="server_jar">{{ translate('serverWizard', 'serverJar', data['lang']) }}</label>
-              <input type="text" class="form-control" id="server_jar" name="server_jar" value=""
-                     placeholder="bedrock_server" required>
+              <input type="text" class="form-control" id="server_jar" name="server_jar" value="" placeholder="bedrock_server" required>
             </div>
             <h4 class="card-title">{{ translate('serverWizard', 'quickSettings', data['lang']) }} <small style="text-transform: none;"> - {{ translate('serverWizard', 'quickSettingsDescription', data['lang']) }}</small>
             </h4>
@@ -179,15 +166,13 @@
             <div class="form-group">
               <label for="port3">{{ translate('serverWizard', 'serverPort', data['lang']) }}
                 <small></small></label>
-              <input type="number" class="form-control" id="port3" name="port" value="19132" step="1" min="1"
-                     max="65535" required>
+              <input type="number" class="form-control" id="port3" name="port" value="19132" step="1" min="1" max="65535" required>
             </div>
             <div class="form-group">
               <div id="accordion-3">
                 <div class="card">
                   <div class="card-header p-2" id="Role-3">
-                    <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-3" aria-expanded="true"
-                       aria-controls="collapseRole-3">
+                    <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-3" aria-expanded="true" aria-controls="collapseRole-3">
                       <i class="fas fa-chevron-down"></i> {{ translate('serverWizard', 'addRole', data['lang'])
                       }} <small style="text-transform: none;"> - {{ translate('serverWizard', 'autoCreate',
                         data['lang']) }}</small>
@@ -197,8 +182,7 @@
                     <div class="card-body scroll">
                       <div class="form-group">
                         {% for r in data['roles'] %}
-                        <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}"
-                                   type="checkbox">&nbsp;
+                        <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}" type="checkbox">&nbsp;
                             {{ r['role_name'].capitalize() }}</label></span>
                         {% end %}
                       </div>
@@ -212,8 +196,7 @@
                 <input type="text" class="form-control" id="zip_root_path" name="zip_root_path">
               </div>
             </div>
-            <div class="modal fade" id="dir_select" tabindex="-1" role="dialog" aria-labelledby="dir_select"
-                 aria-hidden="true">
+            <div class="modal fade" id="dir_select" tabindex="-1" role="dialog" aria-labelledby="dir_select" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -224,8 +207,7 @@
                     </button>
                   </div>
                   <div class="modal-body">
-                    <div class="tree-ctx-item" id="main-tree-div" data-path=""
-                         style="overflow: scroll; max-height:75%;">
+                    <div class="tree-ctx-item" id="main-tree-div" data-path="" style="overflow: scroll; max-height:75%;">
                       <input type="radio" id="main-tree-input" name="root_path" value="" checked>
                       <span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path="">
                         <i class="far fa-folder"></i>
@@ -244,8 +226,7 @@
                 </div>
               </div>
             </div>
-            <button id="zip_submit" type="submit" title="You must select server root dir first" disabled
-                    class="btn btn-primary mr-2">{{ translate('serverWizard', 'importServerButton', data['lang'])
+            <button id="zip_submit" type="submit" title="You must select server root dir first" disabled class="btn btn-primary mr-2">{{ translate('serverWizard', 'importServerButton', data['lang'])
               }}</button>
             <button type="button" class="btn btn-danger mr-2 tree-reset">{{ translate('serverWizard', 'resetForm',
               data['lang'])
@@ -268,8 +249,7 @@
 
             <div class="form-group">
               <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-              <input type="text" class="form-control" id="server_name" name="server_name" value=""
-                     placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+              <input type="text" class="form-control" id="server_name" name="server_name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
             </div>
 
             <div class="form-group">
@@ -280,7 +260,8 @@
                   <label id="fileLabel" class="custom-file-label" for="file">{{ translate('serverWizard', 'labelZipFile', data['lang']) }}</label>
                 </div>
                 <div class="input-group-append">
-                  <button type="button" class="btn btn-info" id="upload-button" onclick="sendFile()" disabled>UPLOAD</button>
+                  <button type="button" class="btn btn-info" id="upload-button" onclick="sendFile()" disabled>{{ translate('serverWizard',
+                    'uploadButton', data['lang']) }}</button>
                 </div>
               </div>
             </div>
@@ -296,28 +277,24 @@
 
               <div class="form-group">
                 <label for="server_jar">{{ translate('serverWizard', 'serverJar', data['lang']) }}</label>
-                <input type="text" class="form-control" id="server_jar" name="server_jar" value=""
-                       placeholder="paper.jar" required>
+                <input type="text" class="form-control" id="server_jar" name="server_jar" value="" placeholder="paper.jar" required>
               </div>
 
-              <h4 class="card-title">{{ translate('serverWizard', 'quickSettings', data['lang']) }} <small
-                       style="text-transform: none;"> - {{ translate('serverWizard', 'quickSettingsDescription',
+              <h4 class="card-title">{{ translate('serverWizard', 'quickSettings', data['lang']) }} <small style="text-transform: none;"> - {{ translate('serverWizard', 'quickSettingsDescription',
                   data['lang']) }}</small></h4>
               <hr>
 
               <div class="form-group">
                 <label for="port3">{{ translate('serverWizard', 'serverPort', data['lang']) }} <small> - {{
                     translate('serverWizard', 'defaultPort', data['lang']) }}</small></label>
-                <input type="number" class="form-control" id="port4" name="port" value="19132" step="1" min="1"
-                       max="65535" required>
+                <input type="number" class="form-control" id="port4" name="port" value="19132" step="1" min="1" max="65535" required>
               </div>
 
               <div class="form-group">
                 <div id="accordion-3">
                   <div class="card">
                     <div class="card-header p-2" id="Role-3">
-                      <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-3"
-                         aria-expanded="true" aria-controls="collapseRole-3">
+                      <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-3" aria-expanded="true" aria-controls="collapseRole-3">
                         <i class="fas fa-chevron-down"></i> {{ translate('serverWizard', 'addRole',
                         data['lang'])
                         }} <small style="text-transform: none;"> - {{ translate('serverWizard', 'autoCreate',
@@ -328,8 +305,7 @@
                       <div class="card-body scroll">
                         <div class="form-group">
                           {% for r in data['roles'] %}
-                          <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}"
-                                     type="checkbox">&nbsp;
+                          <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}" type="checkbox">&nbsp;
                               {{ r['role_name'].capitalize() }}</label></span>
                           {% end %}
                         </div>
@@ -343,8 +319,7 @@
                   <input type="text" class="form-control" id="zip_root_path" name="zip_root_path">
                 </div>
               </div>
-              <div class="modal fade" id="dir_upload_select" tabindex="-1" role="dialog"
-                   aria-labelledby="dir_select" aria-hidden="true">
+              <div class="modal fade" id="dir_upload_select" tabindex="-1" role="dialog" aria-labelledby="dir_select" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
                     <div class="modal-header">
@@ -355,8 +330,7 @@
                       </button>
                     </div>
                     <div class="modal-body">
-                      <div class="tree-ctx-item" id="main-tree-div-upload" data-path=""
-                           style="overflow: scroll; max-height:75%;">
+                      <div class="tree-ctx-item" id="main-tree-div-upload" data-path="" style="overflow: scroll; max-height:75%;">
                         <input type="radio" id="main-tree-input-upload" name="root_path" value="" checked>
                         <span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path="">
                           <i class="far fa-folder"></i>
@@ -375,8 +349,7 @@
                   </div>
                 </div>
               </div>
-              <button id="upload_submit" type="submit" title="You must select server root dir first" disabled
-                      class="btn btn-primary mr-2">{{ translate('serverWizard', 'importServerButton', data['lang'])
+              <button id="upload_submit" type="submit" title="You must select server root dir first" disabled class="btn btn-primary mr-2">{{ translate('serverWizard', 'importServerButton', data['lang'])
                 }}</button>
               <button type="button" class="btn btn-danger mr-2 tree-reset">{{ translate('serverWizard', 'resetForm',
                 data['lang'])
@@ -500,6 +473,15 @@
     let size = file.size
     let type = 'server_import'
 
+    xmlHttpRequest.upload.addEventListener('progress', function (e) {
+
+      if (e.loaded <= size) {
+        var percent = Math.round(e.loaded / size * 100);
+        $(`#upload-progress-bar`).css('width', percent + '%');
+        $(`#upload-progress-bar`).html(percent + '%');
+      }
+    });
+
     xmlHttpRequest.open('POST', target, true);
     xmlHttpRequest.setRequestHeader('X-Content-Type', mimeType);
     xmlHttpRequest.setRequestHeader('X-XSRFToken', token);
@@ -514,7 +496,15 @@
         document.getElementById("lower_half").style.visibility = "visible";
       }
       else {
-        alert('Upload failed with response: ' + event.target.responseText);
+        let response_text = JSON.parse(event.target.responseText);
+        var x = document.querySelector('.bootbox');
+        console.log(JSON.parse(event.target.responseText).info)
+        bootbox.alert({
+          message: JSON.parse(event.target.responseText).info,
+          callback: function () {
+            window.location.reload();
+          }
+        });
         doUpload = false;
       }
     }, false);

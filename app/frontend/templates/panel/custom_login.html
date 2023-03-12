@@ -365,6 +365,15 @@
     let size = file.size
     let type = 'background'
 
+    xmlHttpRequest.upload.addEventListener('progress', function (e) {
+
+      if (e.loaded <= size) {
+        var percent = Math.round(e.loaded / size * 100);
+        $(`#upload-progress-bar`).css('width', percent + '%');
+        $(`#upload-progress-bar`).html(percent + '%');
+      }
+    });
+
     xmlHttpRequest.open('POST', target, true);
     xmlHttpRequest.setRequestHeader('X-Content-Type', mimeType);
     xmlHttpRequest.setRequestHeader('X-XSRFToken', token);
@@ -381,7 +390,15 @@
         }, 2000);
       }
       else {
-        alert('Upload failed with response: ' + event.target.responseText);
+        let response_text = JSON.parse(event.target.responseText);
+        var x = document.querySelector('.bootbox');
+        console.log(JSON.parse(event.target.responseText).info)
+        bootbox.alert({
+          message: JSON.parse(event.target.responseText).info,
+          callback: function () {
+            window.location.reload();
+          }
+        });
         doUpload = false;
       }
     }, false);

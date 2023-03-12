@@ -179,12 +179,14 @@
         "internet": "We have detected the machine running Crafty has no connection to the internet. Client connections to the server may be limited.",
         "no-file": "We can't seem to locate the requested file. Double check the path. Does Crafty have proper permissions?",
         "noJava": "Server {} failed to start with error code: We have detected Java is not installed. Please install java then start the server.",
+        "installerJava": "Failed to install {} : Forge Server Installs require Java. We have detected Java is not installed. Please install java then install the server.",
         "not-downloaded": "We can't seem to find your executable file. Has it finished downloading? Are the permissions set to executable?",
         "portReminder": "We have detected this is the first time {} has been run. Make sure to forward port {} through your router/firewall to make this remotely accessible from the internet.",
         "start-error": "Server {} failed to start with error code: {}",
         "terribleFailure": "What a Terrible Failure!",
         "superError": "You must be a super user to complete this action.",
-        "fileError": "File type must be an image."
+        "fileError": "File type must be an image.",
+        "migration": "Crafty's main server storage is being mirgated to a new location. All server starts have been suspended during this time. Please wait while we finish this migration"
     },
     "footer": {
         "allRightsReserved": "All rights reserved",
@@ -222,6 +224,8 @@
         "newRole": "Add New Role",
         "newUser": "Add New User",
         "pageTitle": "Panel Config",
+        "json": "Config.json",
+        "custom": "Customize Crafty",
         "role": "Role",
         "roles": "Roles",
         "roleUsers": "Role Users",
@@ -230,7 +234,11 @@
         "superConfirmTitle": "Enable superuser? Are you sure?",
         "user": "User",
         "users": "Users",
-        "title": "Crafty Configuration"
+        "title": "Crafty Configuration",
+        "enableLang": "Enable All Languages",
+        "noMounts": "Show no Mounts on Dash",
+        "globalServer": "Global Servers Directory",
+        "globalExplain": "Where Crafty stores all your server files. (We will append the path with /servers/[uuid of server])"
     },
     "customLogin": {
         "customLoginPage": "Customise the Login Page",
@@ -298,7 +306,9 @@
         "shutdown": "Shutdown server for duration of backup",
         "size": "Size",
         "storageLocation": "Storage Location",
-        "storageLocationDesc": "Where do you want to store backups?"
+        "storageLocationDesc": "Where do you want to store backups?",
+        "before": "Run command before backup",
+        "after": "Run command after backup"
     },
     "serverConfig": {
         "bePatientDelete": "Please be patient while we remove your server from the Crafty panel. This screen will close in a few moments.",
@@ -353,7 +363,9 @@
         "timeoutExplain1": "How long Crafty will wait for your server to shutdown after executing the",
         "timeoutExplain2": "command before it forces the process down.",
         "statsHint1": "The port your server is running on should go here. This is just how Crafty opens a connection to your server for stats.",
-        "statsHint2": "This does not change the port of your server. You must still change the port in your server config file."
+        "statsHint2": "This does not change the port of your server. You must still change the port in your server config file.",
+        "ignoredExits": "Ignored Crash Exit Codes",
+        "ignoredExitsExplain": "Exit codes Crafty's Crash detection should ignore as a normal 'stop' (separated by commas)"
     },
     "serverConfigHelp": {
         "desc": "Here is where you can change the configuration of your server",
@@ -550,7 +562,9 @@
         "serverType": "Server Type",
         "serverSelect": "Server Select",
         "serverVersion": "Server Version",
+        "serverUpload": "Upload Zipped Server",
         "sizeInGB": "Size in GB",
+        "uploadButton": "Upload",
         "zipPath": "Server Path"
     },
     "sidebar": {

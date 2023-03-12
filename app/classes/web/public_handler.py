@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 class PublicHandler(BaseHandler):
     def set_current_user(self, user_id: str = None):
-
         expire_days = self.helper.get_setting("cookie_expire")
 
         # if helper comes back with false
@@ -29,7 +28,6 @@ class PublicHandler(BaseHandler):
             # self.clear_cookie("user_data")
 
     def get(self, page=None):
-
         error = bleach.clean(self.get_argument("error", "Invalid Login!"))
         error_msg = bleach.clean(self.get_argument("error_msg", ""))
 
@@ -81,7 +79,6 @@ class PublicHandler(BaseHandler):
         )
 
     def post(self, page=None):
-
         error = bleach.clean(self.get_argument("error", "Invalid Login!"))
         error_msg = bleach.clean(self.get_argument("error_msg", ""))
 
@@ -96,7 +93,6 @@ class PublicHandler(BaseHandler):
             page_data["query"] = self.request.query
 
         if page == "login":
-
             next_page = "/login"
             if self.request.query:
                 next_page = "/login?" + self.request.query

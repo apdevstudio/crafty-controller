@@ -20,6 +20,7 @@ from app.classes.shared.main_models import DatabaseShortcuts
 
 logger = logging.getLogger(__name__)
 
+
 # **********************************************************************************
 #                                   Audit_Log Class
 # **********************************************************************************
@@ -46,6 +47,7 @@ class CraftySettings(BaseModel):
     cookie_secret = CharField(default="")
     login_photo = CharField(default="login_1.jpg")
     login_opacity = IntegerField(default=100)
+    master_server_dir = CharField(default="")
 
     class Meta:
         table_name = "crafty_settings"
@@ -268,6 +270,19 @@ class HelpersManagement:
     @staticmethod
     def set_login_opacity(opacity):
         CraftySettings.update({CraftySettings.login_opacity: opacity}).where(
+            CraftySettings.id == 1
+        ).execute()
+
+    @staticmethod
+    def get_master_server_dir():
+        settings = CraftySettings.select(CraftySettings.master_server_dir).where(
+            CraftySettings.id == 1
+        )
+        return settings[0].master_server_dir
+
+    @staticmethod
+    def set_master_server_dir(server_dir):
+        CraftySettings.update({CraftySettings.master_server_dir: server_dir}).where(
             CraftySettings.id == 1
         ).execute()
 

@@ -1,5 +1,5 @@
 [![Crafty Logo](app/frontend/static/assets/images/logo_long.svg)](https://craftycontrol.com)
-# Crafty Controller 4.0.21
+# Crafty Controller 4.0.22
 > Python based Control Panel for your Minecraft Server
 
 ## What is Crafty Controller?
@@ -17,6 +17,8 @@ Project Homepage - https://craftycontrol.com
 Discord Server - https://discord.gg/9VJPhCE
 
 Git Repository - https://gitlab.com/crafty-controller/crafty-4
+
+Docker Hub - [arcadiatechnology/crafty-4](https://hub.docker.com/r/arcadiatechnology/crafty-4)
 
 <br>
 

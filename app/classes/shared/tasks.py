@@ -4,6 +4,7 @@ import logging
 import threading
 import asyncio
 import datetime
+import json
 
 from tzlocal import get_localzone
 from tzlocal.utils import ZoneInfoNotFoundError
@@ -635,7 +636,9 @@ class TasksManager:
             logger.error(f"Task failed with error: {event.exception}")
 
     def start_stats_recording(self):
-        stats_update_frequency = self.helper.get_setting("stats_update_frequency")
+        stats_update_frequency = self.helper.get_setting(
+            "stats_update_frequency_seconds"
+        )
         logger.info(
             f"Stats collection frequency set to {stats_update_frequency} seconds"
         )
@@ -672,7 +675,6 @@ class TasksManager:
         host_stats = HelpersManagement.get_latest_hosts_stats()
 
         while True:
-
             if host_stats.get(
                 "cpu_usage"
             ) != HelpersManagement.get_latest_hosts_stats().get(
@@ -687,18 +689,37 @@ class TasksManager:
                 host_stats = HelpersManagement.get_latest_hosts_stats()
                 if len(self.helper.websocket_helper.clients) > 0:
                     # There are clients
-                    self.helper.websocket_helper.broadcast_page(
-                        "/panel/dashboard",
-                        "update_host_stats",
-                        {
-                            "cpu_usage": host_stats.get("cpu_usage"),
-                            "cpu_cores": host_stats.get("cpu_cores"),
-                            "cpu_cur_freq": host_stats.get("cpu_cur_freq"),
-                            "cpu_max_freq": host_stats.get("cpu_max_freq"),
-                            "mem_percent": host_stats.get("mem_percent"),
-                            "mem_usage": host_stats.get("mem_usage"),
-                        },
-                    )
+                    try:
+                        self.helper.websocket_helper.broadcast_page(
+                            "/panel/dashboard",
+                            "update_host_stats",
+                            {
+                                "cpu_usage": host_stats.get("cpu_usage"),
+                                "cpu_cores": host_stats.get("cpu_cores"),
+                                "cpu_cur_freq": host_stats.get("cpu_cur_freq"),
+                                "cpu_max_freq": host_stats.get("cpu_max_freq"),
+                                "mem_percent": host_stats.get("mem_percent"),
+                                "mem_usage": host_stats.get("mem_usage"),
+                                "disk_usage": json.loads(
+                                    host_stats.get("disk_json").replace("'", '"')
+                                ),
+                                "mounts": self.helper.get_setting("monitored_mounts"),
+                            },
+                        )
+                    except:
+                        self.helper.websocket_helper.broadcast_page(
+                            "/panel/dashboard",
+                            "update_host_stats",
+                            {
+                                "cpu_usage": host_stats.get("cpu_usage"),
+                                "cpu_cores": host_stats.get("cpu_cores"),
+                                "cpu_cur_freq": host_stats.get("cpu_cur_freq"),
+                                "cpu_max_freq": host_stats.get("cpu_max_freq"),
+                                "mem_percent": host_stats.get("mem_percent"),
+                                "mem_usage": host_stats.get("mem_usage"),
+                                "disk_usage": {},
+                            },
+                        )
             time.sleep(1)
 
     def check_for_updates(self):
@@ -730,10 +751,42 @@ class TasksManager:
                     logger.debug("Could not clear out file from import directory")
 
     def log_watcher(self):
-        self.controller.servers.check_for_old_logs()
+        self.check_for_old_logs()
         self.scheduler.add_job(
-            self.controller.servers.check_for_old_logs,
+            self.check_for_old_logs,
             "interval",
             hours=6,
             id="log-mgmt",
         )
+
+    def check_for_old_logs(self):
+        # check for server logs first
+        self.controller.servers.check_for_old_logs()
+        # check for crafty logs now
+        logs_path = os.path.join(self.controller.project_root, "logs")
+        logs_delete_after = int(
+            self.helper.get_setting("crafty_logs_delete_after_days")
+        )
+        latest_log_files = [
+            "session.log",
+            "schedule.log",
+            "tornado-access.log",
+            "session.log",
+            "commander.log",
+        ]
+        # we won't delete if delete logs after is set to 0
+        if logs_delete_after != 0:
+            log_files = list(
+                filter(
+                    lambda val: val not in latest_log_files,
+                    os.listdir(logs_path),
+                )
+            )
+            for log_file in log_files:
+                log_file_path = os.path.join(logs_path, log_file)
+                if Helpers.check_file_exists(
+                    log_file_path
+                ) and Helpers.is_file_older_than_x_days(
+                    log_file_path, logs_delete_after
+                ):
+                    os.remove(log_file_path)
