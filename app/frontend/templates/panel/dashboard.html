@@ -100,6 +100,7 @@
                 </div>
               </div>
             </div>
+            {% if len(data['hosts_data']['disk_json']) > 0 %}
             <div class="col-12 mt-4">
               <div class="d-flex">
                 <div class="wrapper" style="width: 100%;">
@@ -107,7 +108,7 @@
                   </h5>
                   <div id="storage_data">
                     <div class="row">
-                      {% for item in data.get('hosts_data').get('disk_json') %}
+                      {% for item in data['hosts_data']['disk_json'] %}
                       {% if item["mount"] in data["monitored"] %}
                       <div id="{{item['device']}}" class="col-xl-3 col-lg-3 col-md-4 col-12">
                         <h4 class="mb-0 font-weight-semibold d-inline-block text-truncate storage-heading"
@@ -137,6 +138,7 @@
                 </div>
               </div>
             </div>
+            {% end %}
           </div>
         </div>
       </div>
@@ -931,8 +933,8 @@
         var storage_html = '<div class="row">';
         for (i = 0; i < hostStats.disk_usage.length; i++) {
           if (hostStats.mounts.includes(hostStats.disk_usage[i].mount)) {
-            storage_html += `<div id="{{item['device']}}" class="col-xl-3 col-lg-3 col-md-4 col-12">
-                        <h4 class="mb-0 font-weight-semibold d-inline-block text-truncate storage-heading" id="title_{{item['device']}}" data-toggle="tooltip" data-placement="bottom" title="${hostStats.disk_usage[i].mount}" style="max-width: 100%;"><i class="fas fa-hdd"></i> ${hostStats.disk_usage[i].mount}</h4>
+            storage_html += `<div id="host_storage" class="col-xl-3 col-lg-3 col-md-4 col-12">
+                        <h4 class="mb-0 font-weight-semibold d-inline-block text-truncate storage-heading" id="title_host_storage" data-toggle="tooltip" data-placement="bottom" title="${hostStats.disk_usage[i].mount}" style="max-width: 100%;"><i class="fas fa-hdd"></i> ${hostStats.disk_usage[i].mount}</h4>
                         <div class="progress" style="display: inline-block; height: 20px; width: 100%; background-color: rgb(139, 139, 139) !important;">
                           <div class="progress-bar`;
             if (hostStats.disk_usage[i].percent_used <= 58) {
