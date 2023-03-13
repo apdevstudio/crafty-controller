@@ -27,6 +27,7 @@ modify_role_schema = {
                 "required": ["server_id", "permissions"],
             },
         },
+        "manager": {"type": ["integer", "null"]},
     },
     "additionalProperties": False,
     "minProperties": 1,
