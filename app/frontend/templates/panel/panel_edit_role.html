@@ -322,17 +322,16 @@
       servers = [];
       for (s = 0; s < page_servers.length; s++){
         mask = ""
-      
-      for (i = 0; i < permissions.length; i++){
-        if ($(`permission_${page_servers[s].id}_${permissions[i]}`).prop('checked')){
-          mask += "1"
-        }else{
-          mask += "0"
+        for (i = 0; i < permissions.length; i++){
+          if ($(`#permission_${page_servers[s].id}_${permissions[i]}`).prop('checked')){
+            mask += "1"
+          }else{
+            mask += "0"
+          }
         }
+        servers.push(JSON.stringify({"id": page_servers[s].id, "permissions": mask}));
       }
-      servers.push(JSON.stringify({"id": page_servers[s].id, "permissions": mask}));
-    }
-    return servers;
+      return servers;
     }
 
     $( document ).ready(function() {
