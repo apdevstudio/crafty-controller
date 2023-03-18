@@ -1,10 +1,11 @@
-class SteamCMD_command:
+class SteamCMDcommand:
     """
     Used to construct a sequence of commands to sequentially be executed by SteamCMD.
     This reduces the number of required logins, which when using the other provided
     methods may result in getting rate limited by Steam.
     To be used with the SteamCMD.execute() method.
     """
+
     _commands = []
 
     def __init__(self):
@@ -12,43 +13,51 @@ class SteamCMD_command:
 
     def force_install_dir(self, install_dir: str):
         """
-        Sets the install directory for following app_update and workshop_download_item commands
+        Sets the install directory for following app_update and workshop_download_item
+        commands
+
         :param install_dir: Directory to install to
         :return: Index command was added at
         """
-        self._commands.append('+force_install_dir "{}"'.format(install_dir))
+        self._commands.append(f"+force_install_dir {install_dir}")
         return len(self._commands) - 1
 
-    def app_update(self, app_id: int, validate: bool = False, beta: str = '', beta_pass: str = ''):
+    def app_update(
+        self, app_id: int, validate: bool = False, beta: str = "", beta_pass: str = ""
+    ):
         """
         Updates/installs an app
         :param app_id: The Steam ID for the app you want to install
-        :param validate: Optional parameter for validation. Turn this on when updating something
+        :param validate: Optional. Turn this on when updating something
         :param beta: Optional parameter for running a beta branch.
         :param beta_pass: Optional parameter for entering beta password.
         :return: Index command was added at
         """
-        self._commands.append('+app_update {}{}{}{}'.format(
-            app_id,
-            ' validate' if validate else '',
-            ' -beta {}'.format(beta) if beta else '',
-            ' -betapassword {}'.format(beta_pass) if beta_pass else '',
-        ))
+        self._commands.append(
+            f"+app_update "
+            f"{app_id}"
+            f'{" validate" if validate else ""}'
+            f'{" -beta {}".format(beta) if beta else ""}'
+            f'{" -betapassword {}".format(beta_pass) if beta_pass else ""}'
+        )
         return len(self._commands) - 1
 
-    def workshop_download_item(self, app_id: int, workshop_id: int, validate: bool = False):
+    def workshop_download_item(
+        self, app_id: int, workshop_id: int, validate: bool = False
+    ):
         """
         Updates/installs workshop content
         :param app_id: The parent application ID
         :param workshop_id: The ID for workshop content. Can be found in the url.
-        :param validate: Optional parameter for validation. Turn this on when updating something
+        :param validate: Optional. Turn this on when updating something
         :return: Index command was added at
         """
-        self._commands.append('+workshop_download_item {} {}{}'.format(
-            app_id,
-            workshop_id,
-            ' validate' if validate else ''
-        ))
+        self._commands.append(
+            f"+workshop_download_item "
+            f"{app_id} "
+            f"{workshop_id}"
+            f'{" validate" if validate else ""}'
+        )
         return len(self._commands) - 1
 
     def custom(self, cmd: str):
@@ -70,8 +79,7 @@ class SteamCMD_command:
             # Replacing with None to keep indexes intact
             self._commands[idx] = None
             return True
-        else:
-            return False
+        return False
 
     def get_cmd(self):
         params = filter(None, self._commands)

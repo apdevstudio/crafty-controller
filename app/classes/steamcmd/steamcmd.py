@@ -6,7 +6,7 @@ import subprocess
 import urllib.request
 
 from getpass import getpass
-from app.classes.steamcmd.steamcmd_command import SteamCMD_command
+from app.classes.steamcmd.steamcmd_command import SteamCMDcommand
 
 
 package_links = {
@@ -169,7 +169,7 @@ class SteamCMD:
         self._uname = uname if uname else input("Please enter steam username: ")
         self._passw = passw if passw else getpass("Please enter steam password: ")
 
-        steam_command = SteamCMD_command()
+        steam_command = SteamCMDcommand()
         return self.execute(steam_command)
 
     def app_update(
@@ -189,7 +189,7 @@ class SteamCMD:
         :param betapassword: Optional parameter for entering beta password.
         :return: Status code of child process.
         """
-        steam_command = SteamCMD_command()
+        steam_command = SteamCMDcommand()
         if install_dir:
             steam_command.force_install_dir(install_dir)
         steam_command.app_update(app_id, validate, beta, betapassword)
@@ -218,13 +218,13 @@ class SteamCMD:
         :return: Status code of child process.
         """
 
-        steam_command = SteamCMD_command()
+        steam_command = SteamCMDcommand()
         if install_dir:
             steam_command.force_install_dir(install_dir)
         steam_command.workshop_download_item(app_id, workshop_id, validate)
         return self.execute(steam_command, n_tries)
 
-    def execute(self, cmd: SteamCMD_command, n_tries: int = 1):
+    def execute(self, cmd: SteamCMDcommand, n_tries: int = 1):
         """
         Executes a SteamCMD_command, with added actions occurring sequentially.
         May retry multiple times on timeout due to valves' timeout on large downloads.
@@ -257,10 +257,11 @@ class SteamCMD:
                     f"Download timeout! Tries remaining: {n_tries}. Retrying..."
                 )
                 return self.execute(cmd, n_tries - 1)
+
             # SteamCMD sometimes crashes when timing out downloads, due to
             # an assert checking that the download actually finished.
             # If this happens, retry.
-            elif e.returncode == 134:
+            if e.returncode == 134:
                 self._print_log(
                     f"SteamCMD errored! Tries remaining: {n_tries}. Retrying..."
                 )
