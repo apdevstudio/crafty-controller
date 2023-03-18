@@ -17,12 +17,12 @@
     {% if data["steamCMD"] %}
     <li class="nav-item term-nav-item">
       <a class="nav-link" href="/server/steam_cmd_step1" role="tab" aria-selected="false">
-        <i class="fas fa-file-signature"></i>Steam-CMD</a>
+        <i class="fas fa-file-signature"></i><span class="steam">Steam-CMD&nbsp;</span></a>
     </li>
     {% else %}
     <li class="nav-item term-nav-item" id="steam_link">
       <a style="color: gray;" class="nav-link" href="" role="tab" aria-selected="false">
-        <i class="fas fa-file-signature"></i>Steam-CMD 🔒</a>
+        <i class="fas fa-file-signature"></i><span class="steam">Steam-CMD&nbsp;</span> 🔒</a>
     </li>
     <span class="missing" title="Missing Deps" ,
       data-content="SteamCMD dependencies missing. To run SteamCMD servers please install dependencies as noted in our docs."
@@ -489,6 +489,12 @@
   </div>
 </div>
 <style>
+  .steam::after {
+    content: 'BETA';
+    font-size: 10px;
+    vertical-align: top;
+  }
+
   .scroll {
     max-height: 12em;
     overflow-y: auto;
