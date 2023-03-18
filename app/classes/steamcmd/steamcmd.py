@@ -1,11 +1,13 @@
 import os
 import platform
 import zipfile
+import tarfile
 import subprocess
 import urllib.request
-from app.classes.steamcmd.Steam_CMD_command import SteamCMD_command
 
 from getpass import getpass
+from app.classes.steamcmd.steamcmd_command import SteamCMD_command
+
 
 package_links = {
     "Windows": {
@@ -50,7 +52,10 @@ class SteamCMD:
         self.platform = platform.system()
         if self.platform not in ["Windows", "Linux"]:
             raise NotImplementedError(
-                message=f"Non supported operating system. Expected Windows, or Linux, got {self.platform}"
+                message=(
+                    f"Non supported operating system. "
+                    f"Expected Windows, or Linux, got {self.platform}"
+                )
             )
 
         self.steamcmd_url = package_links[self.platform]["url"]
@@ -77,9 +82,9 @@ class SteamCMD:
                     f.write(data)
                 return data
         except Exception as e:
-            raise Exception(
+            raise FileNotFoundError(
                 message=f"An unknown exception occurred during downloading. {e}"
-            )
+            ) from e
 
     def _extract_steamcmd(self):
         """
@@ -91,8 +96,6 @@ class SteamCMD:
                 f.extractall(self._installation_path)
 
         elif self.platform == "Linux":
-            import tarfile
-
             with tarfile.open(self.zip, "r:gz") as f:
                 f.extractall(self._installation_path)
 
@@ -149,9 +152,9 @@ class SteamCMD:
                 )
                 return
             else:
-                raise Exception(
+                raise SystemError(
                     message=f"Failed to install, check error code {e.returncode}"
-                )
+                ) from e
 
         return
 
@@ -166,8 +169,8 @@ class SteamCMD:
         self._uname = uname if uname else input("Please enter steam username: ")
         self._passw = passw if passw else getpass("Please enter steam password: ")
 
-        sc = SteamCMD_command()
-        return self.execute(sc)
+        steam_command = SteamCMD_command()
+        return self.execute(steam_command)
 
     def app_update(
         self,
@@ -181,20 +184,20 @@ class SteamCMD:
         Installer function for apps.
         :param app_id: The Steam ID for the app you want to install
         :param install_dir: Optional custom installation directory.
-        :param validate: Optional parameter for validation. Turn this on when updating something.
+        :param validate: Optional. Turn this on when updating something.
         :param beta: Optional parameter for running a beta branch.
         :param betapassword: Optional parameter for entering beta password.
         :return: Status code of child process.
         """
-        sc = SteamCMD_command()
+        steam_command = SteamCMD_command()
         if install_dir:
-            sc.force_install_dir(install_dir)
-        sc.app_update(app_id, validate, beta, betapassword)
+            steam_command.force_install_dir(install_dir)
+        steam_command.app_update(app_id, validate, beta, betapassword)
         self._print_log(
             f"Downloading item {app_id}",
             f"into {install_dir} with validate set to {validate}",
         )
-        return self.execute(sc)
+        return self.execute(steam_command)
 
     def workshop_update(
         self,
@@ -205,33 +208,33 @@ class SteamCMD:
         n_tries: int = 5,
     ):
         """
-        Installer function for workshop content. Retries multiple times on timeout due to valves'
-        stupid timeout on large downloads.
+        Installer function for workshop content. Retries multiple times on timeout
+        due to valves' timeout on large downloads.
         :param app_id: The parent application ID
         :param workshop_id: The ID for workshop content. Can be found in the url.
         :param install_dir: Optional custom installation directory.
-        :param validate: Optional parameter for validation. Turn this on when updating something.
-        :param n_tries: Counter for how many redownloads it can make before officially timing out.
+        :param validate: Optional. Turn this on when updating something.
+        :param n_tries: Counter for how many redownloads it can make before timing out.
         :return: Status code of child process.
         """
 
-        sc = SteamCMD_command()
+        steam_command = SteamCMD_command()
         if install_dir:
-            sc.force_install_dir(install_dir)
-        sc.workshop_download_item(app_id, workshop_id, validate)
-        return self.execute(sc, n_tries)
+            steam_command.force_install_dir(install_dir)
+        steam_command.workshop_download_item(app_id, workshop_id, validate)
+        return self.execute(steam_command, n_tries)
 
     def execute(self, cmd: SteamCMD_command, n_tries: int = 1):
         """
         Executes a SteamCMD_command, with added actions occurring sequentially.
-        May retry multiple times on timeout due to valves' stupid timeout on large downloads.
+        May retry multiple times on timeout due to valves' timeout on large downloads.
         :param cmd: Sequence of commands to execute
         :param n_tries: Number of times the command will be tried.
         :return: Status code of child process.
         """
         if n_tries == 0:
             raise TimeoutError(
-                message="""Error executing command, max number of timeout tries exceeded!
+                message="""Error executing command, max number of retries exceeded!
                 Consider increasing the n_tries parameter if the download is
                 particularly large"""
             )
@@ -247,7 +250,8 @@ class SteamCMD:
             return subprocess.check_call(" ".join(params), shell=True)
 
         except subprocess.CalledProcessError as e:
-            # SteamCMD has a habit of timing out large downloads, so  retry on timeout for the remainder of n_tries.
+            # SteamCMD has a habit of timing out large downloads,
+            # so retry on timeout for the remainder of n_tries.
             if e.returncode == 10:
                 self._print_log(
                     f"Download timeout! Tries remaining: {n_tries}. Retrying..."
@@ -264,4 +268,4 @@ class SteamCMD:
 
             raise SystemError(
                 message=f"Steamcmd was unable to run. exit code was {e.returncode}"
-            )
+            ) from e
