@@ -14,6 +14,20 @@
       <a class="nav-link" href="/server/bedrock_step1" role="tab" aria-selected="false">
         <i class="fas fa-file-signature"></i>Minecraft-Bedrock</a>
     </li>
+    {% if data["steamCMD"] %}
+    <li class="nav-item term-nav-item">
+      <a class="nav-link" href="/server/steam_cmd_step1" role="tab" aria-selected="false">
+        <i class="fas fa-file-signature"></i>Steam-CMD</a>
+    </li>
+    {% else %}
+    <li class="nav-item term-nav-item" id="steam_link">
+      <a style="color: gray;" class="nav-link" href="" role="tab" aria-selected="false">
+        <i class="fas fa-file-signature"></i>Steam-CMD 🔒</a>
+    </li>
+    <span class="missing" title="Missing Deps" ,
+      data-content="SteamCMD dependencies missing. To run SteamCMD servers please install dependencies as noted in our docs."
+      , data-placement="bottom"></span>
+    {% end %}
   </ul>
   <div class="d-none" id="overlay" onclick="hide(event)"></div>
   <div class="row">
@@ -905,6 +919,16 @@
 </script>
 
 <script>
+    $("#steam_link").mouseenter(function () {
+      $('[data-toggle="popover"]').popover();
+      $('.missing').popover("show");
+    })
+    $("#steam_link").mouseleave(function () {
+      $('.missing').popover("hide");
+    });
+    $(".tree-reset").on("click", function () {
+      location.href = "/server/bedrock_step1";
+    });
     $(".tree-reset").on("click", function () {
       location.href = "/server/step1";
     });

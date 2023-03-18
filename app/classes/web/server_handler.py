@@ -92,6 +92,8 @@ class ServerHandler(BaseHandler):
 
         page_data = {
             "update_available": self.helper.update_available,
+            "steamCMD": True,
+            "windows": self.helper.is_os_windows(),
             "version_data": self.helper.get_version_string(),
             "user_data": exec_user,
             "user_role": exec_user_role,
@@ -164,6 +166,21 @@ class ServerHandler(BaseHandler):
                 return
 
             template = "server/bedrock_wizard.html"
+
+        if page == "steam_cmd_step1":
+            if not superuser and not self.controller.crafty_perms.can_create_server(
+                exec_user["user_id"]
+            ):
+                self.redirect(
+                    "/panel/error?error=Unauthorized access: "
+                    "not a server creator or server limit reached"
+                )
+                return
+
+            page_data["servers"] = self.controller.steam_apps.fetch_cache()
+            if page_data["servers"] is None:
+                page_data["servers"] = []
+            template = "server/steam_wizard.html"
 
         self.render(
             template,
