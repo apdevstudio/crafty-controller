@@ -1,5 +1,5 @@
 # Changelog
-## --- [4.0.20] - 2022/TBD
+## --- [4.0.22] - 2023/TBD
 ### New features
 TBD
 ### Bug fixes
@@ -10,7 +10,56 @@ TBD
 TBD
 <br><br>
 
-## --- [4.0.19] - 2022/01/07
+## --- [4.0.21] - 2023/03/04
+### New features
+- Add better feedback for uploads with a progress bar ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/546))
+- Add ignored exit codes for crash detection ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/553))
+- Allow users to change the directory where Crafty Stores Servers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/539)) <br>
+    *(Only for non-docker, docker users should change host volume mount)*
+- Add host storage display option to the dashboard ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/551))
+### Bug fixes
+- Fix exception related to page data on server start ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/544))
+- Fix logical issue with uploading dynamic files ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/555))
+- Fix backups failing by correctly using tz objects ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/556))
+- Bump Cryptography/pyOpenSSL for CVE-2023-23931 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/554))
+- Fix debug logging to only display with the -v (verbose) flag ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/560))
+- Optimize world size calculation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/550))
+- Only copy bedrock_server executable on update ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/562))
+- Fix bug where unloaded servers could not be deleted ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/566))
+- Fix bug where "servers" was not appended ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/567))
+### Tweaks
+- Cleanup authentication helpers ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/545))
+- Optimize file upload progress WS ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/546))
+- Truncate sidebar servers to a max of 10 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/552))
+- Upgrade to FA 6. Add Translations ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/549))([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/558))
+- Forge installer and Java Detection improvements ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/559))
+- Crafty log clean up -config option ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/563))
+### Lang
+- Add additional translations to backups page strings ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/543))
+- Add additional missing translations ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/549))
+<br><br>
+
+## --- [4.0.20] - 2023/01/29
+### New features
+- Add option to run command before backup. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/536))
+- Make Config.json editable from panel. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/532))
+- Managed config.json refector (See MR for details). ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/485))
+### Bug fixes
+- Fix local java server imports. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/529))
+- Fix Schedule Restore | Add Backup Config Preservation. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/533))
+- Rework `/public` Route. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/538))
+### Tweaks
+- Hide stats DB directory from files tree. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/530))
+- Make it so file tree doesn't reload on upload/delete. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/541))
+- Add upload completed feedback to file upload. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/541))
+- Added further login screen customisation settings. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/531))
+- Set backup filename to use same time as schedule. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/534))
+- Move Schedules to from DB to Queue Datatype. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/535))
+- Move raknet icon failure to a debug log. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/537))
+- Add Default redirection to Dashboard if the user is connected. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/540))
+<br><br>
+
+## --- [4.0.19] - 2023/01/07
 ### Bug fixes
 - Fix port tooltip not showing on dash while server online. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/503))
 - Fix '+' char in path causing any file operation to fail. ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/502))

@@ -100,7 +100,7 @@ class FileHandler(BaseHandler):
                 self.write(
                     Helpers.get_os_understandable_path(path)
                     + "\n"
-                    + Helpers.generate_tree(path)
+                    + self.helper.generate_tree(path)
                 )
             self.finish()
 
@@ -121,7 +121,7 @@ class FileHandler(BaseHandler):
                 self.write(
                     Helpers.get_os_understandable_path(path)
                     + "\n"
-                    + Helpers.generate_dir(path)
+                    + self.helper.generate_dir(path)
                 )
             self.finish()
 

@@ -104,7 +104,6 @@ class ServerJars:
             logger.error(f"Unable to update serverjars.com cache file: {e}")
 
     def refresh_cache(self):
-
         cache_file = self.helper.serverjar_cache
         cache_old = self.helper.is_file_older_than_x_days(cache_file)
 

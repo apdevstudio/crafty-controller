@@ -1,0 +1,17 @@
+<ul class="nav nav-tabs col-md-12 tab-simple-styled" role="tablist" style="margin-top: 0;">
+    <li class="nav-item term-nav-item">
+        <a class="nav-link {% if data['active_link'] == 'panel_config' %}active{% end %}" href="/panel/panel_config"
+            role="tab" aria-selected="false">
+            <i class="fa-solid fa-wrench"></i>{{ translate('panelConfig', 'pageTitle', data['lang']) }}</a>
+    </li>
+    <li class="nav-item term-nav-item">
+        <a class="nav-link {% if data['active_link'] == 'config_json' %}active{% end %}" href="/panel/config_json"
+            role="tab" aria-selected="false">
+            <i class="fa-solid fa-code"></i>{{ translate('panelConfig', 'json', data['lang']) }}</a>
+    </li>
+    <li class="nav-item term-nav-item">
+        <a class="nav-link {% if data['active_link'] == 'custom_login' %}active{% end %}" href="/panel/custom_login"
+            role="tab" aria-selected="false">
+            <i class="fa fa-palette"></i>{{ translate('panelConfig', 'custom', data['lang']) }}</a>
+    </li>
+</ul>

@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 
 @tornado.web.stream_request_body
 class UploadHandler(BaseHandler):
-
     # noinspection PyAttributeOutsideInit
     def initialize(
         self,
@@ -52,18 +51,19 @@ class UploadHandler(BaseHandler):
                     f"User with ID {user_id} attempted to upload a file that"
                     f" exceeded the max body size."
                 )
-                self.helper.websocket_helper.broadcast_user(
-                    user_id,
-                    "send_start_error",
+
+                return self.finish_json(
+                    413,
                     {
-                        "error": self.helper.translation.translate(
+                        "status": "error",
+                        "error": "TOO LARGE",
+                        "info": self.helper.translation.translate(
                             "error",
                             "fileTooLarge",
                             self.controller.users.get_user_lang_by_id(user_id),
                         ),
                     },
                 )
-                return
             self.do_upload = True
 
             if superuser:
@@ -141,48 +141,49 @@ class UploadHandler(BaseHandler):
                     f"User with ID {user_id} attempted to upload a file that"
                     f" exceeded the max body size."
                 )
-                self.helper.websocket_helper.broadcast_user(
-                    user_id,
-                    "send_start_error",
+
+                return self.finish_json(
+                    413,
                     {
-                        "error": self.helper.translation.translate(
+                        "status": "error",
+                        "error": "TOO LARGE",
+                        "info": self.helper.translation.translate(
                             "error",
                             "fileTooLarge",
                             self.controller.users.get_user_lang_by_id(user_id),
                         ),
                     },
                 )
-                return
             self.do_upload = True
 
             if not superuser:
-                self.helper.websocket_helper.broadcast_user(
-                    user_id,
-                    "send_start_error",
+                return self.finish_json(
+                    401,
                     {
-                        "error": self.helper.translation.translate(
+                        "status": "error",
+                        "error": "UNAUTHORIZED ACCESS",
+                        "info": self.helper.translation.translate(
                             "error",
                             "superError",
                             self.controller.users.get_user_lang_by_id(user_id),
                         ),
                     },
                 )
-                return
             if not self.request.headers.get("X-Content-Type", None).startswith(
                 "image/"
             ):
-                self.helper.websocket_helper.broadcast_user(
-                    user_id,
-                    "send_start_error",
+                return self.finish_json(
+                    415,
                     {
-                        "error": self.helper.translation.translate(
+                        "status": "error",
+                        "error": "TYPE ERROR",
+                        "info": self.helper.translation.translate(
                             "error",
                             "fileError",
                             self.controller.users.get_user_lang_by_id(user_id),
                         ),
                     },
                 )
-                return
             if user_id is None:
                 logger.warning("User ID not found in upload handler call")
                 Console.warning("User ID not found in upload handler call")
@@ -219,18 +220,19 @@ class UploadHandler(BaseHandler):
                     f"User with ID {user_id} attempted to upload a file that"
                     f" exceeded the max body size."
                 )
-                self.helper.websocket_helper.broadcast_user(
-                    user_id,
-                    "send_start_error",
+
+                return self.finish_json(
+                    413,
                     {
-                        "error": self.helper.translation.translate(
+                        "status": "error",
+                        "error": "TOO LARGE",
+                        "info": self.helper.translation.translate(
                             "error",
                             "fileTooLarge",
                             self.controller.users.get_user_lang_by_id(user_id),
                         ),
                     },
                 )
-                return
             self.do_upload = True
 
             if superuser:

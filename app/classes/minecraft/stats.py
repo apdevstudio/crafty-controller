@@ -210,8 +210,7 @@ class Stats:
         return disk_data
 
     @staticmethod
-    def get_world_size(server_path):
-
+    def get_server_dir_size(server_path):
         total_size = 0
 
         total_size = Helpers.get_dir_size(server_path)
@@ -221,7 +220,6 @@ class Stats:
         return level_total_size
 
     def get_server_players(self, server_id):
-
         server = HelperServers.get_server_data_by_id(server_id)
 
         logger.info(f"Getting players for server {server}")
@@ -295,12 +293,11 @@ class Stats:
 
     @staticmethod
     def parse_server_raknet_ping(ping_obj: object):
-
         try:
             server_icon = base64.encodebytes(ping_obj["icon"])
         except Exception as e:
             server_icon = False
-            logger.info(
+            logger.debug(
                 "Unable to read the server icon due to the following error:", exc_info=e
             )
         ping_data = {

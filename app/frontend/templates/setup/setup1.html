@@ -5,61 +5,61 @@
 {% block content %}
 
 <div class="auto-form-wrapper">
-    <div class="text-center">
+  <div class="text-center">
     <!--                <img src="/static/assets/images/logo_long.svg">-->
-        {{ _('Configure Your Existing Server') }}<br /><br />
+    {{ _('Configure Your Existing Server') }}<br /><br />
+  </div>
+  <form action="/login" method="post">
+    {% raw xsrf_form_html() %}
+
+    <div class="form-group">
+      <label class="label">
+        {{ _('Server Name') }} - <small>{{ _('Example Survival Server') }}</small>
+      </label>
+
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="{{ _('Server Name') }}" name="server_name" value="{{_('MyFirstServer') }}" maxlength="55">
+      </div>
     </div>
-    <form action="/public/login" method="post">
-        {% raw xsrf_form_html() %}
 
-        <div class="form-group">
-        <label class="label">
-          {{ _('Server Name') }} - <small>{{ _('Example Survival Server') }}</small>
-        </label>
+    <div class="form-group">
+      {% if data['is_windows'] %}
+      <label class="label">
+        {{ _('Server Path') }} - <small>{{ _('Example c:\minecraft\server') }}</small>
+      </label>
 
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="{{ _('Server Name') }}" name="server_name" value="{{_('MyFirstServer') }}" maxlength="55">
-        </div>
-        </div>
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="{{ _('Server Path') }}" name="server_path"
+               value="c:\windows\minecraft" maxlength="255">
+      </div>
 
-        <div class="form-group">
-            {% if data['is_windows'] %}
-            <label class="label">
-                {{ _('Server Path') }} - <small>{{ _('Example c:\minecraft\server') }}</small>
-            </label>
+      {% else %}
 
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="{{ _('Server Path') }}" name="server_path"
-                 value="c:\windows\minecraft" maxlength="255">
-            </div>
+      <label class="label">
+        {{ _('Server Path') }} - <small>{{ _("Example: /var/opt/minecraft/server") }}</small>
+      </label>
 
-            {% else %}
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="{{ _('Server Path') }}" name="server_path"
+               value="c:\windows\minecraft" maxlength="255">
+      </div>
+      {% end %}
+    </div>
 
-            <label class="label">
-                {{ _('Server Path') }} - <small>{{ _("Example: /var/opt/minecraft/server") }}</small>
-            </label>
+    <div class="form-group">
+      <label class="label">
+        {{ _('Server Jar') }} - <small>{{ _('Example paper.jar') }}</small>
+      </label>
 
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="{{ _('Server Path') }}" name="server_path"
-                 value="c:\windows\minecraft" maxlength="255">
-            </div>
-          {% end %}
-        </div>
-
-        <div class="form-group">
-            <label class="label">
-              {{ _('Server Jar') }} - <small>{{ _('Example paper.jar') }}</small>
-            </label>
-
-            <input type="text" class="form-control" placeholder="{{ _('Server Jar') }}" name="server_jar" value="paper.jar" maxlength="255">
-         </div>
+      <input type="text" class="form-control" placeholder="{{ _('Server Jar') }}" name="server_jar" value="paper.jar" maxlength="255">
+    </div>
 
 
-        <div class="form-group">
-            <button class="btn btn-primary submit-btn btn-block"><i class="fas fa-save"></i> Save</button>
-        </div>
+    <div class="form-group">
+      <button class="btn btn-primary submit-btn btn-block"><i class="fas fa-save"></i> Save</button>
+    </div>
 
-    </form>
+  </form>
 </div>
 
 
