@@ -40,9 +40,10 @@
                     }}</label>
                   {% if data['super_user'] %}
                   <select style="width: 90%;" required class="form-control form-control-lg select-css" id="server_jar"
-                    name="server_jar">
+                    name="steam_server">
                     {% else %}
-                    <select required class="form-control form-control-lg select-css" id="server_jar" name="server_jar">
+                    <select required class="form-control form-control-lg select-css" id="server_jar"
+                      name="steam_server">
                       {% end %}
                       <option value="None">{{ translate('serverWizard', 'selectType', data['lang']) }}</option>
                       {% for s in data['servers'] %}
