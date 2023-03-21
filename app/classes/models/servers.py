@@ -42,6 +42,7 @@ class Servers(BaseModel):
     created_by = IntegerField(default=-100)
     shutdown_timeout = IntegerField(default=60)
     ignored_exits = CharField(default="0")
+    app_id = IntegerField(null=True)
 
     class Meta:
         table_name = "servers"
@@ -71,6 +72,7 @@ class HelperServers:
         created_by: int,
         server_port: int = 25565,
         server_host: str = "127.0.0.1",
+        app_id: int = None,
     ) -> int:
         """Create a server in the database
 
@@ -111,6 +113,7 @@ class HelperServers:
                 Servers.backup_path: backup_path,
                 Servers.type: server_type,
                 Servers.created_by: created_by,
+                Servers.app_id: app_id,
             }
         ).execute()
 

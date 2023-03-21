@@ -617,6 +617,74 @@ class ServerHandler(BaseHandler):
             self.controller.servers.stats.record_stats()
             self.redirect("/panel/dashboard")
 
+        if page == "steam_cmd_step1":
+            if not superuser and not self.controller.crafty_perms.can_create_server(
+                exec_user["user_id"]
+            ):
+                self.redirect(
+                    "/panel/error?error=Unauthorized access: "
+                    "not a server creator or server limit reached"
+                )
+                return
+
+            if not superuser:
+                user_roles = self.controller.roles.get_all_roles()
+            else:
+                user_roles = self.get_user_roles()
+            app_id = bleach.clean(self.get_argument("steam_server", ""))
+            server_name = bleach.clean(self.get_argument("server_name", ""))
+            min_mem = bleach.clean(self.get_argument("min_memory", ""))
+            max_mem = bleach.clean(self.get_argument("max_memory", ""))
+            port = bleach.clean(self.get_argument("port", ""))
+            if int(port) < 1 or int(port) > 65535:
+                self.redirect(
+                    "/panel/error?error=Constraint Error: "
+                    "Port must be greater than 0 and less than 65535"
+                )
+                return
+            captured_roles = []
+            for role in user_roles:
+                if bleach.clean(self.get_argument(str(role), "")) == "on":
+                    captured_roles.append(role)
+
+            if not server_name:
+                self.redirect("/panel/error?error=Server name cannot be empty!")
+                return
+
+            new_server_id = self.controller.create_steam_server(
+                app_id,
+                server_name,
+                exec_user["user_id"],
+            )
+
+            # These lines create a new Role for the Server with full permissions
+            # and add the user to it if he's not a superuser
+            if len(captured_roles) == 0:
+                if not superuser:
+                    new_server_uuid = self.controller.servers.get_server_data_by_id(
+                        new_server_id
+                    ).get("server_uuid")
+                    role_id = self.controller.roles.add_role(
+                        f"Creator of Server with uuid={new_server_uuid}",
+                        exec_user["user_id"],
+                    )
+                    self.controller.server_perms.add_role_server(
+                        new_server_id, role_id, "11111111"
+                    )
+                    self.controller.users.add_role_to_user(
+                        exec_user["user_id"], role_id
+                    )
+
+            else:
+                for role in captured_roles:
+                    role_id = role
+                    self.controller.server_perms.add_role_server(
+                        new_server_id, role_id, "11111111"
+                    )
+
+            self.controller.servers.stats.record_stats()
+            self.redirect("/panel/dashboard")
+
         try:
             self.render(
                 template,

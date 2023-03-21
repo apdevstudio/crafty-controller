@@ -54,6 +54,7 @@ class ServersController(metaclass=Singleton):
         created_by: int,
         server_port: int = 25565,
         server_host: str = "127.0.0.1",
+        app_id: int = None,
     ) -> int:
         """Create a server in the database
 
@@ -89,6 +90,7 @@ class ServersController(metaclass=Singleton):
             created_by,
             server_port,
             server_host,
+            app_id,
         )
 
     @staticmethod

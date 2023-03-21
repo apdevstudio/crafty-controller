@@ -33,6 +33,7 @@ from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.import_helper import ImportHelpers
 from app.classes.minecraft.serverjars import ServerJars
 from app.classes.steamcmd.serverapps import SteamApps
+from app.classes.steamcmd.steamcmd_command import SteamCMDcommand
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +45,7 @@ class Controller:
         self.import_helper: ImportHelpers = import_helper
         self.server_jars: ServerJars = ServerJars(helper)
         self.steam_apps: SteamApps = SteamApps(helper)
+        self.steam_cmd: SteamCMDcommand = SteamCMDcommand()
         self.users_helper: HelperUsers = HelperUsers(database, self.helper)
         self.roles_helper: HelperRoles = HelperRoles(database)
         self.servers_helper: HelperServers = HelperServers(database)
@@ -766,6 +768,55 @@ class Controller:
         )
         return new_id
 
+    def create_steam_server(self, app_id, server_name, user_id, server_port):
+        server_id = Helpers.create_uuid()
+        new_server_dir = os.path.join(self.helper.servers_dir, server_id)
+        backup_path = os.path.join(self.helper.backup_path, server_id)
+        # TODO: what is the server exe called @zedifus
+        server_exe = "????"
+        if Helpers.is_os_windows():
+            new_server_dir = Helpers.wtol_path(new_server_dir)
+            backup_path = Helpers.wtol_path(backup_path)
+            new_server_dir.replace(" ", "^ ")
+            backup_path.replace(" ", "^ ")
+
+        Helpers.ensure_dir_exists(new_server_dir)
+        Helpers.ensure_dir_exists(backup_path)
+
+        # Sets the steamCMD install directory for next install.
+        self.steam_cmd.force_install_dir(new_server_dir)
+
+        full_jar_path = os.path.join(new_server_dir, server_exe)
+
+        if Helpers.is_os_windows():
+            server_command = f'"{full_jar_path}"'
+        else:
+            server_command = f"./{server_exe}"
+        logger.debug("command: " + server_command)
+        server_log_file = ""
+        server_stop = "stop"
+
+        new_id = self.register_server(
+            server_name,
+            server_id,
+            new_server_dir,
+            backup_path,
+            server_command,
+            server_exe,
+            server_log_file,
+            server_stop,
+            server_port,
+            user_id,
+            server_type="steam",
+            app_id=app_id,
+        )
+        ServersController.set_import(new_id)
+        self.steam_cmd.app_update(
+            app_id,
+        )
+        ServersController.finish_import(new_id)
+        return new_id
+
     def create_bedrock_server(self, server_name, user_id):
         server_id = Helpers.create_uuid()
         new_server_dir = os.path.join(self.helper.servers_dir, server_id)
@@ -900,6 +951,7 @@ class Controller:
         created_by: int,
         server_type: str,
         server_host: str = "127.0.0.1",
+        app_id: int = None,
     ):
         # put data in the db
         new_id = self.servers.create_server(
@@ -915,6 +967,7 @@ class Controller:
             created_by,
             server_port,
             server_host,
+            app_id,
         )
 
         if not Helpers.check_file_exists(
