@@ -134,9 +134,10 @@ class ServerInstance:
         self.last_backup_failed = False
         try:
             self.tz = get_localzone()
-        except ZoneInfoNotFoundError:
+        except ZoneInfoNotFoundError as e:
             logger.error(
                 "Could not capture time zone from system. Falling back to Europe/London"
+                f" error: {e}"
             )
             self.tz = ZoneInfo("Europe/London")
         self.server_scheduler = BackgroundScheduler(timezone=str(self.tz))
