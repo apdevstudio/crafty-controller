@@ -1,4 +1,15 @@
 # Changelog
+## --- [4.0.23] - 2023/TBD
+### New features
+TBD
+### Bug fixes
+TBD
+### Tweaks
+TBD
+### Lang
+TBD
+<br><br>
+
 ## --- [4.0.22] - 2023/04/08
 ### Bug fixes
 - Fix dashboard crash for users without disks or if crafty doesn't have permission to access mount point ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/571))
