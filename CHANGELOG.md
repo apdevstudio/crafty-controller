@@ -1,4 +1,13 @@
 # Changelog
+## --- [4.0.22] - 2023/04/08
+### Bug fixes
+- Fix dashboard crash for users without disks or if crafty doesn't have permission to access mount point ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/571))
+- Strip Minecraft motd obfuscation chars to prevent text jumping on dashboard ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/572))
+### Tweaks
+- Improve logging on tz failures ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/569))
+- Add fallback for ping domain to provide better feedback on internet connection ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/570))
+<br><br>
+
 ## --- [4.0.21] - 2023/03/04
 ### New features
 - Add better feedback for uploads with a progress bar ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/546))
