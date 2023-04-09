@@ -268,7 +268,9 @@ class PanelHandler(BaseHandler):
                     break
         for server in defined_servers:
             server_ids.append(str(server.server_id))
-            if server not in page_servers:
+            if not any(
+                item["server_id"] == str(server.server_id) for item in page_servers
+            ):
                 page_servers.append(
                     DatabaseShortcuts.get_data_obj(server.server_object)
                 )
