@@ -452,6 +452,7 @@ class PanelHandler(BaseHandler):
                         page_servers.append(server)
                         un_used_servers.remove(server)
                         user_order.remove(server_id)
+                        break
                 # we only want to set these server stats values once.
                 # We need to update the flag so it only hits that if once.
                 flag += 1
