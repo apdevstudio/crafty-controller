@@ -263,8 +263,9 @@ class PanelHandler(BaseHandler):
                     page_servers.append(
                         DatabaseShortcuts.get_data_obj(server.server_object)
                     )
+                    user_order.remove(server_id)
                     defined_servers.remove(server)
-
+                    break
         for server in defined_servers:
             server_ids.append(str(server.server_id))
             if server not in page_servers:
