@@ -265,12 +265,15 @@ class PanelHandler(BaseHandler):
                     )
                     user_order.remove(server_id)
                     defined_servers.remove(server)
+                    print("defined removed:", defined_servers)
+                    print("user order removed:", user_order)
                     break
         for server in defined_servers:
             server_ids.append(str(server.server_id))
             if not any(
                 item["server_id"] == str(server.server_id) for item in page_servers
             ):
+                print(f"adding {server.server_id}")
                 page_servers.append(
                     DatabaseShortcuts.get_data_obj(server.server_object)
                 )
@@ -280,6 +283,8 @@ class PanelHandler(BaseHandler):
             if str(server_id) not in server_ids:
                 user_order.remove(server_id)
         defined_servers = page_servers
+
+        print("Defined:", defined_servers)
 
         try:
             tz = get_localzone()
