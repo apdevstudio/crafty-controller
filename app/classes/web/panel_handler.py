@@ -273,6 +273,8 @@ class PanelHandler(BaseHandler):
             if not any(
                 item["server_id"] == str(server.server_id) for item in page_servers
             ):
+                print("server id:", server.server_id, type(server.server_id))
+                print("item server id:", item["server_id"], type(item["server_id"]))
                 print(f"adding {server.server_id}")
                 page_servers.append(
                     DatabaseShortcuts.get_data_obj(server.server_object)
