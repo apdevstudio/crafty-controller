@@ -270,8 +270,6 @@ class PanelHandler(BaseHandler):
                     )
                     user_order.remove(server_id)
                     defined_servers.remove(server)
-                    # print("defined removed:", defined_servers)
-                    # print("user order removed:", user_order)
                     break
         for server_id in user_order[:]:
             # remove IDs in list that user no longer has access to
