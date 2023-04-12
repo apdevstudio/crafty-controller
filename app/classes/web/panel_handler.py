@@ -413,15 +413,12 @@ class PanelHandler(BaseHandler):
                     )
                 logger.debug(f"ASFR: {user_auth}")
                 page_data["servers"] = user_auth
-                print("user auth", page_data["servers"])
                 page_data["server_stats"]["running"] = len(
                     list(filter(lambda x: x["stats"]["running"], page_data["servers"]))
                 )
-                print("running", page_data["server_stats"]["running"])
                 page_data["server_stats"]["stopped"] = (
                     len(page_data["servers"]) - page_data["server_stats"]["running"]
                 )
-                print("stopped", page_data["server_stats"]["stopped"])
 
             # set user server order
             user_order = self.controller.users.get_user_by_id(exec_user["user_id"])
