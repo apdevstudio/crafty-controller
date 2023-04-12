@@ -42,7 +42,6 @@
         },
       });
     });
-
   </script>
   {% end %}
   <div class="row">
@@ -50,7 +49,7 @@
       <div class="card">
         <div class="card-body">
           <div class="row">
-            <div class="col-lg-4 col-md-6">
+            <div class="col-xl-4 col-md-5">
               <div class="d-flex">
                 <div class="wrapper">
                   <h5 class="mb-1 font-weight-medium text-primary"> {{ translate('dashboard', 'host', data['lang']) }}
@@ -72,7 +71,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-lg-4 col-md-6 mt-md-0 mt-4">
+            <div class="col-xl-4 col-md-4 mt-md-0 mt-4">
               <div class="d-flex">
                 <div class="wrapper">
                   <h5 class="mb-1 font-weight-medium text-primary">{{ translate('dashboard', 'servers', data['lang']) }}
@@ -88,7 +87,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-lg-4 col-md-6 mt-md-0 mt-4">
+            <div class="col-xl-4 col-md-3 mt-md-0 mt-4">
               <div class="d-flex">
                 <div class="wrapper">
                   <h5 class="mb-1 font-weight-medium text-primary">{{ translate('dashboard', 'players', data['lang']) }}
@@ -101,6 +100,45 @@
                 </div>
               </div>
             </div>
+            {% if len(data['hosts_data']['disk_json']) > 0 %}
+            <div class="col-12 mt-4">
+              <div class="d-flex">
+                <div class="wrapper" style="width: 100%;">
+                  <h5 class="mb-1 font-weight-medium text-primary">Storage
+                  </h5>
+                  <div id="storage_data">
+                    <div class="row">
+                      {% for item in data['hosts_data']['disk_json'] %}
+                      {% if item["mount"] in data["monitored"] %}
+                      <div id="{{item['device']}}" class="col-xl-3 col-lg-3 col-md-4 col-12">
+                        <h4 class="mb-0 font-weight-semibold d-inline-block text-truncate storage-heading"
+                          id="title_{{item['device']}}" data-toggle="tooltip" data-placement="bottom"
+                          title="{{item['mount']}}" style="max-width: 100%;"><i class="fas fa-hdd"></i>
+                          {{item["mount"]}}</h4>
+                        <div class="progress d-inline-block"
+                          style="height: 20px; width: 100%; background-color: rgb(139, 139, 139) !important;">
+                          <div class="progress-bar
+                        {% if item['percent_used'] <= 58 %}
+                        bg-success
+                        {% elif 59 <= item['percent_used'] <= 75 %}
+                        bg-warning
+                        {% else %}
+                        bg-danger
+                        {% end %}
+                        " role="progressbar" style="color: black; height: 100%; width: {{item['percent_used']}}%;"
+                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">{{item["used"]}} /
+                            {{item["total"]}}
+                          </div>
+                        </div>
+                      </div>
+                      {% end %}
+                      {% end %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% end %}
           </div>
         </div>
       </div>
@@ -891,6 +929,32 @@
         cpu_usage.textContent = hostStats.cpu_usage;
         mem_usage.setAttribute('data-original-title', `{% raw translate("dashboard", "memUsage", data['lang']) %}: ${hostStats.mem_usage}`);
         mem_percent.textContent = hostStats.mem_percent + '%';
+
+        var storage_html = '<div class="row">';
+        for (i = 0; i < hostStats.disk_usage.length; i++) {
+          if (hostStats.mounts.includes(hostStats.disk_usage[i].mount)) {
+            storage_html += `<div id="host_storage" class="col-xl-3 col-lg-3 col-md-4 col-12">
+                        <h4 class="mb-0 font-weight-semibold d-inline-block text-truncate storage-heading" id="title_host_storage" data-toggle="tooltip" data-placement="bottom" title="${hostStats.disk_usage[i].mount}" style="max-width: 100%;"><i class="fas fa-hdd"></i> ${hostStats.disk_usage[i].mount}</h4>
+                        <div class="progress" style="display: inline-block; height: 20px; width: 100%; background-color: rgb(139, 139, 139) !important;">
+                          <div class="progress-bar`;
+            if (hostStats.disk_usage[i].percent_used <= 58) {
+              storage_html += ` bg-success`;
+            } else if (hostStats.disk_usage[i].percent_used <= 75 && hostStats.disk_usage[i].percent_used >= 59) {
+              storage_html += ` bg-warning`;
+            } else {
+              storage_html += ` bg-danger`;
+            }
+            storage_html += `" role="progressbar" style="color: black; height: 100%; width: ${hostStats.disk_usage[i].percent_used}%;"
+                               aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">${hostStats.disk_usage[i].used} / ${hostStats.disk_usage[i].total}
+                          </div>
+                        </div>
+                        </div>`;
+          }
+        }
+        storage_html += `</div>`;
+        $(".storage-heading").tooltip('hide');
+        $("#storage_data").html(storage_html);
+        $("#storage_data").tooltip({ selector: '.storage-heading' });
       });
     }
 

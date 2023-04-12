@@ -8,9 +8,10 @@ logger = logging.getLogger(__name__)
 
 
 class DatabaseBuilder:
-    def __init__(self, database, helper, users_helper):
+    def __init__(self, database, helper, users_helper, management_helper):
         self.database = database
         self.helper = helper
+        self.management_helper = management_helper
         self.users_helper = users_helper
 
     def default_settings(self):
@@ -28,6 +29,8 @@ class DatabaseBuilder:
             superuser=True,
             manager=None,
         )
+
+        self.management_helper.create_crafty_row()
 
     def is_fresh_install(self):
         try:

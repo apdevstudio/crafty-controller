@@ -11,6 +11,7 @@ import tornado.escape
 import tornado.locale
 import tornado.httpserver
 
+from app.classes.models.management import HelpersManagement
 from app.classes.shared.console import Console
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.main_controller import Controller
@@ -58,7 +59,6 @@ class Webserver:
 
     @staticmethod
     def log_function(handler):
-
         info = {
             "Status_Code": handler.get_status(),
             "Method": handler.request.method,
@@ -102,7 +102,6 @@ class Webserver:
                     logger.debug("Applied asyncio patch")
 
     def run_tornado(self):
-
         # let's verify we have an SSL cert
         self.helper.create_self_signed_cert()
 
@@ -110,10 +109,13 @@ class Webserver:
         https_port = self.helper.get_setting("https_port")
 
         debug_errors = self.helper.get_setting("show_errors")
-        cookie_secret = self.helper.get_setting("cookie_secret")
-
-        if cookie_secret is False:
+        try:
+            cookie_secret = HelpersManagement.get_cookie_secret()
+        except:
+            cookie_secret = False
+        if cookie_secret is False or cookie_secret == "":
             cookie_secret = self.helper.random_string_generator(32)
+            HelpersManagement.set_cookie_secret(cookie_secret)
 
         if not http_port:
             http_port = 8000

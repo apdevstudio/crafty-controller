@@ -15,6 +15,7 @@ import html
 import zipfile
 import pathlib
 import ctypes
+import shutil
 import subprocess
 import itertools
 from datetime import datetime
@@ -62,6 +63,7 @@ class Helpers:
         self.servers_dir = os.path.join(self.root_dir, "servers")
         self.backup_path = os.path.join(self.root_dir, "backups")
         self.migration_dir = os.path.join(self.root_dir, "app", "migrations")
+        self.dir_migration = False
 
         self.session_file = os.path.join(self.root_dir, "app", "config", "session.lock")
         self.settings_file = os.path.join(self.root_dir, "app", "config", "config.json")
@@ -78,6 +80,7 @@ class Helpers:
         self.websocket_helper = WebSocketHelper(self)
         self.translation = Translation(self)
         self.update_available = False
+        self.ignored_names = ["crafty_managed.txt", "db_stats"]
 
     @staticmethod
     def auto_installer_fix(ex):
@@ -93,7 +96,7 @@ class Helpers:
         try:
             # Get tags from Gitlab, select the latest and parse the semver
             response = get(
-                "https://gitlab.com/api/v4/projects/20430749/repository/tags"
+                "https://gitlab.com/api/v4/projects/20430749/repository/tags", timeout=1
             )
             if response.status_code == 200:
                 remote_version = pkg_version.parse(json.loads(response.text)[0]["name"])
@@ -130,7 +133,7 @@ class Helpers:
         try:
             # Get minecraft server download page
             # (hopefully the don't change the structure)
-            download_page = get(url, headers=headers)
+            download_page = get(url, headers=headers, timeout=1)
 
             # Search for our string targets
             win_download_url = re.search(target_win, download_page.text).group(0)
@@ -142,6 +145,22 @@ class Helpers:
             return linux_download_url
         except Exception as e:
             logger.error(f"Unable to resolve remote bedrock download url! \n{e}")
+        return False
+
+    def detect_java(self):
+        if len(self.find_java_installs()) > 0:
+            return True
+
+        # We'll use this as a fallback for systems
+        # That do not properly setup reg keys or
+        # Update alternatives
+        if self.is_os_windows():
+            if shutil.which("java.exe"):
+                return True
+        else:
+            if shutil.which("java"):
+                return True
+
         return False
 
     @staticmethod
@@ -275,12 +294,17 @@ class Helpers:
             requests.get("https://ntp.org", timeout=1)
             return True
         except Exception:
-            return False
+            try:
+                logger.error("ntp.org ping failed. Falling back to google")
+                requests.get("https://google.com", timeout=1)
+                return True
+            except Exception:
+                return False
 
     @staticmethod
     def check_port(server_port):
         try:
-            ip = get("https://api.ipify.org").content.decode("utf8")
+            ip = get("https://api.ipify.org", timeout=1).content.decode("utf8")
         except:
             ip = "google.com"
         a_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -376,12 +400,93 @@ class Helpers:
 
         return default_return
 
+    def set_settings(self, data):
+        try:
+            with open(self.settings_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4)
+
+        except Exception as e:
+            logger.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+            Console.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+            return False
+
+        return True
+
     @staticmethod
-    def is_subdir(server_path, root_dir):
+    def get_master_config():
+        # Let's get the mounts and only show the first one by default
+        mounts = Helpers.get_all_mounts()
+        if len(mounts) != 0:
+            mounts = mounts[0]
+        # Make changes for users' local config.json files here. As of 4.0.20
+        # Config.json was removed from the repo to make it easier for users
+        # To make non-breaking changes to the file.
+        return {
+            "http_port": 8000,
+            "https_port": 8443,
+            "language": "en_EN",
+            "cookie_expire": 30,
+            "show_errors": True,
+            "history_max_age": 7,
+            "stats_update_frequency_seconds": 30,
+            "delete_default_json": False,
+            "show_contribute_link": True,
+            "virtual_terminal_lines": 70,
+            "max_log_lines": 700,
+            "max_audit_entries": 300,
+            "disabled_language_files": [],
+            "stream_size_GB": 1,
+            "keywords": ["help", "chunk"],
+            "allow_nsfw_profile_pictures": False,
+            "enable_user_self_delete": False,
+            "reset_secrets_on_next_boot": False,
+            "monitored_mounts": mounts,
+            "dir_size_poll_freq_minutes": 5,
+            "crafty_logs_delete_after_days": 0,
+        }
+
+    def get_all_settings(self):
+        try:
+            with open(self.settings_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+
+        except Exception as e:
+            data = {}
+            logger.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+            Console.critical(
+                f"Config File Error: Unable to read {self.settings_file} due to {e}"
+            )
+
+        return data
+
+    @staticmethod
+    def get_all_mounts():
+        mounts = []
+        for item in psutil.disk_partitions(all=False):
+            mounts.append(item.mountpoint)
+
+        return mounts
+
+    def is_subdir(self, server_path, root_dir):
         server_path = os.path.realpath(server_path)
         root_dir = os.path.realpath(root_dir)
 
-        relative = os.path.relpath(server_path, root_dir)
+        if self.is_os_windows():
+            try:
+                relative = os.path.relpath(server_path, root_dir)
+            except:
+                # Windows will crash out if two paths are on different
+                # Drives We can happily return false if this is the case.
+                # Since two different drives will not be relative to eachother.
+                return False
+        else:
+            relative = os.path.relpath(server_path, root_dir)
 
         if relative.startswith(os.pardir):
             return False
@@ -537,7 +642,6 @@ class Helpers:
 
         # open our file
         with open(file_name, "r", encoding="utf-8") as f:
-
             # seek
             f.seek(0, 2)
 
@@ -693,7 +797,7 @@ class Helpers:
                 use_ssl=True,
             )  # + "?d=404"
             try:
-                if requests.head(url).status_code != 404:
+                if requests.head(url, timeout=1).status_code != 404:
                     profile_url = url
             except Exception as e:
                 logger.debug(f"Could not pull resource from Gravatar with error {e}")
@@ -702,7 +806,6 @@ class Helpers:
 
     @staticmethod
     def get_file_contents(path: str, lines=100):
-
         contents = ""
 
         if os.path.exists(path) and os.path.isfile(path):
@@ -723,12 +826,10 @@ class Helpers:
             return False
 
     def create_session_file(self, ignore=False):
-
         if ignore and os.path.exists(self.session_file):
             os.remove(self.session_file)
 
         if os.path.exists(self.session_file):
-
             file_data = self.get_file_contents(self.session_file)
             try:
                 data = json.loads(file_data)
@@ -828,15 +929,16 @@ class Helpers:
         try:
             os.makedirs(path)
             logger.debug(f"Created Directory : {path}")
+            return True
 
         # directory already exists - non-blocking error
         except FileExistsError:
-            pass
+            return True
         except PermissionError as e:
             logger.critical(f"Check generated exception due to permssion error: {e}")
+            return False
 
     def create_self_signed_cert(self, cert_dir=None):
-
         if cert_dir is None:
             cert_dir = os.path.join(self.config_dir, "web", "certs")
 
@@ -919,6 +1021,15 @@ class Helpers:
         return os.name == "nt"
 
     @staticmethod
+    def is_env_docker():
+        path = "/proc/self/cgroup"
+        return (
+            os.path.exists("/.dockerenv")
+            or os.path.isfile(path)
+            and any("docker" in line for line in open(path, encoding="utf-8"))
+        )
+
+    @staticmethod
     def wtol_path(w_path):
         l_path = w_path.replace("\\", "/")
         return l_path
@@ -947,15 +1058,14 @@ class Helpers:
 
         return data
 
-    @staticmethod
-    def generate_tree(folder, output=""):
+    def generate_tree(self, folder, output=""):
         dir_list = []
         unsorted_files = []
         file_list = os.listdir(folder)
         for item in file_list:
             if os.path.isdir(os.path.join(folder, item)):
                 dir_list.append(item)
-            elif str(item) != "crafty.sqlite":
+            elif str(item) != self.ignored_names:
                 unsorted_files.append(item)
         file_list = sorted(dir_list, key=str.casefold) + sorted(
             unsorted_files, key=str.casefold
@@ -965,18 +1075,22 @@ class Helpers:
             rel = os.path.join(folder, raw_filename)
             dpath = os.path.join(folder, filename)
             if os.path.isdir(rel):
-                output += f"""<li class="tree-item" data-path="{dpath}">
-                    \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" class="tree-caret tree-ctx-item tree-folder">
-                    <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" data-name="{filename}" onclick="getDirView(event)">
-                      <i style="color: var(--info);" class="far fa-folder"></i>
-                      <i style="color: var(--info);" class="far fa-folder-open"></i>
-                      {filename}
-                      </span>
-                    </div><li>
-                    \n"""
+                if filename not in self.ignored_names:
+                    output += f"""<li id="{dpath}li" class="tree-item"
+                        data-path="{dpath}">
+                        \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}"
+                        class="tree-caret tree-ctx-item tree-folder">
+                        <span id="{dpath}span" class="files-tree-title" data-path="{dpath}"
+                        data-name="{filename}" onclick="getDirView(event)">
+                        <i style="color: var(--info);" class="far fa-folder"></i>
+                        <i style="color: var(--info);" class="far fa-folder-open"></i>
+                        {filename}
+                        </span>
+                        </div><li>
+                        \n"""
             else:
-                if filename != "crafty_managed.txt":
-                    output += f"""<li
+                if filename not in self.ignored_names:
+                    output += f"""<li id="{dpath}li"
                     class="d-block tree-ctx-item tree-file tree-item"
                     data-path="{dpath}"
                     data-name="{filename}"
@@ -984,16 +1098,14 @@ class Helpers:
                     <i class="far fa-file"></i></span>{filename}</li>"""
         return output
 
-    @staticmethod
-    def generate_dir(folder, output=""):
-
+    def generate_dir(self, folder, output=""):
         dir_list = []
         unsorted_files = []
         file_list = os.listdir(folder)
         for item in file_list:
             if os.path.isdir(os.path.join(folder, item)):
                 dir_list.append(item)
-            elif str(item) != "crafty.sqlite":
+            elif str(item) != self.ignored_names:
                 unsorted_files.append(item)
         file_list = sorted(dir_list, key=str.casefold) + sorted(
             unsorted_files, key=str.casefold
@@ -1004,17 +1116,21 @@ class Helpers:
             dpath = os.path.join(folder, filename)
             rel = os.path.join(folder, raw_filename)
             if os.path.isdir(rel):
-                output += f"""<li class="tree-item" data-path="{dpath}">
-                    \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}" class="tree-caret tree-ctx-item tree-folder">
-                    <span id="{dpath}span" class="files-tree-title" data-path="{dpath}" data-name="{filename}" onclick="getDirView(event)">
-                      <i style="color: var(--info);" class="far fa-folder"></i>
-                      <i style="color: var(--info);" class="far fa-folder-open"></i>
-                      {filename}
-                      </span>
-                    </div><li>"""
+                if filename not in self.ignored_names:
+                    output += f"""<li id="{dpath}li" class="tree-item"
+                        data-path="{dpath}">
+                        \n<div id="{dpath}" data-path="{dpath}" data-name="{filename}"
+                        class="tree-caret tree-ctx-item tree-folder">
+                        <span id="{dpath}span" class="files-tree-title" data-path="{dpath}"
+                        data-name="{filename}" onclick="getDirView(event)">
+                        <i style="color: var(--info);" class="far fa-folder"></i>
+                        <i style="color: var(--info);" class="far fa-folder-open"></i>
+                        {filename}
+                        </span>
+                        </div><li>"""
             else:
-                if filename != "crafty_managed.txt":
-                    output += f"""<li
+                if filename not in self.ignored_names:
+                    output += f"""<li id="{dpath}li"
                     class="d-block tree-ctx-item tree-file tree-item"
                     data-path="{dpath}"
                     data-name="{filename}"

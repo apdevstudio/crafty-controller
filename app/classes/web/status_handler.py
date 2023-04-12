@@ -7,12 +7,12 @@ logger = logging.getLogger(__name__)
 
 class StatusHandler(BaseHandler):
     def get(self):
-        page_data = {"background": self.controller.cached_login}
-        page_data["lang"] = self.helper.get_setting("language")
-        page_data["lang_page"] = self.helper.get_lang_page(
-            self.helper.get_setting("language")
-        )
-        page_data["servers"] = self.controller.servers.get_all_servers_stats()
+        page_data = {
+            "background": self.controller.cached_login,
+            "lang": self.helper.get_setting("language"),
+            "lang_page": self.helper.get_lang_page(self.helper.get_setting("language")),
+            "servers": self.controller.servers.get_all_servers_stats(),
+        }
         running = 0
         for srv in page_data["servers"]:
             if srv["stats"]["running"]:

@@ -19,7 +19,6 @@ class Server:
         self.description = data.get("description")
         # print(self.description)
         if isinstance(self.description, dict):
-
             # cat server
             if "translate" in self.description:
                 self.description = self.description["translate"]
@@ -41,8 +40,6 @@ class Server:
                             lines.append(get_code_format("underlined"))
                         if "strikethrough" in e.keys():
                             lines.append(get_code_format("strikethrough"))
-                        if "obfuscated" in e.keys():
-                            lines.append(get_code_format("obfuscated"))
                         if "color" in e.keys():
                             lines.append(get_code_format(e["color"]))
                         # Then append the text
@@ -124,7 +121,7 @@ def ping(ip, port):
             try:
                 k = sock.recv(1)
                 if not k:
-                    raise Exception()
+                    raise ValueError()
             except:
                 return 0
             k = k[0]
