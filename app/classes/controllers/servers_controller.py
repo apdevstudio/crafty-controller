@@ -253,6 +253,7 @@ class ServersController(metaclass=Singleton):
 
     @staticmethod
     def get_authorized_servers(user_id):
+        server_ids = []
         server_data: t.List[t.Dict[str, t.Any]] = []
         user_roles = HelperUsers.user_role_query(user_id)
         for user in user_roles:
@@ -260,11 +261,13 @@ class ServersController(metaclass=Singleton):
                 user.role_id
             )
             for role in role_servers:
-                server_data.append(
-                    ServersController().get_server_instance_by_id(
-                        role.server_id.server_id
+                if role.server_id.server_id not in server_ids:
+                    server_ids.append(role.server_id.server_id)
+                    server_data.append(
+                        ServersController().get_server_instance_by_id(
+                            role.server_id.server_id
+                        )
                     )
-                )
 
         return server_data
 
