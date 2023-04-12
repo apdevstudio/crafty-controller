@@ -256,14 +256,12 @@ class PanelHandler(BaseHandler):
         user_order = user_order["server_order"].split(",")
         page_servers = []
         server_ids = []
-        print(user_order)
         for server in defined_servers:
             server_ids.append(str(server.server_id))
             if str(server.server_id) not in user_order:
                 # a little unorthodox, but this will cut out a loop.
                 # adding servers to the user order that don't already exist there.
                 user_order.append(str(server.server_id))
-        print(user_order)
         for server_id in user_order[:]:
             for server in defined_servers[:]:
                 if str(server.server_id) == str(server_id):
@@ -275,14 +273,11 @@ class PanelHandler(BaseHandler):
                     # print("defined removed:", defined_servers)
                     # print("user order removed:", user_order)
                     break
-        print(server_ids)
         for server_id in user_order[:]:
             # remove IDs in list that user no longer has access to
             if str(server_id) not in server_ids:
                 user_order.remove(server_id)
         defined_servers = page_servers
-
-        print("Defined:", defined_servers)
 
         try:
             tz = get_localzone()
@@ -418,12 +413,15 @@ class PanelHandler(BaseHandler):
                     )
                 logger.debug(f"ASFR: {user_auth}")
                 page_data["servers"] = user_auth
+                print("user auth", page_data["servers"])
                 page_data["server_stats"]["running"] = len(
                     list(filter(lambda x: x["stats"]["running"], page_data["servers"]))
                 )
+                print("running", page_data["server_stats"]["running"])
                 page_data["server_stats"]["stopped"] = (
                     len(page_data["servers"]) - page_data["server_stats"]["running"]
                 )
+                print("stopped", page_data["server_stats"]["stopped"])
 
             # set user server order
             user_order = self.controller.users.get_user_by_id(exec_user["user_id"])
