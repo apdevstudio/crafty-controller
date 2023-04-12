@@ -256,7 +256,14 @@ class PanelHandler(BaseHandler):
         user_order = user_order["server_order"].split(",")
         page_servers = []
         server_ids = []
-
+        print(user_order)
+        for server in defined_servers:
+            server_ids.append(str(server.server_id))
+            if str(server.server_id) not in user_order:
+                # a little unorthodox, but this will cut out a loop.
+                # adding servers to the user order that don't already exist there.
+                user_order.append(str(server.server_id))
+        print(user_order)
         for server_id in user_order[:]:
             for server in defined_servers[:]:
                 if str(server.server_id) == str(server_id):
@@ -265,21 +272,10 @@ class PanelHandler(BaseHandler):
                     )
                     user_order.remove(server_id)
                     defined_servers.remove(server)
-                    print("defined removed:", defined_servers)
-                    print("user order removed:", user_order)
+                    # print("defined removed:", defined_servers)
+                    # print("user order removed:", user_order)
                     break
-        for server in defined_servers:
-            server_ids.append(str(server.server_id))
-            if not any(
-                item["server_id"] == str(server.server_id) for item in page_servers
-            ):
-                print("server id:", server.server_id, type(server.server_id))
-                print("item server id:", item["server_id"], type(item["server_id"]))
-                print(f"adding {server.server_id}")
-                page_servers.append(
-                    DatabaseShortcuts.get_data_obj(server.server_object)
-                )
-
+        print(server_ids)
         for server_id in user_order[:]:
             # remove IDs in list that user no longer has access to
             if str(server_id) not in server_ids:
