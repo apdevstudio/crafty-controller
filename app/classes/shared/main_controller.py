@@ -33,7 +33,7 @@ from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.import_helper import ImportHelpers
 from app.classes.minecraft.serverjars import ServerJars
 from app.classes.steamcmd.serverapps import SteamApps
-from app.classes.steamcmd.steamcmd_command import SteamCMDcommand
+from app.classes.steamcmd.steamcmd import SteamCMD
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ class Controller:
         self.import_helper: ImportHelpers = import_helper
         self.server_jars: ServerJars = ServerJars(helper)
         self.steam_apps: SteamApps = SteamApps(helper)
-        self.steam_cmd: SteamCMDcommand = SteamCMDcommand()
+        self.steam: SteamCMD()
         self.users_helper: HelperUsers = HelperUsers(database, self.helper)
         self.roles_helper: HelperRoles = HelperRoles(database)
         self.servers_helper: HelperServers = HelperServers(database)
@@ -768,12 +768,12 @@ class Controller:
         )
         return new_id
 
-    def create_steam_server(self, app_id, server_name, user_id, server_port):
+    def create_steam_server(self, app_id, server_name, user_id):
         server_id = Helpers.create_uuid()
         new_server_dir = os.path.join(self.helper.servers_dir, server_id)
         backup_path = os.path.join(self.helper.backup_path, server_id)
         # TODO: what is the server exe called @zedifus
-        server_exe = "????"
+        server_exe = "steamcmd.exe"
         if Helpers.is_os_windows():
             new_server_dir = Helpers.wtol_path(new_server_dir)
             backup_path = Helpers.wtol_path(backup_path)
@@ -784,7 +784,8 @@ class Controller:
         Helpers.ensure_dir_exists(backup_path)
 
         # Sets the steamCMD install directory for next install.
-        self.steam_cmd.force_install_dir(new_server_dir)
+        self.steam = SteamCMD(new_server_dir)
+        self.steam.install()
 
         full_jar_path = os.path.join(new_server_dir, server_exe)
 
@@ -793,7 +794,7 @@ class Controller:
         else:
             server_command = f"./{server_exe}"
         logger.debug("command: " + server_command)
-        server_log_file = ""
+        server_log_file = "bootstrap_log.txt"
         server_stop = "stop"
 
         new_id = self.register_server(
@@ -805,15 +806,13 @@ class Controller:
             server_exe,
             server_log_file,
             server_stop,
-            server_port,
+            2456,
             user_id,
             server_type="steam",
             app_id=app_id,
         )
         ServersController.set_import(new_id)
-        self.steam_cmd.app_update(
-            app_id,
-        )
+        self.steam.app_update(app_id, new_server_dir)
         ServersController.finish_import(new_id)
         return new_id
 
