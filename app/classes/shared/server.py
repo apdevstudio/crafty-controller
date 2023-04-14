@@ -455,6 +455,36 @@ class ServerInstance:
                     # Reset import status if failed while forge installing
                     self.stats_helper.finish_import()
                 return False
+        # ***********************************************
+        # ***********************************************
+        #               STEAM SERVERS
+        # ***********************************************
+        # ***********************************************
+        elif HelperServers.get_server_type_by_id(self.server_id) == "steam":
+            try:
+                self.process = subprocess.call(
+                    self.server_command,
+                    cwd=self.server_path,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    bufsize=1,
+                    stderr=subprocess.STDOUT,
+                )
+            except Exception as ex:
+                logger.error(
+                    f"Server {self.name} failed to start with error code: {ex}"
+                )
+                if user_id:
+                    self.helper.websocket_helper.broadcast_user(
+                        user_id,
+                        "send_start_error",
+                        {
+                            "error": self.helper.translation.translate(
+                                "error", "start-error", user_lang
+                            ).format(self.name, ex)
+                        },
+                    )
+                    return
 
         else:
             try:
@@ -1528,9 +1558,10 @@ class ServerInstance:
         # if we got a good ping return, let's parse it
         if int_mc_ping:
             int_data = True
-            if (
-                HelperServers.get_server_type_by_id(server["server_id"])
-                == "minecraft-bedrock"
+            if HelperServers.get_server_type_by_id(
+                server["server_id"]
+            ) == "minecraft-bedrock" or HelperServers.get_server_type_by_id(
+                server["server_id"] == "steam"
             ):
                 ping_data = Stats.parse_server_raknet_ping(int_mc_ping)
             else:
@@ -1651,7 +1682,7 @@ class ServerInstance:
         # otherwise people have gotten confused.
         if self.check_running():
             # if we got a good ping return, let's parse it
-            if HelperServers.get_server_type_by_id(server_id) != "minecraft-bedrock":
+            if HelperServers.get_server_type_by_id(server_id) == "minecraft-java":
                 if int_mc_ping:
                     int_data = True
                     ping_data = Stats.parse_server_ping(int_mc_ping)
