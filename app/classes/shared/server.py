@@ -467,7 +467,6 @@ class ServerInstance:
                     cwd=self.server_path,
                     stdin=subprocess.PIPE,
                     stdout=subprocess.PIPE,
-                    bufsize=1,
                     stderr=subprocess.STDOUT,
                 )
             except Exception as ex:
