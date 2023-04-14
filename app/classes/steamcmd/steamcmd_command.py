@@ -19,7 +19,7 @@ class SteamCMDcommand:
         :param install_dir: Directory to install to
         :return: Index command was added at
         """
-        self._commands.append(f"+force_install_dir {install_dir}")
+        self._commands.append(f'+force_install_dir "{install_dir}"')
         return len(self._commands) - 1
 
     def app_update(
