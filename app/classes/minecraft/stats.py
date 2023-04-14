@@ -6,7 +6,7 @@ import datetime
 import base64
 import typing as t
 
-from app.classes.minecraft.mc_ping import ping
+from app.classes.minecraft.ping import ping
 from app.classes.models.management import HostStats
 from app.classes.models.servers import HelperServers
 from app.classes.shared.null_writer import NullWriter
@@ -191,21 +191,25 @@ class Stats:
                     # ENOENT, pop-up a Windows GUI error for a non-ready
                     # partition or just hang.
                     continue
-            usage = psutil.disk_usage(part.mountpoint)
-            disk_data.append(
-                {
-                    "device": part.device,
-                    "total_raw": usage.total,
-                    "total": Helpers.human_readable_file_size(usage.total),
-                    "used_raw": usage.used,
-                    "used": Helpers.human_readable_file_size(usage.used),
-                    "free_raw": usage.free,
-                    "free": Helpers.human_readable_file_size(usage.free),
-                    "percent_used": usage.percent,
-                    "fs": part.fstype,
-                    "mount": part.mountpoint,
-                }
-            )
+            try:
+                usage = psutil.disk_usage(part.mountpoint)
+                disk_data.append(
+                    {
+                        "device": part.device,
+                        "total_raw": usage.total,
+                        "total": Helpers.human_readable_file_size(usage.total),
+                        "used_raw": usage.used,
+                        "used": Helpers.human_readable_file_size(usage.used),
+                        "free_raw": usage.free,
+                        "free": Helpers.human_readable_file_size(usage.free),
+                        "percent_used": usage.percent,
+                        "fs": part.fstype,
+                        "mount": part.mountpoint,
+                    }
+                )
+            except PermissionError:
+                logger.debug(f"Permission error accessing {part.mountpoint}")
+                continue
 
         return disk_data
 

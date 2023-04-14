@@ -9,7 +9,7 @@ with redirect_stderr(NullWriter()):
     import psutil
 
 
-class BedrockPing:
+class RaknetPing:
     magic = b"\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78"
     fields = {  # (len, signed)
         "byte": (1, False),
@@ -25,19 +25,19 @@ class BedrockPing:
     }
     byte_order = "big"
 
-    def __init__(self, bedrock_addr, bedrock_port, client_guid=0, timeout=5):
-        self.addr = bedrock_addr
-        self.port = bedrock_port
+    def __init__(self, server_addr, server_port, client_guid=0, timeout=5):
+        self.addr = server_addr
+        self.port = server_port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.settimeout(timeout)
         self.proc = psutil.Process(os.getpid())
         self.guid = client_guid
-        self.guid_bytes = self.guid.to_bytes(8, BedrockPing.byte_order)
+        self.guid_bytes = self.guid.to_bytes(8, RaknetPing.byte_order)
 
     @staticmethod
     def __byter(in_val, to_type):
-        f = BedrockPing.fields[to_type]
-        return in_val.to_bytes(f[0], BedrockPing.byte_order, signed=f[1])
+        f = RaknetPing.fields[to_type]
+        return in_val.to_bytes(f[0], RaknetPing.byte_order, signed=f[1])
 
     @staticmethod
     def __slice(in_bytes, pattern):
@@ -46,7 +46,7 @@ class BedrockPing:
         pattern_index = 0
         while bytes_index < len(in_bytes):
             try:
-                field = BedrockPing.fields[pattern[pattern_index]]
+                field = RaknetPing.fields[pattern[pattern_index]]
             except IndexError as index_error:
                 raise IndexError(
                     "Ran out of pattern with additional bytes remaining"
@@ -55,7 +55,7 @@ class BedrockPing:
                 string_header_length = field[0]
                 string_length = int.from_bytes(
                     in_bytes[bytes_index : bytes_index + string_header_length],
-                    BedrockPing.byte_order,
+                    RaknetPing.byte_order,
                     signed=field[1],
                 )
                 length = string_header_length + string_length
@@ -75,7 +75,7 @@ class BedrockPing:
                 ret.append(
                     int.from_bytes(
                         in_bytes[bytes_index : bytes_index + length],
-                        BedrockPing.byte_order,
+                        RaknetPing.byte_order,
                         signed=field[1],
                     )
                 )
@@ -89,10 +89,10 @@ class BedrockPing:
         return time.perf_counter_ns() // 1000000
 
     def __sendping(self):
-        pack_id = BedrockPing.__byter(0x01, "byte")
-        now = BedrockPing.__byter(BedrockPing.__get_time(), "ulong")
+        pack_id = RaknetPing.__byter(0x01, "byte")
+        now = RaknetPing.__byter(RaknetPing.__get_time(), "ulong")
         guid = self.guid_bytes
-        d2s = pack_id + now + BedrockPing.magic + guid
+        d2s = pack_id + now + RaknetPing.magic + guid
         # print("S:", d2s)
         self.sock.sendto(d2s, (self.addr, self.port))
 
@@ -100,10 +100,10 @@ class BedrockPing:
         data = self.sock.recv(4096)
         if data[0] == 0x1C:
             ret = {}
-            sliced = BedrockPing.__slice(
+            sliced = RaknetPing.__slice(
                 data, ["byte", "ulong", "ulong", "magic", "string"]
             )
-            if sliced[3] != BedrockPing.magic:
+            if sliced[3] != RaknetPing.magic:
                 raise ValueError(f"Incorrect magic received ({sliced[3]})")
             ret["server_guid"] = sliced[2]
             ret["server_string_raw"] = sliced[4]

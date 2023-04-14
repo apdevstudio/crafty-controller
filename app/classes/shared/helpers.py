@@ -295,7 +295,12 @@ class Helpers:
             requests.get("https://ntp.org", timeout=1)
             return True
         except Exception:
-            return False
+            try:
+                logger.error("ntp.org ping failed. Falling back to google")
+                requests.get("https://google.com", timeout=1)
+                return True
+            except Exception:
+                return False
 
     @staticmethod
     def check_port(server_port):
