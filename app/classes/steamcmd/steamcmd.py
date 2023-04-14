@@ -4,10 +4,12 @@ import zipfile
 import tarfile
 import subprocess
 import urllib.request
+import logging
 
 from getpass import getpass
 from app.classes.steamcmd.steamcmd_command import SteamCMDcommand
 
+logger = logging.getLogger(__name__)
 
 package_links = {
     "Windows": {
@@ -108,20 +110,20 @@ class SteamCMD:
 
         os.remove(self.zip)
 
-    @staticmethod
-    def _print_log(*message):
-        """
-        Small helper function for printing log entries.
-        Helps with output of subprocess.check_call not always having newlines
-        :param *message: Accepts multiple messages, each will be printed on a
-        new line
-        """
-        # TODO: Handle logs better
-        print("")
-        print("")
-        for msg in message:
-            print(msg)
-        print("")
+    # @staticmethod
+    # def _print_log(*message):
+    #    """
+    #    Small helper function for printing log entries.
+    #    Helps with output of subprocess.check_call not always having newlines
+    #    :param *message: Accepts multiple messages, each will be printed on a
+    #    new line
+    #    """
+    #    # TODO: Handle logs better
+    #    print("")
+    #    print("")
+    #    for msg in message:
+    #        print(msg)
+    #    print("")
 
     def install(self, force: bool = False):
         """
@@ -143,18 +145,13 @@ class SteamCMD:
             subprocess.check_call((self.exe, "+quit"))
         except subprocess.CalledProcessError as e:
             if e.returncode == 7:
-                self._print_log(
+                logger.error(
                     "SteamCMD has returned error code 7 on fresh installation",
-                    "",
-                    "Not sure why this crashed,",
-                    "long live steamcmd and it's non existent documentation..",
-                    "It should be fine nevertheless",
                 )
                 return
-            else:
-                raise SystemError(
-                    message=f"Failed to install, check error code {e.returncode}"
-                ) from e
+            raise SystemError(
+                message=f"Failed to install, check error code {e.returncode}"
+            ) from e
 
         return
 
@@ -193,7 +190,7 @@ class SteamCMD:
         if install_dir:
             steam_command.force_install_dir(install_dir)
         steam_command.app_update(app_id, validate, beta, betapassword)
-        self._print_log(
+        logger.debug(
             f"Downloading item {app_id}",
             f"into {install_dir} with validate set to {validate}",
         )
@@ -245,7 +242,7 @@ class SteamCMD:
             cmd.get_cmd(),
             "+quit",
         )
-        self._print_log("Parameters used:", " ".join(params))
+        logger.debug("Parameters used: ".join(params))
         try:
             return subprocess.check_call(" ".join(params), shell=True)
 
@@ -253,7 +250,7 @@ class SteamCMD:
             # SteamCMD has a habit of timing out large downloads,
             # so retry on timeout for the remainder of n_tries.
             if e.returncode == 10:
-                self._print_log(
+                logger.warning(
                     f"Download timeout! Tries remaining: {n_tries}. Retrying..."
                 )
                 return self.execute(cmd, n_tries - 1)
@@ -262,7 +259,7 @@ class SteamCMD:
             # an assert checking that the download actually finished.
             # If this happens, retry.
             if e.returncode == 134:
-                self._print_log(
+                logger.error(
                     f"SteamCMD errored! Tries remaining: {n_tries}. Retrying..."
                 )
                 return self.execute(cmd, n_tries - 1)
