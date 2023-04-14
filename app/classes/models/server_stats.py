@@ -194,19 +194,23 @@ class HelperServerStats:
         self.database.close()
 
     def get_latest_server_stats(self):
-        self.database.connect(reuse_if_open=True)
-        latest = (
-            ServerStats.select()
-            .where(ServerStats.server_id == self.server_id)
-            .order_by(ServerStats.created.desc())
-            .limit(1)
-            .get(self.database)
-        )
-
-        self.database.close()
         try:
-            return DatabaseShortcuts.get_data_obj(latest)
-        except IndexError:
+            self.database.connect(reuse_if_open=True)
+            latest = (
+                ServerStats.select()
+                .where(ServerStats.server_id == self.server_id)
+                .order_by(ServerStats.created.desc())
+                .limit(1)
+                .get(self.database)
+            )
+
+            self.database.close()
+            try:
+                return DatabaseShortcuts.get_data_obj(latest)
+            except IndexError:
+                return {}
+        except Exception as err:
+            logger.debug(f"Error getting stats error: {err}")
             return {}
 
     def get_server_stats(self):
