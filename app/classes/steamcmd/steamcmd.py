@@ -145,9 +145,7 @@ class SteamCMD:
             subprocess.check_call((self.exe, "+quit"))
         except subprocess.CalledProcessError as e:
             if e.returncode == 7:
-                logger.error(
-                    "SteamCMD has returned error code 7 on fresh installation",
-                )
+                logger.error("SteamCMD has returned error code 7 on fresh installation")
                 return
             raise SystemError(
                 message=f"Failed to install, check error code {e.returncode}"
@@ -191,8 +189,8 @@ class SteamCMD:
             steam_command.force_install_dir(install_dir)
         steam_command.app_update(app_id, validate, beta, betapassword)
         logger.debug(
-            f"Downloading item {app_id}",
-            f"into {install_dir} with validate set to {validate}",
+            f"Downloading item {app_id}\n"
+            f"into {install_dir} with validate set to {validate}"
         )
         return self.execute(steam_command)
 
@@ -237,7 +235,7 @@ class SteamCMD:
             )
 
         params = (
-            self.exe,
+            f'"{self.exe}"',
             f"+login {self._uname} {self._passw}",
             cmd.get_cmd(),
             "+quit",
@@ -264,6 +262,4 @@ class SteamCMD:
                 )
                 return self.execute(cmd, n_tries - 1)
 
-            raise SystemError(
-                message=f"Steamcmd was unable to run. exit code was {e.returncode}"
-            ) from e
+            raise SystemError(f"Steamcmd was unable to run. exit code was {e}") from e
