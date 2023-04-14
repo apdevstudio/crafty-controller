@@ -633,15 +633,6 @@ class ServerHandler(BaseHandler):
                 user_roles = self.get_user_roles()
             app_id = bleach.clean(self.get_argument("steam_server", ""))
             server_name = bleach.clean(self.get_argument("server_name", ""))
-            min_mem = bleach.clean(self.get_argument("min_memory", ""))
-            max_mem = bleach.clean(self.get_argument("max_memory", ""))
-            port = bleach.clean(self.get_argument("port", ""))
-            if int(port) < 1 or int(port) > 65535:
-                self.redirect(
-                    "/panel/error?error=Constraint Error: "
-                    "Port must be greater than 0 and less than 65535"
-                )
-                return
             captured_roles = []
             for role in user_roles:
                 if bleach.clean(self.get_argument(str(role), "")) == "on":
