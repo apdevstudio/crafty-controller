@@ -3,6 +3,8 @@
 {% block title %}Crafty Controller - {{ translate('serverWizard', 'newServer', data['lang']) }}{% end %}
 
 {% block content %}
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/css/bootstrap-select.min.css">
 
 <div class="content-wrapper">
   <ul class="nav nav-tabs col-md-12 tab-simple-styled " role="tablist">
@@ -30,33 +32,28 @@
           <h4>{{ translate('serverWizard', 'newServer', data['lang']) }}</h4>
           <br />
           <p class="card-description">
-
           <form method="post" class="server-wizard" onSubmit="wait_msg()">
             {% raw xsrf_form_html() %}
             <div class="row">
               <div class="col-sm-12">
                 <div class="form-group">
                   <label for="server_jar">{{ translate('serverWizard', 'serverType', data['lang'])
-                    }}</label>
-                  {% if data['super_user'] %}
-                  <select style="width: 90%;" required class="form-control form-control-lg select-css" id="server_jar"
-                    name="steam_server">
-                    {% else %}
-                    <select required class="form-control form-control-lg select-css" id="server_jar"
-                      name="steam_server">
-                      {% end %}
-                      <option value="None">{{ translate('serverWizard', 'selectType', data['lang']) }}</option>
-                      {% for s in data['servers'] %}
-                      {% if data["windows"] and s["windows"] %}
-                      <option value="{{ s['appid'] }}">{{ s["name"].capitalize() }}</option>
-                      {% elif not data["windows"] and s["linux"] %}
-                      <option value="{{ s['appid'] }}">{{ s["name"].capitalize() }}</option>
-                      {% end %}
-                      {% end %}
-                    </select>
-                    {% if data['super_user'] %}
-                    &nbsp;&nbsp;<i onclick="refreshCache()" id="refresh-cache" class="refresh-class fas fa-sync"></i>
+                    }}</label></br>
+                  <select style="width: 80%" required class="selectpicker form-control form-control-lg select-css"
+                    id="steam_server" data-live-search="true" name="steam_server">
+                    <option value="None">None</option>
+                    {% for s in data['servers'] %}
+                    {% if data["windows"] and s["windows"] %}
+                    <option value="{{ s['appid'] }}">{{ s["name"].capitalize() }}</option>
+                    {% elif not data["windows"] and s["linux"] %}
+                    <option value="{{ s['appid'] }}">{{ s["name"].capitalize() }}</option>
                     {% end %}
+                    {% end %}
+                  </select>
+                  {% if data['super_user'] %}
+                  &nbsp;&nbsp;<i onclick="refreshCache()" style="float: left;" id="refresh-cache"
+                    class="refresh-class fas fa-sync"></i>
+                  {% end %}
                 </div>
               </div>
               <div class="col-sm-12">
@@ -73,34 +70,24 @@
                 style="text-transform: none;"> - {{ translate('serverWizard', 'quickSettingsDescription',
                 data['lang']) }}</small></h4>
             <hr>
+            <script>
+              function searchBar() {
+                var input, filter, select, options, a, i, txtValue;
+                input = document.getElementById("search_bar");
+                filter = input.value.toUpperCase();
+                select = document.getElementById("steam_server");
+                options = select.getElementsByTagName("option");
+                for (i = 0; i < options.length; i++) {
+                  txtValue = options[i].innerText;
+                  if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    options[i].style.display = "";
+                  } else {
+                    options[i].style.display = "none";
+                  }
+                }
+              }
+            </script>
             <div class="row">
-
-              <div class="col-sm-4">
-                <div class="form-group">
-                  <label for="min_memory1">{{ translate('serverWizard', 'minMem', data['lang']) }} <small> - {{
-                      translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                  <input type="number" class="form-control" id="min_memory1" name="min_memory" value="1" step="0.5"
-                    min="0.5" required>
-                </div>
-              </div>
-
-              <div class="col-sm-4">
-                <div class="form-group">
-                  <label for="max_memory1">{{ translate('serverWizard', 'maxMem', data['lang']) }} <small> - {{
-                      translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                  <input type="number" class="form-control" id="max_memory1" name="max_memory" value="2" step="0.5"
-                    min="0.5" required>
-                </div>
-              </div>
-
-              <div class="col-sm-4">
-                <div class="form-group">
-                  <label for="port1">{{ translate('serverWizard', 'serverPort', data['lang']) }} <small> - {{
-                      translate('serverWizard', 'defaultPort', data['lang']) }}</small></label>
-                  <input type="number" class="form-control" id="port1" name="port" value="25565" step="1" min="1"
-                    max="65535 " required>
-                </div>
-              </div>
               <div class="col-sm-12">
                 <div class="form-group">
                   <div id="accordion-1">
@@ -690,4 +677,5 @@
     }
 
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/js/bootstrap-select.min.js"></script>
 {% end %}
