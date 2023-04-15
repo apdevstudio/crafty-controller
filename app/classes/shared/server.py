@@ -462,12 +462,11 @@ class ServerInstance:
         # ***********************************************
         elif HelperServers.get_server_type_by_id(self.server_id) == "steam":
             try:
-                self.process = subprocess.call(
+                self.process = subprocess.Popen(
                     self.server_command,
                     cwd=self.server_path,
                     stdin=subprocess.PIPE,
                     stdout=subprocess.PIPE,
-                    bufsize=1,
                     stderr=subprocess.STDOUT,
                 )
             except Exception as ex:
