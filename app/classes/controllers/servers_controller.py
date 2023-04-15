@@ -532,7 +532,6 @@ class ServersController(metaclass=Singleton):
 
         return json.loads(content)
 
-
     @staticmethod
     def get_banned_players(server_id):
         srv = ServersController().get_server_instance_by_id(server_id)
