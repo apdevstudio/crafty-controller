@@ -812,7 +812,7 @@ class Controller:
             app_id=app_id,
         )
         ServersController.set_import(new_id)
-        self.steam.app_update(app_id, new_server_dir)
+        self.steam.app_update(app_id, "./gamefiles")
         ServersController.finish_import(new_id)
         return new_id
 
