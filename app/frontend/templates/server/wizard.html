@@ -49,8 +49,8 @@
                       <div class="input-group-append">
                         <button class="btn custom-picker" type="button" onclick="refreshCache()"><i id="refresh-cache" class="refresh-class fas fa-sync"></i></button>
                       </div>
-                      {% end %}
                   </div>
+                  {% end %}
                 </div>
               </div>
 
@@ -124,8 +124,7 @@
                         <div class="card-body scroll">
                           <div class="form-group">
                             {% for r in data['roles'] %}
-                            <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}" type="checkbox">&nbsp;
-                                {{ r['role_name'].capitalize() }}</label></span>
+                            <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}" type="checkbox">&nbsp; {{ r['role_name'].capitalize() }}</label></span>
                             {% end %}
                           </div>
                         </div>
