@@ -1255,3 +1255,23 @@ class Helpers:
         if region == "EN":
             return "en"
         return lang + "-" + region
+
+    @staticmethod
+    def get_player_avatar(uuid):
+        mojang_response = requests.get(
+            f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}"
+        )
+        if mojang_response.status_code == 200:
+            uuid_profile = mojang_response.json()
+            profile_properties = uuid_profile["properties"]
+            for property in profile_properties:
+                if property["name"] == "textures":
+                    decodedBytes = base64.b64decode(property["value"])
+                    decodedStr = decodedBytes.decode("utf-8")
+                    textureJson = json.loads(decodedStr)
+            skin_url = textureJson["textures"]["SKIN"]["url"]
+            skin_response = requests.get(skin_url, stream=True)
+            if skin_response.status_code == 200:
+                return base64.b64encode(skin_response.content)
+        else:
+            return
