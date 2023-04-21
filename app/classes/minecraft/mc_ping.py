@@ -16,7 +16,11 @@ logger = logging.getLogger(__name__)
 
 class Server:
     def __init__(self, data):
-        self.description = data.get("description")
+        try:
+            self.description = data.get("description")
+        except:
+            logger.debug("Failed to get description from response.")
+            self.description = ""
         # print(self.description)
         if isinstance(self.description, dict):
             # cat server
@@ -38,8 +42,6 @@ class Server:
                             lines.append(get_code_format("italic"))
                         if "underlined" in e.keys():
                             lines.append(get_code_format("underlined"))
-                        if "strikethrough" in e.keys():
-                            lines.append(get_code_format("strikethrough"))
                         if "color" in e.keys():
                             lines.append(get_code_format(e["color"]))
                         # Then append the text
