@@ -289,9 +289,9 @@ class AjaxHandler(BaseHandler):
                 logger.warning("Server ID not found in send_command ajax call")
                 Console.warning("Server ID not found in send_command ajax call")
 
-            srv_obj = self.controller.servers.get_server_instance_by_id(server_id)
+            svr_obj = self.controller.servers.get_server_instance_by_id(server_id)
 
-            if command == srv_obj.settings["stop_command"]:
+            if command == svr_obj.settings["stop_command"]:
                 logger.info(
                     "Stop command detected as terminal input - intercepting."
                     + f"Starting Crafty's stop process for server with id: {server_id}"
@@ -313,8 +313,8 @@ class AjaxHandler(BaseHandler):
                 )
                 command = None
             if command:
-                if srv_obj.check_running():
-                    srv_obj.send_command(command)
+                if svr_obj.check_running():
+                    svr_obj.send_command(command)
 
             self.controller.management.add_to_audit_log(
                 exec_user["user_id"],
@@ -445,6 +445,21 @@ class AjaxHandler(BaseHandler):
                         new_server_id
                     )
                     new_server_obj.execution_command = server_data["execution_command"]
+                    # reset executable path
+                    if svr_obj.path in svr_obj.executable:
+                        new_server_obj.executable = str(svr_obj.executable).replace(
+                            svr_obj.path, new_server_obj.path
+                        )
+                    # reset run command path
+                    if svr_obj.path in svr_obj.execution_command:
+                        new_server_obj.execution_command = str(
+                            svr_obj.execution_command
+                        ).replace(svr_obj.path, new_server_obj.path)
+                    # reset log path
+                    if svr_obj.path in svr_obj.log_path:
+                        new_server_obj.log_path = str(svr_obj.log_path).replace(
+                            svr_obj.path, new_server_obj.path
+                        )
                     self.controller.servers.update_server(new_server_obj)
 
                     # preserve backup config
@@ -505,6 +520,21 @@ class AjaxHandler(BaseHandler):
                         new_server_id
                     )
                     new_server_obj.execution_command = server_data["execution_command"]
+                    # reset executable path
+                    if server_obj.path in server_obj.executable:
+                        new_server_obj.executable = str(server_obj.executable).replace(
+                            server_obj.path, new_server_obj.path
+                        )
+                    # reset run command path
+                    if server_obj.path in server_obj.execution_command:
+                        new_server_obj.execution_command = str(
+                            server_obj.execution_command
+                        ).replace(server_obj.path, new_server_obj.path)
+                    # reset log path
+                    if server_obj.path in server_obj.log_path:
+                        new_server_obj.log_path = str(server_obj.log_path).replace(
+                            server_obj.path, new_server_obj.path
+                        )
                     self.controller.servers.update_server(new_server_obj)
 
                     # preserve backup config
