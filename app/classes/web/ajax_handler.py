@@ -540,12 +540,6 @@ class AjaxHandler(BaseHandler):
         user_perms = self.controller.server_perms.get_user_id_permissions_list(
             exec_user["user_id"], server_id
         )
-        if page == "del_task":
-            if not permissions["Schedule"] in user_perms:
-                self.redirect("/panel/error?error=Unauthorized access to Tasks")
-            else:
-                sch_id = self.get_argument("schedule_id", "-404")
-                self.tasks_manager.remove_job(sch_id)
 
         if page == "del_backup":
             if not permissions["Backup"] in user_perms:
