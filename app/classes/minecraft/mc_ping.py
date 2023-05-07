@@ -40,8 +40,6 @@ class Server:
                             lines.append(get_code_format("underlined"))
                         if "strikethrough" in e.keys():
                             lines.append(get_code_format("strikethrough"))
-                        if "obfuscated" in e.keys():
-                            lines.append(get_code_format("obfuscated"))
                         if "color" in e.keys():
                             lines.append(get_code_format(e["color"]))
                         # Then append the text

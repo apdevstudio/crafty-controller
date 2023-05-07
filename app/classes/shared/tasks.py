@@ -47,9 +47,10 @@ class TasksManager:
         self.tornado: Webserver = Webserver(helper, controller, self)
         try:
             self.tz = get_localzone()
-        except ZoneInfoNotFoundError:
+        except ZoneInfoNotFoundError as e:
             logger.error(
                 "Could not capture time zone from system. Falling back to Europe/London"
+                f" error: {e}"
             )
             self.tz = "Europe/London"
         self.scheduler = BackgroundScheduler(timezone=str(self.tz))
