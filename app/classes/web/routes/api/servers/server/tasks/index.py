@@ -106,6 +106,8 @@ class ApiServersServerTasksIndexHandler(BaseApiHandler):
                     ),
                 },
             )
+        if "parent" not in data:
+            data["parent"] = None
         task_id = self.tasks_manager.schedule_job(data)
 
         self.controller.management.add_to_audit_log(
