@@ -235,7 +235,14 @@
     if (key != "start_time" && key != "cron_string" && key != "interval_type") {
       if (typeof value == "boolean") {
         return value
-      } else {
+      } 
+      console.log(key)
+      if (key === "interval" && value === ""){
+        return 0;
+      }
+      if (key === "command" && typeof(value === "integer")){
+        return value.toString();
+      }else {
         return (isNaN(value) ? value : +value);
       }
     } else {
