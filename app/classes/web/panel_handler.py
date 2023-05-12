@@ -1051,7 +1051,7 @@ class PanelHandler(BaseHandler):
             page_data["schedule"]["cron_string"] = ""
             page_data["schedule"]["delay"] = 0
             page_data["schedule"]["time"] = ""
-            page_data["schedule"]["interval"] = ""
+            page_data["schedule"]["interval"] = 1
             # we don't need to check difficulty here.
             # We'll just default to basic for new schedules
             page_data["schedule"]["difficulty"] = "basic"
