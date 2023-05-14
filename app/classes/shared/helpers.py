@@ -302,6 +302,16 @@ class Helpers:
                 return False
 
     @staticmethod
+    def check_address_status(address):
+        try:
+            requests.get(address, timeout=1)
+            time.sleep(1)
+            requests.get(address, timeout=1)
+            return True
+        except:
+            return False
+
+    @staticmethod
     def check_port(server_port):
         try:
             ip = get("https://api.ipify.org", timeout=1).content.decode("utf8")

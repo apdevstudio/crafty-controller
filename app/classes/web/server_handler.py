@@ -143,7 +143,11 @@ class ServerHandler(BaseHandler):
                     "not a server creator or server limit reached"
                 )
                 return
-
+            page_data["server_api"] = False
+            if page_data["online"]:
+                page_data["server_api"] = self.helper.check_address_status(
+                    "https://serverjars.com/api/fetchTypes"
+                )
             page_data["server_types"] = self.controller.server_jars.get_serverjar_data()
             page_data["js_server_types"] = json.dumps(
                 self.controller.server_jars.get_serverjar_data()
