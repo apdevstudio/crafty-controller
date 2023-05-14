@@ -13,6 +13,7 @@
 - Fix project root error on first start ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/580))
 ### Tweaks
 - Check for python version so we don't just fail out on unsupported python versions ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/577))
+- Show warning for serverjars API connection issues ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/581))
 ### Lang
 TBD
 <br><br>
