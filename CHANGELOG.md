@@ -3,7 +3,8 @@
 ### New features
 TBD
 ### Bug fixes
-TBD
+- Fix pipelines failing to build from gitlab pre-defined variable deprecation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/582))
+- Fix incompatible buildx provenance meta, causing digest issues on GL/DH container registries ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/582))
 ### Tweaks
 TBD
 ### Lang
