@@ -1,13 +1,27 @@
 # Changelog
-## --- [4.0.22] - 2023/TBD
+## --- [4.1.0] - 2023/TBD
 ### New features
 TBD
+### Refactor
+- Frontend Ajax Refactor | Start using API to send Remote Comms to Server ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/565))
 ### Bug fixes
-TBD
+- Fix pipelines failing to build from gitlab pre-defined variable deprecation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/582))
+- Fix incompatible buildx provenance meta, causing digest issues on GL/DH container registries ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/582))
+- Fix Auth'd servers in roles | Refine server ordering ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/574))
+- Fix import loop detection ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/575))
 ### Tweaks
 TBD
 ### Lang
 TBD
+<br><br>
+
+## --- [4.0.22] - 2023/04/08
+### Bug fixes
+- Fix dashboard crash for users without disks or if crafty doesn't have permission to access mount point ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/571))
+- Strip Minecraft motd obfuscation chars to prevent text jumping on dashboard ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/572))
+### Tweaks
+- Improve logging on tz failures ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/569))
+- Add fallback for ping domain to provide better feedback on internet connection ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/570))
 <br><br>
 
 ## --- [4.0.21] - 2023/03/04

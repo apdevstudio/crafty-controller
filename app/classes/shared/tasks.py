@@ -47,9 +47,10 @@ class TasksManager:
         self.tornado: Webserver = Webserver(helper, controller, self)
         try:
             self.tz = get_localzone()
-        except ZoneInfoNotFoundError:
+        except ZoneInfoNotFoundError as e:
             logger.error(
                 "Could not capture time zone from system. Falling back to Europe/London"
+                f" error: {e}"
             )
             self.tz = "Europe/London"
         self.scheduler = BackgroundScheduler(timezone=str(self.tz))
@@ -420,6 +421,7 @@ class TasksManager:
                 )
             for item in jobs:
                 logger.info(f"JOB: {item}")
+            return task.schedule_id
 
     def remove_all_server_tasks(self, server_id):
         schedules = HelpersManagement.get_schedules_by_server(server_id)
@@ -449,7 +451,6 @@ class TasksManager:
         # created task a child of itself.
         if str(job_data.get("parent")) == str(sch_id):
             job_data["parent"] = None
-
         HelpersManagement.update_scheduled_task(sch_id, job_data)
 
         if not (
