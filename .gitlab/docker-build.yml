@@ -45,6 +45,7 @@ docker-build-dev:
       --build-arg "BUILD_DATE=$(date +"%Y-%m-%dT%H:%M:%SZ")"
       --build-arg "BUILD_REF=${CI_COMMIT_SHA}"
       --build-arg "CRAFTY_VER=${VERSION}"
+      --provenance false
       --tag "$CI_REGISTRY_IMAGE${tag}"
       --tag "arcadiatechnology/crafty-4${tag}"
       --platform linux/arm64/v8,linux/amd64
@@ -100,6 +101,7 @@ docker-build-prod:
       --build-arg "BUILD_DATE=$(date +"%Y-%m-%dT%H:%M:%SZ")"
       --build-arg "BUILD_REF=${CI_COMMIT_SHA}"
       --build-arg "CRAFTY_VER=${VERSION}"
+      --provenance false
       --tag "$CI_REGISTRY_IMAGE:$VERSION"
       --tag "$CI_REGISTRY_IMAGE:latest"
       --tag "arcadiatechnology/crafty-4:$VERSION"
