@@ -321,8 +321,59 @@
         return r ? r[1] : undefined;
     }
 
+    function gather_server_json() {
+      servers = [];
+      for (s = 0; s < page_servers.length; s++){
+        mask = ""
+        for (i = 0; i < permissions.length; i++){
+          if ($(`#permission_${page_servers[s].id}_${permissions[i]}`).prop('checked')){
+            mask += "1"
+          }else{
+            mask += "0"
+          }
+        }
+        servers.push(JSON.stringify({"id": page_servers[s].id, "permissions": mask}));
+      }
+      return servers;
+    }
+
     $( document ).ready(function() {
         console.log( "ready!" );
+    });
+    const roleId = new URLSearchParams(document.location.search).get('id');
+
+    $("#config_form").on("submit", async function (e) {
+      e.preventDefault();
+      var token = getCookie("_xsrf")
+      let configForm = document.getElementById("config_form");
+
+      let formData = new FormData(configForm);
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      let send_object = Object()
+      send_object.servers = []
+      send_object.name = formDataObject.role_name
+
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(formDataObject, replacer);
+
+      let res = await fetch(`/api/v2/roles/${roleId}`, {
+        method: 'PATCH',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: formDataJsonString,
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        window.location.reload();
+      } else {
+
+        bootbox.alert({
+          title: responseData.error,
+          message: responseData.error_data
+          });
+      } 
     });
 
 

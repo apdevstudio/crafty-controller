@@ -281,74 +281,7 @@ class AjaxHandler(BaseHandler):
             exec_user["user_id"], server_id
         )
 
-        if page == "send_command":
-            command = self.get_body_argument("command", default=None, strip=True)
-            server_id = self.get_argument("id", None)
-
-            if server_id is None:
-                logger.warning("Server ID not found in send_command ajax call")
-                Console.warning("Server ID not found in send_command ajax call")
-
-            srv_obj = self.controller.servers.get_server_instance_by_id(server_id)
-
-            if command == srv_obj.settings["stop_command"]:
-                logger.info(
-                    "Stop command detected as terminal input - intercepting."
-                    + f"Starting Crafty's stop process for server with id: {server_id}"
-                )
-                self.controller.management.send_command(
-                    exec_user["user_id"], server_id, self.get_remote_ip(), "stop_server"
-                )
-                command = None
-            elif command == "restart":
-                logger.info(
-                    "Restart command detected as terminal input - intercepting."
-                    + f"Starting Crafty's stop process for server with id: {server_id}"
-                )
-                self.controller.management.send_command(
-                    exec_user["user_id"],
-                    server_id,
-                    self.get_remote_ip(),
-                    "restart_server",
-                )
-                command = None
-            if command:
-                if srv_obj.check_running():
-                    srv_obj.send_command(command)
-
-            self.controller.management.add_to_audit_log(
-                exec_user["user_id"],
-                f"Sent command to "
-                f"{self.controller.servers.get_server_friendly_name(server_id)} "
-                f"terminal: {command}",
-                server_id,
-                self.get_remote_ip(),
-            )
-
-        elif page == "send_order":
-            self.controller.users.update_server_order(
-                exec_user["user_id"], bleach.clean(self.get_argument("order"))
-            )
-            return
-
-        elif page == "backup_now":
-            server_id = self.get_argument("id", None)
-            if server_id is None:
-                logger.error("Server ID is none. Canceling backup!")
-                return
-
-            server = self.controller.servers.get_server_instance_by_id(server_id)
-            self.controller.management.add_to_audit_log_raw(
-                self.controller.users.get_user_by_id(exec_user["user_id"])["username"],
-                exec_user["user_id"],
-                server_id,
-                f"Backup now executed for server {server_id} ",
-                source_ip=self.get_remote_ip(),
-            )
-
-            server.backup_server()
-
-        elif page == "select_photo":
+        if page == "select_photo":
             if exec_user["superuser"]:
                 photo = urllib.parse.unquote(self.get_argument("photo", ""))
                 opacity = self.get_argument("opacity", 100)
@@ -382,23 +315,6 @@ class AjaxHandler(BaseHandler):
                         self.controller.cached_login = "login_1.jpg"
             return
 
-        elif page == "kill":
-            if not permissions["Commands"] in user_perms:
-                if not superuser:
-                    self.redirect("/panel/error?error=Unauthorized access to Commands")
-                    return
-            server_id = self.get_argument("id", None)
-            svr = self.controller.servers.get_server_instance_by_id(server_id)
-            try:
-                svr.kill()
-                time.sleep(5)
-                svr.cleanup_server_object()
-                svr.record_server_stats()
-            except Exception as e:
-                logger.error(
-                    f"Could not find PID for requested termsig. Full error: {e}"
-                )
-            return
         elif page == "eula":
             server_id = self.get_argument("id", None)
             svr = self.controller.servers.get_server_instance_by_id(server_id)
@@ -624,12 +540,6 @@ class AjaxHandler(BaseHandler):
         user_perms = self.controller.server_perms.get_user_id_permissions_list(
             exec_user["user_id"], server_id
         )
-        if page == "del_task":
-            if not permissions["Schedule"] in user_perms:
-                self.redirect("/panel/error?error=Unauthorized access to Tasks")
-            else:
-                sch_id = self.get_argument("schedule_id", "-404")
-                self.tasks_manager.remove_job(sch_id)
 
         if page == "del_backup":
             if not permissions["Backup"] in user_perms:
@@ -667,84 +577,6 @@ class AjaxHandler(BaseHandler):
                 file_path,
             ):
                 os.remove(file_path)
-
-        elif page == "delete_server":
-            if not permissions["Config"] in user_perms:
-                if not superuser:
-                    self.redirect("/panel/error?error=Unauthorized access to Config")
-                    return
-            server_id = self.get_argument("id", None)
-            logger.info(
-                f"Removing server from panel for server: "
-                f"{self.controller.servers.get_server_friendly_name(server_id)}"
-            )
-
-            server_data = self.controller.servers.get_server_data(server_id)
-            server_name = server_data["server_name"]
-
-            self.controller.management.add_to_audit_log(
-                exec_user["user_id"],
-                f"Deleted server {server_id} named {server_name}",
-                server_id,
-                self.get_remote_ip(),
-            )
-
-            self.tasks_manager.remove_all_server_tasks(server_id)
-            self.controller.remove_server(server_id, False)
-
-        elif page == "delete_server_files":
-            if not permissions["Config"] in user_perms:
-                if not superuser:
-                    self.redirect("/panel/error?error=Unauthorized access to Config")
-                    return
-            server_id = self.get_argument("id", None)
-            logger.info(
-                f"Removing server and all associated files for server: "
-                f"{self.controller.servers.get_server_friendly_name(server_id)}"
-            )
-
-            server_data = self.controller.servers.get_server_data(server_id)
-            server_name = server_data["server_name"]
-
-            self.controller.management.add_to_audit_log(
-                exec_user["user_id"],
-                f"Deleted server {server_id} named {server_name}",
-                server_id,
-                self.get_remote_ip(),
-            )
-
-            for server in self.controller.servers.failed_servers:
-                if server["server_id"] == int(server_id):
-                    return
-            self.tasks_manager.remove_all_server_tasks(server_id)
-            self.controller.remove_server(server_id, True)
-
-        elif page == "delete_unloaded_server":
-            if not permissions["Config"] in user_perms:
-                if not superuser:
-                    self.redirect("/panel/error?error=Unauthorized access to Config")
-                    return
-            server_id = self.get_argument("id", None)
-            logger.info(
-                f"Removing server and all associated files for server: "
-                f"{self.controller.servers.get_server_friendly_name(server_id)}"
-            )
-
-            server_data = self.controller.servers.get_server_data_by_id(server_id)
-            server_name = server_data["server_name"]
-
-            self.controller.management.add_to_audit_log(
-                exec_user["user_id"],
-                f"Deleted server {server_id} named {server_name}",
-                server_id,
-                self.get_remote_ip(),
-            )
-
-            self.tasks_manager.remove_all_server_tasks(server_id)
-            for item in self.controller.servers.failed_servers[:]:
-                if item["server_id"] == int(server_id):
-                    self.controller.servers.failed_servers.remove(item)
-            self.controller.remove_unloaded_server(server_id)
 
     def check_server_id(self, server_id, page_name):
         if server_id is None:

@@ -11,6 +11,9 @@ except ModuleNotFoundError as e:
 
 class CustomStaticHandler(tornado.web.StaticFileHandler):
     def validate_absolute_path(self, root: str, absolute_path: str) -> Optional[str]:
+        # This is for the mobile app service worker
+        if self.request.path.find("service-worker.js") != -1:
+            self.set_header("Service-Worker-Allowed", "/")
         try:
             return super().validate_absolute_path(root, absolute_path)
         except tornado.web.HTTPError as error:

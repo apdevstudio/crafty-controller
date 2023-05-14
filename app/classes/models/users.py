@@ -386,7 +386,7 @@ class HelperUsers:
 
     @staticmethod
     def get_users_from_role(role_id):
-        UserRoles.select().where(UserRoles.role_id == role_id).execute()
+        return UserRoles.select().where(UserRoles.role_id == role_id).execute()
 
     # **********************************************************************************
     #                                   ApiKeys Methods
