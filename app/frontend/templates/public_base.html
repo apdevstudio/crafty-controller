@@ -14,6 +14,13 @@
   <link rel="stylesheet" href="/static/assets/vendors/typicons/typicons.css">
   <link rel="stylesheet" href="/static/assets/vendors/css/vendor.bundle.base.css">
   <link rel="stylesheet" href="/static/assets/vendors/fontawesome6/css/all.css">
+  <link rel="manifest" href="/static/assets/crafty.webmanifest">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Crafty">
+  <link rel="apple-touch-icon" href="../static/assets/images/Crafty_4-0.png">
   <!-- endinject -->
   <!-- Plugin css for this page -->
   <!-- End Plugin css for this page -->
@@ -98,7 +105,7 @@
       usingWebSockets = false;
     }
     // {% else %}
-    let usingWebSockets = false;
+    usingWebSockets = false;
     warn('WebSockets are not supported in Crafty if not using the https protocol')
     var webSocket;
 // {% end%}
@@ -106,6 +113,21 @@
   </script>
   {% block js %}
   <!-- Custom js for this page -->
+  <script>
+    $(document).ready(function () {
+      let login_opacity_div = document.getElementById('login_opacity');
+      let opacity = login_opacity_div.getAttribute('data-value');
+      document.getElementById('login-form-background').style.background = 'rgb(34, 36, 55, ' + (opacity / 100) + ')';
+      //Register Service worker for mobile app
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/static/assets/js/shared/service-worker.js', {scope: '/'})
+          .then(function (registration) {
+            console.error('Service Worker Registered');
+          });
+      }
+    });
+
+  </script>
   <!-- End custom js for this page -->
   {% end %}
 

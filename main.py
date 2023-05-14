@@ -27,6 +27,17 @@ if helper.check_root():
     time.sleep(5)
     Console.critical("Crafty shutting down. Root/Admin access denied.")
     sys.exit(0)
+if not (sys.version_info.major == 3 and sys.version_info.minor >= 9):
+    Console.critical(
+        "Python version mismatch. Python "
+        f"{sys.version_info.major}.{sys.version_info.minor} detected."
+    )
+    Console.critical("Crafty requires Python 3.9 or above. Please upgrade python.")
+    time.sleep(5)
+    Console.critical("Crafty shutting down.")
+    time.sleep(3)
+    Console.info("Crafty stopped. Exiting...")
+    sys.exit(0)
 # pylint: disable=wrong-import-position
 try:
     from app.classes.models.base_model import database_proxy

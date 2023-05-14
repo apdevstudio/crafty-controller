@@ -27,6 +27,36 @@ modify_role_schema = {
                 "required": ["server_id", "permissions"],
             },
         },
+        "manager": {"type": ["integer", "null"]},
+    },
+    "additionalProperties": False,
+    "minProperties": 1,
+}
+
+basic_modify_role_schema = {
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1,
+        },
+        "servers": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "server_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                    },
+                    "permissions": {
+                        "type": "string",
+                        "pattern": "^[01]{8}$",  # 8 bits, see EnumPermissionsServer
+                    },
+                },
+                "required": ["server_id", "permissions"],
+            },
+        },
     },
     "additionalProperties": False,
     "minProperties": 1,
@@ -109,7 +139,10 @@ class ApiRolesRoleIndexHandler(BaseApiHandler):
             )
 
         try:
-            validate(data, modify_role_schema)
+            if auth_data[4]["superuser"]:
+                validate(data, modify_role_schema)
+            else:
+                validate(data, basic_modify_role_schema)
         except ValidationError as e:
             return self.finish_json(
                 400,
