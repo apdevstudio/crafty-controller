@@ -254,7 +254,12 @@ class PanelHandler(BaseHandler):
         user_order = user_order["server_order"].split(",")
         page_servers = []
         server_ids = []
-
+        for server in defined_servers:
+            server_ids.append(str(server.server_id))
+            if str(server.server_id) not in user_order:
+                # a little unorthodox, but this will cut out a loop.
+                # adding servers to the user order that don't already exist there.
+                user_order.append(str(server.server_id))
         for server_id in user_order[:]:
             for server in defined_servers[:]:
                 if str(server.server_id) == str(server_id):
@@ -263,14 +268,7 @@ class PanelHandler(BaseHandler):
                     )
                     user_order.remove(server_id)
                     defined_servers.remove(server)
-
-        for server in defined_servers:
-            server_ids.append(str(server.server_id))
-            if server not in page_servers:
-                page_servers.append(
-                    DatabaseShortcuts.get_data_obj(server.server_object)
-                )
-
+                    break
         for server_id in user_order[:]:
             # remove IDs in list that user no longer has access to
             if str(server_id) not in server_ids:
@@ -450,6 +448,7 @@ class PanelHandler(BaseHandler):
                         page_servers.append(server)
                         un_used_servers.remove(server)
                         user_order.remove(server_id)
+                        break
                 # we only want to set these server stats values once.
                 # We need to update the flag so it only hits that if once.
                 flag += 1
