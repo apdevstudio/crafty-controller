@@ -9,8 +9,11 @@
 - Fix incompatible buildx provenance meta, causing digest issues on GL/DH container registries ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/582))
 - Fix Auth'd servers in roles | Refine server ordering ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/574))
 - Fix import loop detection ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/575))
+- Fix Cargo errors on Ubuntu 23.04 installs ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/579))
+- Fix project root error on first start ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/580))
 ### Tweaks
-TBD
+- Check for python version so we don't just fail out on unsupported python versions ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/577))
+- Show warning for serverjars API connection issues ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/581))
 ### Lang
 TBD
 <br><br>
