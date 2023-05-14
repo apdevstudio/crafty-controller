@@ -577,7 +577,8 @@
         "documentation": "Documentation",
         "navigation": "Navigation",
         "newServer": "Create New Server",
-        "servers": "Servers"
+        "servers": "Servers",
+        "inApp": "In App Docs"
     },
     "userConfig": {
         "apiKey": "API Keys",
