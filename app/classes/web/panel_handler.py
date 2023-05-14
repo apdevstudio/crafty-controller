@@ -6,7 +6,6 @@ import typing as t
 import json
 import logging
 import threading
-import shlex
 import urllib.parse
 import bleach
 import requests
@@ -17,7 +16,6 @@ from tornado import iostream
 # TZLocal is set as a hidden import on win pipeline
 from tzlocal import get_localzone
 from tzlocal.utils import ZoneInfoNotFoundError
-from croniter import croniter
 
 from app.classes.models.servers import Servers
 from app.classes.models.server_permissions import EnumPermissionsServer
@@ -256,7 +254,12 @@ class PanelHandler(BaseHandler):
         user_order = user_order["server_order"].split(",")
         page_servers = []
         server_ids = []
-
+        for server in defined_servers:
+            server_ids.append(str(server.server_id))
+            if str(server.server_id) not in user_order:
+                # a little unorthodox, but this will cut out a loop.
+                # adding servers to the user order that don't already exist there.
+                user_order.append(str(server.server_id))
         for server_id in user_order[:]:
             for server in defined_servers[:]:
                 if str(server.server_id) == str(server_id):
@@ -265,14 +268,7 @@ class PanelHandler(BaseHandler):
                     )
                     user_order.remove(server_id)
                     defined_servers.remove(server)
-
-        for server in defined_servers:
-            server_ids.append(str(server.server_id))
-            if server not in page_servers:
-                page_servers.append(
-                    DatabaseShortcuts.get_data_obj(server.server_object)
-                )
-
+                    break
         for server_id in user_order[:]:
             # remove IDs in list that user no longer has access to
             if str(server_id) not in server_ids:
@@ -452,6 +448,7 @@ class PanelHandler(BaseHandler):
                         page_servers.append(server)
                         un_used_servers.remove(server)
                         user_order.remove(server_id)
+                        break
                 # we only want to set these server stats values once.
                 # We need to update the flag so it only hits that if once.
                 flag += 1
@@ -1053,7 +1050,7 @@ class PanelHandler(BaseHandler):
             page_data["schedule"]["cron_string"] = ""
             page_data["schedule"]["delay"] = 0
             page_data["schedule"]["time"] = ""
-            page_data["schedule"]["interval"] = ""
+            page_data["schedule"]["interval"] = 1
             # we don't need to check difficulty here.
             # We'll just default to basic for new schedules
             page_data["schedule"]["difficulty"] = "basic"
@@ -1556,156 +1553,6 @@ class PanelHandler(BaseHandler):
                 role = self.controller.roles.get_role(r)
                 exec_user_role.add(role["role_name"])
 
-        if page == "server_detail":
-            if not permissions[
-                "Config"
-            ] in self.controller.server_perms.get_user_id_permissions_list(
-                exec_user["user_id"], server_id
-            ):
-                if not superuser:
-                    self.redirect("/panel/error?error=Unauthorized access to Config")
-                    return
-            server_name = self.get_argument("server_name", None)
-            server_obj = self.controller.servers.get_server_obj(server_id)
-            shutdown_timeout = self.get_argument("shutdown_timeout", 60)
-            if superuser:
-                log_path = self.get_argument("log_path", "")
-                if log_path:
-                    if Helpers.is_os_windows():
-                        log_path.replace(" ", "^ ")
-                        log_path = Helpers.wtol_path(log_path)
-                    if not self.helper.validate_traversal(server_obj.path, log_path):
-                        log_path = ""
-                executable = self.get_argument("executable", None)
-                execution_command = self.get_argument("execution_command", None)
-                server_ip = self.get_argument("server_ip", None)
-                server_port = self.get_argument("server_port", None)
-                if int(server_port) < 1 or int(server_port) > 65535:
-                    self.redirect(
-                        "/panel/error?error=Constraint Error: "
-                        "Port must be greater than 0 and less than 65535"
-                    )
-                    return
-                executable_update_url = self.get_argument("executable_update_url", "")
-                show_status = int(float(self.get_argument("show_status", "0")))
-            else:
-                execution_command = server_obj.execution_command
-                executable = server_obj.executable
-            stop_command = self.get_argument("stop_command", None)
-            auto_start_delay = self.get_argument("auto_start_delay", "10")
-            auto_start = int(float(self.get_argument("auto_start", "0")))
-            crash_detection = int(float(self.get_argument("crash_detection", "0")))
-            logs_delete_after = int(float(self.get_argument("logs_delete_after", "0")))
-            java_selection = self.get_argument("java_selection", None)
-            # make sure there is no whitespace
-            ignored_exits = self.get_argument("ignored_exits", "").replace(" ", "")
-            # subpage = self.get_argument('subpage', None)
-
-            server_id = self.check_server_id()
-            if server_id is None:
-                return
-            if java_selection:
-                try:
-                    if self.helper.is_os_windows():
-                        execution_list = shlex.split(execution_command, posix=False)
-                    else:
-                        execution_list = shlex.split(execution_command, posix=True)
-                except ValueError:
-                    self.redirect(
-                        "/panel/error?error=Invalid execution command. Java path"
-                        " must be surrounded by quotes."
-                        " (Are you missing a closing quote?)"
-                    )
-                if (
-                    not any(
-                        java_selection in path for path in Helpers.find_java_installs()
-                    )
-                    and java_selection != "java"
-                ):
-                    self.redirect(
-                        "/panel/error?error=Attack attempted."
-                        + " A copy of this report is being sent to server owner."
-                    )
-                    self.controller.management.add_to_audit_log_raw(
-                        exec_user["username"],
-                        exec_user["user_id"],
-                        server_id,
-                        f"Attempted to send bad java path for {server_id}."
-                        + " Possible attack. Act accordingly.",
-                        self.get_remote_ip(),
-                    )
-                    return
-                if java_selection != "java":
-                    if self.helper.is_os_windows():
-                        execution_list[0] = '"' + java_selection + '/bin/java"'
-                    else:
-                        execution_list[0] = '"' + java_selection + '"'
-                else:
-                    execution_list[0] = "java"
-                execution_command = ""
-                for item in execution_list:
-                    execution_command += item + " "
-
-            server_obj: Servers = self.controller.servers.get_server_obj(server_id)
-            stale_executable = server_obj.executable
-            # Compares old jar name to page data being passed.
-            # If they are different we replace the executable name in the
-            if str(stale_executable) != str(executable):
-                execution_command = execution_command.replace(
-                    str(stale_executable), str(executable)
-                )
-
-            server_obj.server_name = server_name
-            server_obj.shutdown_timeout = shutdown_timeout
-            if superuser:
-                if Helpers.validate_traversal(
-                    self.helper.get_servers_root_dir(), server_obj.path
-                ):
-                    server_obj.log_path = log_path
-                if Helpers.validate_traversal(
-                    self.helper.get_servers_root_dir(), executable
-                ):
-                    server_obj.executable = executable
-                server_obj.execution_command = execution_command
-                server_obj.server_ip = server_ip
-                server_obj.server_port = server_port
-                server_obj.executable_update_url = executable_update_url
-                server_obj.show_status = show_status
-            else:
-                server_obj.log_path = server_obj.log_path
-                server_obj.executable = server_obj.executable
-                server_obj.execution_command = execution_command
-                server_obj.server_ip = server_obj.server_ip
-                server_obj.server_port = server_obj.server_port
-                server_obj.executable_update_url = server_obj.executable_update_url
-            server_obj.stop_command = stop_command
-            server_obj.auto_start_delay = auto_start_delay
-            server_obj.auto_start = auto_start
-            server_obj.crash_detection = crash_detection
-            server_obj.logs_delete_after = logs_delete_after
-            server_obj.ignored_exits = ignored_exits
-            failed = False
-            for servers in self.controller.servers.failed_servers:
-                if servers["server_id"] == int(server_id):
-                    failed = True
-            if not failed:
-                self.controller.servers.update_server(server_obj)
-            else:
-                self.controller.servers.update_unloaded_server(server_obj)
-                self.controller.servers.init_all_servers()
-            self.controller.servers.crash_detection(server_obj)
-
-            self.controller.servers.refresh_server_settings(server_id)
-
-            self.controller.management.add_to_audit_log(
-                exec_user["user_id"],
-                f"Edited server {server_id} named {server_name}",
-                server_id,
-                self.get_remote_ip(),
-            )
-
-            self.redirect(f"/panel/server_detail?id={server_id}&subpage=config")
-
         if page == "server_backup":
             logger.debug(self.request.arguments)
 
@@ -1801,336 +1648,6 @@ class PanelHandler(BaseHandler):
                 )
 
             self.redirect("/panel/config_json")
-
-        if page == "new_schedule":
-            server_id = self.check_server_id()
-            if not server_id:
-                return
-
-            if (
-                not permissions["Schedule"]
-                in self.controller.server_perms.get_user_id_permissions_list(
-                    exec_user["user_id"], server_id
-                )
-                and not superuser
-            ):
-                self.redirect(
-                    "/panel/error?error=Unauthorized access: User not authorized"
-                )
-                return
-
-            difficulty = bleach.clean(self.get_argument("difficulty", None))
-            server_obj = self.controller.servers.get_server_obj(server_id)
-            enabled = bleach.clean(self.get_argument("enabled", "0"))
-            name = bleach.clean(self.get_argument("name", ""))
-            if difficulty == "basic":
-                action = bleach.clean(self.get_argument("action", None))
-                interval = bleach.clean(self.get_argument("interval", None))
-                interval_type = bleach.clean(self.get_argument("interval_type", None))
-                # only check for time if it's number of days
-                if interval_type == "days":
-                    sch_time = bleach.clean(self.get_argument("time", None))
-                    if int(interval) > 30:
-                        self.redirect(
-                            "/panel/error?error=Invalid argument."
-                            " Days must be 30 or fewer."
-                        )
-                        return
-                if action == "command":
-                    command = self.get_argument("command", None)
-                elif action == "start":
-                    command = "start_server"
-                elif action == "stop":
-                    command = "stop_server"
-                elif action == "restart":
-                    command = "restart_server"
-                elif action == "backup":
-                    command = "backup_server"
-
-            elif difficulty == "reaction":
-                interval_type = "reaction"
-                action = bleach.clean(self.get_argument("action", None))
-                delay = bleach.clean(self.get_argument("delay", None))
-                parent = bleach.clean(self.get_argument("parent", None))
-                if action == "command":
-                    command = self.get_argument("command", None)
-                elif action == "start":
-                    command = "start_server"
-                elif action == "stop":
-                    command = "stop_server"
-                elif action == "restart":
-                    command = "restart_server"
-                elif action == "backup":
-                    command = "backup_server"
-
-            else:
-                interval_type = ""
-                cron_string = bleach.clean(self.get_argument("cron", ""))
-                if not croniter.is_valid(cron_string):
-                    self.redirect(
-                        "/panel/error?error=INVALID FORMAT: Invalid Cron Format."
-                    )
-                    return
-                action = bleach.clean(self.get_argument("action", None))
-                if action == "command":
-                    command = self.get_argument("command", None)
-                elif action == "start":
-                    command = "start_server"
-                elif action == "stop":
-                    command = "stop_server"
-                elif action == "restart":
-                    command = "restart_server"
-                elif action == "backup":
-                    command = "backup_server"
-            if bleach.clean(self.get_argument("enabled", "0")) == "1":
-                enabled = True
-            else:
-                enabled = False
-            if bleach.clean(self.get_argument("one_time", "0")) == "1":
-                one_time = True
-            else:
-                one_time = False
-
-            if interval_type == "days":
-                job_data = {
-                    "name": name,
-                    "server_id": server_id,
-                    "action": action,
-                    "interval_type": interval_type,
-                    "interval": interval,
-                    "command": command,
-                    "start_time": sch_time,
-                    "enabled": enabled,
-                    "one_time": one_time,
-                    "cron_string": "",
-                    "parent": None,
-                    "delay": 0,
-                }
-            elif difficulty == "reaction":
-                job_data = {
-                    "name": name,
-                    "server_id": server_id,
-                    "action": action,
-                    "interval_type": interval_type,
-                    "interval": "",
-                    # We'll base every interval off of a midnight start time.
-                    "start_time": "",
-                    "command": command,
-                    "cron_string": "",
-                    "enabled": enabled,
-                    "one_time": one_time,
-                    "parent": parent,
-                    "delay": delay,
-                }
-            elif difficulty == "advanced":
-                job_data = {
-                    "name": name,
-                    "server_id": server_id,
-                    "action": action,
-                    "interval_type": "",
-                    "interval": "",
-                    # We'll base every interval off of a midnight start time.
-                    "start_time": "",
-                    "command": command,
-                    "cron_string": cron_string,
-                    "enabled": enabled,
-                    "one_time": one_time,
-                    "parent": None,
-                    "delay": 0,
-                }
-            else:
-                job_data = {
-                    "name": name,
-                    "server_id": server_id,
-                    "action": action,
-                    "interval_type": interval_type,
-                    "interval": interval,
-                    "command": command,
-                    "enabled": enabled,
-                    # We'll base every interval off of a midnight start time.
-                    "start_time": "00:00",
-                    "one_time": one_time,
-                    "cron_string": "",
-                    "parent": None,
-                    "delay": 0,
-                }
-
-            self.tasks_manager.schedule_job(job_data)
-
-            self.controller.management.add_to_audit_log(
-                exec_user["user_id"],
-                f"Edited server {server_id}: added scheduled job",
-                server_id,
-                self.get_remote_ip(),
-            )
-            self.tasks_manager.reload_schedule_from_db()
-            self.redirect(f"/panel/server_detail?id={server_id}&subpage=schedules")
-
-        if page == "edit_schedule":
-            server_id = self.check_server_id()
-            if not server_id:
-                return
-
-            if (
-                not permissions["Schedule"]
-                in self.controller.server_perms.get_user_id_permissions_list(
-                    exec_user["user_id"], server_id
-                )
-                and not superuser
-            ):
-                self.redirect(
-                    "/panel/error?error=Unauthorized access: User not authorized"
-                )
-                return
-
-            sch_id = self.get_argument("sch_id", None)
-            if sch_id is None:
-                self.redirect("/panel/error?error=Invalid Schedule ID")
-
-            difficulty = bleach.clean(self.get_argument("difficulty", None))
-            server_obj = self.controller.servers.get_server_obj(server_id)
-            enabled = bleach.clean(self.get_argument("enabled", "0"))
-            name = bleach.clean(self.get_argument("name", ""))
-            if difficulty == "basic":
-                action = bleach.clean(self.get_argument("action", None))
-                interval = bleach.clean(self.get_argument("interval", None))
-                interval_type = bleach.clean(self.get_argument("interval_type", None))
-                # only check for time if it's number of days
-                if interval_type == "days":
-                    sch_time = bleach.clean(self.get_argument("time", None))
-                    if int(interval) > 30:
-                        self.redirect(
-                            "/panel/error?error=Invalid argument."
-                            " Days must be 30 or fewer."
-                        )
-                        return
-                if action == "command":
-                    command = self.get_argument("command", None)
-                elif action == "start":
-                    command = "start_server"
-                elif action == "stop":
-                    command = "stop_server"
-                elif action == "restart":
-                    command = "restart_server"
-                elif action == "backup":
-                    command = "backup_server"
-            elif difficulty == "reaction":
-                interval_type = "reaction"
-                action = bleach.clean(self.get_argument("action", None))
-                delay = bleach.clean(self.get_argument("delay", None))
-                parent = bleach.clean(self.get_argument("parent", None))
-                if action == "command":
-                    command = self.get_argument("command", None)
-                elif action == "start":
-                    command = "start_server"
-                elif action == "stop":
-                    command = "stop_server"
-                elif action == "restart":
-                    command = "restart_server"
-                elif action == "backup":
-                    command = "backup_server"
-                parent = bleach.clean(self.get_argument("parent", None))
-            else:
-                interval_type = ""
-                cron_string = bleach.clean(self.get_argument("cron", ""))
-                if not croniter.is_valid(cron_string):
-                    self.redirect(
-                        "/panel/error?error=INVALID FORMAT: Invalid Cron Format."
-                    )
-                    return
-                action = bleach.clean(self.get_argument("action", None))
-                if action == "command":
-                    command = self.get_argument("command", None)
-                elif action == "start":
-                    command = "start_server"
-                elif action == "stop":
-                    command = "stop_server"
-                elif action == "restart":
-                    command = "restart_server"
-                elif action == "backup":
-                    command = "backup_server"
-            if bleach.clean(self.get_argument("enabled", "0")) == "1":
-                enabled = True
-            else:
-                enabled = False
-            if bleach.clean(self.get_argument("one_time", "0")) == "1":
-                one_time = True
-            else:
-                one_time = False
-
-            if interval_type == "days":
-                job_data = {
-                    "name": name,
-                    "server_id": server_id,
-                    "action": action,
-                    "interval_type": interval_type,
-                    "interval": interval,
-                    "command": command,
-                    "start_time": sch_time,
-                    "enabled": enabled,
-                    "one_time": one_time,
-                    "cron_string": "",
-                    "parent": None,
-                    "delay": 0,
-                }
-            elif difficulty == "advanced":
-                job_data = {
-                    "name": name,
-                    "server_id": server_id,
-                    "action": action,
-                    "interval_type": "",
-                    "interval": "",
-                    # We'll base every interval off of a midnight start time.
-                    "start_time": "",
-                    "command": command,
-                    "cron_string": cron_string,
-                    "delay": "",
-                    "parent": "",
-                    "enabled": enabled,
-                    "one_time": one_time,
-                }
-            elif difficulty == "reaction":
-                job_data = {
-                    "name": name,
-                    "server_id": server_id,
-                    "action": action,
-                    "interval_type": interval_type,
-                    "interval": "",
-                    # We'll base every interval off of a midnight start time.
-                    "start_time": "",
-                    "command": command,
-                    "cron_string": "",
-                    "enabled": enabled,
-                    "one_time": one_time,
-                    "parent": parent,
-                    "delay": delay,
-                }
-            else:
-                job_data = {
-                    "name": name,
-                    "server_id": server_id,
-                    "action": action,
-                    "interval_type": interval_type,
-                    "interval": interval,
-                    "command": command,
-                    "enabled": enabled,
-                    # We'll base every interval off of a midnight start time.
-                    "start_time": "00:00",
-                    "delay": "",
-                    "parent": "",
-                    "one_time": one_time,
-                    "cron_string": "",
-                }
-            self.tasks_manager.update_job(sch_id, job_data)
-
-            self.controller.management.add_to_audit_log(
-                exec_user["user_id"],
-                f"Edited server {server_id}: updated schedule",
-                server_id,
-                self.get_remote_ip(),
-            )
-            self.tasks_manager.reload_schedule_from_db()
-            self.redirect(f"/panel/server_detail?id={server_id}&subpage=schedules")
 
         elif page == "edit_user":
             if bleach.clean(self.get_argument("username", None)).lower() == "system":

@@ -13,20 +13,39 @@ server_patch_schema = {
     "type": "object",
     "properties": {
         "server_name": {"type": "string", "minLength": 1},
-        "path": {"type": "string", "minLength": 1},
         "backup_path": {"type": "string"},
         "executable": {"type": "string"},
         "log_path": {"type": "string", "minLength": 1},
         "execution_command": {"type": "string", "minLength": 1},
+        "java_selection": {"type": "string"},
         "auto_start": {"type": "boolean"},
-        "auto_start_delay": {"type": "integer"},
+        "auto_start_delay": {"type": "integer", "minimum": 0},
         "crash_detection": {"type": "boolean"},
         "stop_command": {"type": "string"},
-        "executable_update_url": {"type": "string", "minLength": 1},
+        "executable_update_url": {"type": "string"},
         "server_ip": {"type": "string", "minLength": 1},
         "server_port": {"type": "integer"},
-        "logs_delete_after": {"type": "integer"},
-        "type": {"type": "string", "minLength": 1},
+        "shutdown_timeout": {"type": "integer", "minimum": 0},
+        "logs_delete_after": {"type": "integer", "minimum": 0},
+        "ignored_exits": {"type": "string"},
+        "show_status": {"type": "boolean"},
+    },
+    "additionalProperties": False,
+    "minProperties": 1,
+}
+basic_server_patch_schema = {
+    "type": "object",
+    "properties": {
+        "server_name": {"type": "string", "minLength": 1},
+        "executable": {"type": "string"},
+        "java_selection": {"type": "string"},
+        "auto_start": {"type": "boolean"},
+        "auto_start_delay": {"type": "integer", "minimum": 0},
+        "crash_detection": {"type": "boolean"},
+        "stop_command": {"type": "string"},
+        "shutdown_timeout": {"type": "integer"},
+        "logs_delete_after": {"type": "integer", "minimum": 0},
+        "ignored_exits": {"type": "string"},
     },
     "additionalProperties": False,
     "minProperties": 1,
@@ -63,7 +82,11 @@ class ApiServersServerIndexHandler(BaseApiHandler):
             )
 
         try:
-            validate(data, server_patch_schema)
+            # prevent general users from becoming bad actors
+            if auth_data[4]["superuser"]:
+                validate(data, server_patch_schema)
+            else:
+                validate(data, basic_server_patch_schema)
         except ValidationError as e:
             return self.finish_json(
                 400,
@@ -88,9 +111,24 @@ class ApiServersServerIndexHandler(BaseApiHandler):
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         server_obj = self.controller.servers.get_server_obj(server_id)
+        java_flag = False
         for key in data:
             # If we don't validate the input there could be security issues
+            if key == "java_selection" and data[key] != "none":
+                try:
+                    command = self.helper.get_execution_java(
+                        data[key], server_obj.execution_command
+                    )
+                    setattr(server_obj, "execution_command", command)
+                except ValueError:
+                    return self.finish_json(
+                        400, {"status": "error", "error": "INVALID EXECUTION COMMAND"}
+                    )
+                java_flag = True
+
             if key != "path":
+                if key == "execution_command" and java_flag:
+                    continue
                 setattr(server_obj, key, data[key])
         self.controller.servers.update_server(server_obj)
 
@@ -134,7 +172,16 @@ class ApiServersServerIndexHandler(BaseApiHandler):
         )
 
         self.tasks_manager.remove_all_server_tasks(server_id)
-        self.controller.remove_server(server_id, remove_files)
+        failed = False
+        for item in self.controller.servers.failed_servers[:]:
+            if item["server_id"] == int(server_id):
+                self.controller.servers.failed_servers.remove(item)
+                failed = True
+
+        if failed:
+            self.controller.remove_unloaded_server(server_id)
+        else:
+            self.controller.remove_server(server_id, remove_files)
 
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],

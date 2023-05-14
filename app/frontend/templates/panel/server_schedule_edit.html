@@ -37,15 +37,12 @@
           <div class="row">
             <div class="col-md-8 col-sm-8">
               {% if data['new_schedule'] == True %}
-              <form class="forms-sample" method="post"
+              <form class="forms-sample" method="post" id="new_schedule_form"
                 action="/panel/new_schedule?id={{ data['server_stats']['server_id']['server_id'] }}">
                 {% else %}
-                <form class="forms-sample" method="post"
+                <form class="forms-sample" method="post" id="schedule_form"
                   action="/panel/edit_schedule?id={{ data['server_stats']['server_id']['server_id'] }}&sch_id={{ data['schedule']['schedule_id'] }}">
                   {% end %}
-                  {% raw xsrf_form_html() %}
-                  <input type="hidden" name="id" value="{{ data['server_stats']['server_id']['server_id'] }}">
-                  <input type="hidden" name="subpage" value="config">
 
                   <div class="form-group">
                     <label for="name">{{ translate('serverSchedules', 'name' , data['lang']) }}</label>
@@ -89,7 +86,7 @@
                           class="text-muted ml-1"> - {{ translate('serverScheduleConfig', 'interval-explain' ,
                           data['lang']) }}</small> </label>
                       <input type="number" class="form-control" name="interval" id="interval"
-                        value="{{ data['schedule']['interval']  }}" placeholder="Interval" required>
+                        value="{{ data['schedule']['interval']  }}" placeholder="Interval" required min="1">
                       <br>
                       <br>
                       <select id="interval_type" onchange="ifDays(this);" name="interval_type"
@@ -108,7 +105,7 @@
                         <label for="time">{{ translate('serverScheduleConfig', 'time' , data['lang']) }} <small
                             class="text-muted ml-1"> - {{ translate('serverScheduleConfig', 'time-explain' ,
                             data['lang']) }}</small> </label>
-                        <input type="time" class="form-control" name="time" id="time"
+                        <input type="time" class="form-control" name="start_time" id="time"
                           value="{{ data['schedule']['time']  }}" placeholder="Time" required>
                       </div>
                     </div>
@@ -127,7 +124,7 @@
                       <label for="cron">{{ translate('serverScheduleConfig', 'cron' , data['lang']) }} <small
                           class="text-muted ml-1"> - {{ translate('serverScheduleConfig', 'cron-explain' , data['lang'])
                           }}</small> </label>
-                      <input type="input" class="form-control" name="cron" id="cron"
+                      <input type="input" class="form-control" name="cron_string" id="cron"
                         value="{{ data['schedule']['cron_string']  }}" placeholder="* * * * *">
                     </div>
                   </div>
@@ -234,8 +231,120 @@
       return r ? r[1] : undefined;
     }
 
+    function replacer(key, value) {
+    if (key != "start_time" && key != "cron_string" && key != "interval_type") {
+      if (typeof value == "boolean") {
+        return value
+      } 
+      console.log(key)
+      if (key === "interval" && value === ""){
+        return 0;
+      }
+      if (key === "command" && typeof(value === "integer")){
+        return value.toString();
+      }else {
+        return (isNaN(value) ? value : +value);
+      }
+    } else {
+      if (value === "" && key == "start_time"){
+        return "00:00";
+      }else{
+        return value;
+      }
+    }
+  }
+
+    const serverId = new URLSearchParams(document.location.search).get('id');
+    const schId = new URLSearchParams(document.location.search).get('sch_id');
     $(document).ready(function () {
       console.log("ready!");
+      $("#new_schedule_form").on("submit", async function (e) {
+      e.preventDefault();
+      var token = getCookie("_xsrf")
+      let schForm = document.getElementById("new_schedule_form");
+
+      let formData = new FormData(schForm);
+      formData.delete("difficulty");
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      //We need to make sure these are sent regardless of whether or not they're checked
+      formDataObject.enabled = $("#enabled").prop('checked');
+      formDataObject.one_time = $("#one_time").prop('checked');
+      if ($("#difficulty").val() == "reaction"){
+        formDataObject.interval_type = "reaction";
+      }
+      if (formDataObject.cron_string != ""){
+        formDataObject.interval_type = '';
+      }
+      console.log(formDataObject);
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(formDataObject, replacer);
+
+      console.log(formDataJsonString);
+
+      let res = await fetch(`/api/v2/servers/${serverId}/tasks/`, {
+        method: 'POST',
+        headers: {
+          'X-XSRFToken': token,
+          "Content-Type": "application/json",
+        },
+        body: formDataJsonString,
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        window.location.href = `/panel/server_detail?id=${serverId}&subpage=schedules`;
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+          });
+      } 
+    });
+
+    $("#schedule_form").on("submit", async function (e) {
+      e.preventDefault();
+      var token = getCookie("_xsrf")
+      let schForm = document.getElementById("schedule_form");
+
+      let formData = new FormData(schForm);
+      formData.delete("difficulty");
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      //We need to make sure these are sent regardless of whether or not they're checked
+      formDataObject.enabled = $("#enabled").prop('checked');
+      formDataObject.one_time = $("#one_time").prop('checked');
+      if ($("#difficulty").val() == "reaction"){
+        formDataObject.interval_type = "reaction";
+      }
+      if (formDataObject.cron_string != ""){
+        formDataObject.interval_type = '';
+      }
+      console.log(formDataObject);
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(formDataObject, replacer);
+
+      console.log(formDataJsonString);
+
+      let res = await fetch(`/api/v2/servers/${serverId}/tasks/${schId}`, {
+        method: 'PATCH',
+        headers: {
+          'X-XSRFToken': token,
+          "Content-Type": "application/json", 
+        },
+        body: formDataJsonString,
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        window.location.href = `/panel/server_detail?id=${serverId}&subpage=schedules`;
+      } else {
+
+        bootbox.alert({
+          title: responseData.error,
+          message: responseData.error_data
+          });
+      } 
+    });
 
     });
 
@@ -265,6 +374,7 @@
         document.getElementById("parent").required = true;
         document.getElementById("interval").required = false;
         document.getElementById("time").required = false;
+        $("#cron").val("");
       }
       else {
         document.getElementById("ifAdvanced").style.display = "none";
@@ -274,6 +384,7 @@
         document.getElementById("parent").required = false;
         document.getElementById("interval").required = true;
         document.getElementById("time").required = true;
+        $("#cron").val("");
       }
     }
     function ifDays() {
@@ -286,22 +397,6 @@
       }
     }
 
-    function del_task(sch_id, id) {
-      var token = getCookie("_xsrf")
-
-      $.ajax({
-        type: "DELETE",
-        headers: { 'X-XSRFToken': token },
-        url: '/ajax/del_task?server_id=' + id + '&schedule_id=' + sch_id,
-        data: {
-          schedule_id: sch_id,
-          id: id
-        },
-        success: function (data) {
-          location.reload();
-        },
-      });
-    }
     function startup() {
       try {
         document.getElementById("{{ data['schedule']['interval_type'] }}").setAttribute('selected', true);
