@@ -210,6 +210,10 @@
         "preparingLogs": " Please wait while we prepare your logs... We`ll send a notification when they`re ready. This may take a while for large deployments.",
         "supportLogs": "Support Logs"
     },
+    "offline": {
+        "offline": "Offline",
+        "pleaseConnect": "Please connect to the internet to use Crafty."
+    },
     "panelConfig": {
         "adminControls": "Admin Controls",
         "allowedServers": "Allowed Servers",

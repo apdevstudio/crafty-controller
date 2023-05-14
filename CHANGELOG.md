@@ -1,7 +1,7 @@
 # Changelog
 ## --- [4.1.0] - 2023/TBD
 ### New features
-TBD
+- Mobile PWA App (beta) | Ability to add a Crafty icon to your mobile's home screen ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/576))
 ### Refactor
 - Frontend Ajax Refactor | Start using API to send Remote Comms to Server ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/565))
 ### Bug fixes
