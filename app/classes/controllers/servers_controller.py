@@ -278,11 +278,10 @@ class ServersController(metaclass=Singleton):
         for role in roles_list:
             role_users = HelperUsers.get_users_from_role(role.role_id)
             for user_role in role_users:
-                user_ids.add(user_role.user_id)
+                user_ids.add(user_role.user_id.user_id)
 
         for user_id in HelperUsers.get_super_user_list():
             user_ids.add(user_id)
-
         return user_ids
 
     def get_all_servers_stats(self):

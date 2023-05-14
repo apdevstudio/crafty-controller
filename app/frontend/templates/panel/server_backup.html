@@ -326,7 +326,7 @@
     $.ajax({
       type: "POST",
       headers: { 'X-XSRFToken': token },
-      url: '/ajax/backup_now?id=' + server_id,
+      url: `/api/v2/servers/${server_id}/action/backup_server`,
       success: function (data) {
         return;
       },
