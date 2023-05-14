@@ -19,7 +19,11 @@
   <div class="row">
     {% if data['online'] %}
     <div class="col-sm-6 grid-margin stretch-card">
-      <div class="card">
+    <div class="api-alert" style="position: absolute; top: -5px; z-index: 100; opacity: .99;">
+    <p style="color: white !important;"><i class="fas fa-exclamation-triangle" style="color: #d98c20;"></i> Server JARs API unreachable. Please check <a href="https://status.craftycontrol.com/status/craftycontrol" 
+      target="_blank">Crafty's status Page</a>
+      for more information.</p></div>
+      <div class="card" id="creation_wizard">
         <div class="card-body">
 
           <h4>{{ translate('serverWizard', 'newServer', data['lang']) }}</h4>
@@ -27,6 +31,16 @@
           <p class="card-description">
 
           <form method="post" class="server-wizard" onSubmit="wait_msg()">
+            {% if data["server_api"] %}
+            <fieldset>
+            {% else %}
+            <fieldset disabled="disabled">
+              <style>
+                #creation_wizard {
+                -webkit-filter: grayscale(1);
+                }
+              </style>
+            {% end %}
             {% raw xsrf_form_html() %}
             <div class="row">
               <div class="col-sm-12">
@@ -145,7 +159,7 @@
               data['lang']) }}</button>
             <button type="reset" class="btn btn-danger mr-2">{{ translate('serverWizard', 'resetForm', data['lang'])
               }}</button>
-
+          </fieldset>
           </form>
           </p>
         </div>
