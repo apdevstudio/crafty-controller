@@ -186,7 +186,10 @@
         "terribleFailure": "What a Terrible Failure!",
         "superError": "You must be a super user to complete this action.",
         "fileError": "File type must be an image.",
-        "migration": "Crafty's main server storage is being mirgated to a new location. All server starts have been suspended during this time. Please wait while we finish this migration"
+        "migration": "Crafty's main server storage is being mirgated to a new location. All server starts have been suspended during this time. Please wait while we finish this migration",
+        "serverJars1": "Server JARs API unreachable. Please check",
+        "craftyStatus": "Crafty's status page",
+        "serverJars2": "for the most up to date information."
     },
     "footer": {
         "allRightsReserved": "All rights reserved",
