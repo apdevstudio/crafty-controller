@@ -186,7 +186,8 @@
         "terribleFailure": "What a Terrible Failure!",
         "superError": "You must be a super user to complete this action.",
         "fileError": "File type must be an image.",
-        "migration": "Crafty's main server storage is being mirgated to a new location. All server starts have been suspended during this time. Please wait while we finish this migration"
+        "migration": "Crafty's main server storage is being mirgated to a new location. All server starts have been suspended during this time. Please wait while we finish this migration",
+        "cronFormat": "Invalid Cron format detected"
     },
     "footer": {
         "allRightsReserved": "All rights reserved",
@@ -208,6 +209,10 @@
         "logout": "Logout",
         "preparingLogs": " Please wait while we prepare your logs... We`ll send a notification when they`re ready. This may take a while for large deployments.",
         "supportLogs": "Support Logs"
+    },
+    "offline": {
+        "offline": "Offline",
+        "pleaseConnect": "Please connect to the internet to use Crafty."
     },
     "panelConfig": {
         "adminControls": "Admin Controls",

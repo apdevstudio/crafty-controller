@@ -333,7 +333,7 @@ class ServerHandler(BaseHandler):
 
             if import_type == "import_jar":
                 if self.helper.is_subdir(
-                    import_server_path, self.controller.project_root
+                    self.controller.project_root, import_server_path
                 ):
                     self.redirect(
                         "/panel/error?error=Loop Error: The selected path will cause"
@@ -499,7 +499,7 @@ class ServerHandler(BaseHandler):
 
             if import_type == "import_jar":
                 if self.helper.is_subdir(
-                    import_server_path, self.controller.project_root
+                    self.controller.project_root, import_server_path
                 ):
                     self.redirect(
                         "/panel/error?error=Loop Error: The selected path will cause"

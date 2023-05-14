@@ -35,7 +35,13 @@ class ApiServersServerStdinHandler(BaseApiHandler):
                 "Please report this to the devs"
             )
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
-
+        decoded = self.request.body.decode("utf-8")
+        self.controller.management.add_to_audit_log(
+            auth_data[4]["user_id"],
+            f"Sent command ({decoded}) to terminal",
+            server_id=0,
+            source_ip=self.get_remote_ip(),
+        )
         if svr.send_command(self.request.body.decode("utf-8")):
             return self.finish_json(
                 200,

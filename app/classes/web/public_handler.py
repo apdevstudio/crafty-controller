@@ -50,11 +50,14 @@ class PublicHandler(BaseHandler):
         if page == "login":
             template = "public/login.html"
 
-        elif page == 404:
+        elif page == "404":
             template = "public/404.html"
 
         elif page == "error":
             template = "public/error.html"
+
+        elif page == "offline":
+            template = "public/offline.html"
 
         elif page == "logout":
             self.clear_cookie("token")
