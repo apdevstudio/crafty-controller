@@ -1,4 +1,15 @@
 # Changelog
+## --- [4.1.1] - 2023/TBD
+### New features
+TBD
+### Bug fixes
+TBD
+### Tweaks
+TBD
+### Lang
+TBD
+<br><br>
+
 ## --- [4.1.0] - 2023/05/15
 ### New features
 - Mobile PWA App (beta) | Ability to add a Crafty icon to your mobile's home screen ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/576))
