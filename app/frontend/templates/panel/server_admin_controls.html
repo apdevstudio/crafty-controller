@@ -14,7 +14,8 @@
     <div class="col-12">
       <div class="page-header">
         <h4 class="page-title">
-          {{ translate('serverDetails', 'serverDetails', data['lang']) }} - {{ data['server_stats']['server_id']['server_name'] }}
+          {{ translate('serverDetails', 'serverDetails', data['lang']) }} - {{
+          data['server_stats']['server_id']['server_name'] }}
           <br />
           <small>UUID: {{ data['server_stats']['server_id']['server_uuid'] }}</small>
         </h4>
@@ -76,10 +77,14 @@
                 <li class="playerItem">
                   <h3>{{ player }}</h3>
                   <div class="buttons">
-                    <button onclick="send_command_to_server('ban {{ player }}')" type="button" class="btn btn-danger">Ban</button>
-                    <button onclick="send_command_to_server('kick {{ player }}')" type="button" class="btn btn-outline-danger">Kick</button>
-                    <button onclick="send_command_to_server('op {{ player }}')" type="button" class="btn btn-warning">OP</button>
-                    <button onclick="send_command_to_server('deop {{ player }}')" type="button" class="btn btn-outline-warning">De-OP</button>
+                    <button onclick="send_command_to_server('ban {{ player }}')" type="button"
+                      class="btn btn-danger">Ban</button>
+                    <button onclick="send_command_to_server('kick {{ player }}')" type="button"
+                      class="btn btn-outline-danger">Kick</button>
+                    <button onclick="send_command_to_server('op {{ player }}')" type="button"
+                      class="btn btn-warning">OP</button>
+                    <button onclick="send_command_to_server('deop {{ player }}')" type="button"
+                      class="btn btn-outline-warning">De-OP</button>
                   </div>
                 </li>
                 {% end %}
@@ -136,21 +141,22 @@
 
   });
 
-  function send_command_to_server(command) {
+  async function send_command_to_server(command) {
     console.log(command)
     var token = getCookie("_xsrf")
     console.log('sending command: ' + command)
 
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      url: '/ajax/send_command?id=' + serverId,
-      data: { command },
-      success: function (data) {
-        console.log("got response:");
-        console.log(data);
+    let res = await fetch(`/api/v2/servers/${serverId}/stdin`, {
+      method: 'POST',
+      headers: {
+        'X-XSRFToken': token
       },
+      body: command,
     });
+
+    let responseData = await res.text();
+    console.log("got response:");
+    console.log(responseData);
   }
 
 

@@ -16,6 +16,7 @@ import zipfile
 import pathlib
 import ctypes
 import shutil
+import shlex
 import subprocess
 import itertools
 from datetime import datetime
@@ -146,6 +147,29 @@ class Helpers:
         except Exception as e:
             logger.error(f"Unable to resolve remote bedrock download url! \n{e}")
         return False
+
+    def get_execution_java(self, value, execution_command):
+        if self.is_os_windows():
+            execution_list = shlex.split(execution_command, posix=False)
+        else:
+            execution_list = shlex.split(execution_command, posix=True)
+        if (
+            not any(value in path for path in self.find_java_installs())
+            and value != "java"
+        ):
+            return
+        if value != "java":
+            if self.is_os_windows():
+                execution_list[0] = '"' + value + '/bin/java"'
+            else:
+                execution_list[0] = '"' + value + '"'
+        else:
+            execution_list[0] = "java"
+        execution_command = ""
+        for item in execution_list:
+            execution_command += item + " "
+
+        return execution_command
 
     def detect_java(self):
         if len(self.find_java_installs()) > 0:
@@ -300,6 +324,16 @@ class Helpers:
                 return True
             except Exception:
                 return False
+
+    @staticmethod
+    def check_address_status(address):
+        try:
+            response = requests.get(address, timeout=2)
+            return (
+                response.status_code // 100 == 2
+            )  # Check if the status code starts with 2
+        except requests.RequestException:
+            return False
 
     @staticmethod
     def check_port(server_port):
