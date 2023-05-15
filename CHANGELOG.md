@@ -16,6 +16,7 @@
 ### Tweaks
 - Check for python version so we don't just fail out on unsupported python versions ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/577))
 - Show warning for serverjars API connection issues ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/581))
+- Retain pathing in execution command on backup restore ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/578))
 <br><br>
 
 ## --- [4.0.22] - 2023/04/08

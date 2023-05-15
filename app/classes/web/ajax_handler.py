@@ -281,7 +281,74 @@ class AjaxHandler(BaseHandler):
             exec_user["user_id"], server_id
         )
 
-        if page == "select_photo":
+        if page == "send_command":
+            command = self.get_body_argument("command", default=None, strip=True)
+            server_id = self.get_argument("id", None)
+
+            if server_id is None:
+                logger.warning("Server ID not found in send_command ajax call")
+                Console.warning("Server ID not found in send_command ajax call")
+
+            svr_obj = self.controller.servers.get_server_instance_by_id(server_id)
+
+            if command == svr_obj.settings["stop_command"]:
+                logger.info(
+                    "Stop command detected as terminal input - intercepting."
+                    + f"Starting Crafty's stop process for server with id: {server_id}"
+                )
+                self.controller.management.send_command(
+                    exec_user["user_id"], server_id, self.get_remote_ip(), "stop_server"
+                )
+                command = None
+            elif command == "restart":
+                logger.info(
+                    "Restart command detected as terminal input - intercepting."
+                    + f"Starting Crafty's stop process for server with id: {server_id}"
+                )
+                self.controller.management.send_command(
+                    exec_user["user_id"],
+                    server_id,
+                    self.get_remote_ip(),
+                    "restart_server",
+                )
+                command = None
+            if command:
+                if svr_obj.check_running():
+                    svr_obj.send_command(command)
+
+            self.controller.management.add_to_audit_log(
+                exec_user["user_id"],
+                f"Sent command to "
+                f"{self.controller.servers.get_server_friendly_name(server_id)} "
+                f"terminal: {command}",
+                server_id,
+                self.get_remote_ip(),
+            )
+
+        elif page == "send_order":
+            self.controller.users.update_server_order(
+                exec_user["user_id"], bleach.clean(self.get_argument("order"))
+            )
+            return
+
+        elif page == "backup_now":
+            server_id = self.get_argument("id", None)
+            if server_id is None:
+                logger.error("Server ID is none. Canceling backup!")
+                return
+
+            server = self.controller.servers.get_server_instance_by_id(server_id)
+            self.controller.management.add_to_audit_log_raw(
+                self.controller.users.get_user_by_id(exec_user["user_id"])["username"],
+                exec_user["user_id"],
+                server_id,
+                f"Backup now executed for server {server_id} ",
+                source_ip=self.get_remote_ip(),
+            )
+
+            server.backup_server()
+
+        elif page == "select_photo":
             if exec_user["superuser"]:
                 photo = urllib.parse.unquote(self.get_argument("photo", ""))
                 opacity = self.get_argument("opacity", 100)
@@ -361,6 +428,21 @@ class AjaxHandler(BaseHandler):
                         new_server_id
                     )
                     new_server_obj.execution_command = server_data["execution_command"]
+                    # reset executable path
+                    if svr_obj.path in svr_obj.executable:
+                        new_server_obj.executable = str(svr_obj.executable).replace(
+                            svr_obj.path, new_server_obj.path
+                        )
+                    # reset run command path
+                    if svr_obj.path in svr_obj.execution_command:
+                        new_server_obj.execution_command = str(
+                            svr_obj.execution_command
+                        ).replace(svr_obj.path, new_server_obj.path)
+                    # reset log path
+                    if svr_obj.path in svr_obj.log_path:
+                        new_server_obj.log_path = str(svr_obj.log_path).replace(
+                            svr_obj.path, new_server_obj.path
+                        )
                     self.controller.servers.update_server(new_server_obj)
 
                     # preserve backup config
@@ -421,6 +503,21 @@ class AjaxHandler(BaseHandler):
                         new_server_id
                     )
                     new_server_obj.execution_command = server_data["execution_command"]
+                    # reset executable path
+                    if server_obj.path in server_obj.executable:
+                        new_server_obj.executable = str(server_obj.executable).replace(
+                            server_obj.path, new_server_obj.path
+                        )
+                    # reset run command path
+                    if server_obj.path in server_obj.execution_command:
+                        new_server_obj.execution_command = str(
+                            server_obj.execution_command
+                        ).replace(server_obj.path, new_server_obj.path)
+                    # reset log path
+                    if server_obj.path in server_obj.log_path:
+                        new_server_obj.log_path = str(server_obj.log_path).replace(
+                            server_obj.path, new_server_obj.path
+                        )
                     self.controller.servers.update_server(new_server_obj)
 
                     # preserve backup config
