@@ -328,11 +328,11 @@ class Helpers:
     @staticmethod
     def check_address_status(address):
         try:
-            requests.get(address, timeout=1)
-            time.sleep(1)
-            requests.get(address, timeout=1)
-            return True
-        except:
+            response = requests.get(address, timeout=2)
+            return (
+                response.status_code // 100 == 2
+            )  # Check if the status code starts with 2
+        except requests.RequestException:
             return False
 
     @staticmethod
