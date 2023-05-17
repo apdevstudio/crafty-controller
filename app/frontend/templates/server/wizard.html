@@ -187,9 +187,6 @@
             <p style="color: white !important;"><i class="fas fa-exclamation-triangle" style="color: red;"></i>&nbsp;{{ translate('error', 'noInternet', data['lang']) }}</p></div>
           {% end %}
         </div>
-        {% if data["server_api"] and data["online"] %}
-        <a href="https://serverjars.com" target="_blank" style="text-align: center;"><img src="../../static/assets/images/powered-by-serverjars.svg" alt="Powered by serverjars.com" width="40%"></a>
-        {% end %}
       </div>
       </form>
     </div>
@@ -983,7 +980,7 @@
     function wait_msg(importing) {
       bootbox.alert({
         title: importing ? '{% raw translate("serverWizard", "importing", data["lang"]) %}' : '{% raw translate("serverWizard", "downloading", data["lang"]) %}',
-        message: '<i class="fas fa-cloud-download"></i> {% raw translate("serverWizard", "bePatient", data["lang"]) %}',
+        message: importing ? '<i class="fas fa-cloud-download"></i> {% raw translate("serverWizard", "bePatient", data["lang"]) %}': '<i class="fas fa-cloud-download"></i> {% raw translate("serverWizard", "bePatient", data["lang"]) %}<br><br><a href="https://serverjars.com" target="_blank" style="text-align: center;"><img src="../../static/assets/images/powered-by-serverjars.svg" alt="Powered by serverjars.com" width="40%"></a>',
       });
     }
 

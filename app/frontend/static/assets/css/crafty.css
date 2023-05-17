@@ -135,3 +135,7 @@ body {
 .accordion .card {
     margin-bottom: 0px;
 }
+
+.bootbox-body {
+    text-align: center;
+}
