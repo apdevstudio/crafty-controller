@@ -17,7 +17,6 @@
   </ul>
   <div class="d-none" id="overlay" onclick="hide(event)"></div>
   <div class="row">
-    {% if data['online'] %}
     <div class="col-sm-6 grid-margin stretch-card">
       <div class="card" id="creation_wizard">
         <div class="card-body">
@@ -27,21 +26,18 @@
           <p class="card-description">
 
           <form method="post" class="server-wizard" onSubmit="wait_msg()">
-            {% if data["server_api"] %}
+            {% if data["server_api"] and data["online"] %}
             <fieldset>
             {% else %}
             <fieldset disabled="disabled">
               <style>
-                #creation_wizard {
-                -webkit-filter: grayscale(1);
-                }
                 .api-alert{
                 position:absolute;
                 top:-5px;
                 left:0;
                 font-size: 50px !important;
                 color:#fff;
-                background:rgb(0,170,170);
+                background: rgb(127, 133, 133);
                 opacity:.4;
                 width:100%;
                 height:100%;
@@ -73,8 +69,10 @@
                       onchange="serverJarChange(this)">
                       {% end %}
                       <option value="None">{{ translate('serverWizard', 'selectType', data['lang']) }}</option>
+                      {% if data["online"] %}
                       {% for s in data['server_types'] %}
                       <option value="{{ s }}">{{ s.capitalize() }}</option>
+                      {% end %}
                       {% end %}
                     </select>
                     {% if data['super_user'] %}
@@ -178,17 +176,22 @@
             <button type="reset" class="btn btn-danger mr-2">{{ translate('serverWizard', 'resetForm', data['lang'])
               }}</button>
           </fieldset>
-          {% if not data["server_api"] %}
+          {% if not data["server_api"] and data["online"] %}
           <div class="api-alert" style="position: absolute; top: -5px; z-index: 100; opacity: .99;">
-            <p style="color: white !important;"><i class="fas fa-exclamation-triangle" style="color: white;"></i>&nbsp;{{ translate('error', 'serverJars1', data['lang']) }}<a style="color: red;"; href="https://status.craftycontrol.com/status/craftycontrol" 
+            <p style="color: white !important;"><i class="fas fa-exclamation-triangle" style="color: red;"></i>&nbsp;{{ translate('error', 'serverJars1', data['lang']) }}<a style="color: red;"; href="https://status.craftycontrol.com/status/craftycontrol" 
               target="_blank">&nbsp;{{ translate('error', 'craftyStatus', data['lang']) }}</a>
               &nbsp;{{ translate('error', 'serverJars2', data['lang']) }}</p></div>
           {% end %}
+          {% if not data["online"] %}
+          <div class="api-alert" style="position: absolute; top: -5px; z-index: 100; opacity: .99;">
+            <p style="color: white !important;"><i class="fas fa-exclamation-triangle" style="color: red;"></i>&nbsp;{{ translate('error', 'noInternet', data['lang']) }}</p></div>
+          {% end %}
         </div>
+        {% if data["server_api"] and data["online"] %}
         <a href="https://serverjars.com" target="_blank" style="text-align: center;"><img src="../../static/assets/images/powered-by-serverjars.svg" alt="Powered by serverjars.com" width="40%"></a>
+        {% end %}
       </div>
       </form>
-      {% end %}
     </div>
 
     <div class="col-sm-6 grid-margin stretch-card">

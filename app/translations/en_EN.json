@@ -188,9 +188,11 @@
         "fileError": "File type must be an image.",
         "migration": "Crafty's main server storage is being mirgated to a new location. All server starts have been suspended during this time. Please wait while we finish this migration",
         "serverJars1": "Server JARs API unreachable. Please check",
+        "bedrockError": "Bedrock downloads unavailable. Please check",
         "craftyStatus": "Crafty's status page",
         "serverJars2": "for the most up to date information.",
-        "cronFormat": "Invalid Cron format detected"
+        "cronFormat": "Invalid Cron format detected",
+        "noInternet": "Crafty is having trouble accessing the internet. Server Creation has been disabled. Please check your internet connection and refresh this page."
     },
     "footer": {
         "allRightsReserved": "All rights reserved",
