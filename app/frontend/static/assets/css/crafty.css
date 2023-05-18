@@ -149,10 +149,6 @@ div>.input-group>.custom-file-input {
     border: 1px solid var(--outline);
 }
 
-.input-group>.input-group-append>button {
-    height: calc(1.5em + 0.75rem + 2px);
-}
-
 div>.input-group>.form-control-file {
     position: relative !important;
     -webkit-box-flex: 1 !important;

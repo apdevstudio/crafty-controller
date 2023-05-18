@@ -1,5 +1,5 @@
 [![Crafty Logo](app/frontend/static/assets/images/logo_long.svg)](https://craftycontrol.com)
-# Crafty Controller 4.0.23
+# Crafty Controller 4.1.1
 > Python based Control Panel for your Minecraft Server
 
 ## What is Crafty Controller?
@@ -9,7 +9,7 @@ a web interface for the server administrators to interact with their servers. Cr
 is compatible with Docker, Linux, Windows 7, Windows 8 and Windows 10.
 
 ## Documentation
-Documentation available on [wiki.craftycontrol.com](https://craftycontrol.com)
+Documentation available on [Crafty Docs](https://docs.craftycontrol.com)
 
 ## Meta
 Project Homepage - https://craftycontrol.com

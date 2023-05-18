@@ -89,6 +89,7 @@ class UsersController:
                 },
             },
             "hints": {"type": "boolean"},
+            "server_order": {"type": "string"},
         }
 
     # **********************************************************************************

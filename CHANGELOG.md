@@ -1,5 +1,5 @@
 # Changelog
-## --- [4.0.23] - 2023/TBD
+## --- [4.1.1] - 2023/TBD
 ### New features
 TBD
 ### Bug fixes
@@ -8,6 +8,26 @@ TBD
 TBD
 ### Lang
 TBD
+<br><br>
+
+## --- [4.1.0] - 2023/05/15
+### New features
+- Mobile PWA App (beta) | Ability to add a Crafty icon to your mobile's home screen ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/576))
+- [New Crafty Documentation release](https://docs.craftycontrol.com)
+### Refactor
+- Frontend Ajax Refactor | Start using API to send Remote Comms to Server ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/565))
+- MKDocs Release | Replace wiki names with docs ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/583))
+### Bug fixes
+- Fix pipelines failing to build from gitlab pre-defined variable deprecation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/582))
+- Fix incompatible buildx provenance meta, causing digest issues on GL/DH container registries ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/582))
+- Fix Auth'd servers in roles | Refine server ordering ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/574))
+- Fix import loop detection ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/575))
+- Fix Cargo errors on Ubuntu 23.04 installs ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/579))
+- Fix project root error on first start ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/580))
+### Tweaks
+- Check for python version so we don't just fail out on unsupported python versions ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/577))
+- Show warning for serverjars API connection issues ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/581))
+- Retain pathing in execution command on backup restore ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/578))
 <br><br>
 
 ## --- [4.0.22] - 2023/04/08
