@@ -26,6 +26,12 @@ from app.classes.web.routes.api.servers.server.stdin import ApiServersServerStdi
 from app.classes.web.routes.api.servers.server.tasks.index import (
     ApiServersServerTasksIndexHandler,
 )
+from app.classes.web.routes.api.servers.server.backups.index import (
+    ApiServersServerBackupsIndexHandler,
+)
+from app.classes.web.routes.api.servers.server.backups.backup.index import (
+    ApiServersServerBackupsBackupIndexHandler,
+)
 from app.classes.web.routes.api.servers.server.tasks.task.children import (
     ApiServersServerTasksTaskChildrenHandler,
 )
@@ -110,6 +116,16 @@ def api_handlers(handler_args):
         (
             r"/api/v2/servers/([0-9]+)/?",
             ApiServersServerIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/servers/([0-9]+)/backups/?",
+            ApiServersServerBackupsIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/servers/([0-9]+)/backups/backup/?",
+            ApiServersServerBackupsBackupIndexHandler,
             handler_args,
         ),
         (
