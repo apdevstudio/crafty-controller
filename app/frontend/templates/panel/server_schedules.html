@@ -83,7 +83,7 @@
                           <p>{{schedule.action}}</p>
                         </td>
                         <td id="{{schedule.command}}" class="action" style="overflow: scroll; max-width: 30px;">
-                          <p>{{schedule.command}}</p>
+                          <p style="overflow: scroll;">{{schedule.command}}</p>
                         </td>
                         <td id="{{schedule.interval}}" class="action">
                           {% if schedule.interval_type != '' and schedule.interval_type != 'reaction' %}
@@ -136,7 +136,7 @@
                           <p>{{schedule.action}}</p>
                         </td>
                         <td id="{{schedule.command}}" class="action" style="overflow: scroll; max-width: 30px;">
-                          <p>{{schedule.command}}</p>
+                          <p style="overflow: scroll;">{{schedule.command}}</p>
                         </td>
                         <td id="{{schedule.enabled}}" class="action">
                           {% if schedule.enabled %}
