@@ -273,14 +273,15 @@
       if ($("#difficulty").val() == "reaction"){
         formDataObject.interval_type = "reaction";
       }
+      if ($("action").val() != "command"){
+        formDataObject.command = formDataObject.action + "_server";
+      }
       if (formDataObject.cron_string != ""){
         formDataObject.interval_type = '';
       }
       console.log(formDataObject);
       // Format the plain form data as JSON
       let formDataJsonString = JSON.stringify(formDataObject, replacer);
-
-      console.log(formDataJsonString);
 
       let res = await fetch(`/api/v2/servers/${serverId}/tasks/`, {
         method: 'POST',
@@ -316,6 +317,9 @@
       formDataObject.one_time = $("#one_time").prop('checked');
       if ($("#difficulty").val() == "reaction"){
         formDataObject.interval_type = "reaction";
+      }
+      if ($("#action").val() != "command"){
+        formDataObject.command = formDataObject.action + "_server";
       }
       if (formDataObject.cron_string != ""){
         formDataObject.interval_type = '';
