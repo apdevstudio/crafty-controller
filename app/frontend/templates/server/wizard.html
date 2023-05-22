@@ -20,6 +20,10 @@
     <div class="col-sm-6 grid-margin stretch-card">
       <div class="card" id="creation_wizard">
         <div class="card-body">
+          {% if data["server_api"] and data["online"] %}
+          <a href="https://serverjars.com/" target="_blank" alt="serverjars icon"><img src="../../static/assets/images/serverjars/ICON.svg"
+             style="float: right; width: 40px; position: relative;"></a>
+          {% end %}
 
           <h4>{{ translate('serverWizard', 'newServer', data['lang']) }}</h4>
           <br />
@@ -980,7 +984,7 @@
     function wait_msg(importing) {
       bootbox.alert({
         title: importing ? '{% raw translate("serverWizard", "importing", data["lang"]) %}' : '{% raw translate("serverWizard", "downloading", data["lang"]) %}',
-        message: importing ? '<i class="fas fa-cloud-download"></i> {% raw translate("serverWizard", "bePatient", data["lang"]) %}': '<i class="fas fa-cloud-download"></i> {% raw translate("serverWizard", "bePatient", data["lang"]) %}<br><br><a href="https://serverjars.com" target="_blank" style="text-align: center;"><img src="../../static/assets/images/powered-by-serverjars.svg" alt="Powered by serverjars.com" width="40%"></a>',
+        message: importing ? '<i class="fas fa-cloud-download"></i> {% raw translate("serverWizard", "bePatient", data["lang"]) %}': '<i class="fas fa-cloud-download"></i> {% raw translate("serverWizard", "bePatient", data["lang"]) %}<br><br><a href="https://serverjars.com" target="_blank" style="text-align: center;"><img src="../../static/assets/images/serverjars/FULL-WHITE.svg" alt="Powered by serverjars.com" width="40%"></a>',
       });
     }
 
