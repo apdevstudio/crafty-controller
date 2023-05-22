@@ -366,39 +366,6 @@
     console.log("ready!");
 
   });
-
-  function yesnoCheck(that) {
-    if (that.value == "command") {
-      document.getElementById("ifYes").style.display = "block";
-      document.getElementById("command").required = true;
-    } else {
-      document.getElementById("ifYes").style.display = "none";
-      document.getElementById("command").required = false;
-    }
-  }
-  function basicAdvanced(that) {
-    if (that.value == "advanced") {
-      document.getElementById("ifAdvanced").style.display = "block";
-      document.getElementById("ifBasic").style.display = "none";
-      document.getElementById("interval").required = false;
-      document.getElementById("time").required = false;
-    } else {
-      document.getElementById("ifAdvanced").style.display = "none";
-      document.getElementById("ifBasic").style.display = "block";
-      document.getElementById("interval").required = true;
-      document.getElementById("time").required = true;
-    }
-  }
-  function ifDays(that) {
-    if (that.value == "days") {
-      document.getElementById("ifDays").style.display = "block";
-      document.getElementById("time").required = true;
-    } else {
-      document.getElementById("ifDays").style.display = "none";
-      document.getElementById("time").required = false;
-    }
-  }
-
   $(".del_button").click(function () {
     var sch_id = $(this).data('sch');
 
