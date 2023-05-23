@@ -188,9 +188,11 @@
         "fileError": "File type must be an image.",
         "migration": "Crafty's main server storage is being mirgated to a new location. All server starts have been suspended during this time. Please wait while we finish this migration",
         "serverJars1": "Server JARs API unreachable. Please check",
+        "bedrockError": "Bedrock downloads unavailable. Please check",
         "craftyStatus": "Crafty's status page",
         "serverJars2": "for the most up to date information.",
-        "cronFormat": "Invalid Cron format detected"
+        "cronFormat": "Invalid Cron format detected",
+        "noInternet": "Crafty is having trouble accessing the internet. Server Creation has been disabled. Please check your internet connection and refresh this page."
     },
     "footer": {
         "allRightsReserved": "All rights reserved",
@@ -251,6 +253,7 @@
     "customLogin": {
         "customLoginPage": "Customise the Login Page",
         "loginImage": "Upload a background image for the login screen.",
+        "labelLoginImage": "Choose your Login Background",
         "backgroundUpload": "Background Upload",
         "loginBackground": "Login Background Image",
         "loginOpacity": "Select the Login Window Opacity",
@@ -547,6 +550,7 @@
         "importServerButton": "Import Server!",
         "importZip": "Import from a Zip File",
         "uploadZip": "Upload Zip File For Server Import",
+        "labelZipFile": "Choose your Zip File",
         "maxMem": "Maximum Memory",
         "minMem": "Minimum Memory",
         "myNewServer": "My New Server",

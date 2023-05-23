@@ -1,4 +1,12 @@
 # Changelog
+## --- [4.1.1] - 2023/05/23
+### Bug fixes
+- Fix task scheduling where a command was not sent to the DB ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/586))
+### Tweaks
+- Improve the UI on several areas of the Crafty Panel ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/547))
+- Improve creation page errors / Server Jars Credit ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/587))
+<br><br>
+
 ## --- [4.1.0] - 2023/05/15
 ### New features
 - Mobile PWA App (beta) | Ability to add a Crafty icon to your mobile's home screen ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/576))
