@@ -17,8 +17,7 @@
   </ul>
   <div class="d-none" id="overlay" onclick="hide(event)"></div>
   <div class="row">
-    {% if data['online'] %}
-    <div class="col-md-6 grid-margin stretch-card">
+    <div class="col-sm-6 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
 
@@ -26,6 +25,35 @@
           <br />
 
           <form method="post" name="create_server" class="server-wizard" onSubmit="wait_msg()">
+            {% if data["server_api"] and data["online"] %}
+            <fieldset>
+            {% else %}
+            <fieldset disabled="disabled">
+              <style>
+                .api-alert{
+                position:absolute;
+                top:-5px;
+                left:0;
+                font-size: 50px !important;
+                color:#fff;
+                background:rgb(127, 133, 133);
+                opacity:.4;
+                width:100%;
+                height:100%;
+                z-index: 100;
+                }
+                .api-alert p {
+                  margin: 0;
+                  position: absolute;
+                  top: 50%;
+                  left: 50%;
+                  text-align: center;
+                  font-size: 20px;
+                  -ms-transform: translate(-50%, -50%);
+                  transform: translate(-50%, -50%);
+                }
+              </style>
+            {% end %}
             {% raw xsrf_form_html() %}
             <div class="form-group">
               <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
@@ -60,12 +88,22 @@
               data['lang']) }}</button>
             <button type="reset" class="btn btn-danger mr-2">{{ translate('serverWizard', 'resetForm', data['lang'])
               }}</button>
+            </fieldset>
+            {% if not data["server_api"] and data["online"] %}
+            <div class="api-alert" style="position: absolute; top: -5px; z-index: 100; opacity: .99;">
+              <p style="color: white !important;"><i class="fas fa-exclamation-triangle" style="color: red;"></i>&nbsp;{{ translate('error', 'bedrockError', data['lang']) }}<a style="color: red;"; href="https://status.craftycontrol.com/status/craftycontrol" 
+                target="_blank">&nbsp;{{ translate('error', 'craftyStatus', data['lang']) }}</a>
+                &nbsp;{{ translate('error', 'serverJars2', data['lang']) }}</p></div>
+            {% end %}
+            {% if not data["online"] %}
+            <div class="api-alert" style="position: absolute; top: -5px; z-index: 100; opacity: .99;">
+              <p style="color: white !important;"><i class="fas fa-exclamation-triangle" style="color: red;"></i>&nbsp;{{ translate('error', 'noInternet', data['lang']) }}</p></div>
+            {% end %}
         </div>
         </form>
       </div>
     </div>
-    {% end %}
-    <div class="col-md-6 grid-margin stretch-card">
+    <div class="col-sm-6 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
 
