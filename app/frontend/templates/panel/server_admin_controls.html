@@ -40,6 +40,13 @@
           </span>
 
           <div class="row">
+            {% include "parts/server_players.html %}
+          </div>
+
+          <hr />
+
+          <div class="row">
+
             <div class="col-md-6 col-sm-12">
               <style>
                 .playerItem {
@@ -133,7 +140,7 @@
   $(document).ready(function () {
     console.log("ready!");
 
-    var bannedPlayers = `{{ data['banned_players'] }}`;
+    var bannedPlayers = `{{ data['banned_players_html'] }}`;
 
     var bannedPlayersDecoded = htmlDecode(bannedPlayers);
 

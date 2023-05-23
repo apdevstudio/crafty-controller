@@ -139,3 +139,46 @@ body {
 .bootbox-body {
     text-align: center;
 }
+
+/**************************************************************/
+/* CSS for Froms Displays */
+/**************************************************************/
+div>.input-group>.custom-file-input {
+    position: relative !important;
+    -webkit-box-flex: 1 !important;
+    -ms-flex: 1 1 auto !important;
+    flex: 1 1 auto !important;
+    width: 1% !important;
+    margin-bottom: 0 !important;
+    border: 1px solid var(--outline);
+}
+
+div>.input-group>.form-control-file {
+    position: relative !important;
+    -webkit-box-flex: 1 !important;
+    -ms-flex: 1 1 auto !important;
+    flex: 1 1 auto !important;
+    width: 1% !important;
+    margin-bottom: 0 !important;
+    border: 1px solid var(--outline);
+}
+
+.custom-picker {
+    border: 1px solid var(--outline);
+}
+
+div>.input-group>.form-control {
+    position: relative !important;
+    -webkit-box-flex: 1 !important;
+    -ms-flex: 1 1 auto !important;
+    flex: 1 1 auto !important;
+    width: 1% !important;
+    margin-bottom: 0 !important;
+    border: 1px solid var(--outline);
+}
+
+.input-group>.input-group-append>button.upload-button {
+    height: calc(1.5em + 0.75rem + 2px);
+}
+
+/**************************************************************/
