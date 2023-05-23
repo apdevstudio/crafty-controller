@@ -5,7 +5,7 @@ TBD
 ### Bug fixes
 TBD
 ### Tweaks
-TBD
+-  Improve the UI on several areas of the Crafty Panel ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/547))
 ### Lang
 TBD
 <br><br>
