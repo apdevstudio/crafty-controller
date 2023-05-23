@@ -1,4 +1,15 @@
 # Changelog
+## --- [4.1.2] - 2023/TBD
+### New features
+TBD
+### Bug fixes
+TBD
+### Tweaks
+TBD
+### Lang
+TBD
+<br><br>
+
 ## --- [4.1.1] - 2023/05/23
 ### Bug fixes
 - Fix task scheduling where a command was not sent to the DB ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/586))
