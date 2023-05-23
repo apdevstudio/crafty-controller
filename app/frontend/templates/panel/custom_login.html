@@ -28,7 +28,12 @@
 
 
           {% if data['superuser'] %}
-          {% include "parts/crafty_config_list.html %}
+          <span class="d-none d-sm-block">
+            {% include "parts/crafty_config_list.html %}
+          </span>
+          <span class="d-block d-sm-none">
+            {% include "parts/m_crafty_config_list.html %}
+          </span>
           {% end %}
 
           <!-- Page Title Header Starts-->
@@ -51,16 +56,19 @@
                     <div class="col-12">
                       <h4>{{ translate('customLogin', 'loginImage', data['lang']) }}</h4>
                       <hr>
-                      <form class="form-row" name="zip" method="post" class="server-wizard" onSubmit="wait_msg(true)">
+                      <form class="form" name="zip" method="post" class="server-wizard" onSubmit="wait_msg(true)">
                         {% raw xsrf_form_html() %}
                         <input type="hidden" value="import_zip" name="create_type">
-                        <div class="col form-group">
-                          <span id="upload_input"><input type="file" class="form-control-file" id="file" name="file"
-                              multiple="false" required></span>
-                        </div>
-                        <div class="col form-group">
-                          <button type="button" class="btn btn-info" id="upload-button" onclick="sendFile()"
-                            disabled>UPLOAD</button>
+                        <div class="form-group">
+                          <div id="upload_input" class="input-group">
+                            <div class="custom-file">
+                              <input type="file" class="custom-file-input" id="file" name="file" multiple="false" required>
+                              <label id="fileLabel" class="custom-file-label" for="file">{{ translate('customLogin', 'labelLoginImage', data['lang']) }}</label>
+                            </div>
+                            <div class="input-group-append">
+                              <button type="button" class="btn btn-info upload-button" id="upload-button" onclick="sendFile()" disabled>UPLOAD</button>
+                            </div>
+                          </div>
                         </div>
                       </form>
                       <hr>
@@ -73,8 +81,7 @@
                           <div class="form-group row">
                             <label for="photo" class="col-sm-6 col-form-label">Selected Background Image</label>
                             <div class="col-sm-6">
-                              <select class="form-select form-control form-control-lg select-css form-control-plaintext"
-                                id="photo" name="photo" form="photo_form" onchange="updateBackgroundPreview()">
+                              <select class="form-select form-control form-control-lg select-css form-control-plaintext" id="photo" name="photo" form="photo_form" onchange="updateBackgroundPreview()">
                                 {% for image in data["backgrounds"] %}
                                 <option value="{{image}}">{{image}}</option>
                                 {% end %}
@@ -83,9 +90,7 @@
                           </div>
                           <div id="photo_loading" class="form-group" hidden>
                             <div class="progress">
-                              <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                                aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i
-                                  class="fa-solid fa-spinner"></i></div>
+                              <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div>
                             </div>
                           </div>
                           <div class="form-group row">
@@ -93,13 +98,11 @@
                               data['lang']) }}</label>
                             <label class="col-sm-1" id="opacityValue">{{ data['login_opacity'] }}%</label>
                             <div class="range col-sm-8">
-                              <input type="range" class="form-control-range" id="modal_opacity" name="modal_opacity"
-                                onchange="previewOpacity()" min="0" max="100" value="{{ data['login_opacity'] }}">
+                              <input type="range" class="form-control-range" id="modal_opacity" name="modal_opacity" onchange="previewOpacity()" min="0" max="100" value="{{ data['login_opacity'] }}">
                             </div>
                           </div>
                           <div id="login_preview" style="position: relative;">
-                            <img id="bg-preview" src="../../static/assets/images/auth/{{ data['background'] }}"
-                              class="img-fluid" alt="Responsive image">
+                            <img id="bg-preview" src="../../static/assets/images/auth/{{ data['background'] }}" class="img-fluid" alt="Responsive image">
                             <div id="login-form-preview">
                               <div id="login-form-background" class="auto-form-wrapper login-modal">
                                 <div class="text-center auto-form-logo">
@@ -163,20 +166,17 @@
                                 </style>
 
                                 <div id="login_form_data">
-                                  <input type="hidden" name="_xsrf"
-                                    value="2|1d603267|809fb6bd82f677d440e484dde7c3a310|1671726040" disabled>
+                                  <input type="hidden" name="_xsrf" value="2|1d603267|809fb6bd82f677d440e484dde7c3a310|1671726040" disabled>
                                   <div class="form-group">
                                     <label class="label">Username</label>
                                     <div class="input-group">
-                                      <input type="text" class="form-control login-text-input login-input"
-                                        placeholder="Username" name="username" id="username" required="true" disabled>
+                                      <input type="text" class="form-control login-text-input login-input" placeholder="Username" name="username" id="username" required="true" disabled>
                                     </div>
                                   </div>
                                   <div class="form-group">
                                     <label class="label">Password</label>
                                     <div class="input-group">
-                                      <input type="password" class="form-control login-text-input login-input"
-                                        placeholder="Password" name="password" id="password" required="true" disabled>
+                                      <input type="password" class="form-control login-text-input login-input" placeholder="Password" name="password" id="password" required="true" disabled>
                                     </div>
                                   </div>
                                   <div class="form-group">
@@ -195,8 +195,7 @@
                                     <a href="#" class="text-small forgot-password" disabled>Forgot Password</a>
                                   </div>
                                   <div class="text-block text-center my-3">
-                                    <span class="text-small font-weight-semibold"><a
-                                        href="https://craftycontrol.com/">Crafty Control
+                                    <span class="text-small font-weight-semibold"><a href="https://craftycontrol.com/">Crafty Control
                                         4.0.20</a> </span>
                                   </div>
                                 </div>
@@ -228,6 +227,10 @@
 </div>
 
 <style>
+  .img-fluid {
+    margin-bottom: 1rem;
+  }
+
   .popover-body {
     color: white !important;
     ;
@@ -272,6 +275,7 @@
     console.log("File changed");
     if ($('#file').val()) {
       $('#upload-button').prop("disabled", false);
+      document.getElementById("fileLabel").innerHTML = $('#file').val().split('\\').pop().split('/').pop();
       console.log("File changed good");
     }
   });
@@ -352,7 +356,7 @@
   var file;
   function sendFile() {
     file = $("#file")[0].files[0]
-    document.getElementById("upload_input").innerHTML = '<div class="progress"><div id="upload-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>';
+    document.getElementById("upload_input").innerHTML = '<div class="progress" style="width: 100%"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>';
     let xmlHttpRequest = new XMLHttpRequest();
     let token = getCookie("_xsrf")
     let fileName = file.name
@@ -380,7 +384,7 @@
     xmlHttpRequest.addEventListener('load', (event) => {
       if (event.target.responseText == 'success') {
         console.log('Upload for file', file.name, 'was successful!')
-        document.getElementById("upload_input").innerHTML = '<div class="card-header header-sm d-flex justify-content-between align-items-center"><span id="file-uploaded" style="color: gray;">' + fileName + '</span> 🔒</div>';
+        document.getElementById("upload_input").innerHTML = '<div class="card-header header-sm d-flex justify-content-between align-items-center" style="width: 100%"><span id="file-uploaded" style="color: gray;">' + fileName + '</span> 🔒</div>';
         setTimeout(function () {
           window.location.reload();
         }, 2000);
