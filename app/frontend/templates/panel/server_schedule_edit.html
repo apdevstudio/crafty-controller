@@ -273,7 +273,7 @@
       if ($("#difficulty").val() == "reaction"){
         formDataObject.interval_type = "reaction";
       }
-      if ($("action").val() != "command"){
+      if ($("#action").val() != "command"){
         formDataObject.command = formDataObject.action + "_server";
       }
       if (formDataObject.cron_string != ""){
