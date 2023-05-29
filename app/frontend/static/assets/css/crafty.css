@@ -181,4 +181,12 @@ div>.input-group>.form-control {
     height: calc(1.5em + 0.75rem + 2px);
 }
 
+.no-scroll {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.no-scroll::-webkit-scrollbar {
+    display: none;
+  }
 /**************************************************************/
