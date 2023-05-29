@@ -9,14 +9,14 @@
             </tr>
         </thead>
         <tbody>
-            {% for player in data['all_players'] %}
+            {% for player in data['cached_players'] %}
             <tr id="playerItem-{{ player['name'] }}" class="playerItem--">
                 <td>
                     <strong> {{ player['name'] }}</strong>
                 </td>
-                {% if player['status'] == 'online' %}
+                {% if player['status'] == 'Online' %}
                 <td><span class="text-success"><i class="fas fa-signal"></i> {{ player['status'] }}</span></td>
-                {% elif player['status'] == 'offline' %}
+                {% elif player['status'] == 'Offline' %}
                 <td><span class="text-warning"><i class="fa-solid fa-signal-slash"></i> Last connection : {{ player['last_seen'] }}</span></td>
                 {% end %}
                 <td class="buttons">
