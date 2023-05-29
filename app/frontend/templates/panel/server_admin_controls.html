@@ -45,69 +45,6 @@
 
           <hr />
 
-          <div class="row">
-
-            <div class="col-md-6 col-sm-12">
-              <style>
-                .playerItem {
-                  padding: 1rem;
-                  display: flex;
-                  flex-flow: row wrap;
-                  align-items: center;
-                  justify-content: space-between;
-                  margin: 1rem 0px 1rem 0px;
-                }
-
-                .playerItem h3 {
-                  vertical-align: middle;
-                  padding: 0px;
-                  margin: 0px;
-                  margin-right: 1.5rem;
-                }
-
-                .playerItem button {
-                  vertical-align: middle;
-                  margin: 0.25rem;
-                }
-
-                .playerUnban {
-                  margin-bottom: 1rem;
-                }
-
-                .banned span {
-                  font-size: 1.1rem;
-                }
-              </style>
-              <h2>{{ translate('serverPlayerManagement', 'players', data['lang']) }}:</h2>
-              <ul style="list-style: none;padding: 0px;margin: 0px; margin-bottom: 1rem;gap: 1rem;">
-                {% for player in data['get_players'] %}
-                <li class="playerItem">
-                  <h3>{{ player }}</h3>
-                  <div class="buttons">
-                    <button onclick="send_command_to_server('ban {{ player }}')" type="button"
-                      class="btn btn-danger">Ban</button>
-                    <button onclick="send_command_to_server('kick {{ player }}')" type="button"
-                      class="btn btn-outline-danger">Kick</button>
-                    <button onclick="send_command_to_server('op {{ player }}')" type="button"
-                      class="btn btn-warning">OP</button>
-                    <button onclick="send_command_to_server('deop {{ player }}')" type="button"
-                      class="btn btn-outline-warning">De-OP</button>
-                  </div>
-                </li>
-                {% end %}
-              </ul>
-            </div>
-            <div class="col-md-6 col-sm-12">
-              <h2>{{ translate('serverPlayerManagement', 'bannedPlayers', data['lang']) }}:</h2>
-              <ul id="bannedPlayers" style="list-style: none;padding: 0px;margin: 0px; margin-bottom: 1rem;gap: 1rem;">
-                <li class="playerItem banned">
-                  <h3>{{ translate('serverPlayerManagement', 'loadingBannedPlayers', data['lang']) }}</h3>
-                </li>
-
-              </ul>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>

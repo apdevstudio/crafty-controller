@@ -5,7 +5,7 @@ TBD
 ### Bug fixes
 TBD
 ### Tweaks
-TBD
+- Send empty json for no banned/cached players ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/589))
 ### Lang
 TBD
 <br><br>

@@ -529,8 +529,8 @@ class ServersController(metaclass=Singleton):
                 content = file.read()
                 file.close()
         except Exception as ex:
-            print(ex)
-            return None
+            logger.error(ex)
+            return {}
 
         return json.loads(content)
 
@@ -548,8 +548,8 @@ class ServersController(metaclass=Singleton):
                 content = file.read()
                 file.close()
         except Exception as ex:
-            print(ex)
-            return None
+            logger.error(ex)
+            return {}
 
         return json.loads(content)
 
