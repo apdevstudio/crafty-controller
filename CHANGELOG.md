@@ -3,9 +3,10 @@
 ### New features
 TBD
 ### Bug fixes
-TBD
-### Tweaks
+- Fix upload root files being hidden ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/590))
 - Send empty json for no banned/cached players ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/589))
+### Tweaks
+TBD
 ### Lang
 TBD
 <br><br>
