@@ -17,7 +17,7 @@
                 {% if player['status'] == 'online' %}
                 <td><span class="text-success"><i class="fas fa-signal"></i> {{ player['status'] }}</span></td>
                 {% elif player['status'] == 'offline' %}
-                <td><span class="text-warning"><i class="fa-solid fa-signal-slash"></i> Last connexion : {{ player['last_seen'] }}</span></td>
+                <td><span class="text-warning"><i class="fa-solid fa-signal-slash"></i> Last connection : {{ player['last_seen'] }}</span></td>
                 {% end %}
                 <td class="buttons">
                     {% if data['server_stats']['running'] %}
