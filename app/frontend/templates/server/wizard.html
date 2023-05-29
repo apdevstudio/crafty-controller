@@ -553,6 +553,7 @@
                 <div class="form-group">
                   <input type="text" class="form-control" id="zip_root_path" name="zip_root_path">
                 </div>
+              </div>
                 <div class="modal fade" id="dir_upload_select" tabindex="-1" role="dialog" aria-labelledby="dir_select" aria-hidden="true">
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -596,7 +597,6 @@
       </div>
     </div>
   </div>
-</div>
 <style>
   button>i.refresh-class {
     margin: 0px;
@@ -949,6 +949,7 @@
 
     function show_file_tree() {
       if (upload) {
+        console.log("upload true")
         $("#dir_upload_select").modal();
       } else {
         $("#dir_select").modal();
