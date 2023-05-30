@@ -29,7 +29,7 @@
                     <br class="mobile-break"/>
                     <button onclick="send_command_to_server(`deop {{ player['name'] }}`)" type="button" class="btn btn-outline-warning controls">De-OP</button>
                     {% else %}
-                    <span> Unavailable (Server Offline)</span>
+                    <span> Unavailable <br>(Server Offline)</span>
                     {% end %}
                 </td>
             </tr>
@@ -51,9 +51,9 @@
         width: 70px;
     }
 </style>
-<div class="col-xl-6 col-lg-12 col-md-12 col-sm-12">
+<div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 no-scroll" width="100%">
     <h2>{{ translate('serverPlayerManagement', 'bannedPlayers', data['lang']) }}:</h2>
-    <table class="table table-sm-responsive">
+    <table class="table table-sm-responsive d-none d-lg-block no-scroll" style="width: 100%;">
         <thead class="thead">
             <tr>
                 <th scope="col">Player</th>
@@ -68,6 +68,24 @@
                 <td><strong> {{ player['name'] }}</strong></td>
                 <td>Banned on {{ player['banned_on'] }}</td>
                 <td>Banned by : {{ player['source'] }} <br />Reason : {{ player['reason'] }}</td>
+                <td class="buttons">
+                    <button onclick="send_command_to_server(`pardon {{ player['name'] }} `)" type="button" class="btn btn-danger">Unban</button>
+                </td>
+            </tr>
+            {% end %}
+        </tbody>
+    </table>
+    <table class="table table-sm-responsive d-block d-lg-none" style="width: 100%;">
+        <thead class="thead ">
+            <tr>
+                <th scope="col">Player</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for player in data['banned_players'] %}
+            <tr id="playerItem-{{ player }}" class="playerItem--">
+                <td><strong> {{ player['name'] }}</strong></td>
                 <td class="buttons">
                     <button onclick="send_command_to_server(`pardon {{ player['name'] }} `)" type="button" class="btn btn-danger">Unban</button>
                 </td>

@@ -232,7 +232,7 @@
         let players = server.players_cache;
         for(let i=0; i < players.length; i++){
             text += `<tr id="playerItem-${ players[i]["name"] }" class="playerItem--" style="text-align: center;">`;
-            text += `<td style="overflow: scroll;"><strong>${players[i]["name"]}</strong></td>`;
+            text += `<td class="no-scroll" style="overflow: scroll;"><strong>${players[i]["name"]}</strong></td>`;
             if(players[i]["status"] === "Online"){
                 text += `<td><span class="text-success"><i class="fas fa-signal"></i> ${ players[i]['status'] }</span></td>`
             }else{
@@ -241,7 +241,7 @@
             if(server["running"]){
                 text += `<td><button onclick="send_command_to_server('ban ${ players[i]['name'] }')" type="button" class="btn btn-danger controls">Ban</button><br class="mobile-break"><button onclick="send_command_to_server('kick ${ players[i]['name'] }')" type="button" class="btn btn-outline-danger controls">Kick</button><br><button onclick="send_command_to_server('op ${ players[i]['name'] }')" type="button" class="btn btn-warning controls">OP</button><br class="mobile-break"><button onclick="send_command_to_server('deop ${ players[i]['name'] }')" type="button" class="btn btn-outline-warning controls">De-OP</button></td>`
             }else{
-                text += `<td><span> Unavailable (Server Offline)</span></td>`
+                text += `<td><span> Unavailable<br> (Server Offline)</span></td>`
             }
 
         }
