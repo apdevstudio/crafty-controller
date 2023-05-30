@@ -1246,7 +1246,7 @@ class ServerInstance:
         for p in self.player_cache[:]:
             if p["status"] == "Online" and p["name"] not in server_players:
                 p["status"] = "Offline"
-                p["last_seen"] = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                p["last_seen"] = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
             elif p["name"] in server_players:
                 self.player_cache.remove(p)
         for player in server_players:
@@ -1259,7 +1259,7 @@ class ServerInstance:
                 {
                     "name": player,
                     "status": "Online",
-                    "last_seen": datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                    "last_seen": datetime.datetime.now().strftime("%d/%m/%Y %H:%M"),
                 }
             )
 
@@ -1449,6 +1449,12 @@ class ServerInstance:
             minutes=self.helper.get_setting("dir_size_poll_freq_minutes"),
             id=str(self.server_id) + "_dir_poll",
         )
+        self.dir_scheduler.add_job(
+            self.cache_players,
+            "interval",
+            seconds=5,
+            id=str(self.server_id) + "_players_poll",
+        )
 
     def calc_dir_size(self):
         server_dt = HelperServers.get_server_data_by_id(self.server_id)
@@ -1518,6 +1524,7 @@ class ServerInstance:
                         "created": datetime.datetime.now().strftime(
                             "%Y/%m/%d, %H:%M:%S"
                         ),
+                        "players_cache": self.player_cache,
                     },
                 )
             total_players += int(raw_ping_result.get("online"))
@@ -1790,7 +1797,6 @@ class ServerInstance:
 
     def record_server_stats(self):
         server_stats = self.get_servers_stats()
-        self.cache_players()
         self.stats_helper.insert_server_stats(server_stats)
 
         # delete old data
