@@ -130,3 +130,36 @@ class ApiServersServerWebhooksWebhookIndexHandler(BaseApiHandler):
         )
 
         self.finish_json(200, {"status": "ok"})
+
+    def post(self, server_id: str, webhook_id: str):
+        auth_data = self.authenticate_user()
+        if not auth_data:
+            return
+
+        self.controller.management.add_to_audit_log(
+            auth_data[4]["user_id"],
+            "Tested webhook",
+            server_id,
+            self.get_remote_ip(),
+        )
+        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+            # if the user doesn't have access to the server, return an error
+            return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
+
+        if (
+            EnumPermissionsServer.CONFIG
+            not in self.controller.server_perms.get_user_id_permissions_list(
+                auth_data[4]["user_id"], server_id
+            )
+        ):
+            # if the user doesn't have Schedule permission, return an error
+            return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
+        webhook = self.controller.management.get_webhook_by_id(webhook_id)
+        try:
+            WebhookHandler.send_discord_webhook(
+                webhook["bot_name"], webhook["url"], webhook["body"], 880808
+            )
+        except Exception as e:
+            self.finish_json(500, {"status": "error", "error": str(e)})
+
+        self.finish_json(200, {"status": "ok"})
