@@ -79,10 +79,10 @@ class Webhooks(BaseModel):
     id = AutoField()
     server_id = IntegerField(null=True)
     name = CharField(default="Custom Webhook", max_length=64)
-    url = CharField(unique=True)
+    url = CharField(default="")
     webhook_type = CharField(default="Custom")
     bot_name = CharField(default="Crafty Controller")
-    triggers = CharField(default="server_start,server_stop")
+    trigger = CharField(default="server_start,server_stop")
     body = CharField(default="")
     enabled = BooleanField(default=True)
 
@@ -514,16 +514,7 @@ class HelpersWebhooks:
         self.database = database
 
     @staticmethod
-    def create_webhook(
-        server_id: int,
-        webhook_type: str,
-        name: str,
-        url: str,
-        bot_name: str,
-        body: str,
-        triggers: str,
-        enabled: bool,
-    ) -> int:
+    def create_webhook(create_data) -> int:
         """Create a webhook in the database
 
         Args:
@@ -544,13 +535,46 @@ class HelpersWebhooks:
         """
         return Webhooks.insert(
             {
-                Webhooks.server_id: server_id,
-                Webhooks.name: name,
-                Webhooks.webhook_type: webhook_type,
-                Webhooks.url: url,
-                Webhooks.bot_name: bot_name,
-                Webhooks.body: body,
-                Webhooks.triggers: triggers,
-                Webhooks.enabled: enabled,
+                Webhooks.server_id: create_data["server_id"],
+                Webhooks.name: create_data["name"],
+                Webhooks.webhook_type: create_data["webhook_type"],
+                Webhooks.url: create_data["url"],
+                Webhooks.bot_name: create_data["bot_name"],
+                Webhooks.body: create_data["body"],
+                Webhooks.trigger: create_data["trigger"],
+                Webhooks.enabled: create_data["enabled"],
             }
         ).execute()
+
+    @staticmethod
+    def modify_webhook(webhook_id, updata):
+        Webhooks.update(updata).where(Webhooks.id == webhook_id).execute()
+
+    @staticmethod
+    def get_webhook_by_id(webhook_id):
+        return model_to_dict(Webhooks.get(Webhooks.id == webhook_id))
+
+    @staticmethod
+    def get_webhooks_by_server(server_id):
+        data = {}
+        for webhook in (
+            Webhooks.select().where(Webhooks.server_id == server_id).execute()
+        ):
+            data[str(webhook.id)] = {
+                "webhook_type": webhook.webhook_type,
+                "name": webhook.name,
+                "url": webhook.url,
+                "bot_name": webhook.bot_name,
+                "trigger": webhook.trigger,
+                "body": webhook.body,
+                "enabled": webhook.enabled,
+            }
+        return data
+
+    @staticmethod
+    def delete_webhook(webhook_id):
+        Webhooks.delete().where(Webhooks.id == webhook_id).execute()
+
+    @staticmethod
+    def delete_webhooks_by_server(server_id):
+        Webhooks.delete().where(Webhooks.server_id == server_id).execute()

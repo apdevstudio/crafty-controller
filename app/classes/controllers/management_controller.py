@@ -1,7 +1,7 @@
 import logging
 import queue
 
-from app.classes.models.management import HelpersManagement
+from app.classes.models.management import HelpersManagement, HelpersWebhooks
 from app.classes.models.servers import HelperServers
 
 logger = logging.getLogger(__name__)
@@ -206,3 +206,30 @@ class ManagementController:
     @staticmethod
     def set_master_server_dir(server_dir):
         HelpersManagement.set_master_server_dir(server_dir)
+
+    # **********************************************************************************
+    #                                   Webhooks Methods
+    # **********************************************************************************
+    @staticmethod
+    def create_webhook(data):
+        return HelpersWebhooks.create_webhook(data)
+
+    @staticmethod
+    def modify_webhook(webhook_id, data):
+        HelpersWebhooks.modify_webhook(webhook_id, data)
+
+    @staticmethod
+    def get_webhook_by_id(webhook_id):
+        return HelpersWebhooks.get_webhook_by_id(webhook_id)
+
+    @staticmethod
+    def get_webhooks_by_server(server_id):
+        return HelpersWebhooks.get_webhooks_by_server(server_id)
+
+    @staticmethod
+    def delete_webhook(webhook_id):
+        HelpersWebhooks.delete_webhook(webhook_id)
+
+    @staticmethod
+    def delete_webhook_by_server(server_id):
+        HelpersWebhooks.delete_webhooks_by_server(server_id)
