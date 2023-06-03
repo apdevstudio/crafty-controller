@@ -1,0 +1,261 @@
+{% extends ../base.html %}
+
+{% block meta %}
+{% end %}
+
+{% block title %}Crafty Controller - {{ translate('serverDetails', 'serverDetails', data['lang']) }}{% end %}
+
+{% block content %}
+
+<div class="content-wrapper">
+
+  <!-- Page Title Header Starts-->
+  <div class="row page-title-header">
+    <div class="col-12">
+      <div class="page-header">
+        <h4 class="page-title">
+          {{ translate('serverDetails', 'serverDetails', data['lang']) }} - {{
+          data['server_stats']['server_id']['server_name'] }}
+          <br />
+          <small>UUID: {{ data['server_stats']['server_id']['server_uuid'] }}</small>
+        </h4>
+      </div>
+    </div>
+
+  </div>
+  <!-- Page Title Header Ends-->
+
+  {% include "parts/details_stats.html" %}
+
+  <div class="row">
+
+    <div class="col-sm-12 grid-margin">
+      <div class="card">
+        <div class="card-body  pt-0">
+          {% include "parts/server_controls_list.html" %}
+
+          <div class="row">
+            <div class="col-md-8 col-sm-8">
+              {% if data['new_webhook'] == True %}
+              <form class="forms-sample" method="post" id="new_webhook_form"
+                action="/panel/new_webhook?id={{ data['server_stats']['server_id']['server_id'] }}">
+                {% else %}
+                <form class="forms-sample" method="post" id="schedule_form"
+                  action="/panel/edit_schedule?id={{ data['server_stats']['server_id']['server_id'] }}&sch_id={{ data['schedule']['schedule_id'] }}">
+                  {% end %}
+                  <select class="form-select form-control form-control-lg select-css" id="webhook_type" name="webhook_type"
+                  form="role_form">
+                  {% for type in data['providers'] %}
+                  <option value="{{type}}">{{type}}</option>
+                  {% end %}
+                </select>
+                <br>
+                <br>
+                  <button type="submit" class="btn btn-success mr-2"><i class="fas fa-save"></i> {{
+                    translate('serverConfig', 'save', data['lang']) }}</button>
+                  <button type="reset"
+                    onclick="location.href=`/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=schedules`"
+                    class="btn btn-light"><i class="fas fa-times"></i> {{ translate('serverConfig', 'cancel',
+                    data['lang']) }}</button>
+                </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+  <!-- content-wrapper ends -->
+
+  {% end %}
+
+  {% block js %}
+  <script>
+
+
+    //used to get cookies from browser - this is part of tornados xsrf protection - it's for extra security
+    function getCookie(name) {
+      var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+      return r ? r[1] : undefined;
+    }
+
+    function replacer(key, value) {
+    if (key != "start_time" && key != "cron_string" && key != "interval_type") {
+      if (typeof value == "boolean") {
+        return value
+      } 
+      console.log(key)
+      if (key === "interval" && value === ""){
+        return 0;
+      }
+      if (key === "command" && typeof(value === "integer")){
+        return value.toString();
+      }else {
+        return (isNaN(value) ? value : +value);
+      }
+    } else {
+      if (value === "" && key == "start_time"){
+        return "00:00";
+      }else{
+        return value;
+      }
+    }
+  }
+
+    const serverId = new URLSearchParams(document.location.search).get('id');
+    const schId = new URLSearchParams(document.location.search).get('sch_id');
+    $(document).ready(function () {
+      console.log("ready!");
+      $("#new_schedule_form").on("submit", async function (e) {
+      e.preventDefault();
+      var token = getCookie("_xsrf")
+      let schForm = document.getElementById("new_schedule_form");
+
+      let formData = new FormData(schForm);
+      formData.delete("difficulty");
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      //We need to make sure these are sent regardless of whether or not they're checked
+      formDataObject.enabled = $("#enabled").prop('checked');
+      formDataObject.one_time = $("#one_time").prop('checked');
+      if ($("#difficulty").val() == "reaction"){
+        formDataObject.interval_type = "reaction";
+      }
+      if ($("#action").val() != "command"){
+        formDataObject.command = formDataObject.action + "_server";
+      }
+      if (formDataObject.cron_string != ""){
+        formDataObject.interval_type = '';
+      }
+      console.log(formDataObject);
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(formDataObject, replacer);
+
+      let res = await fetch(`/api/v2/servers/${serverId}/tasks/`, {
+        method: 'POST',
+        headers: {
+          'X-XSRFToken': token,
+          "Content-Type": "application/json",
+        },
+        body: formDataJsonString,
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        window.location.href = `/panel/server_detail?id=${serverId}&subpage=schedules`;
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+          });
+      } 
+    });
+
+    $("#schedule_form").on("submit", async function (e) {
+      e.preventDefault();
+      var token = getCookie("_xsrf")
+      let schForm = document.getElementById("schedule_form");
+
+      let formData = new FormData(schForm);
+      formData.delete("difficulty");
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      //We need to make sure these are sent regardless of whether or not they're checked
+      formDataObject.enabled = $("#enabled").prop('checked');
+      formDataObject.one_time = $("#one_time").prop('checked');
+      if ($("#difficulty").val() == "reaction"){
+        formDataObject.interval_type = "reaction";
+      }
+      if ($("#action").val() != "command"){
+        formDataObject.command = formDataObject.action + "_server";
+      }
+      if (formDataObject.cron_string != ""){
+        formDataObject.interval_type = '';
+      }
+      console.log(formDataObject);
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(formDataObject, replacer);
+
+      console.log(formDataJsonString);
+
+      let res = await fetch(`/api/v2/servers/${serverId}/tasks/${schId}`, {
+        method: 'PATCH',
+        headers: {
+          'X-XSRFToken': token,
+          "Content-Type": "application/json", 
+        },
+        body: formDataJsonString,
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        window.location.href = `/panel/server_detail?id=${serverId}&subpage=schedules`;
+      } else {
+
+        bootbox.alert({
+          title: responseData.error,
+          message: responseData.error_data
+          });
+      } 
+    });
+
+    });
+
+    function yesnoCheck() {
+      if (document.getElementById('action').value == "command") {
+        document.getElementById("ifYes").style.display = "block";
+        document.getElementById("command_input").required = true;
+      } else {
+        document.getElementById("ifYes").style.display = "none";
+        document.getElementById("command_input").required = false;
+      }
+    }
+    function basicAdvanced() {
+      if (document.getElementById('difficulty').value == "advanced") {
+        document.getElementById("ifAdvanced").style.display = "block";
+        document.getElementById("ifReaction").style.display = "none";
+        document.getElementById("ifBasic").style.display = "none";
+        document.getElementById("delay").required = false;
+        document.getElementById("parent").required = false;
+        document.getElementById("interval").required = false;
+        document.getElementById("time").required = false;
+      } else if (document.getElementById('difficulty').value == "reaction") {
+        document.getElementById("ifReaction").style.display = "block";
+        document.getElementById("ifBasic").style.display = "none";
+        document.getElementById("ifAdvanced").style.display = "none";
+        document.getElementById("delay").required = true;
+        document.getElementById("parent").required = true;
+        document.getElementById("interval").required = false;
+        document.getElementById("time").required = false;
+        $("#cron").val("");
+      }
+      else {
+        document.getElementById("ifAdvanced").style.display = "none";
+        document.getElementById("ifReaction").style.display = "none";
+        document.getElementById("ifBasic").style.display = "block";
+        document.getElementById("delay").required = false;
+        document.getElementById("parent").required = false;
+        document.getElementById("interval").required = true;
+        document.getElementById("time").required = true;
+        $("#cron").val("");
+      }
+    }
+    function ifDays() {
+      if (document.getElementById('interval_type').value == "days") {
+        document.getElementById("ifDays").style.display = "block";
+        document.getElementById("time").required = true;
+      } else {
+        document.getElementById("ifDays").style.display = "none";
+        document.getElementById("time").required = false;
+      }
+    }
+
+    function startup() {
+    }
+
+    window.onload(startup())
+  </script>
+
+  {% end %}
