@@ -53,7 +53,7 @@
         <a class="nav-link {% if data['active_link'] == 'metrics' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=metrics" role="tab" aria-selected="true">
             <i class="fa-solid fa-chart-line"></i>{{ translate('serverDetails', 'metrics', data['lang']) }}</a>
     </li>
-    {% if data['permissions']['Webhooks'] in data['user_permissions'] %}
+    {% if data['permissions']['Config'] in data['user_permissions'] %}
     <li class="nav-item term-nav-item">
         <a class="nav-link {% if data['active_link'] == 'webhooks' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=webhooks" role="tab" aria-selected="true">
         <i class="fas fa-users"></i>Webhooks</a>
