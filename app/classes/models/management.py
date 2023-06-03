@@ -555,20 +555,23 @@ class HelpersWebhooks:
         return model_to_dict(Webhooks.get(Webhooks.id == webhook_id))
 
     @staticmethod
-    def get_webhooks_by_server(server_id):
-        data = {}
-        for webhook in (
-            Webhooks.select().where(Webhooks.server_id == server_id).execute()
-        ):
-            data[str(webhook.id)] = {
-                "webhook_type": webhook.webhook_type,
-                "name": webhook.name,
-                "url": webhook.url,
-                "bot_name": webhook.bot_name,
-                "trigger": webhook.trigger,
-                "body": webhook.body,
-                "enabled": webhook.enabled,
-            }
+    def get_webhooks_by_server(server_id, model):
+        if not model:
+            data = {}
+            for webhook in (
+                Webhooks.select().where(Webhooks.server_id == server_id).execute()
+            ):
+                data[str(webhook.id)] = {
+                    "webhook_type": webhook.webhook_type,
+                    "name": webhook.name,
+                    "url": webhook.url,
+                    "bot_name": webhook.bot_name,
+                    "trigger": webhook.trigger,
+                    "body": webhook.body,
+                    "enabled": webhook.enabled,
+                }
+        else:
+            data = Webhooks.select().where(Webhooks.server_id == server_id).execute()
         return data
 
     @staticmethod
