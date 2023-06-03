@@ -166,7 +166,7 @@ class ServerHandler(BaseHandler):
                     "not a server creator or server limit reached"
                 )
                 return
-
+            page_data["server_api"] = True
             template = "server/bedrock_wizard.html"
 
         self.render(
