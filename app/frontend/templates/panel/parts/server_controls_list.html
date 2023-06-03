@@ -56,7 +56,7 @@
     {% if data['permissions']['Config'] in data['user_permissions'] %}
     <li class="nav-item term-nav-item">
         <a class="nav-link {% if data['active_link'] == 'webhooks' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=webhooks" role="tab" aria-selected="true">
-        <i class="fas fa-users"></i>Webhooks</a>
+            <i class="fa-solid fa-webhook"></i>{{ translate('webhooks', 'webhooks', data['lang']) }}</a>
     </li>
     {% end %}
 </ul>

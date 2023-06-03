@@ -32,7 +32,7 @@
             {% end %}
             <a class="dropdown-item {% if data['active_link'] == 'metrics' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=metrics" role="tab" aria-selected="true"><i class="fa-solid fa-chart-line"></i> {{ translate('serverDetails', 'metrics', data['lang']) }}</a>
             {% if data['permissions']['Config'] in data['user_permissions'] %}
-            <a class="dropdown-item {% if data['active_link'] == 'webhooks' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=webhooks" role="tab" aria-selected="true"><i class="fas fa-users"></i>Webhooks</a>
+            <a class="dropdown-item {% if data['active_link'] == 'webhooks' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=webhooks" role="tab" aria-selected="true"><i class="fa-solid fa-webhook"></i>{{ translate('webhooks', 'webhooks', data['lang']) }}</a>
             {% end %}
         </div>
     </div>

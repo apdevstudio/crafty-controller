@@ -51,22 +51,22 @@
                 <br>
                 <br>
                 <div class="form-group">
-                  <label for="name">{{ translate('serverSchedules', 'name' , data['lang']) }}</label>
+                  <label for="name">{{ translate('webhooks', 'name' , data['lang']) }}</label>
                   <input type="input" class="form-control" name="name" id="name_input"
                     value="{{ data['webhook']['name']}}" maxlength="30" placeholder="Name" required>
                 </div>
                 <div class="form-group">
-                  <label for="url">Webhook URL</label>
+                  <label for="url">{{ translate('webhooks', 'url', data['lang']) }}</label>
                   <input type="input" class="form-control" name="url" id="url"
                     value="{{ data['webhook']['url']}}" placeholder="https://webhooks.craftycontrol.com/fakeurl" required>
                 </div>
                 <div class="form-group">
-                  <label for="bot_name">Bot {{ translate('serverSchedules', 'name' , data['lang']) }}</label>
+                  <label for="bot_name">{{ translate('webhooks', 'bot_name' , data['lang']) }}</label>
                   <input type="input" class="form-control" name="bot_name" id="bot_name_input"
                     value="{{ data['webhook']['bot_name']}}" maxlength="30" placeholder="Crafty Controller" required>
                 </div>
                 <div class="form-group">
-                  <label for="trigger">Trigger</label>
+                  <label for="trigger">{{ translate('webhooks', 'trigger', data['lang']) }}</label>
                   <select class="form-control selectpicker show-tick" name="trigger" id="trigger-select" data-icon-base="fas" data-tick-icon="fa-check" multiple data-style="custom-picker">
                   {% for trigger in data['triggers'] %}
                   {% if trigger in data["webhook"]["trigger"] %}
@@ -78,7 +78,7 @@
                   </select>
                 </div>
                 <div class="form-group">
-                  <label for="body">Body</label>
+                  <label for="body">{{ translate('webhooks', 'webhook_body', data['lang']) }}</label>
                     <textarea id="body-input" name="body" rows="4" cols="50">
                       {{ data["webhook"]["body"] }}
                     </textarea>
@@ -86,7 +86,7 @@
                 <div class="form-check-flat">
                   <label for="enabled" class="form-check-label ml-4 mb-4">
                     <input type="checkbox" class="form-check-input" id="enabled" name="enabled" checked=""
-                      value="1">{{ translate('serverScheduleConfig', 'enabled' , data['lang']) }}
+                      value="1">{{ translate('webhooks', 'enabled', data['lang']) }}
                   </label>
 
                 </div>
