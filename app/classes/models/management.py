@@ -77,11 +77,14 @@ class HostStats(BaseModel):
 # **********************************************************************************
 class Webhooks(BaseModel):
     id = AutoField()
-    name = CharField(max_length=64, unique=True, index=True)
-    method = CharField(default="POST")
+    server_id = IntegerField(null=True)
+    name = CharField(default="Custom Webhook", max_length=64)
     url = CharField(unique=True)
-    event = CharField(default="")
-    send_data = BooleanField(default=True)
+    webhook_type = CharField(default="Custom")
+    bot_name = CharField(default="Crafty Controller")
+    triggers = CharField(default="server_start,server_stop")
+    body = CharField(default="")
+    enabled = BooleanField(default=True)
 
     class Meta:
         table_name = "webhooks"
@@ -501,3 +504,53 @@ class HelpersManagement:
                 f"Not removing {dir_to_del} from excluded directories - "
                 f"not in the excluded directory list for server ID {server_id}"
             )
+
+
+# **********************************************************************************
+#                                   Webhooks Class
+# **********************************************************************************
+class HelpersWebhooks:
+    def __init__(self, database):
+        self.database = database
+
+    @staticmethod
+    def create_webhook(
+        server_id: int,
+        webhook_type: str,
+        name: str,
+        url: str,
+        bot_name: str,
+        body: str,
+        triggers: str,
+        enabled: bool,
+    ) -> int:
+        """Create a webhook in the database
+
+        Args:
+            server_id: ID of a server this webhook will be married to
+            name: The name of the webhook
+            url: URL to the webhook
+            webhook_type: The provider this webhook will be sent to
+            bot name: The name that will appear when the webhook is sent
+            triggers: Server actions that will trigger this webhook
+            body: The message body of the webhook
+            enabled: Should Crafty trigger the webhook
+
+        Returns:
+            int: The new webhooks's id
+
+        Raises:
+            PeeweeException: If the webhook already exists
+        """
+        return Webhooks.insert(
+            {
+                Webhooks.server_id: server_id,
+                Webhooks.name: name,
+                Webhooks.webhook_type: webhook_type,
+                Webhooks.url: url,
+                Webhooks.bot_name: bot_name,
+                Webhooks.body: body,
+                Webhooks.triggers: triggers,
+                Webhooks.enabled: enabled,
+            }
+        ).execute()
