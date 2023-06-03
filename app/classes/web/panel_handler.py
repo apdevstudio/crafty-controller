@@ -760,6 +760,11 @@ class PanelHandler(BaseHandler):
                             "/panel/error?error=Unauthorized access to Webhooks Config"
                         )
                         return
+                page_data[
+                    "webhooks"
+                ] = self.controller.management.get_webhooks_by_server(
+                    server_id, model=True
+                )
 
             def get_banned_players_html():
                 banned_players = self.controller.servers.get_banned_players(server_id)
@@ -1073,7 +1078,68 @@ class PanelHandler(BaseHandler):
                 "server_type"
             ] = self.controller.servers.get_server_type_by_id(server_id)
             page_data["new_webhook"] = True
+            page_data["webhook"] = {}
+            page_data["webhook"]["webhook_type"] = "Custom"
+            page_data["webhook"]["name"] = ""
+            page_data["webhook"]["url"] = ""
+            page_data["webhook"]["bot_name"] = "Crafty Controller"
+            page_data["webhook"]["trigger"] = []
+            page_data["webhook"]["body"] = ""
+            page_data["webhook"]["enabled"] = True
+
             page_data["providers"] = WebhookHandler.get_providers()
+            page_data["triggers"] = WebhookHandler.get_monitored_actions()
+
+            if not EnumPermissionsServer.CONFIG in page_data["user_permissions"]:
+                if not superuser:
+                    self.redirect("/panel/error?error=Unauthorized access To Webhooks")
+                    return
+
+            template = "panel/server_webhook_edit.html"
+
+        elif page == "webhook_edit":
+            server_id = self.get_argument("id", None)
+            webhook_id = self.get_argument("webhook_id", None)
+            if server_id is None:
+                return self.redirect("/panel/error?error=Invalid Server ID")
+            server_obj = self.controller.servers.get_server_instance_by_id(server_id)
+            page_data["backup_failed"] = server_obj.last_backup_status()
+            server_obj = None
+            page_data["active_link"] = "webhooks"
+            page_data["server_data"] = self.controller.servers.get_server_data_by_id(
+                server_id
+            )
+            page_data[
+                "user_permissions"
+            ] = self.controller.server_perms.get_user_id_permissions_list(
+                exec_user["user_id"], server_id
+            )
+            page_data["permissions"] = {
+                "Commands": EnumPermissionsServer.COMMANDS,
+                "Terminal": EnumPermissionsServer.TERMINAL,
+                "Logs": EnumPermissionsServer.LOGS,
+                "Schedule": EnumPermissionsServer.SCHEDULE,
+                "Backup": EnumPermissionsServer.BACKUP,
+                "Files": EnumPermissionsServer.FILES,
+                "Config": EnumPermissionsServer.CONFIG,
+                "Players": EnumPermissionsServer.PLAYERS,
+            }
+            page_data["server_stats"] = self.controller.servers.get_server_stats_by_id(
+                server_id
+            )
+            page_data["server_stats"][
+                "server_type"
+            ] = self.controller.servers.get_server_type_by_id(server_id)
+            page_data["new_webhook"] = True
+            page_data["webhook"] = self.controller.management.get_webhook_by_id(
+                webhook_id
+            )
+            page_data["webhook"]["trigger"] = str(
+                page_data["webhook"]["trigger"]
+            ).split(",")
+
+            page_data["providers"] = WebhookHandler.get_providers()
+            page_data["triggers"] = WebhookHandler.get_monitored_actions()
 
             if not EnumPermissionsServer.CONFIG in page_data["user_permissions"]:
                 if not superuser:
