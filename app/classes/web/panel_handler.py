@@ -576,7 +576,6 @@ class PanelHandler(BaseHandler):
                 "Files": EnumPermissionsServer.FILES,
                 "Config": EnumPermissionsServer.CONFIG,
                 "Players": EnumPermissionsServer.PLAYERS,
-                "Webhooks": EnumPermissionsServer.WEBHOOKS,
             }
             page_data[
                 "user_permissions"
@@ -752,7 +751,7 @@ class PanelHandler(BaseHandler):
                 )
             if subpage == "webhooks":
                 if (
-                    not page_data["permissions"]["Webhooks"]
+                    not page_data["permissions"]["Config"]
                     in page_data["user_permissions"]
                 ):
                     if not superuser:
@@ -760,7 +759,6 @@ class PanelHandler(BaseHandler):
                             "/panel/error?error=Unauthorized access to Webhooks Config"
                         )
                         return
-                page_data[""]
 
             def get_banned_players_html():
                 banned_players = self.controller.servers.get_banned_players(server_id)
