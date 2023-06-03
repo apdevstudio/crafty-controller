@@ -1,0 +1,280 @@
+{% extends ../base.html %}
+
+{% block meta %}
+{% end %}
+
+{% block title %}Crafty Controller - {{ translate('serverDetails', 'serverDetails', data['lang']) }}{% end %}
+
+{% block content %}
+
+<div class="content-wrapper">
+
+  <!-- Page Title Header Starts-->
+  <div class="row page-title-header">
+    <div class="col-12">
+      <div class="page-header">
+        <h4 class="page-title">
+          {{ translate('serverDetails', 'serverDetails', data['lang']) }} - {{
+          data['server_stats']['server_id']['server_name'] }}
+          <br />
+          <small>UUID: {{ data['server_stats']['server_id']['server_uuid'] }}</small>
+        </h4>
+      </div>
+    </div>
+
+  </div>
+  <!-- Page Title Header Ends-->
+
+  {% include "parts/details_stats.html" %}
+
+  <div class="row">
+
+    <div class="col-sm-12 grid-margin">
+      <div class="card">
+        <div class="card-body  pt-0">
+
+          <span class="d-none d-sm-block">
+            {% include "parts/server_controls_list.html" %}
+          </span>
+          <span class="d-block d-sm-none">
+            {% include "parts/m_server_controls_list.html" %}
+          </span>
+
+          <div class="row">
+            <div class="col-md-12 col-sm-12" style="overflow-x:auto;">
+              <div class="card">
+                <div class="card-header header-sm d-flex justify-content-between align-items-center">
+                  <h4 class="card-title"><i class="fas fa-calendar"></i> {{ translate('serverSchedules',
+                    'scheduledTasks', data['lang']) }} </h4>
+                  {% if data['user_data']['hints'] %}
+                  <span class="too_small" title="{{ translate('serverSchedules', 'cannotSee', data['lang']) }}" ,
+                    data-content="{{ translate('serverSchedules', 'cannotSeeOnMobile', data['lang']) }}" ,
+                    data-placement="bottom"></span>
+                  {% end %}
+                  <div><button
+                      onclick="location.href=`/panel/add_schedule?id={{ data['server_stats']['server_id']['server_id'] }}`"
+                      class="btn btn-info">{{ translate('serverSchedules', 'create', data['lang']) }}<i
+                        class="fas fa-pencil-alt"></i></button></div>
+                </div>
+                <div class="card-body">
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <style>
+    .popover-body {
+      color: white !important;
+      ;
+    }
+
+    .toggle-handle {
+      background-color: white !important;
+    }
+
+    .toggle-on {
+      color: black !important;
+    }
+
+    .toggle {
+      height: 0px !important;
+    }
+  </style>
+
+
+
+</div>
+<style>
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  td::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  td {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+</style>
+<!-- content-wrapper ends -->
+
+{% end %}
+
+{% block js %}
+<script>
+
+  function debounce(func, timeout = 300) {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+  }
+
+  $(() => {
+    $('.schedule-enabled-toggle').bootstrapToggle({
+      on: 'Yes',
+      off: 'No',
+      onstyle: 'success',
+      offstyle: 'danger',
+    })
+    $('.schedule-enabled-toggle').each(function () {
+      const enabled = JSON.parse(this.getAttribute('data-schedule-enabled'));
+      $(this).bootstrapToggle(enabled ? 'on' : 'off')
+    })
+    $('.schedule-enabled-toggle').change(function () {
+      const id = this.getAttribute('data-schedule-id');
+      const enabled = this.checked;
+
+      fetch(`/api/v2/servers/{{data['server_id']}}/tasks/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ enabled }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    });
+  })
+
+  const serverId = new URLSearchParams(document.location.search).get('id')
+
+  $(document).ready(function () {
+    console.log('ready for JS!')
+    $('#schedule_table').DataTable({
+      'order': [4, 'asc'],
+    }
+    );
+
+  });
+  $(document).ready(function () {
+    console.log('ready for JS!')
+    $('#mini_schedule_table').DataTable({
+      'order': [2, 'asc']
+    }
+    );
+    document.getElementById('mini_schedule_table_wrapper').hidden = true;
+  });
+  $(document).ready(function () {
+    $('[data-toggle="popover"]').popover();
+    if ($(window).width() < 1000) {
+      $('.too_small').popover("show");
+      document.getElementById('schedule_table_wrapper').hidden = true;
+      document.getElementById('mini_schedule_table_wrapper').hidden = false;
+    }
+
+  });
+  $(window).ready(function () {
+    $('body').click(function () {
+      $('.too_small').popover("hide");
+    });
+  });
+  $(window).resize(function () {
+    // This will execute whenever the window is resized
+    if ($(window).width() < 1000) {
+      $('.too_small').popover("show");
+      document.getElementById('schedule_table_wrapper').hidden = true;
+      document.getElementById('mini_schedule_table_wrapper').hidden = false;
+    }
+    else {
+      $('.too_small').popover("hide");
+      document.getElementById('schedule_table_wrapper').hidden = false;
+      document.getElementById('mini_schedule_table_wrapper').hidden = true;
+    } // New width
+  });
+</script>
+<script>
+
+
+  //used to get cookies from browser - this is part of tornados xsrf protection - it's for extra security
+  function getCookie(name) {
+    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+    return r ? r[1] : undefined;
+  }
+
+  $(document).ready(function () {
+    console.log("ready!");
+
+  });
+
+  function yesnoCheck(that) {
+    if (that.value == "command") {
+      document.getElementById("ifYes").style.display = "block";
+      document.getElementById("command").required = true;
+    } else {
+      document.getElementById("ifYes").style.display = "none";
+      document.getElementById("command").required = false;
+    }
+  }
+  function basicAdvanced(that) {
+    if (that.value == "advanced") {
+      document.getElementById("ifAdvanced").style.display = "block";
+      document.getElementById("ifBasic").style.display = "none";
+      document.getElementById("interval").required = false;
+      document.getElementById("time").required = false;
+    } else {
+      document.getElementById("ifAdvanced").style.display = "none";
+      document.getElementById("ifBasic").style.display = "block";
+      document.getElementById("interval").required = true;
+      document.getElementById("time").required = true;
+    }
+  }
+  function ifDays(that) {
+    if (that.value == "days") {
+      document.getElementById("ifDays").style.display = "block";
+      document.getElementById("time").required = true;
+    } else {
+      document.getElementById("ifDays").style.display = "none";
+      document.getElementById("time").required = false;
+    }
+  }
+
+  $(".del_button").click(function () {
+    var sch_id = $(this).data('sch');
+
+    console.log(sch_id)
+
+    bootbox.confirm({
+      title: "{{ translate('serverSchedules', 'areYouSure', data['lang']) }}",
+      message: "{{ translate('serverSchedules', 'confirmDelete', data['lang']) }}",
+      buttons: {
+        cancel: {
+          label: '<i class="fas fa-times"></i> {{ translate("serverSchedules", "cancel", data['lang']) }}'
+          },
+        confirm: {
+          className: 'btn-outline-danger',
+          label: '<i class="fas fa-check"></i> {{ translate("serverSchedules", "confirm", data['lang']) }}'
+          }
+      },
+      callback: function (result) {
+        console.log(result);
+        if (result == true) {
+          del_task(sch_id, serverId);
+        }
+      }
+    });
+  });
+
+  async function del_task(sch_id, id) {
+    var token = getCookie("_xsrf")
+
+    let res = await fetch(`/api/v2/servers/${id}/tasks/${sch_id}`, {
+      method: 'DELETE',
+      headers: {
+        'token': token,
+      },
+    });
+    let responseData = await res;
+    if (responseData.statusText === "OK") {
+      window.location.reload();
+    }
+  }
+
+</script>
+
+{% end %}
