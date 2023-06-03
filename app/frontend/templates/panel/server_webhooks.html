@@ -57,6 +57,51 @@
                         class="fas fa-pencil-alt"></i></button></div>
                 </div>
                 <div class="card-body">
+                                    <table class="table table-hover d-none d-lg-block responsive-table" id="schedule_table" width="100%" style="table-layout:fixed;">
+                    <thead>
+                      <tr class="rounded">
+                        <th style="width: 10%; min-width: 10px;">Name
+                        </th>
+                        <th style="width: 20%; min-width: 50px;">Webhook Type</th>
+                        <th style="width: 50%; min-width: 50px;">Trigger</th>
+                        <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'enabled',
+                          data['lang']) }}</th>
+                        <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'edit', data['lang'])
+                          }}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for webhook in data['webhooks'] %}
+                      <tr>
+                        <td id="{{webhook.name}}" class="id">
+                          <p>{{webhook.name}}</p>
+                        </td>
+                        <td id="{{webhook.webhook_type}}" class="type">
+                          <p>{{webhook.webhook_type}}</p>
+                        </td>
+                        <td id="{{webhook.trigger}}" class="trigger" style="overflow: scroll; max-width: 30px;">
+                          <p style="overflow: scroll;" class="no-scroll">{{webhook.trigger}}</p>
+                        </td>
+                        <td id="{{webhook.enabled}}" class="enabled">
+                          <input style="width: 10px !important;" type="checkbox" class="webhook-enabled-toggle" data-webhook-id="{{webhook.id}}" data-webhook-enabled="{{ 'true' if webhook.enabled else 'false' }}">
+                        </td>
+                        <td id="webhook_edit" class="action">
+                          <button onclick="window.location.href='/panel/webhook_edit?id={{ data['server_stats']['server_id']['server_id'] }}&webhook_id={{webhook.id}}'" class="btn btn-info">
+                            <i class="fas fa-pencil-alt"></i>
+                          </button>
+                          <br>
+                          <br>
+                          <button data-webhook={{ webhook.id }} class="btn btn-danger del_button">
+                            <i class="fas fa-trash" aria-hidden="true"></i>
+                          </button>
+                          <button data-webhook={{ webhook.id }} data-toggle="tooltip" title="Test Websocket" class="btn btn-outline-warning test-socket">
+                            <i class="fa-solid fa-vial"></i>
+                          </button>
+                        </td>
+                      </tr>
+                      {% end %}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -118,21 +163,21 @@
   }
 
   $(() => {
-    $('.schedule-enabled-toggle').bootstrapToggle({
+    $('.webhook-enabled-toggle').bootstrapToggle({
       on: 'Yes',
       off: 'No',
       onstyle: 'success',
       offstyle: 'danger',
     })
-    $('.schedule-enabled-toggle').each(function () {
-      const enabled = JSON.parse(this.getAttribute('data-schedule-enabled'));
+    $('.webhook-enabled-toggle').each(function () {
+      const enabled = JSON.parse(this.getAttribute('data-webhook-enabled'));
       $(this).bootstrapToggle(enabled ? 'on' : 'off')
     })
-    $('.schedule-enabled-toggle').change(function () {
-      const id = this.getAttribute('data-schedule-id');
+    $('.webhook-enabled-toggle').change(function () {
+      const id = this.getAttribute('data-webhook-id');
       const enabled = this.checked;
 
-      fetch(`/api/v2/servers/{{data['server_id']}}/tasks/${id}`, {
+      fetch(`/api/v2/servers/{{data['server_id']}}/webhook/${id}`, {
         method: 'PATCH',
         body: JSON.stringify({ enabled }),
         headers: {
@@ -143,50 +188,6 @@
   })
 
   const serverId = new URLSearchParams(document.location.search).get('id')
-
-  $(document).ready(function () {
-    console.log('ready for JS!')
-    $('#schedule_table').DataTable({
-      'order': [4, 'asc'],
-    }
-    );
-
-  });
-  $(document).ready(function () {
-    console.log('ready for JS!')
-    $('#mini_schedule_table').DataTable({
-      'order': [2, 'asc']
-    }
-    );
-    document.getElementById('mini_schedule_table_wrapper').hidden = true;
-  });
-  $(document).ready(function () {
-    $('[data-toggle="popover"]').popover();
-    if ($(window).width() < 1000) {
-      $('.too_small').popover("show");
-      document.getElementById('schedule_table_wrapper').hidden = true;
-      document.getElementById('mini_schedule_table_wrapper').hidden = false;
-    }
-
-  });
-  $(window).ready(function () {
-    $('body').click(function () {
-      $('.too_small').popover("hide");
-    });
-  });
-  $(window).resize(function () {
-    // This will execute whenever the window is resized
-    if ($(window).width() < 1000) {
-      $('.too_small').popover("show");
-      document.getElementById('schedule_table_wrapper').hidden = true;
-      document.getElementById('mini_schedule_table_wrapper').hidden = false;
-    }
-    else {
-      $('.too_small').popover("hide");
-      document.getElementById('schedule_table_wrapper').hidden = false;
-      document.getElementById('mini_schedule_table_wrapper').hidden = true;
-    } // New width
-  });
 </script>
 <script>
 
@@ -202,42 +203,9 @@
 
   });
 
-  function yesnoCheck(that) {
-    if (that.value == "command") {
-      document.getElementById("ifYes").style.display = "block";
-      document.getElementById("command").required = true;
-    } else {
-      document.getElementById("ifYes").style.display = "none";
-      document.getElementById("command").required = false;
-    }
-  }
-  function basicAdvanced(that) {
-    if (that.value == "advanced") {
-      document.getElementById("ifAdvanced").style.display = "block";
-      document.getElementById("ifBasic").style.display = "none";
-      document.getElementById("interval").required = false;
-      document.getElementById("time").required = false;
-    } else {
-      document.getElementById("ifAdvanced").style.display = "none";
-      document.getElementById("ifBasic").style.display = "block";
-      document.getElementById("interval").required = true;
-      document.getElementById("time").required = true;
-    }
-  }
-  function ifDays(that) {
-    if (that.value == "days") {
-      document.getElementById("ifDays").style.display = "block";
-      document.getElementById("time").required = true;
-    } else {
-      document.getElementById("ifDays").style.display = "none";
-      document.getElementById("time").required = false;
-    }
-  }
 
   $(".del_button").click(function () {
-    var sch_id = $(this).data('sch');
-
-    console.log(sch_id)
+    var webhook_id = $(this).data('webhook');
 
     bootbox.confirm({
       title: "{{ translate('serverSchedules', 'areYouSure', data['lang']) }}",
@@ -254,24 +222,73 @@
       callback: function (result) {
         console.log(result);
         if (result == true) {
-          del_task(sch_id, serverId);
+          del_hook(webhook_id, serverId);
         }
       }
     });
   });
 
-  async function del_task(sch_id, id) {
+  $(".test-socket").click(function () {
+    var webhook_id = $(this).data('webhook');
+
+    bootbox.confirm({
+      title: "{{ translate('serverSchedules', 'areYouSure', data['lang']) }}",
+      message: "{{ translate('serverSchedules', 'confirmDelete', data['lang']) }}",
+      buttons: {
+        cancel: {
+          label: '<i class="fas fa-times"></i> {{ translate("serverSchedules", "cancel", data['lang']) }}'
+          },
+        confirm: {
+          className: 'btn-outline-danger',
+          label: '<i class="fas fa-check"></i> {{ translate("serverSchedules", "confirm", data['lang']) }}'
+          }
+      },
+      callback: function (result) {
+        console.log(result);
+        if (result == true) {
+          test_hook(webhook_id, serverId);
+        }
+      }
+    });
+  });
+  async function test_hook(webhook_id, id) {
     var token = getCookie("_xsrf")
 
-    let res = await fetch(`/api/v2/servers/${id}/tasks/${sch_id}`, {
+    let res = await fetch(`/api/v2/servers/${id}/webhook/${webhook_id}/`, {
+      method: 'POST',
+      headers: {
+        'token': token,
+      },
+    });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      bootbox.alert("Webhook Sent!")
+    }else{
+      console.log(responseData);
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+          });
+    }
+  }
+
+  async function del_hook(webhook_id, id) {
+    var token = getCookie("_xsrf")
+
+    let res = await fetch(`/api/v2/servers/${id}/webhook/${webhook_id}`, {
       method: 'DELETE',
       headers: {
         'token': token,
       },
     });
-    let responseData = await res;
+    let responseData = await res.json();
     if (responseData.statusText === "OK") {
       window.location.reload();
+    }else{
+      bootbox.alert({
+          title: responseData.stats,
+          message: responseData.error
+          });
     }
   }
 
