@@ -13,7 +13,7 @@ from app.classes.web.base_api_handler import BaseApiHandler
 
 logger = logging.getLogger(__name__)
 
-task_patch_schema = {
+webhook_patch_schema = {
     "type": "object",
     "properties": {
         "webhook_type": {"type": "string", "enum": WebhookHandler.get_providers()},
@@ -82,7 +82,7 @@ class ApiServersServerWebhooksWebhookIndexHandler(BaseApiHandler):
 
         return self.finish_json(200, {"status": "ok"})
 
-    def patch(self, server_id: str, task_id: str):
+    def patch(self, server_id: str, webhook_id: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
@@ -95,7 +95,7 @@ class ApiServersServerWebhooksWebhookIndexHandler(BaseApiHandler):
             )
 
         try:
-            validate(data, task_patch_schema)
+            validate(data, webhook_patch_schema)
         except ValidationError as e:
             return self.finish_json(
                 400,
@@ -111,7 +111,7 @@ class ApiServersServerWebhooksWebhookIndexHandler(BaseApiHandler):
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
-            EnumPermissionsServer.SCHEDULE
+            EnumPermissionsServer.CONFIG
             not in self.controller.server_perms.get_user_id_permissions_list(
                 auth_data[4]["user_id"], server_id
             )
@@ -119,34 +119,14 @@ class ApiServersServerWebhooksWebhookIndexHandler(BaseApiHandler):
             # if the user doesn't have Schedule permission, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
-        # Checks to make sure some doofus didn't actually make the newly
-        # created task a child of itself.
-        if str(data.get("parent")) == str(task_id) and data.get("parent") is not None:
-            data["parent"] = None
-
         data["server_id"] = server_id
-        if data["cron_string"] != "" and not croniter.is_valid(data["cron_string"]):
-            return self.finish_json(
-                405,
-                {
-                    "status": "error",
-                    "error": self.helper.translation.translate(
-                        "error",
-                        "cronFormat",
-                        self.controller.users.get_user_lang_by_id(
-                            auth_data[4]["user_id"]
-                        ),
-                    ),
-                },
-            )
-        self.tasks_manager.update_job(task_id, data)
+        self.controller.management.modify_webhook(webhook_id, data)
 
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],
-            f"Edited server {server_id}: updated schedule",
+            f"Edited server {server_id}: updated webhook",
             server_id,
             self.get_remote_ip(),
         )
-        self.tasks_manager.reload_schedule_from_db()
 
         self.finish_json(200, {"status": "ok"})
