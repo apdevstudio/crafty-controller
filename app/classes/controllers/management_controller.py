@@ -223,8 +223,8 @@ class ManagementController:
         return HelpersWebhooks.get_webhook_by_id(webhook_id)
 
     @staticmethod
-    def get_webhooks_by_server(server_id):
-        return HelpersWebhooks.get_webhooks_by_server(server_id)
+    def get_webhooks_by_server(server_id, model=False):
+        return HelpersWebhooks.get_webhooks_by_server(server_id, model)
 
     @staticmethod
     def delete_webhook(webhook_id):
