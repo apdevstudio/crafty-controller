@@ -7,6 +7,22 @@ logger = logging.getLogger(__name__)
 
 class WebhookHandler:
     @staticmethod
+    def get_providers():
+        return [
+            "Discord",
+            "Home Assistant",
+            "Mattermost",
+            "Opsgenie",
+            "Signal",
+            "Slack",
+            "SMTP",
+            "Splunk",
+            "Teams",
+            "Telegram",
+            "Custom",
+        ]
+
+    @staticmethod
     def send_discord_webhook(title, message, color):
         dataset = {
             "username": "Crafty Webhooks",
@@ -23,7 +39,7 @@ class WebhookHandler:
         logger.debug(
             "Webhook response: "
             + requests.post(
-                "https://discord.com/api/webhooks/1107017140004995081/leFCJ4g_Uw6ZwxaZXTLmi-L7njIFwVvFbf3JEHnAvUJAd90PoMknlivel0rosfnFed77",
+                "",
                 data=json.dumps(dataset),
                 headers={"Content-type": "application/json"},
             ),
