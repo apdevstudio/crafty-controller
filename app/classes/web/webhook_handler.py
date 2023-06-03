@@ -23,6 +23,10 @@ class WebhookHandler:
         ]
 
     @staticmethod
+    def get_monitored_actions():
+        return ["server_start", "server_stop", "server_crash", "server_backup"]
+
+    @staticmethod
     def send_discord_webhook(title, message, color):
         dataset = {
             "username": "Crafty Webhooks",
