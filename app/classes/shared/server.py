@@ -31,7 +31,6 @@ from app.classes.shared.console import Console
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.null_writer import NullWriter
-from app.classes.web.webhook_handler import WebhookHandler
 
 with redirect_stderr(NullWriter()):
     import psutil
@@ -513,9 +512,6 @@ class ServerInstance:
         if self.process.poll() is None:
             logger.info(f"Server {self.name} running with PID {self.process.pid}")
             Console.info(f"Server {self.name} running with PID {self.process.pid}")
-            WebhookHandler.send_discord_webhook(
-                "Crafty Controller", f"{self.name} started!", 65354
-            )
             self.is_crashed = False
             self.stats_helper.server_crash_reset()
             self.record_server_stats()
@@ -811,9 +807,6 @@ class ServerInstance:
 
         logger.info(f"Stopped Server {server_name} with PID {server_pid}")
         Console.info(f"Stopped Server {server_name} with PID {server_pid}")
-        WebhookHandler.send_discord_webhook(
-            "Crafty Controller", f"{self.name} was stopped!", 16748076
-        )
 
         # massive resetting of variables
         self.cleanup_server_object()
@@ -898,11 +891,6 @@ class ServerInstance:
                 f"Restarting server"
             )
 
-            WebhookHandler.send_discord_webhook(
-                "Crafty Controller",
-                f"{self.name} crashed! Crafty Controller is attempting to start it back up!",
-                16711680,
-            )
             self.run_threaded_server(None)
             return True
         logger.critical(
