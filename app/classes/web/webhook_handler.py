@@ -27,7 +27,7 @@ class WebhookHandler:
         return ["server_start", "server_stop", "server_crash", "server_backup"]
 
     @staticmethod
-    def send_discord_webhook(title, message, color):
+    def send_discord_webhook(title, url, message, color):
         dataset = {
             "username": "Crafty Webhooks",
             "avatar_url": "https://docs.craftycontrol.com/img/favicon.ico",
@@ -39,12 +39,8 @@ class WebhookHandler:
                 }
             ],
         }
-
-        logger.debug(
-            "Webhook response: "
-            + requests.post(
-                "",
-                data=json.dumps(dataset),
-                headers={"Content-type": "application/json"},
-            ),
+        requests.post(
+            url,
+            data=json.dumps(dataset),
+            headers={"Content-type": "application/json"},
         )
