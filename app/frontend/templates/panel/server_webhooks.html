@@ -44,7 +44,7 @@
             <div class="col-md-12 col-sm-12" style="overflow-x:auto;">
               <div class="card">
                 <div class="card-header header-sm d-flex justify-content-between align-items-center">
-                  <h4 class="card-title"><i class="fas fa-calendar"></i> {{ translate('webhooks', 'webhooks', data['lang']) }} </h4>
+                  <h4 class="card-title"><i class="fa-regular fa-bell"></i> {{ translate('webhooks', 'webhooks', data['lang']) }} </h4>
                   {% if data['user_data']['hints'] %}
                   <span class="too_small" title="{{ translate('serverSchedules', 'cannotSee', data['lang']) }}" ,
                     data-content="{{ translate('serverSchedules', 'cannotSeeOnMobile', data['lang']) }}" ,
@@ -359,11 +359,11 @@
       },
     });
     let responseData = await res.json();
-    if (responseData.statusText === "OK") {
+    if (responseData.status === "ok") {
       window.location.reload();
     }else{
       bootbox.alert({
-          title: responseData.stats,
+          title: responseData.status,
           message: responseData.error
           });
     }
