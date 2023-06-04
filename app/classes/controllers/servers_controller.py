@@ -516,6 +516,25 @@ class ServersController(metaclass=Singleton):
     #                                    Servers Helpers Methods
     # **********************************************************************************
     @staticmethod
+    def get_cached_players(server_id):
+        srv = ServersController().get_server_instance_by_id(server_id)
+        stats = srv.stats_helper.get_server_stats()
+        server_path = stats["server_id"]["path"]
+        path = os.path.join(server_path, "usercache.json")
+
+        try:
+            with open(
+                Helpers.get_os_understandable_path(path), encoding="utf-8"
+            ) as file:
+                content = file.read()
+                file.close()
+        except Exception as ex:
+            logger.error(ex)
+            return {}
+
+        return json.loads(content)
+
+    @staticmethod
     def get_banned_players(server_id):
         srv = ServersController().get_server_instance_by_id(server_id)
         stats = srv.stats_helper.get_server_stats()
@@ -529,8 +548,8 @@ class ServersController(metaclass=Singleton):
                 content = file.read()
                 file.close()
         except Exception as ex:
-            print(ex)
-            return None
+            logger.error(ex)
+            return {}
 
         return json.loads(content)
 

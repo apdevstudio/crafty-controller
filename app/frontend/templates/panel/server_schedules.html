@@ -47,18 +47,14 @@
                   <h4 class="card-title"><i class="fas fa-calendar"></i> {{ translate('serverSchedules',
                     'scheduledTasks', data['lang']) }} </h4>
                   {% if data['user_data']['hints'] %}
-                  <span class="too_small" title="{{ translate('serverSchedules', 'cannotSee', data['lang']) }}" ,
-                    data-content="{{ translate('serverSchedules', 'cannotSeeOnMobile', data['lang']) }}" ,
-                    data-placement="bottom"></span>
+                  <span class="too_small" title="{{ translate('serverSchedules', 'cannotSee', data['lang']) }}" , data-content="{{ translate('serverSchedules', 'cannotSeeOnMobile', data['lang']) }}" , data-placement="bottom"></span>
                   {% end %}
-                  <div><button
-                      onclick="location.href=`/panel/add_schedule?id={{ data['server_stats']['server_id']['server_id'] }}`"
-                      class="btn btn-info">{{ translate('serverSchedules', 'create', data['lang']) }}<i
-                        class="fas fa-pencil-alt"></i></button></div>
+                  <div>
+                    <button onclick="location.href=`/panel/add_schedule?id={{ data['server_stats']['server_id']['server_id'] }}`" class="btn btn-info">{{ translate('serverSchedules', 'create', data['lang']) }}<i class="fas fa-pencil-alt"></i></button>
+                  </div>
                 </div>
                 <div class="card-body">
-                  <table class="table table-hover d-none d-lg-block responsive-table" id="schedule_table" width="100%"
-                    style="table-layout:fixed;">
+                  <table class="table table-hover d-none d-lg-block responsive-table" id="schedule_table" width="100%" style="table-layout:fixed;">
                     <thead>
                       <tr class="rounded">
                         <th style="width: 2%; min-width: 10px;">{{ translate('serverSchedules', 'name', data['lang']) }}
@@ -87,7 +83,7 @@
                           <p>{{schedule.action}}</p>
                         </td>
                         <td id="{{schedule.command}}" class="action" style="overflow: scroll; max-width: 30px;">
-                          <p>{{schedule.command}}</p>
+                          <p style="overflow: scroll;" class="no-scroll">{{schedule.command}}</p>
                         </td>
                         <td id="{{schedule.interval}}" class="action">
                           {% if schedule.interval_type != '' and schedule.interval_type != 'reaction' %}
@@ -105,14 +101,10 @@
                           <p>{{schedule.next_run}}</p>
                         </td>
                         <td id="{{schedule.enabled}}" class="action">
-                          <input style="width: 10px !important;" type="checkbox" class="schedule-enabled-toggle"
-                            data-schedule-id="{{schedule.schedule_id}}"
-                            data-schedule-enabled="{{ 'true' if schedule.enabled else 'false' }}">
+                          <input style="width: 10px !important;" type="checkbox" class="schedule-enabled-toggle" data-schedule-id="{{schedule.schedule_id}}" data-schedule-enabled="{{ 'true' if schedule.enabled else 'false' }}">
                         </td>
                         <td id="{{schedule.action}}" class="action">
-                          <button
-                            onclick="window.location.href='/panel/edit_schedule?id={{ data['server_stats']['server_id']['server_id'] }}&sch_id={{schedule.schedule_id}}'"
-                            class="btn btn-info">
+                          <button onclick="window.location.href='/panel/edit_schedule?id={{ data['server_stats']['server_id']['server_id'] }}&sch_id={{schedule.schedule_id}}'" class="btn btn-info">
                             <i class="fas fa-pencil-alt"></i>
                           </button>
                           <br>
@@ -126,8 +118,7 @@
                     </tbody>
                   </table>
                   <hr />
-                  <table class="table table-hover d-block d-lg-none" id="mini_schedule_table" width="100%"
-                    style="table-layout:fixed;">
+                  <table class="table table-hover d-block d-lg-none" id="mini_schedule_table" width="100%" style="table-layout:fixed;">
                     <thead>
                       <tr class="rounded">
                         <th style="width: 25%; min-width: 50px;">{{ translate('serverSchedules', 'action', data['lang'])
@@ -145,7 +136,7 @@
                           <p>{{schedule.action}}</p>
                         </td>
                         <td id="{{schedule.command}}" class="action" style="overflow: scroll; max-width: 30px;">
-                          <p>{{schedule.command}}</p>
+                          <p style="overflow: scroll;">{{schedule.command}}</p>
                         </td>
                         <td id="{{schedule.enabled}}" class="action">
                           {% if schedule.enabled %}
@@ -160,8 +151,7 @@
                         </td>
                       </tr>
                       <!-- Modal -->
-                      <div class="modal fade" id="task_details_{{schedule.schedule_id}}" tabindex="-1" role="dialog"
-                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal fade" id="task_details_{{schedule.schedule_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                           <div class="modal-content">
                             <div class="modal-header">
@@ -208,19 +198,14 @@
                                   <p>zzzzzzz</p>
                                   {% end %}
                                 </li>
-                                <li id="{{schedule.enabled}}" class="action"
-                                  style="border-top: .1em solid gray; border-bottom: .1em solid gray">
+                                <li id="{{schedule.enabled}}" class="action" style="border-top: .1em solid gray; border-bottom: .1em solid gray">
                                   <h4>{{ translate('serverSchedules', 'enabled', data['lang']) }}</h4>
-                                  <input type="checkbox" class="schedule-enabled-toggle"
-                                    data-schedule-id="{{schedule.schedule_id}}"
-                                    data-schedule-enabled="{{ 'true' if schedule.enabled else 'false' }}">
+                                  <input type="checkbox" class="schedule-enabled-toggle" data-schedule-id="{{schedule.schedule_id}}" data-schedule-enabled="{{ 'true' if schedule.enabled else 'false' }}">
                                 </li>
                               </ul>
                             </div>
                             <div class="modal-footer">
-                              <button
-                                onclick="window.location.href='/panel/edit_schedule?id={{ data['server_stats']['server_id']['server_id'] }}&sch_id={{schedule.schedule_id}}'"
-                                class="btn btn-info">
+                              <button onclick="window.location.href='/panel/edit_schedule?id={{ data['server_stats']['server_id']['server_id'] }}&sch_id={{schedule.schedule_id}}'" class="btn btn-info">
                                 <i class="fas fa-pencil-alt"></i> {{ translate('serverSchedules', 'edit', data['lang'])
                                 }}
                               </button>
@@ -381,39 +366,6 @@
     console.log("ready!");
 
   });
-
-  function yesnoCheck(that) {
-    if (that.value == "command") {
-      document.getElementById("ifYes").style.display = "block";
-      document.getElementById("command").required = true;
-    } else {
-      document.getElementById("ifYes").style.display = "none";
-      document.getElementById("command").required = false;
-    }
-  }
-  function basicAdvanced(that) {
-    if (that.value == "advanced") {
-      document.getElementById("ifAdvanced").style.display = "block";
-      document.getElementById("ifBasic").style.display = "none";
-      document.getElementById("interval").required = false;
-      document.getElementById("time").required = false;
-    } else {
-      document.getElementById("ifAdvanced").style.display = "none";
-      document.getElementById("ifBasic").style.display = "block";
-      document.getElementById("interval").required = true;
-      document.getElementById("time").required = true;
-    }
-  }
-  function ifDays(that) {
-    if (that.value == "days") {
-      document.getElementById("ifDays").style.display = "block";
-      document.getElementById("time").required = true;
-    } else {
-      document.getElementById("ifDays").style.display = "none";
-      document.getElementById("time").required = false;
-    }
-  }
-
   $(".del_button").click(function () {
     var sch_id = $(this).data('sch');
 
