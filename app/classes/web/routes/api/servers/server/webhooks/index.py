@@ -43,7 +43,11 @@ class ApiServersServerWebhooksIndexHandler(BaseApiHandler):
             # if the user doesn't have Schedule permission, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
         self.finish_json(
-            200, self.controller.management.get_webhooks_by_server(server_id)
+            200,
+            {
+                "status": "ok",
+                "data": self.controller.management.get_webhooks_by_server(server_id),
+            },
         )
 
     def post(self, server_id: str):

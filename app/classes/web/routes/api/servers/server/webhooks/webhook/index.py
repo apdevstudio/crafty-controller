@@ -52,7 +52,13 @@ class ApiServersServerWebhooksWebhookIndexHandler(BaseApiHandler):
             return self.finish_json(
                 400, {"status": "error", "error": "NO WEBHOOK FOUND"}
             )
-        self.finish_json(200, self.controller.management.get_webhook_by_id(webhook_id))
+        self.finish_json(
+            200,
+            {
+                "status": "ok",
+                "data": self.controller.management.get_webhook_by_id(webhook_id),
+            },
+        )
 
     def delete(self, server_id: str, webhook_id: str):
         auth_data = self.authenticate_user()
