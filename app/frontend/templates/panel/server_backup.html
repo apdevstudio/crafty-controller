@@ -333,25 +333,23 @@
     });
     return;
   }
-
-  function del_backup(filename, id) {
+  async function del_backup(filename, id) {
     var token = getCookie("_xsrf")
-
-    data_to_send = { file_name: filename }
-
-    console.log('Sending Command to delete backup: ' + filename)
-    $.ajax({
-      type: "DELETE",
-      headers: { 'X-XSRFToken': token },
-      url: '/ajax/del_backup?server_id=' + id,
-      data: {
-        file_path: filename,
-        id: id
+    let contents = JSON.stringify({"filename": filename})
+    let res = await fetch(`/api/v2/servers/${id}/backups/backup/`, {
+      method: 'DELETE',
+      headers: {
+        'token': token,
       },
-      success: function (data) {
-        location.reload();
-      },
+      body: contents
     });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      window.location.reload();
+    }else{
+      bootbox.alert({"title": responseData.status,
+                    "message": responseData.error})
+    }
   }
 
   function restore_backup(filename, id) {
@@ -366,9 +364,8 @@
       type: "POST",
       headers: { 'X-XSRFToken': token },
       url: '/ajax/restore_backup?server_id=' + id,
-      data: {
-        zip_file: filename,
-        id: id
+      body: {
+        "filename": filename,
       },
       success: function (data) {
         setTimeout(function () {
@@ -376,6 +373,28 @@
         }, 15000);
       },
     });
+  }
+  async function restore_backup(filename, id) {
+    var token = getCookie("_xsrf")
+    let contents = JSON.stringify({"filename": filename})
+    var dialog = bootbox.dialog({
+      message: "<i class='fa fa-spin fa-spinner'></i> {{ translate('serverBackups', 'restoring', data['lang']) }}",
+      closeButton: false
+    });
+    let res = await fetch(`/api/v2/servers/${id}/backups/backup/`, {
+      method: 'POST',
+      headers: {
+        'token': token,
+      },
+      body: contents
+    });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      window.location.href = "/panel/dashboard";
+    }else{
+      bootbox.alert({"title": responseData.status,
+                    "message": responseData.error})
+    }
   }
 
   $("#before-check").on("click", function () {
@@ -457,7 +476,7 @@
           console.log(result);
           if (result == true) {
             var full_path = backup_path + '/' + file_to_del;
-            del_backup(full_path, server_id);
+            del_backup(file_to_del, server_id);
           }
         }
       });
