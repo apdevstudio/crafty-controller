@@ -86,7 +86,6 @@ class ApiServersServerBackupsBackupIndexHandler(BaseApiHandler):
 
     def post(self, server_id: str):
         auth_data = self.authenticate_user()
-        backup_conf = self.controller.management.get_backup_config(server_id)
         if not auth_data:
             return
         if (
