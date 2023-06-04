@@ -120,6 +120,12 @@ class ApiServersServerWebhooksWebhookIndexHandler(BaseApiHandler):
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         data["server_id"] = server_id
+        if "trigger" in data.keys():
+            triggers = ""
+            for item in data["trigger"]:
+                string = item + ","
+                triggers += string
+            data["trigger"] = triggers
         self.controller.management.modify_webhook(webhook_id, data)
 
         self.controller.management.add_to_audit_log(

@@ -1130,7 +1130,7 @@ class PanelHandler(BaseHandler):
             page_data["server_stats"][
                 "server_type"
             ] = self.controller.servers.get_server_type_by_id(server_id)
-            page_data["new_webhook"] = True
+            page_data["new_webhook"] = False
             page_data["webhook"] = self.controller.management.get_webhook_by_id(
                 webhook_id
             )

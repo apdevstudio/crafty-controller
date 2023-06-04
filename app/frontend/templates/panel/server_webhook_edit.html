@@ -40,7 +40,7 @@
               <form class="forms-sample" method="post" id="new_webhook_form"
                 action="/panel/new_webhook?id={{ data['server_stats']['server_id']['server_id'] }}">
               {% else %}
-              <form class="forms-sample" method="post" id="schedule_form"
+              <form class="forms-sample" method="post" id="webhook_form"
                 action="/panel/edit_webhook?id={{ data['server_stats']['server_id']['server_id'] }}&sch_id={{ data['webhook']['id'] }}">
               {% end %}
                 <select class="form-select form-control form-control-lg select-css" id="webhook_type" name="webhook_type">
@@ -196,10 +196,10 @@
       } 
     });
 
-    $("#schedule_form").on("submit", async function (e) {
+    $("#webhook_form").on("submit", async function (e) {
       e.preventDefault();
       var token = getCookie("_xsrf");
-      let webhookForm = document.getElementById("new_webhook_form");
+      let webhookForm = document.getElementById("webhook_form");
       let select_val = JSON.stringify($('#trigger-select').val());
       select_val = JSON.parse(select_val);
 
@@ -214,7 +214,7 @@
       // Format the plain form data as JSON
       let formDataJsonString = JSON.stringify(formDataObject, replacer);
 
-      let res = await fetch(`/api/v2/servers/${serverId}/webhooks/${webhookId}`, {
+      let res = await fetch(`/api/v2/servers/${serverId}/webhook/${webhookId}`, {
         method: 'PATCH',
         headers: {
           'X-XSRFToken': token,
@@ -228,8 +228,8 @@
       } else {
 
         bootbox.alert({
-          title: responseData.error,
-          message: responseData.error_data
+          title: responseData.status,
+          message: responseData.error
           });
       } 
     });
