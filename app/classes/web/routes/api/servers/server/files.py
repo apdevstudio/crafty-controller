@@ -6,6 +6,7 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 from app.classes.models.server_permissions import EnumPermissionsServer
 from app.classes.shared.helpers import Helpers
+from app.classes.shared.file_helpers import FileHelpers
 from app.classes.web.base_api_handler import BaseApiHandler
 
 logger = logging.getLogger(__name__)
@@ -15,6 +16,15 @@ files_get_schema = {
     "properties": {
         "page": {"type": "string", "minLength": 1},
         "folder": {"type": "string"},
+    },
+    "additionalProperties": False,
+    "minProperties": 1,
+}
+
+file_delete_schema = {
+    "type": "object",
+    "properties": {
+        "filename": {"type": "string", "minLength": 5},
     },
     "additionalProperties": False,
     "minProperties": 1,
@@ -32,12 +42,16 @@ class ApiServersServerFilesIndexHandler(BaseApiHandler):
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
-            EnumPermissionsServer.BACKUP
+            EnumPermissionsServer.FILES
             not in self.controller.server_perms.get_user_id_permissions_list(
                 auth_data[4]["user_id"], server_id
             )
+            or EnumPermissionsServer.BACKUP
+            in self.controller.server_perms.get_user_id_permissions_list(
+                auth_data[4]["user_id"], server_id
+            )
         ):
-            # if the user doesn't have Config permission, return an error
+            # if the user doesn't have Files or Backup permission, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         try:
@@ -123,3 +137,56 @@ class ApiServersServerFilesIndexHandler(BaseApiHandler):
                         "excluded": False,
                     }
         self.finish_json(200, {"status": "ok", "data": return_json})
+
+    def delete(self, server_id: str):
+        auth_data = self.authenticate_user()
+        if not auth_data:
+            return
+
+        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+            # if the user doesn't have access to the server, return an error
+            return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
+
+        if (
+            EnumPermissionsServer.FILES
+            not in self.controller.server_perms.get_user_id_permissions_list(
+                auth_data[4]["user_id"], server_id
+            )
+        ):
+            # if the user doesn't have Files permission, return an error
+            return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
+        try:
+            data = json.loads(self.request.body)
+        except json.decoder.JSONDecodeError as e:
+            return self.finish_json(
+                400, {"status": "error", "error": "INVALID_JSON", "error_data": str(e)}
+            )
+        try:
+            validate(data, file_delete_schema)
+        except ValidationError as e:
+            return self.finish_json(
+                400,
+                {
+                    "status": "error",
+                    "error": "INVALID_JSON_SCHEMA",
+                    "error_data": str(e),
+                },
+            )
+        if not Helpers.validate_traversal(
+            self.controller.servers.get_server_data_by_id(server_id)["path"],
+            data["filename"],
+        ):
+            return self.finish_json(
+                400,
+                {
+                    "status": "error",
+                    "error": "TRAVERSAL DETECTED",
+                    "error_data": str(e),
+                },
+            )
+
+        if os.path.isdir(data["filename"]):
+            FileHelpers.del_dirs(data["filename"])
+        else:
+            FileHelpers.del_file(data["filename"])
+        return self.finish_json(200, {"status": "ok"})
