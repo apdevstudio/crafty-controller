@@ -21,7 +21,7 @@ files_get_schema = {
 }
 
 
-class ApiServersServerBackupsFilesIndexHandler(BaseApiHandler):
+class ApiServersServerFilesIndexHandler(BaseApiHandler):
     def post(self, server_id: str):
         auth_data = self.authenticate_user()
         if not auth_data:

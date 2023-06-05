@@ -588,7 +588,7 @@
   }
   async function getTreeView(path){
     var token = getCookie("_xsrf");
-    let res = await fetch(`/api/v2/servers/${server_id}/backups/files`, {
+    let res = await fetch(`/api/v2/servers/${server_id}/files`, {
         method: 'POST',
         headers: {
           'X-XSRFToken': token

@@ -32,8 +32,8 @@ from app.classes.web.routes.api.servers.server.backups.index import (
 from app.classes.web.routes.api.servers.server.backups.backup.index import (
     ApiServersServerBackupsBackupIndexHandler,
 )
-from app.classes.web.routes.api.servers.server.backups.files import (
-    ApiServersServerBackupsFilesIndexHandler,
+from app.classes.web.routes.api.servers.server.files import (
+    ApiServersServerFilesIndexHandler,
 )
 from app.classes.web.routes.api.servers.server.tasks.task.children import (
     ApiServersServerTasksTaskChildrenHandler,
@@ -132,8 +132,8 @@ def api_handlers(handler_args):
             handler_args,
         ),
         (
-            r"/api/v2/servers/([0-9]+)/backups/files/?",
-            ApiServersServerBackupsFilesIndexHandler,
+            r"/api/v2/servers/([0-9]+)/files/?",
+            ApiServersServerFilesIndexHandler,
             handler_args,
         ),
         (
