@@ -108,24 +108,6 @@ class AjaxHandler(BaseHandler):
             )
             self.finish()
 
-        elif page == "get_dir":
-            server_id = self.get_argument("id", None)
-            path = self.get_argument("path", None)
-
-            if not self.check_server_id(server_id, "get_tree"):
-                return
-            server_id = bleach.clean(server_id)
-
-            if Helpers.validate_traversal(
-                self.controller.servers.get_server_data_by_id(server_id)["path"], path
-            ):
-                self.write(
-                    Helpers.get_os_understandable_path(path)
-                    + "\n"
-                    + Helpers.generate_dir(path)
-                )
-            self.finish()
-
     @tornado.web.authenticated
     def post(self, page):
         api_key, _, exec_user = self.current_user

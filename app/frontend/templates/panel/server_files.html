@@ -882,68 +882,86 @@
     });
   }
 
-  function getTreeView(event) {
-    const path = $('#root_dir').data('path');;
+  function getDirView(event){
+    let path = event.target.parentElement.getAttribute("data-path");
+    if (document.getElementById(path).classList.contains('clicked')) {
+      return;
+    }else{
+      getTreeView(path);
+    }
 
-    $.ajax({
-      type: "GET",
-      url: "/files/get_tree?id=" + serverId + "&path=" + path,
-      dataType: 'text',
-      success: function (data) {
-        console.log("got response:");
+  }
+  async function getTreeView(path){
+    var token = getCookie("_xsrf");
+    let res = await fetch(`/api/v2/servers/${serverId}/files`, {
+        method: 'POST',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: JSON.stringify({"page": "files", "folder": path}),
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        console.log(responseData);
+        process_tree_response(responseData);
 
-        dataArr = data.split('\n');
-        serverDir = dataArr.shift(); // Remove & return first element (server directory)
-        text = dataArr.join('\n');
+      } else {
 
-        try {
-          document.getElementById(path).innerHTML += text;
-          event.target.parentElement.classList.add("clicked");
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+        });
+      }
+  }
+
+  function process_tree_response(response) {
+    let path = response.data.root_path.path;
+    let text = ``;
+    if (!response.data.root_path.top){
+      text = `<ul class="tree-nested d-block" id="${path}ul">`;
+    }
+      Object.entries(response.data).forEach(([key, value]) => {
+        if (key === "root_path" || key === "db_stats"){
+          //continue is not valid in for each. Return acts as a continue.
+          return;
+        }
+      let checked = ""
+      let dpath = value.path;
+      let filename = key;
+      if (value.dir){
+        if (value.excluded){
+          checked = "checked"
+        }
+        text += `<li class="tree-item" id="${dpath}li" data-path="${dpath}">
+                            \n<div id="${dpath}" data-path="${dpath}" data-name="${filename}" class="tree-caret tree-ctx-item tree-folder">
+                            <input type="checkbox" class="checkBoxClass d-none file-check" name="root_path" value="${dpath}" ${checked}>
+                            <span id="${dpath}span" class="files-tree-title" data-path="${dpath}" data-name="${filename}" onclick="getDirView(event)">
+                            <i style="color: var(--info);" class="far fa-folder"></i>
+                            <i style="color: var(--info);" class="far fa-folder-open"></i>
+                            ${filename}
+                            </span>
+                            </input></div></li>`
+      }else{
+        text += `<li
+                        class="d-block tree-ctx-item tree-file"
+                        data-path="${dpath}"
+                        data-name="${filename}"
+                        onclick="clickOnFile(event)" id="${dpath}li"><input type='checkbox' class="checkBoxClass d-none file-check" name='root_path' value="${dpath}" ${checked}><span style="margin-right: 6px;">
+                        <i class="far fa-file"></i></span></input>${filename}</li>`
+      }
+    });
+    if (! response.data.root_path.top){
+      text += `</ul>`;
+    }
+    if(response.data.root_path.top){
+      try {
+          document.getElementById('main-tree-div').innerHTML += text;
+          document.getElementById('main-tree').parentElement.classList.add("clicked");
         } catch {
           document.getElementById('files-tree').innerHTML = text;
         }
-
-
-        document.getElementsByClassName('files-tree-title')[0].setAttribute('data-path', serverDir);
-        document.getElementsByClassName('files-tree-title')[0].setAttribute('data-name', 'Files');
-
-        setTimeout(function () { setTreeViewContext() }, 1000);
-      },
-    });
-  }
-
-  function getToggleMain(event) {
-    path = event.target.parentElement.getAttribute('data-path');
-    document.getElementById("files-tree").classList.toggle("d-block");
-    document.getElementById(path + "span").classList.toggle("tree-caret-down");
-    document.getElementById(path + "span").classList.toggle("tree-caret");
-  }
-
-  function getDirView(event) {
-    let path = event.target.parentElement.getAttribute('data-path');
-
-    if (document.getElementById(path).classList.contains('clicked')) {
-
-      var toggler = document.getElementById(path + "span");
-
-      if (toggler.classList.contains('files-tree-title')) {
-        document.getElementById(path + "ul").classList.toggle("d-block");
-        document.getElementById(path + "span").classList.toggle("tree-caret-down");
-      }
-      return;
-    } else {
-      $.ajax({
-        type: "GET",
-        url: "/files/get_dir?id=" + serverId + "&path=" + path,
-        dataType: 'text',
-        success: function (data) {
-          console.log("got response:");
-
-          dataArr = data.split('\n');
-          serverDir = dataArr.shift(); // Remove & return first element (server directory)
-          text = dataArr.join('\n');
-
-          try {
+    }else{
+      try {
             document.getElementById(path + "span").classList.add('tree-caret-down');
             document.getElementById(path).innerHTML += text;
             document.getElementById(path).classList.add("clicked");
@@ -951,9 +969,7 @@
             console.log("Bad")
           }
 
-          setTimeout(function () { setTreeViewContext() }, 1000);
-
-          var toggler = document.getElementById(path);
+          var toggler = document.getElementById(path + "span");
 
           if (toggler.classList.contains('files-tree-title')) {
             document.getElementById(path + "span").addEventListener("click", function caretListener() {
@@ -961,9 +977,14 @@
               document.getElementById(path + "span").classList.toggle("tree-caret-down");
             });
           }
-        },
-      });
     }
+    setTimeout(function () { setTreeViewContext() }, 1000);
+  }
+  function getToggleMain(event) {
+    path = event.target.parentElement.getAttribute('data-path');
+    document.getElementById("files-tree").classList.toggle("d-block");
+    document.getElementById(path + "span").classList.toggle("tree-caret-down");
+    document.getElementById(path + "span").classList.toggle("tree-caret");
   }
 
   function setTreeViewContext() {
@@ -1172,7 +1193,7 @@
     });
   }
 
-  getTreeView();
+  getTreeView($('#root_dir').data('path'));
   setTreeViewContext();
 
   function setKeyboard(target) {
