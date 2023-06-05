@@ -648,37 +648,27 @@
     });
   }
 
-  function deleteFile(path, callback) {
-    console.log('Deleting: ' + path)
-    var token = getCookie("_xsrf")
-    $.ajax({
-      type: "DELETE",
-      headers: { 'X-XSRFToken': token },
-      url: "/files/del_file?id=" + serverId,
-      data: {
-        file_path: path
-      },
-      success: function (data) {
-        console.log("got response:");
-        callback();
-      },
-    });
-  }
+  async function deleteItem(path, el, callback) {
+    var token = getCookie("_xsrf");
+    let res = await fetch(`/api/v2/servers/${serverId}/files`, {
+        method: 'DELETE',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: JSON.stringify({"filename": path}),
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        el = document.getElementById(path + "li");
+        $(el).remove();
+        document.getElementById('files-tree-nav').style.display = 'none';
+      } else {
 
-  function deleteDir(path, callback) {
-    var token = getCookie("_xsrf")
-    $.ajax({
-      type: "DELETE",
-      headers: { 'X-XSRFToken': token },
-      url: "/files/del_dir?id=" + serverId,
-      data: {
-        dir_path: path
-      },
-      success: function (data) {
-        console.log("got response:");
-        callback();
-      },
-    });
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+        });
+      }
   }
 
   function unZip(path, callback) {
@@ -1155,11 +1145,7 @@
       },
       callback: function (result) {
         if (!result) return;
-        deleteFile(path, function () {
-          el = document.getElementById(path + "li");
-          $(el).remove();
-          document.getElementById('files-tree-nav').style.display = 'none';
-        });
+        deleteItem(path);
       }
     });
   }
@@ -1184,11 +1170,7 @@
       },
       callback: function (result) {
         if (!result) return;
-        deleteDir(path, function () {
-          el = document.getElementById(path + "li");
-          $(el).remove();
-          document.getElementById('files-tree-nav').style.display = 'none';
-        });
+        deleteItem(path);
       }
     });
   }
