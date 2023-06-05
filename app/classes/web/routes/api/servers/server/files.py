@@ -46,7 +46,7 @@ class ApiServersServerFilesIndexHandler(BaseApiHandler):
             not in self.controller.server_perms.get_user_id_permissions_list(
                 auth_data[4]["user_id"], server_id
             )
-            or EnumPermissionsServer.BACKUP
+            or not EnumPermissionsServer.BACKUP
             in self.controller.server_perms.get_user_id_permissions_list(
                 auth_data[4]["user_id"], server_id
             )
