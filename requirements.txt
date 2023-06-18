@@ -13,7 +13,7 @@ psutil==5.9
 pyOpenSSL==23.2.0
 pyjwt==2.4.0
 PyYAML==5.4
-requests==2.26
+requests==2.31
 termcolor==1.1
 tornado==6.3.2
 tzlocal==4.0
