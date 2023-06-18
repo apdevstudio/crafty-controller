@@ -1,4 +1,21 @@
 # Changelog
+## --- [4.1.2] - 2023/06/18
+### Bug fixes
+- Fix upload root files being hidden ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/590))
+- Send empty json for no banned/cached players ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/589))
+- Bump Tornado from 6.0 to 6.3.2 in response to CVE-2023-28370 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/591))
+- Fix bug where commands would show "command_server" when initially created ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/592))
+- Add ID autofield to management CraftySettings class ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/599))
+### Refactor
+- Optimize player management page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/593))
+### Tweaks
+- Remove bedrock servers in serverjars options ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/595))
+- Bump cryptography & pyOpenSSL ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/596))
+- Bump requests ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/600))
+### Lang
+- Update es_ES & pl_PL lang, thank you `.lucyy_` & `terrariadlc` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/597))
+<br><br>
+
 ## --- [4.1.1] - 2023/05/23
 ### Bug fixes
 - Fix task scheduling where a command was not sent to the DB ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/586))
