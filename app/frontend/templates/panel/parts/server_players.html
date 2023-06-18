@@ -1,4 +1,4 @@
-<div class="col-md-6 col-sm-12">
+<div class="col-xl-6 col-lg-12 col-md-12 col-sm-12">
     <h2>{{ translate('serverPlayerManagement', 'players', data['lang']) }}:</h2>
     <table class="table table-sm-responsive">
         <thead class="thead">
@@ -8,25 +8,28 @@
                 <th scope="col">Actions</th>
             </tr>
         </thead>
-        <tbody>
-            {% for player in data['all_players'] %}
-            <tr id="playerItem-{{ player['name'] }}" class="playerItem--">
+        <tbody id="player-body">
+            {% for player in data['cached_players'] %}
+            <tr id="playerItem-{{ player['name'] }}" class="playerItem--" style="text-align: center;">
                 <td>
                     <strong> {{ player['name'] }}</strong>
                 </td>
-                {% if player['status'] == 'online' %}
-                <td><span class="text-success"><i class="fas fa-signal"></i> {{ player['status'] }}</span></td>
-                {% elif player['status'] == 'offline' %}
-                <td><span class="text-warning"><i class="fa-solid fa-signal-slash"></i> Last connection : {{ player['last_seen'] }}</span></td>
+                {% if player['status'] == 'Online' %}
+                <td style="overflow: scroll;"><span class="text-success"><i class="fas fa-signal"></i> {{ player['status'] }}</span></td>
+                {% elif player['status'] == 'Offline' %}
+                <td><span class="text-warning"><i class="fa-regular fa-circle-xmark"></i><span class="offline-status">&nbsp;{{ player['status'] }}</span><span class="conn-break"> Last connection :<br> {{ player['last_seen'] }}</span></span></td>
                 {% end %}
-                <td class="buttons">
+                <td class="buttons" style="text-align: center;">
                     {% if data['server_stats']['running'] %}
-                    <button onclick="send_command_to_server(`ban {{ player['name'] }}`)" type="button" class="btn btn-danger">Ban</button>
-                    <button onclick="send_command_to_server(`kick {{ player['name'] }}`)" type="button" class="btn btn-outline-danger">Kick</button>
-                    <button onclick="send_command_to_server(`op {{ player['name'] }}`)" type="button" class="btn btn-warning">OP</button>
-                    <button onclick="send_command_to_server(`deop {{ player['name'] }}`)" type="button" class="btn btn-outline-warning">De-OP</button>
+                    <button onclick="send_command_to_server(`ban {{ player['name'] }}`)" type="button" class="btn btn-danger controls">Ban</button>
+                    <br class="mobile-break"/>
+                    <button onclick="send_command_to_server(`kick {{ player['name'] }}`)" type="button" class="btn btn-outline-danger controls">Kick</button>
+                    <br>
+                    <button onclick="send_command_to_server(`op {{ player['name'] }}`)" type="button" class="btn btn-warning controls">OP</button>
+                    <br class="mobile-break"/>
+                    <button onclick="send_command_to_server(`deop {{ player['name'] }}`)" type="button" class="btn btn-outline-warning controls">De-OP</button>
                     {% else %}
-                    <span> Unavailable (Server Offline)</span>
+                    <span> Unavailable <br>(Server Offline)</span>
                     {% end %}
                 </td>
             </tr>
@@ -34,9 +37,23 @@
         </tbody>
     </table>
 </div>
-<div class="col-md-6 col-sm-12">
+<style>
+    @media (min-width: 600px)  {
+        .mobile-break { display: none;}
+        .offline-status {
+            display: none;
+        }
+    }
+    @media screen and (max-width: 600px)  {
+        .conn-break { display: none; }
+    }
+    button.controls {
+        width: 70px;
+    }
+</style>
+<div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 no-scroll" width="100%">
     <h2>{{ translate('serverPlayerManagement', 'bannedPlayers', data['lang']) }}:</h2>
-    <table class="table table-sm-responsive">
+    <table class="table table-sm-responsive d-none d-lg-block no-scroll" style="width: 100%;">
         <thead class="thead">
             <tr>
                 <th scope="col">Player</th>
@@ -51,6 +68,24 @@
                 <td><strong> {{ player['name'] }}</strong></td>
                 <td>Banned on {{ player['banned_on'] }}</td>
                 <td>Banned by : {{ player['source'] }} <br />Reason : {{ player['reason'] }}</td>
+                <td class="buttons">
+                    <button onclick="send_command_to_server(`pardon {{ player['name'] }} `)" type="button" class="btn btn-danger">Unban</button>
+                </td>
+            </tr>
+            {% end %}
+        </tbody>
+    </table>
+    <table class="table table-sm-responsive d-block d-lg-none" style="width: 100%;">
+        <thead class="thead ">
+            <tr>
+                <th scope="col">Player</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for player in data['banned_players'] %}
+            <tr id="playerItem-{{ player }}" class="playerItem--">
+                <td><strong> {{ player['name'] }}</strong></td>
                 <td class="buttons">
                     <button onclick="send_command_to_server(`pardon {{ player['name'] }} `)" type="button" class="btn btn-danger">Unban</button>
                 </td>
