@@ -11,6 +11,7 @@ TBD
 - Optimize player management page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/593))
 ### Tweaks
 - Remove bedrock servers in serverjars options ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/595))
+- Bump cryptography & pyOpenSSL ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/596))
 ### Lang
 - Update es_ES & pl_PL lang, thank you `.lucyy_` & `terrariadlc` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/597))
 <br><br>
