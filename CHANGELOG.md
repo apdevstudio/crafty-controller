@@ -1,7 +1,5 @@
 # Changelog
-## --- [4.1.2] - 2023/TBD
-### New features
-TBD
+## --- [4.1.2] - 2023/06/18
 ### Bug fixes
 - Fix upload root files being hidden ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/590))
 - Send empty json for no banned/cached players ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/589))
