@@ -1,4 +1,15 @@
 # Changelog
+## --- [4.1.3] - 2023/TBD
+### New features
+TBD
+### Bug fixes
+TBD
+### Tweaks
+TBD
+### Lang
+TBD
+<br><br>
+
 ## --- [4.1.2] - 2023/06/18
 ### Bug fixes
 - Fix upload root files being hidden ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/590))
