@@ -166,48 +166,6 @@
                     <input type="number" class="form-control" name="logs_delete_after" id="logs_delete_after" value="{{ data['server_stats']['server_id']['logs_delete_after']  }}" step="1" max="365" min="0" required>
                   </div>
 
-                  <!--
-                  <div class="form-check-flat">
-                    <label for="auto_start" class="form-check-label ml-4 mb-4">
-                      {% if data['server_stats']['server_id']['auto_start'] %}
-                      <input type="checkbox" class="form-check-input" id="auto_start" name="auto_start" checked=""
-                             data-toggle="toggle" value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'serverAutoStart',
-                      data['lang']) }}
-                      {% else %}
-                      <input type="checkbox" class="form-check-input" id="auto_start" name="auto_start" value="1"
-                             data-toggle="toggle">&nbsp;&nbsp;{{
-                      translate('serverConfig', 'serverAutoStart', data['lang']) }}
-                      {% end %}
-                    </label>
-
-                    <label for="crash_detection" class="form-check-label ml-4 mb-4">
-                      {% if data['server_stats']['server_id']['crash_detection'] %}
-                      <input type="checkbox" class="form-check-input" id="crash_detection" name="crash_detection"
-                             data-toggle="toggle" checked="" value="1">&nbsp;&nbsp;{{ translate('serverConfig',
-                      'serverCrashDetection', data['lang']) }}
-                      {% else %}
-                      <input type="checkbox" class="form-check-input" id="crash_detection" name="crash_detection"
-                             data-toggle="toggle" value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'serverCrashDetection',
-                      data['lang']) }}
-                      {% end %}
-                    </label>
-
-                    {% if data['super_user'] %}
-                    <label for="show_status" class="form-check-label ml-4 mb-4">
-                      {% if data['server_stats']['server_id']['show_status'] %}
-                      <input type="checkbox" class="form-check-input" id="show_status" name="show_status"
-                             data-toggle="toggle" checked="" value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'showStatus',
-                      data['lang']) }}
-                      {% else %}
-                      <input type="checkbox" class="form-check-input" id="show_status" name="show_status"
-                             data-toggle="toggle" value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'showStatus',
-                      data['lang']) }}
-                      {% end %}
-                    </label>
-                    {% end %}
-                  </div>
-                -->
-
                   <div class="form-group">
                     <div class="custom-control custom-switch">
                       {% if data['server_stats']['server_id']['auto_start'] %}
@@ -237,7 +195,7 @@
                       <input type="checkbox" class="custom-control-input" id="show_status" name="show_status" checked="" value="1">
                       <label class="custom-control-label" for="show_status">&nbsp;&nbsp;{{ translate('serverConfig', 'showStatus', data['lang']) }}</label>
                       {% else %}
-                      <input type="checkbox" class="custom-control-input" id="show_status" name="show_status" value="1">&nbsp;&nbsp;{{ translate('serverConfig', 'showStatus', data['lang']) }}
+                      <input type="checkbox" class="custom-control-input" id="show_status" name="show_status" value="1">&nbsp;&nbsp;
                       <label class="custom-control-label" for="show_status">&nbsp;&nbsp;{{ translate('serverConfig', 'showStatus', data['lang']) }}</label>
                       {% end %}
                       {% end %}
