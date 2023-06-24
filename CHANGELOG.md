@@ -3,7 +3,7 @@
 ### New features
 TBD
 ### Bug fixes
-TBD
+- Include tzdata in Docker image ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/604))
 ### Tweaks
 TBD
 ### Lang
