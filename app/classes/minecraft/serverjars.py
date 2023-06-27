@@ -153,6 +153,9 @@ class ServerJars:
     def _get_server_type_list(self):
         url = "/api/fetchTypes/"
         response = self._get_api_result(url)
+        if "bedrock" in response.keys():
+            # remove pocketmine from options
+            del response["bedrock"]
         return response
 
     def download_jar(self, jar, server, version, path, server_id):
