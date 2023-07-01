@@ -4,6 +4,7 @@
 TBD
 ### Bug fixes
 - Include tzdata in Docker image ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/604))
+- Fix text/formatting issue on server config page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/602))
 ### Tweaks
 TBD
 ### Lang
