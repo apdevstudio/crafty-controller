@@ -25,6 +25,7 @@ RUN apt-get update \
         openjdk-8-jre-headless \
         openjdk-11-jre-headless \
         openjdk-17-jre-headless \
+        tzdata \
     && apt-get autoremove \
     && apt-get clean
 
