@@ -92,20 +92,21 @@ class ApiServersServerTasksIndexHandler(BaseApiHandler):
             data["start_time"] = "00:00"
 
         # validate cron string
-        if data["cron_string"] != "" and not croniter.is_valid(data["cron_string"]):
-            return self.finish_json(
-                405,
-                {
-                    "status": "error",
-                    "error": self.helper.translation.translate(
-                        "error",
-                        "cronFormat",
-                        self.controller.users.get_user_lang_by_id(
-                            auth_data[4]["user_id"]
+        if "cron_string" in data:
+            if data["cron_string"] != "" and not croniter.is_valid(data["cron_string"]):
+                return self.finish_json(
+                    405,
+                    {
+                        "status": "error",
+                        "error": self.helper.translation.translate(
+                            "error",
+                            "cronFormat",
+                            self.controller.users.get_user_lang_by_id(
+                                auth_data[4]["user_id"]
+                            ),
                         ),
-                    ),
-                },
-            )
+                    },
+                )
         if "parent" not in data:
             data["parent"] = None
         task_id = self.tasks_manager.schedule_job(data)
