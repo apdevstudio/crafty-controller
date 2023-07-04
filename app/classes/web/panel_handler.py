@@ -808,7 +808,7 @@ class PanelHandler(BaseHandler):
                     Helpers.get_os_understandable_path(server_info["backup_path"]), file
                 )
             )
-            if not Helpers.is_subdir(
+            if not self.helper.is_subdir(
                 backup_file,
                 Helpers.get_os_understandable_path(server_info["backup_path"]),
             ) or not os.path.isfile(backup_file):
@@ -1463,7 +1463,7 @@ class PanelHandler(BaseHandler):
 
             server_info = self.controller.servers.get_server_data_by_id(server_id)
 
-            if not Helpers.is_subdir(
+            if not self.helper.is_subdir(
                 file,
                 Helpers.get_os_understandable_path(server_info["path"]),
             ) or not os.path.isfile(file):

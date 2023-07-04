@@ -656,14 +656,13 @@ class AjaxHandler(BaseHandler):
 
             server_info = self.controller.servers.get_server_data_by_id(server_id)
             if not (
-                file_path,
-                Helpers.is_subdir(
-                    Helpers.get_os_understandable_path(server_info["path"])
+                self.helper.is_subdir(
+                    file_path, Helpers.get_os_understandable_path(server_info["path"])
                 )
-                or Helpers.is_subdir(
+                or self.helper.is_subdir(
                     file_path,
                     Helpers.get_os_understandable_path(server_info["backup_path"]),
-                ),
+                )
             ) or not Helpers.check_file_exists(os.path.abspath(file_path)):
                 logger.warning(f"Invalid path in del_backup ajax call ({file_path})")
                 Console.warning(f"Invalid path in del_backup ajax call ({file_path})")
