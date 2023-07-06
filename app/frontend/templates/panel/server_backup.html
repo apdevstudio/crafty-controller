@@ -523,17 +523,6 @@
         closeButton: false
       });
 
-      $.ajax({
-        type: "POST",
-        headers: { 'X-XSRFToken': token },
-        url: '/ajax/backup_select?id=' + server_id + '&path=' + path,
-      });
-    } else {
-      bootbox.alert("You must input a path before selecting this button");
-    }
-  });
-  if (webSocket) {
-    webSocket.on('send_temp_path', function (data) {
       setTimeout(function () {
         var x = document.querySelector('.bootbox');
         if (x) {
@@ -543,13 +532,15 @@
         if (x) {
           x.remove()
         }
-        document.getElementById('main-tree-input').setAttribute('value', data.path)
-        getTreeView(data.path);
+        document.getElementById('main-tree-input').setAttribute('value', path)
+        getTreeView(path);
         show_file_tree();
 
       }, 5000);
-    });
-  }
+    } else {
+      bootbox.alert("You must input a path before selecting this button");
+    }
+  });
   if (webSocket) {
     webSocket.on('backup_status', function (backup) {
       if (backup.percent >= 100) {
