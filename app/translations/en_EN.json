@@ -203,7 +203,8 @@
         "forgotPassword": "Forgot Password",
         "login": "Log In",
         "password": "Password",
-        "username": "Username"
+        "username": "Username",
+        "viewStatus": "View Public Status Page"
     },
     "notify": {
         "activityLog": "Activity Logs",
