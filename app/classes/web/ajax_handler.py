@@ -9,7 +9,6 @@ import bleach
 import tornado.web
 import tornado.escape
 
-from app.classes.models.server_permissions import EnumPermissionsServer
 from app.classes.shared.console import Console
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.server import ServerOutBuf
