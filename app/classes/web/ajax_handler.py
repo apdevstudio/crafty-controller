@@ -187,11 +187,6 @@ class AjaxHandler(BaseHandler):
                     )
             return
 
-        elif page == "backup_select":
-            path = self.get_argument("path", None)
-            self.helper.backup_select(path, exec_user["user_id"])
-            return
-
         elif page == "jar_cache":
             if not superuser:
                 self.redirect("/panel/error?error=Not a super user")

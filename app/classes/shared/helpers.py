@@ -1146,12 +1146,6 @@ class Helpers:
                     user_id, "send_temp_path", {"path": temp_dir}
                 )
 
-    def backup_select(self, path, user_id):
-        if user_id:
-            self.websocket_helper.broadcast_user(
-                user_id, "send_temp_path", {"path": path}
-            )
-
     @staticmethod
     def unzip_backup_archive(backup_path, zip_name):
         zip_path = os.path.join(backup_path, zip_name)

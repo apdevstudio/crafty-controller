@@ -313,21 +313,32 @@
     return r ? r[1] : undefined;
   }
 
-  function backup_started() {
+  async function backup_started() {
     var token = getCookie("_xsrf")
     document.getElementById('backup_button').style.visibility = 'hidden';
     var dialog = bootbox.dialog({
       message: "{{ translate('serverBackups', 'backupTask', data['lang']) }}",
       closeButton: false
     });
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      url: `/api/v2/servers/${server_id}/action/backup_server`,
-      success: function (data) {
-        return;
-      },
-    });
+    var token = getCookie("_xsrf");
+    let res = await fetch(`/api/v2/servers/${server_id}/action/backup_server`, {
+        method: 'POST',
+        headers: {
+          'X-XSRFToken': token
+        }
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        console.log(responseData);
+        process_tree_response(responseData);
+
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+        });
+      }
     return;
   }
   async function del_backup(filename, id) {
@@ -349,28 +360,6 @@
     }
   }
 
-  function restore_backup(filename, id) {
-    var token = getCookie("_xsrf")
-    var dialog = bootbox.dialog({
-      message: "<i class='fa fa-spin fa-spinner'></i> {{ translate('serverBackups', 'restoring', data['lang']) }}",
-      closeButton: false
-    });
-
-    console.log('Sending Command to restore backup: ' + filename)
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      url: '/ajax/restore_backup?server_id=' + id,
-      body: {
-        "filename": filename,
-      },
-      success: function (data) {
-        setTimeout(function () {
-          location.href = ('/panel/dashboard');
-        }, 15000);
-      },
-    });
-  }
   async function restore_backup(filename, id) {
     var token = getCookie("_xsrf")
     let contents = JSON.stringify({"filename": filename})
@@ -571,17 +560,6 @@
         closeButton: false
       });
 
-      $.ajax({
-        type: "POST",
-        headers: { 'X-XSRFToken': token },
-        url: '/ajax/backup_select?id=' + server_id + '&path=' + path,
-      });
-    } else {
-      bootbox.alert("You must input a path before selecting this button");
-    }
-  });
-  if (webSocket) {
-    webSocket.on('send_temp_path', function (data) {
       setTimeout(function () {
         var x = document.querySelector('.bootbox');
         if (x) {
@@ -591,13 +569,15 @@
         if (x) {
           x.remove()
         }
-        document.getElementById('main-tree-input').setAttribute('value', data.path)
-        getTreeView(data.path);
+        document.getElementById('main-tree-input').setAttribute('value', path)
+        getTreeView(path);
         show_file_tree();
 
       }, 5000);
-    });
-  }
+    } else {
+      bootbox.alert("You must input a path before selecting this button");
+    }
+  });
   if (webSocket) {
     webSocket.on('backup_status', function (backup) {
       if (backup.percent >= 100) {
