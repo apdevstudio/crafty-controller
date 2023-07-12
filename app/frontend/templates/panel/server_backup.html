@@ -44,11 +44,8 @@
             <div class="col-md-6 col-sm-12">
               <br>
               <br>
-              <form class="forms-sample" method="post" action="/panel/server_backup">
+              <form id="backup-form" class="forms-sample" method="post" action="/panel/server_backup">
                 {% raw xsrf_form_html() %}
-                <input type="hidden" name="id" value="{{ data['server_stats']['server_id']['server_id'] }}">
-                <input type="hidden" name="subpage" value="backup">
-
 
                 {% if data['backing_up'] %}
                 <div class="progress" style="height: 15px;">
@@ -415,6 +412,46 @@
   });
 
   $(document).ready(function () {
+    $("#config_form").on("submit", async function (e) {
+      e.preventDefault();
+      var token = getCookie("_xsrf")
+      let backupForm = document.getElementById("backup_form");
+      //Remove checks that we don't need in form data.
+      $(this).children("before-check").remove();
+      $(this).children("after-check").remove();
+      let formData = new FormData(backupForm);
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      //We need to make sure these are sent regardless of whether or not they're checked
+      formDataObject.compress = $("#compress").prop('checked');
+      formDataObject.shutdown = $("#shutdown").prop('checked');
+      console.log(formDataObject);
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(formDataObject, replacer);
+      formDataJsonString["ignored_exits"] = toString(formDataJsonString["ignored_exits"]);
+      console.log(formDataJsonString.ignored_exits)
+
+      console.log(formDataJsonString);
+
+      let res = await fetch(`/api/v2/servers/${serverId}`, {
+        method: 'PATCH',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: formDataJsonString,
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        window.location.reload();
+      } else {
+
+        bootbox.alert({
+          title: responseData.error,
+          message: responseData.error_data
+        });
+      }
+    });
+  
     try {
       if ($('#backup_path').val() == '') {
         console.log('true')
