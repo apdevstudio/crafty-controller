@@ -1580,68 +1580,7 @@ class PanelHandler(BaseHandler):
                 role = self.controller.roles.get_role(r)
                 exec_user_role.add(role["role_name"])
 
-        if page == "server_backup":
-            logger.debug(self.request.arguments)
-
-            server_id = self.check_server_id()
-            if not server_id:
-                return
-
-            if (
-                not permissions["Backup"]
-                in self.controller.server_perms.get_user_id_permissions_list(
-                    exec_user["user_id"], server_id
-                )
-                and not superuser
-            ):
-                self.redirect(
-                    "/panel/error?error=Unauthorized access: User not authorized"
-                )
-                return
-
-            server_obj = self.controller.servers.get_server_obj(server_id)
-            compress = self.get_argument("compress", False)
-            shutdown = self.get_argument("shutdown", False)
-            check_changed = self.get_argument("changed")
-            before = self.get_argument("backup_before", "")
-            after = self.get_argument("backup_after", "")
-            if str(check_changed) == str(1):
-                checked = self.get_body_arguments("root_path")
-            else:
-                checked = self.controller.management.get_excluded_backup_dirs(server_id)
-            if superuser:
-                backup_path = self.get_argument("backup_path", None)
-                if Helpers.is_os_windows():
-                    backup_path.replace(" ", "^ ")
-                    backup_path = Helpers.wtol_path(backup_path)
-            else:
-                backup_path = server_obj.backup_path
-            max_backups = bleach.clean(self.get_argument("max_backups", None))
-
-            server_obj = self.controller.servers.get_server_obj(server_id)
-
-            server_obj.backup_path = backup_path
-            self.controller.servers.update_server(server_obj)
-            self.controller.management.set_backup_config(
-                server_id,
-                max_backups=max_backups,
-                excluded_dirs=checked,
-                compress=bool(compress),
-                shutdown=bool(shutdown),
-                before=before,
-                after=after,
-            )
-
-            self.controller.management.add_to_audit_log(
-                exec_user["user_id"],
-                f"Edited server {server_id}: updated backups",
-                server_id,
-                self.get_remote_ip(),
-            )
-            self.tasks_manager.reload_schedule_from_db()
-            self.redirect(f"/panel/server_detail?id={server_id}&subpage=backup")
-
-        elif page == "config_json":
+        if page == "config_json":
             try:
                 data = {}
                 with open(self.helper.settings_file, "r", encoding="utf-8") as f:

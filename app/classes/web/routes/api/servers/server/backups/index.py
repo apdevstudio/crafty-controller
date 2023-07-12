@@ -10,13 +10,13 @@ logger = logging.getLogger(__name__)
 backup_patch_schema = {
     "type": "object",
     "properties": {
-        "path": {"type": "string", "minLength": 1},
-        "max": {"type": "int"},
+        "backup_path": {"type": "string", "minLength": 1},
+        "max_backups": {"type": "integer"},
         "compress": {"type": "boolean"},
         "shutdown": {"type": "boolean"},
-        "before_command": {"type": "string"},
-        "after_command": {"type": "string"},
-        "exclusions": {"type": "string"},
+        "backup_before": {"type": "string"},
+        "backup_after": {"type": "string"},
+        "exclusions": {"type": "array"},
     },
     "additionalProperties": False,
     "minProperties": 1,
@@ -25,12 +25,12 @@ backup_patch_schema = {
 basic_backup_patch_schema = {
     "type": "object",
     "properties": {
-        "max": {"type": "int"},
+        "max_backups": {"type": "integer"},
         "compress": {"type": "boolean"},
         "shutdown": {"type": "boolean"},
-        "before_command": {"type": "string"},
-        "after_command": {"type": "string"},
-        "exclusions": {"type": "string"},
+        "backup_before": {"type": "string"},
+        "backup_after": {"type": "string"},
+        "exclusions": {"type": "array"},
     },
     "additionalProperties": False,
     "minProperties": 1,
@@ -65,7 +65,10 @@ class ApiServersServerBackupsIndexHandler(BaseApiHandler):
             )
 
         try:
-            validate(data, backup_patch_schema)
+            if auth_data[4]["superuser"]:
+                validate(data, backup_patch_schema)
+            else:
+                validate(data, basic_backup_patch_schema)
         except ValidationError as e:
             return self.finish_json(
                 400,
@@ -90,13 +93,31 @@ class ApiServersServerBackupsIndexHandler(BaseApiHandler):
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         self.controller.management.set_backup_config(
-            data["server_id"],
-            data["backup_path"],
-            data["max_backups"],
-            data["excluded_dirs"],
-            data["compress"],
-            data["shutdown"],
-            data["before"],
-            data["after"],
+            server_id,
+            data.get(
+                "backup_path",
+                self.controller.management.get_backup_config(server_id)["backup_path"],
+            ),
+            data.get(
+                "max_backups",
+                self.controller.management.get_backup_config(server_id)["max_backups"],
+            ),
+            data.get("exclusions"),
+            data.get(
+                "compress",
+                self.controller.management.get_backup_config(server_id)["compress"],
+            ),
+            data.get(
+                "shutdown",
+                self.controller.management.get_backup_config(server_id)["shutdown"],
+            ),
+            data.get(
+                "backup_before",
+                self.controller.management.get_backup_config(server_id)["before"],
+            ),
+            data.get(
+                "backup_after",
+                self.controller.management.get_backup_config(server_id)["after"],
+            ),
         )
-        return self.finish(200, {"status": "ok"})
+        return self.finish_json(200, {"status": "ok"})

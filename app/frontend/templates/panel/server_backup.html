@@ -44,9 +44,7 @@
             <div class="col-md-6 col-sm-12">
               <br>
               <br>
-              <form id="backup-form" class="forms-sample" method="post" action="/panel/server_backup">
-                {% raw xsrf_form_html() %}
-
+              <form id="backup-form" class="forms-sample">
                 {% if data['backing_up'] %}
                 <div class="progress" style="height: 15px;">
                   <div class="progress-bar progress-bar-striped progress-bar-animated" id="backup_progress_bar"
@@ -146,8 +144,6 @@
                     data-server_path="{{ data['server_stats']['server_id']['path']}}" type="button">{{
                     translate('serverBackups', 'clickExclude', data['lang']) }}</button>
                 </div>
-                <input type="number" class="form-control" name="changed" id="changed" value="0"
-                  style="visibility: hidden;"></input>
                 <div class="modal fade" id="dir_select" tabindex="-1" role="dialog" aria-labelledby="dir_select"
                   aria-hidden="true">
                   <div class="modal-dialog" role="document">
@@ -400,29 +396,48 @@
     }
   });
 
+  function replacer(key, value) {
+    if (key != "backup_before" && key != "backup_after") {
+      if (typeof value == "boolean" || key === "executable_update_url") {
+        return value
+      } else {
+        return (isNaN(value) ? value : +value);
+      }
+    } else {
+      return value;
+    }
+  }
+
   $(document).ready(function () {
-    $("#config_form").on("submit", async function (e) {
+    $("#backup-form").on("submit", async function (e) {
       e.preventDefault();
       var token = getCookie("_xsrf")
-      let backupForm = document.getElementById("backup_form");
-      //Remove checks that we don't need in form data.
-      $(this).children("before-check").remove();
-      $(this).children("after-check").remove();
+      let backupForm = document.getElementById("backup-form");
+
       let formData = new FormData(backupForm);
+      //Remove checks that we don't need in form data.
+      formData.delete("after-check");
+      formData.delete("before-check");
       //Create an object from the form data entries
       let formDataObject = Object.fromEntries(formData.entries());
       //We need to make sure these are sent regardless of whether or not they're checked
       formDataObject.compress = $("#compress").prop('checked');
       formDataObject.shutdown = $("#shutdown").prop('checked');
+      let excluded = [];
+      $('input.excluded:checkbox:checked').each(function () {
+        excluded.push($(this).val());
+      });
+      if ($("#root_files_button").hasClass("clicked")){
+        formDataObject.exclusions = excluded;
+      }
+      console.log(excluded);
       console.log(formDataObject);
       // Format the plain form data as JSON
       let formDataJsonString = JSON.stringify(formDataObject, replacer);
-      formDataJsonString["ignored_exits"] = toString(formDataJsonString["ignored_exits"]);
-      console.log(formDataJsonString.ignored_exits)
 
       console.log(formDataJsonString);
 
-      let res = await fetch(`/api/v2/servers/${serverId}`, {
+      let res = await fetch(`/api/v2/servers/${server_id}/backups/`, {
         method: 'PATCH',
         headers: {
           'X-XSRFToken': token
@@ -550,7 +565,6 @@
         return;
       } else {
         document.getElementById('root_files_button').classList.add('clicked');
-        document.getElementById("changed").value = 1;
       }
       path = $("#root_files_button").data('server_path')
       console.log($("#root_files_button").data('server_path'))
@@ -643,7 +657,7 @@
         }
         text += `<li class="tree-item" data-path="${dpath}">
                             \n<div id="${dpath}" data-path="${dpath}" data-name="${filename}" class="tree-caret tree-ctx-item tree-folder">
-                            <input type="checkbox" class="checkBoxClass" name="root_path" value="${dpath}" ${checked}>
+                            <input type="checkbox" class="checkBoxClass excluded" value="${dpath}" ${checked}>
                             <span id="${dpath}span" class="files-tree-title" data-path="${dpath}" data-name="${filename}" onclick="getDirView(event)">
                             <i style="color: var(--info);" class="far fa-folder"></i>
                             <i style="color: var(--info);" class="far fa-folder-open"></i>
@@ -655,7 +669,7 @@
                         class="d-block tree-ctx-item tree-file"
                         data-path="${dpath}"
                         data-name="${filename}"
-                        onclick=""><input type='checkbox' class="checkBoxClass" name='root_path' value="${dpath}" ${checked}><span style="margin-right: 6px;">
+                        onclick=""><input type='checkbox' class="checkBoxClass excluded" name='root_path' value="${dpath}" ${checked}><span style="margin-right: 6px;">
                         <i class="far fa-file"></i></span></input>${filename}</li>`
       }
     });
