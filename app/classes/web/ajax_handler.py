@@ -156,11 +156,6 @@ class AjaxHandler(BaseHandler):
                         self.controller.cached_login = "login_1.jpg"
             return
 
-        elif page == "eula":
-            server_id = self.get_argument("id", None)
-            svr = self.controller.servers.get_server_instance_by_id(server_id)
-            svr.agree_eula(exec_user["user_id"])
-
         elif page == "unzip_server":
             path = urllib.parse.unquote(self.get_argument("path", ""))
             if not path:

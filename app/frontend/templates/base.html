@@ -412,20 +412,26 @@
       });
     }
 
-    function eulaAgree(server_id, command) {
+    async function eulaAgree(server_id, command) {
       //< !--this getCookie function is in base.html-- >
       var token = getCookie("_xsrf");
 
-      $.ajax({
-        type: "POST",
-        headers: { 'X-XSRFToken': token },
-        url: '/ajax/eula?id=' + server_id,
-        success: function (data) {
-          console.log("got response:");
-          console.log(data);
-          location.reload();
-        }
+      let res = await fetch(`/api/v2/servers/${server_id}/action/eula/`, {
+        method: 'POST',
+        headers: {
+          'X-XSRFToken': token
+        },
       });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        window.location.reload();
+      } else {
+
+        bootbox.alert({
+          title: responseData.error,
+          message: responseData.error_data
+        });
+      }
     }
 
 
