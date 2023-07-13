@@ -43,6 +43,7 @@ class AuditLog(BaseModel):
 #                                Crafty Settings Class
 # **********************************************************************************
 class CraftySettings(BaseModel):
+    id = AutoField()
     secret_api_key = CharField(default="")
     cookie_secret = CharField(default="")
     login_photo = CharField(default="login_1.jpg")
