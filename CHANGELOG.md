@@ -5,8 +5,9 @@ TBD
 ### Bug fixes
 - Include tzdata in Docker image ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/604))
 - Fix text/formatting issue on server config page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/602))
+- Bump required version of PyYAML to 6.0.1 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/609))
 ### Tweaks
-TBD
+- Add public status link to login ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/608))
 ### Lang
 TBD
 <br><br>
