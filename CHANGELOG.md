@@ -1,4 +1,15 @@
 # Changelog
+## --- [4.1.4] - 2023/TBD
+### New features
+TBD
+### Bug fixes
+TBD
+### Tweaks
+TBD
+### Lang
+TBD
+<br><br>
+
 ## --- [4.1.3] - 2023/07/18
 ### Bug fixes
 - Include tzdata in Docker image ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/604))
