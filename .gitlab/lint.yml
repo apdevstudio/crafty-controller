@@ -67,6 +67,8 @@ sonarcloud-check:
   tags:
     - docker
   rules:
+    - exists:
+        - $SONAR_TOKEN
     - if: "$CODE_QUALITY_DISABLED"
       when: never
     - if: "$CI_COMMIT_TAG || $CI_COMMIT_BRANCH"
