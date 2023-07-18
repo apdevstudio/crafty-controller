@@ -1,7 +1,5 @@
 # Changelog
-## --- [4.1.3] - 2023/TBD
-### New features
-TBD
+## --- [4.1.3] - 2023/07/18
 ### Bug fixes
 - Include tzdata in Docker image ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/604))
 - Fix text/formatting issue on server config page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/602))
@@ -12,8 +10,6 @@ TBD
 - Replace "in_file" helper method ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/605))
 ### Tweaks
 - Add public status link to login ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/608))
-### Lang
-TBD
 <br><br>
 
 ## --- [4.1.2] - 2023/06/18
