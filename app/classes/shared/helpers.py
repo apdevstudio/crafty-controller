@@ -507,9 +507,9 @@ class Helpers:
 
         return mounts
 
-    def is_subdir(self, server_path, root_dir):
-        server_path = os.path.realpath(server_path)
-        root_dir = os.path.realpath(root_dir)
+    def is_subdir(self, child_path, parent_path):
+        server_path = os.path.realpath(child_path)
+        root_dir = os.path.realpath(parent_path)
 
         if self.is_os_windows():
             try:
@@ -1243,22 +1243,6 @@ class Helpers:
                 zip_ref.extractall(temp_dir)
             return temp_dir
         return False
-
-    @staticmethod
-    def in_path(parent_path, child_path):
-        # Smooth out relative path names, note: if you are concerned about
-        # symbolic links, you should use os.path.realpath too
-        parent_path = os.path.abspath(parent_path)
-        child_path = os.path.abspath(child_path)
-
-        # Compare the common path of the parent and child path with the
-        # common path of just the parent path. Using the commonpath method
-        # on just the parent path will regularise the path name in the same way
-        # as the comparison that deals with both paths, removing any trailing
-        # path separator
-        return os.path.commonpath([parent_path]) == os.path.commonpath(
-            [parent_path, child_path]
-        )
 
     @staticmethod
     def download_file(executable_url, jar_path):

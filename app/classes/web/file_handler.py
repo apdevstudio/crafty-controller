@@ -57,11 +57,11 @@ class FileHandler(BaseHandler):
                 return
             server_id = bleach.clean(server_id)
 
-            if not Helpers.in_path(
+            if not self.helper.is_subdir(
+                file_path,
                 Helpers.get_os_understandable_path(
                     self.controller.servers.get_server_data_by_id(server_id)["path"]
                 ),
-                file_path,
             ) or not Helpers.check_file_exists(os.path.abspath(file_path)):
                 logger.warning(
                     f"Invalid path in get_file file file ajax call ({file_path})"
@@ -163,11 +163,11 @@ class FileHandler(BaseHandler):
                 return
             server_id = bleach.clean(server_id)
 
-            if not Helpers.in_path(
+            if not self.helper.is_subdir(
+                file_path,
                 Helpers.get_os_understandable_path(
                     self.controller.servers.get_server_data_by_id(server_id)["path"]
                 ),
-                file_path,
             ) or Helpers.check_file_exists(os.path.abspath(file_path)):
                 logger.warning(
                     f"Invalid path in create_file file ajax call ({file_path})"
@@ -196,11 +196,11 @@ class FileHandler(BaseHandler):
                 return
             server_id = bleach.clean(server_id)
 
-            if not Helpers.in_path(
+            if not self.helper.is_subdir(
+                dir_path,
                 Helpers.get_os_understandable_path(
                     self.controller.servers.get_server_data_by_id(server_id)["path"]
                 ),
-                dir_path,
             ) or Helpers.check_path_exists(os.path.abspath(dir_path)):
                 logger.warning(
                     f"Invalid path in create_dir file ajax call ({dir_path})"
@@ -263,12 +263,12 @@ class FileHandler(BaseHandler):
 
             server_info = self.controller.servers.get_server_data_by_id(server_id)
             if not (
-                Helpers.in_path(
-                    Helpers.get_os_understandable_path(server_info["path"]), file_path
+                self.helper.is_subdir(
+                    file_path, Helpers.get_os_understandable_path(server_info["path"])
                 )
-                or Helpers.in_path(
-                    Helpers.get_os_understandable_path(server_info["backup_path"]),
+                or self.helper.is_subdir(
                     file_path,
+                    Helpers.get_os_understandable_path(server_info["backup_path"]),
                 )
             ) or not Helpers.check_file_exists(os.path.abspath(file_path)):
                 logger.warning(f"Invalid path in del_file file ajax call ({file_path})")
@@ -296,8 +296,8 @@ class FileHandler(BaseHandler):
             server_id = bleach.clean(server_id)
 
             server_info = self.controller.servers.get_server_data_by_id(server_id)
-            if not Helpers.in_path(
-                Helpers.get_os_understandable_path(server_info["path"]), dir_path
+            if not self.helper.is_subdir(
+                dir_path, Helpers.get_os_understandable_path(server_info["path"])
             ) or not Helpers.check_path_exists(os.path.abspath(dir_path)):
                 logger.warning(f"Invalid path in del_file file ajax call ({dir_path})")
                 Console.warning(f"Invalid path in del_file file ajax call ({dir_path})")
@@ -348,11 +348,11 @@ class FileHandler(BaseHandler):
                 return
             server_id = bleach.clean(server_id)
 
-            if not Helpers.in_path(
+            if not self.helper.is_subdir(
+                file_path,
                 Helpers.get_os_understandable_path(
                     self.controller.servers.get_server_data_by_id(server_id)["path"]
                 ),
-                file_path,
             ) or not Helpers.check_file_exists(os.path.abspath(file_path)):
                 logger.warning(
                     f"Invalid path in save_file file ajax call ({file_path})"
@@ -365,60 +365,6 @@ class FileHandler(BaseHandler):
             # Open the file in write mode and store the content in file_object
             with open(file_path, "w", encoding="utf-8") as file_object:
                 file_object.write(file_contents)
-
-        elif page == "rename_file":
-            if not permissions["Files"] in user_perms:
-                if not superuser:
-                    self.redirect("/panel/error?error=Unauthorized access to Files")
-                    return
-            item_path = Helpers.get_os_understandable_path(
-                self.get_body_argument("item_path", default=None, strip=True)
-            )
-            new_item_name = self.get_body_argument(
-                "new_item_name", default=None, strip=True
-            )
-
-            if not self.check_server_id(server_id, "rename_file"):
-                return
-            server_id = bleach.clean(server_id)
-
-            if item_path is None or new_item_name is None:
-                logger.warning("Invalid path(s) in rename_file file ajax call")
-                Console.warning("Invalid path(s) in rename_file file ajax call")
-                return
-
-            if not Helpers.in_path(
-                Helpers.get_os_understandable_path(
-                    self.controller.servers.get_server_data_by_id(server_id)["path"]
-                ),
-                item_path,
-            ) or not Helpers.check_path_exists(os.path.abspath(item_path)):
-                logger.warning(
-                    f"Invalid old name path in rename_file file ajax call ({server_id})"
-                )
-                Console.warning(
-                    f"Invalid old name path in rename_file file ajax call ({server_id})"
-                )
-                return
-
-            new_item_path = os.path.join(os.path.split(item_path)[0], new_item_name)
-
-            if not Helpers.in_path(
-                Helpers.get_os_understandable_path(
-                    self.controller.servers.get_server_data_by_id(server_id)["path"]
-                ),
-                new_item_path,
-            ) or Helpers.check_path_exists(os.path.abspath(new_item_path)):
-                logger.warning(
-                    f"Invalid new name path in rename_file file ajax call ({server_id})"
-                )
-                Console.warning(
-                    f"Invalid new name path in rename_file file ajax call ({server_id})"
-                )
-                return
-
-            # RENAME
-            os.rename(item_path, new_item_path)
 
     @tornado.web.authenticated
     def patch(self, page):
@@ -462,11 +408,11 @@ class FileHandler(BaseHandler):
                 Console.warning("Invalid path(s) in rename_file file ajax call")
                 return
 
-            if not Helpers.in_path(
+            if not self.helper.is_subdir(
+                item_path,
                 Helpers.get_os_understandable_path(
                     self.controller.servers.get_server_data_by_id(server_id)["path"]
                 ),
-                item_path,
             ) or not Helpers.check_path_exists(os.path.abspath(item_path)):
                 logger.warning(
                     f"Invalid old name path in rename_file file ajax call ({server_id})"
@@ -478,11 +424,11 @@ class FileHandler(BaseHandler):
 
             new_item_path = os.path.join(os.path.split(item_path)[0], new_item_name)
 
-            if not Helpers.in_path(
+            if not self.helper.is_subdir(
+                new_item_path,
                 Helpers.get_os_understandable_path(
                     self.controller.servers.get_server_data_by_id(server_id)["path"]
                 ),
-                new_item_path,
             ) or Helpers.check_path_exists(os.path.abspath(new_item_path)):
                 logger.warning(
                     f"Invalid new name path in rename_file file ajax call ({server_id})"

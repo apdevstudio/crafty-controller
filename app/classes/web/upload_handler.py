@@ -278,11 +278,11 @@ class UploadHandler(BaseHandler):
             filename = self.request.headers.get("X-FileName", None)
             full_path = os.path.join(path, filename)
 
-            if not Helpers.in_path(
+            if not self.helper.is_subdir(
+                full_path,
                 Helpers.get_os_understandable_path(
                     self.controller.servers.get_server_data_by_id(server_id)["path"]
                 ),
-                full_path,
             ):
                 logger.warning(
                     f"User {user_id} tried to upload a file to {server_id} "
