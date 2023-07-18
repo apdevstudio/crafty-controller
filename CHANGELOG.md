@@ -1,4 +1,17 @@
 # Changelog
+## --- [4.1.3] - 2023/07/18
+### Bug fixes
+- Include tzdata in Docker image ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/604))
+- Fix text/formatting issue on server config page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/602))
+- Bump required version of PyYAML to 6.0.1 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/609))
+- Fix enable/disable schedule toggles on schedule list ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/606))
+- Fix formatting on Creation page when server jars is unavailable ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/601))
+### Refactor
+- Replace "in_file" helper method ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/605))
+### Tweaks
+- Add public status link to login ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/608))
+<br><br>
+
 ## --- [4.1.2] - 2023/06/18
 ### Bug fixes
 - Fix upload root files being hidden ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/590))
