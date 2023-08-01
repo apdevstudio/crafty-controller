@@ -97,6 +97,7 @@
     {% end %}
     <div class="accordion" id="accordionServers">
       {% for server in data['servers'] %}
+      {% if server['server_data']['show_status'] %}
       <div class="card mb-0">
         <div class="card-header" id="heading-{{server['server_data']['server_id']}}">
           <h2 class="mb-0 container overflow-hidden">
@@ -166,6 +167,7 @@
           </div>
         </div>
       </div>
+      {% end %}
       {% end %}
     </div>
   </div>
