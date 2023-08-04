@@ -1,7 +1,7 @@
 <div class="col-sm-12 mt-4 mb-4">
     <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
-            Server Controls
+        <button class="btn btn-outline dropdown-toggle custom-picker" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-bars"></i> Server Controls
         </button>
         <div class="dropdown-menu col-md-12" aria-labelledby="dropdownMenuButton">
             {% if data['permissions']['Terminal'] in data['user_permissions'] %}
@@ -12,7 +12,7 @@
             <a class="dropdown-item {% if data['active_link'] == 'logs' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=logs" role="tab" aria-selected="false"><i class="fa-solid fa-book-open-reader"></i> {{ translate('serverDetails', 'logs', data['lang']) }}</a>
             {% end %}
             {% if data['permissions']['Schedule'] in data['user_permissions'] %}
-            <a class="dropdown-item {% if data['active_link'] == 'schedules' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=schedules" role="tab" aria-selected="false"><i class="fas fa-clock"></i> {{ translate('serverDetails', 'schedule', data['lang']) }}</a>
+            <a class="dropdown-item {% if data['active_link'] == 'schedules' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=schedules" role="tab" aria-selected="false"><i class="fa-solid fa-clock"></i> {{ translate('serverDetails', 'schedule', data['lang']) }}</a>
             {% end %}
             {% if data['permissions']['Backup'] in data['user_permissions'] %}
             {% if data['backup_failed'] %}

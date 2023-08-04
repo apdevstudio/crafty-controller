@@ -6,8 +6,7 @@
 {% block title %}Crafty Controller - {{ translate('panelConfig', 'pageTitle', data['lang']) }}{% end %}
 
 {% block content %}
-<link rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/css/bootstrap-select.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/css/bootstrap-select.min.css">
 
 
 <div class="content-wrapper">
@@ -30,7 +29,12 @@
         <div class="card-body">
 
           {% if data['superuser'] %}
-          {% include "parts/crafty_config_list.html %}
+          <span class="d-none d-sm-block">
+            {% include "parts/crafty_config_list.html %}
+          </span>
+          <span class="d-block d-sm-none">
+            {% include "parts/m_crafty_config_list.html %}
+          </span>
           {% end %}
 
           <!-- Page Title Header Starts-->
@@ -69,11 +73,8 @@
                 </select>
                 {% elif item[0] == 'disabled_language_files' %}
                 <div class="input-group">
-                  <button type="button" class="btn btn-outline-default custom-picker" onclick="$('option', $('#lang_select')).each(function(element) {
-                $(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')
-            });">{{ translate('panelConfig', 'enableLang', data['lang']) }}</button>
-                  <select id="lang_select" class="form-control selectpicker show-tick" data-icon-base="fas"
-                    data-tick-icon="fa-check" multiple data-style="custom-picker">
+                  <button type="button" class="btn btn-outline-default custom-picker" onclick="$('option', $('#lang_select')).each(function(element) {$(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')});">{{ translate('panelConfig', 'enableLang', data['lang']) }}</button>
+                  <select id="lang_select" class="form-control selectpicker show-tick custom-picker" data-icon-base="fas" data-tick-icon="fa-check" multiple data-style="custom-picker">
                     {% for lang in data['all_languages'] %}
                     {% if lang in item[1] %}
                     <option selected>{{lang}}</option>
@@ -82,17 +83,12 @@
                     {% end %}
                     {% end %}
                   </select>
-                  <textarea id="disabled_lang" name="{{item[0]}}" class="form-control list hidden"
-                    rows="{{ len(data['all_languages']) }}" value="{{','.join(item[1])}}"
-                    hidden>{{','.join(item[1])}}</textarea>
+                  <textarea id="disabled_lang" name="{{item[0]}}" class="form-control list hidden" rows="{{ len(data['all_languages']) }}" value="{{','.join(item[1])}}" hidden>{{','.join(item[1])}}</textarea>
                 </div>
                 {% elif item[0] == 'monitored_mounts'%}
                 <div class="input-group">
-                  <button type="button" class="btn btn-outline-default custom-picker" onclick="$('option', $('#mount_select')).each(function(element) {
-                $(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')
-            });">{{ translate('panelConfig', 'noMounts', data['lang']) }}</button>
-                  <select id="mount_select" class="form-control selectpicker show-tick" data-icon-base="fas"
-                    data-tick-icon="fa-check" multiple data-style="custom-picker">
+                  <button type="button" class="btn btn-outline-default custom-picker" onclick="$('option', $('#mount_select')).each(function(element) {$(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')});">{{ translate('panelConfig', 'noMounts', data['lang']) }}</button>
+                  <select id="mount_select" class="form-control selectpicker show-tick" data-icon-base="fas" data-tick-icon="fa-check" multiple data-style="custom-picker">
                     {% for mount in data['all_partitions'] %}
                     {% if mount in item[1] %}
                     <option selected>{{mount}}</option>
@@ -101,13 +97,10 @@
                     {% end %}
                     {% end %}
                   </select>
-                  <textarea id="monitored_mounts" name="{{item[0]}}" class="form-control list hidden"
-                    rows="{{ len(data['all_partitions']) }}" value="{{','.join(item[1])}}"
-                    hidden>{{','.join(item[1])}}</textarea>
+                  <textarea id="monitored_mounts" name="{{item[0]}}" class="form-control list hidden" rows="{{ len(data['all_partitions']) }}" value="{{','.join(item[1])}}" hidden>{{','.join(item[1])}}</textarea>
                 </div>
                 {% elif isinstance(item[1], list) %}
-                <textarea value="{{','.join(item[1])}}" type="text" name="{{item[0]}}"
-                  class="form-control list">{{','.join(item[1])}}</textarea>
+                <textarea value="{{','.join(item[1])}}" type="text" name="{{item[0]}}" class="form-control list">{{','.join(item[1])}}</textarea>
                 {% elif isinstance(item[1], bool) %}
                 <div style="margin-left: 30px;">
                   {% if item[1] == True %}
@@ -123,11 +116,9 @@
                   {% end %}
                 </div>
                 {% elif isinstance(item[1], int) %}
-                <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
-                  step="1" min="0" required>
+                <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}" step="1" min="0" required>
                 {% else %}
-                <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
-                  step="2" min="0" required>
+                <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}" step="2" min="0" required>
                 {% end %}
               </div>
               {% end %}
@@ -142,10 +133,6 @@
 </div>
 
 <style>
-  .custom-picker {
-    border: 1px solid var(--outline);
-  }
-
   .dropdown-menu.inner {
     display: inline-block !important;
   }

@@ -3,6 +3,7 @@
 import json
 import logging
 
+from croniter import croniter
 from jsonschema import ValidationError, validate
 from app.classes.models.server_permissions import EnumPermissionsServer
 
@@ -35,6 +36,7 @@ task_patch_schema = {
                 "",
             ],
         },
+        "name": {"type": "string"},
         "start_time": {"type": "string", "pattern": r"\d{1,2}:\d{1,2}"},
         "command": {"type": ["string", "null"]},
         "one_time": {"type": "boolean", "default": False},
@@ -49,10 +51,47 @@ task_patch_schema = {
 
 class ApiServersServerTasksTaskIndexHandler(BaseApiHandler):
     def get(self, server_id: str, task_id: str):
-        pass
+        auth_data = self.authenticate_user()
+        if not auth_data:
+            return
+        if (
+            EnumPermissionsServer.SCHEDULE
+            not in self.controller.server_perms.get_user_id_permissions_list(
+                auth_data[4]["user_id"], server_id
+            )
+        ):
+            # if the user doesn't have Schedule permission, return an error
+            return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
+        self.finish_json(200, self.controller.management.get_scheduled_task(task_id))
 
     def delete(self, server_id: str, task_id: str):
-        pass
+        auth_data = self.authenticate_user()
+        if not auth_data:
+            return
+        if (
+            EnumPermissionsServer.SCHEDULE
+            not in self.controller.server_perms.get_user_id_permissions_list(
+                auth_data[4]["user_id"], server_id
+            )
+        ):
+            # if the user doesn't have Schedule permission, return an error
+            return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
+
+        try:
+            self.tasks_manager.remove_job(task_id)
+        except Exception:
+            return self.finish_json(
+                400, {"status": "error", "error": "NO SCHEDULE FOUND"}
+            )
+        self.controller.management.add_to_audit_log(
+            auth_data[4]["user_id"],
+            f"Edited server {server_id}: removed schedule",
+            server_id,
+            self.get_remote_ip(),
+        )
+        self.tasks_manager.reload_schedule_from_db()
+
+        return self.finish_json(200, {"status": "ok"})
 
     def patch(self, server_id: str, task_id: str):
         auth_data = self.authenticate_user()
@@ -96,6 +135,22 @@ class ApiServersServerTasksTaskIndexHandler(BaseApiHandler):
         if str(data.get("parent")) == str(task_id) and data.get("parent") is not None:
             data["parent"] = None
 
+        data["server_id"] = server_id
+        if "cron_string" in data:
+            if data["cron_string"] != "" and not croniter.is_valid(data["cron_string"]):
+                return self.finish_json(
+                    405,
+                    {
+                        "status": "error",
+                        "error": self.helper.translation.translate(
+                            "error",
+                            "cronFormat",
+                            self.controller.users.get_user_lang_by_id(
+                                auth_data[4]["user_id"]
+                            ),
+                        ),
+                    },
+                )
         self.tasks_manager.update_job(task_id, data)
 
         self.controller.management.add_to_audit_log(

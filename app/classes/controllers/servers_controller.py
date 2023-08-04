@@ -255,6 +255,7 @@ class ServersController(metaclass=Singleton):
 
     @staticmethod
     def get_authorized_servers(user_id):
+        server_ids = []
         server_data: t.List[t.Dict[str, t.Any]] = []
         user_roles = HelperUsers.user_role_query(user_id)
         for user in user_roles:
@@ -262,11 +263,13 @@ class ServersController(metaclass=Singleton):
                 user.role_id
             )
             for role in role_servers:
-                server_data.append(
-                    ServersController().get_server_instance_by_id(
-                        role.server_id.server_id
+                if role.server_id.server_id not in server_ids:
+                    server_ids.append(role.server_id.server_id)
+                    server_data.append(
+                        ServersController().get_server_instance_by_id(
+                            role.server_id.server_id
+                        )
                     )
-                )
 
         return server_data
 
@@ -277,11 +280,10 @@ class ServersController(metaclass=Singleton):
         for role in roles_list:
             role_users = HelperUsers.get_users_from_role(role.role_id)
             for user_role in role_users:
-                user_ids.add(user_role.user_id)
+                user_ids.add(user_role.user_id.user_id)
 
         for user_id in HelperUsers.get_super_user_list():
             user_ids.add(user_id)
-
         return user_ids
 
     def get_all_servers_stats(self):
@@ -516,6 +518,25 @@ class ServersController(metaclass=Singleton):
     #                                    Servers Helpers Methods
     # **********************************************************************************
     @staticmethod
+    def get_cached_players(server_id):
+        srv = ServersController().get_server_instance_by_id(server_id)
+        stats = srv.stats_helper.get_server_stats()
+        server_path = stats["server_id"]["path"]
+        path = os.path.join(server_path, "usercache.json")
+
+        try:
+            with open(
+                Helpers.get_os_understandable_path(path), encoding="utf-8"
+            ) as file:
+                content = file.read()
+                file.close()
+        except Exception as ex:
+            logger.error(ex)
+            return {}
+
+        return json.loads(content)
+
+    @staticmethod
     def get_banned_players(server_id):
         srv = ServersController().get_server_instance_by_id(server_id)
         stats = srv.stats_helper.get_server_stats()
@@ -529,8 +550,8 @@ class ServersController(metaclass=Singleton):
                 content = file.read()
                 file.close()
         except Exception as ex:
-            print(ex)
-            return None
+            logger.error(ex)
+            return {}
 
         return json.loads(content)
 

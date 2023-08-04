@@ -145,7 +145,11 @@ class ServerHandler(BaseHandler):
                     "not a server creator or server limit reached"
                 )
                 return
-
+            page_data["server_api"] = False
+            if page_data["online"]:
+                page_data["server_api"] = self.helper.check_address_status(
+                    "https://serverjars.com/api/fetchTypes"
+                )
             page_data["server_types"] = self.controller.server_jars.get_serverjar_data()
             page_data["js_server_types"] = json.dumps(
                 self.controller.server_jars.get_serverjar_data()
@@ -164,7 +168,7 @@ class ServerHandler(BaseHandler):
                     "not a server creator or server limit reached"
                 )
                 return
-
+            page_data["server_api"] = True
             template = "server/bedrock_wizard.html"
 
         if page == "steam_cmd_step1":
@@ -350,7 +354,7 @@ class ServerHandler(BaseHandler):
 
             if import_type == "import_jar":
                 if self.helper.is_subdir(
-                    import_server_path, self.controller.project_root
+                    self.controller.project_root, import_server_path
                 ):
                     self.redirect(
                         "/panel/error?error=Loop Error: The selected path will cause"
@@ -516,7 +520,7 @@ class ServerHandler(BaseHandler):
 
             if import_type == "import_jar":
                 if self.helper.is_subdir(
-                    import_server_path, self.controller.project_root
+                    self.controller.project_root, import_server_path
                 ):
                     self.redirect(
                         "/panel/error?error=Loop Error: The selected path will cause"

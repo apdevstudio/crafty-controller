@@ -39,7 +39,8 @@
                 <div class="form-group">
                   <label for="server_jar">{{ translate('serverWizard', 'serverType', data['lang'])
                     }}</label></br>
-                  <select style="width: 80%" required class="selectpicker form-control form-control-lg select-css"
+                  <div class="input-group">
+                  <select data-container="body" required class="selectpicker form-control form-control-lg select-css"
                     id="steam_server" data-live-search="true" name="steam_server">
                     <option value="None">None</option>
                     {% for s in data['servers'] %}
@@ -50,10 +51,13 @@
                     {% end %}
                     {% end %}
                   </select>
+
                   {% if data['super_user'] %}
-                  &nbsp;&nbsp;<i onclick="refreshCache()" style="float: left;" id="refresh-cache"
-                    class="refresh-class fas fa-sync"></i>
+                  <div class="input-group-append">
+                    <button class="btn custom-picker" type="button" onclick="refreshCache()"><i id="refresh-cache" class="refresh-class fas fa-sync"></i></button>
+                  </div>
                   {% end %}
+                  </div>
                 </div>
               </div>
               <div class="col-sm-12">

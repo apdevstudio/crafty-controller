@@ -26,6 +26,7 @@ RUN apt-get update \
         openjdk-11-jre-headless \
         openjdk-17-jre-headless \
         lib32stdc++6 \
+        tzdata \
     && apt-get autoremove \
     && apt-get clean
 
@@ -68,7 +69,7 @@ LABEL \
     org.opencontainers.image.title="Crafty Controller" \
     org.opencontainers.image.description="A Game Server Control Panel / Launcher" \
     org.opencontainers.image.url="https://craftycontrol.com/" \
-    org.opencontainers.image.documentation="https://wiki.craftycontrol.com/" \
+    org.opencontainers.image.documentation="https://docs.craftycontrol.com" \
     org.opencontainers.image.source="https://gitlab.com/crafty-controller/crafty-4" \
     org.opencontainers.image.vendor="Arcadia Technology, LLC." \
     org.opencontainers.image.licenses="GPL-3.0"

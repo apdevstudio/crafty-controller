@@ -1,5 +1,5 @@
 # Changelog
-## --- [4.0.23] - 2023/TBD
+## --- [4.1.4] - 2023/TBD
 ### New features
 TBD
 ### Bug fixes
@@ -8,6 +8,64 @@ TBD
 TBD
 ### Lang
 TBD
+<br><br>
+
+## --- [4.1.3] - 2023/07/18
+### Bug fixes
+- Include tzdata in Docker image ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/604))
+- Fix text/formatting issue on server config page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/602))
+- Bump required version of PyYAML to 6.0.1 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/609))
+- Fix enable/disable schedule toggles on schedule list ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/606))
+- Fix formatting on Creation page when server jars is unavailable ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/601))
+### Refactor
+- Replace "in_file" helper method ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/605))
+### Tweaks
+- Add public status link to login ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/608))
+<br><br>
+
+## --- [4.1.2] - 2023/06/18
+### Bug fixes
+- Fix upload root files being hidden ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/590))
+- Send empty json for no banned/cached players ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/589))
+- Bump Tornado from 6.0 to 6.3.2 in response to CVE-2023-28370 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/591))
+- Fix bug where commands would show "command_server" when initially created ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/592))
+- Add ID autofield to management CraftySettings class ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/599))
+### Refactor
+- Optimize player management page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/593))
+### Tweaks
+- Remove bedrock servers in serverjars options ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/595))
+- Bump cryptography & pyOpenSSL ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/596))
+- Bump requests ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/600))
+### Lang
+- Update es_ES & pl_PL lang, thank you `.lucyy_` & `terrariadlc` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/597))
+<br><br>
+
+## --- [4.1.1] - 2023/05/23
+### Bug fixes
+- Fix task scheduling where a command was not sent to the DB ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/586))
+### Tweaks
+- Improve the UI on several areas of the Crafty Panel ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/547))
+- Improve creation page errors / Server Jars Credit ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/587))
+<br><br>
+
+## --- [4.1.0] - 2023/05/15
+### New features
+- Mobile PWA App (beta) | Ability to add a Crafty icon to your mobile's home screen ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/576))
+- [New Crafty Documentation release](https://docs.craftycontrol.com)
+### Refactor
+- Frontend Ajax Refactor | Start using API to send Remote Comms to Server ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/565))
+- MKDocs Release | Replace wiki names with docs ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/583))
+### Bug fixes
+- Fix pipelines failing to build from gitlab pre-defined variable deprecation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/582))
+- Fix incompatible buildx provenance meta, causing digest issues on GL/DH container registries ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/582))
+- Fix Auth'd servers in roles | Refine server ordering ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/574))
+- Fix import loop detection ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/575))
+- Fix Cargo errors on Ubuntu 23.04 installs ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/579))
+- Fix project root error on first start ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/580))
+### Tweaks
+- Check for python version so we don't just fail out on unsupported python versions ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/577))
+- Show warning for serverjars API connection issues ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/581))
+- Retain pathing in execution command on backup restore ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/578))
 <br><br>
 
 ## --- [4.0.22] - 2023/04/08

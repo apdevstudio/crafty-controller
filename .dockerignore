@@ -3,6 +3,7 @@ docker/
 .dockerignore
 Dockerfile
 docker-compose.yml
+docker-compose.yml.example
 
 # git & gitlab related
 .git/
@@ -17,6 +18,8 @@ docker-compose.yml
 .venv
 .vscode
 crafty_commander.exe
+CHANGELOG.md
+CONTRIBUTING.md
 DBCHANGES.md
-docker-compose.yml.example
 README.md
+sonar-project.properties

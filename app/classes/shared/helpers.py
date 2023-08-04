@@ -16,6 +16,7 @@ import zipfile
 import pathlib
 import ctypes
 import shutil
+import shlex
 import subprocess
 import itertools
 from datetime import datetime
@@ -147,6 +148,29 @@ class Helpers:
         except Exception as e:
             logger.error(f"Unable to resolve remote bedrock download url! \n{e}")
         return False
+
+    def get_execution_java(self, value, execution_command):
+        if self.is_os_windows():
+            execution_list = shlex.split(execution_command, posix=False)
+        else:
+            execution_list = shlex.split(execution_command, posix=True)
+        if (
+            not any(value in path for path in self.find_java_installs())
+            and value != "java"
+        ):
+            return
+        if value != "java":
+            if self.is_os_windows():
+                execution_list[0] = '"' + value + '/bin/java"'
+            else:
+                execution_list[0] = '"' + value + '"'
+        else:
+            execution_list[0] = "java"
+        execution_command = ""
+        for item in execution_list:
+            execution_command += item + " "
+
+        return execution_command
 
     def detect_java(self):
         if len(self.find_java_installs()) > 0:
@@ -301,6 +325,16 @@ class Helpers:
                 return True
             except Exception:
                 return False
+
+    @staticmethod
+    def check_address_status(address):
+        try:
+            response = requests.get(address, timeout=2)
+            return (
+                response.status_code // 100 == 2
+            )  # Check if the status code starts with 2
+        except requests.RequestException:
+            return False
 
     @staticmethod
     def check_port(server_port):
@@ -474,9 +508,9 @@ class Helpers:
 
         return mounts
 
-    def is_subdir(self, server_path, root_dir):
-        server_path = os.path.realpath(server_path)
-        root_dir = os.path.realpath(root_dir)
+    def is_subdir(self, child_path, parent_path):
+        server_path = os.path.realpath(child_path)
+        root_dir = os.path.realpath(parent_path)
 
         if self.is_os_windows():
             try:
@@ -1212,22 +1246,6 @@ class Helpers:
         return False
 
     @staticmethod
-    def in_path(parent_path, child_path):
-        # Smooth out relative path names, note: if you are concerned about
-        # symbolic links, you should use os.path.realpath too
-        parent_path = os.path.abspath(parent_path)
-        child_path = os.path.abspath(child_path)
-
-        # Compare the common path of the parent and child path with the
-        # common path of just the parent path. Using the commonpath method
-        # on just the parent path will regularise the path name in the same way
-        # as the comparison that deals with both paths, removing any trailing
-        # path separator
-        return os.path.commonpath([parent_path]) == os.path.commonpath(
-            [parent_path, child_path]
-        )
-
-    @staticmethod
     def download_file(executable_url, jar_path):
         try:
             response = requests.get(executable_url, timeout=5)
@@ -1261,3 +1279,24 @@ class Helpers:
         if region == "EN":
             return "en"
         return lang + "-" + region
+
+    @staticmethod
+    def get_player_avatar(uuid_player):
+        mojang_response = requests.get(
+            f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid_player}",
+            timeout=10,
+        )
+        if mojang_response.status_code == 200:
+            uuid_profile = mojang_response.json()
+            profile_properties = uuid_profile["properties"]
+            for prop in profile_properties:
+                if prop["name"] == "textures":
+                    decoded_bytes = base64.b64decode(prop["value"])
+                    decoded_str = decoded_bytes.decode("utf-8")
+                    texture_json = json.loads(decoded_str)
+            skin_url = texture_json["textures"]["SKIN"]["url"]
+            skin_response = requests.get(skin_url, stream=True, timeout=10)
+            if skin_response.status_code == 200:
+                return base64.b64encode(skin_response.content)
+        else:
+            return
