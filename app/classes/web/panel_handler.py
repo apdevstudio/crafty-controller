@@ -797,24 +797,11 @@ class PanelHandler(BaseHandler):
                 page_data[
                     "banned_players"
                 ] = self.controller.servers.get_banned_players(server_id)
-                page_data[
-                    "cached_players"
-                ] = self.controller.servers.get_cached_players(server_id)
+                server_instance = self.controller.servers.get_server_instance_by_id(
+                    server_id
+                )
+                page_data["cached_players"] = server_instance.player_cache
 
-                page_data["all_players"] = []
-                for player in page_data["cached_players"]:
-                    if player["name"] in page_data["get_players"]:
-                        player["status"] = "online"
-                    else:
-                        player["status"] = "offline"
-                        temp_date = datetime.datetime.strptime(
-                            player["expiresOn"], "%Y-%m-%d %H:%M:%S %z"
-                        )
-                        player["last_seen"] = (
-                            temp_date - datetime.timedelta(30, 0, 0, 0, 0, 0, 0)
-                        ).strftime("%Y/%m/%d %H:%M:%S")
-                    player["avatar"] = Helpers.get_player_avatar(player["uuid"])
-                    page_data["all_players"].append(player)
                 for player in page_data["banned_players"]:
                     player["banned"] = True
                     temp_date = datetime.datetime.strptime(
@@ -837,9 +824,9 @@ class PanelHandler(BaseHandler):
                     Helpers.get_os_understandable_path(server_info["backup_path"]), file
                 )
             )
-            if not Helpers.in_path(
-                Helpers.get_os_understandable_path(server_info["backup_path"]),
+            if not self.helper.is_subdir(
                 backup_file,
+                Helpers.get_os_understandable_path(server_info["backup_path"]),
             ) or not os.path.isfile(backup_file):
                 self.redirect("/panel/error?error=Invalid path detected")
                 return
@@ -1595,8 +1582,9 @@ class PanelHandler(BaseHandler):
 
             server_info = self.controller.servers.get_server_data_by_id(server_id)
 
-            if not Helpers.in_path(
-                Helpers.get_os_understandable_path(server_info["path"]), file
+            if not self.helper.is_subdir(
+                file,
+                Helpers.get_os_understandable_path(server_info["path"]),
             ) or not os.path.isfile(file):
                 self.redirect("/panel/error?error=Invalid path detected")
                 return
