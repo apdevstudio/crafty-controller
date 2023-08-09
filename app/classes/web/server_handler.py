@@ -11,6 +11,7 @@ from app.classes.shared.helpers import Helpers
 from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.main_models import DatabaseShortcuts
 from app.classes.web.base_handler import BaseHandler
+from app.classes.shared.websocket_manager import WebSocketManager
 
 logger = logging.getLogger(__name__)
 
@@ -207,7 +208,7 @@ class ServerHandler(BaseHandler):
                         )
                     ):
                         time.sleep(3)
-                        self.helper.websocket_helper.broadcast_user(
+                        WebSocketManager().broadcast_user(
                             exec_user["user_id"],
                             "send_start_error",
                             {

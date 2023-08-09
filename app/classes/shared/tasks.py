@@ -20,6 +20,7 @@ from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.main_controller import Controller
 from app.classes.web.tornado_handler import Webserver
+from app.classes.shared.websocket_manager import WebSocketManager
 
 logger = logging.getLogger("apscheduler")
 scheduler_intervals = {
@@ -688,10 +689,10 @@ class TasksManager:
                 # Stats are different
 
                 host_stats = HelpersManagement.get_latest_hosts_stats()
-                if len(self.helper.websocket_helper.clients) > 0:
+                if len(WebSocketManager().auth_clients) > 0:
                     # There are clients
                     try:
-                        self.helper.websocket_helper.broadcast_page(
+                        WebSocketManager().broadcast_page(
                             "/panel/dashboard",
                             "update_host_stats",
                             {
@@ -708,7 +709,7 @@ class TasksManager:
                             },
                         )
                     except:
-                        self.helper.websocket_helper.broadcast_page(
+                        WebSocketManager().broadcast_page(
                             "/panel/dashboard",
                             "update_host_stats",
                             {

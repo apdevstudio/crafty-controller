@@ -65,7 +65,7 @@
     try {
       pageQueryParams = 'page_query_params=' + encodeURIComponent(location.search)
       page = 'page=' + encodeURIComponent(location.pathname)
-      var wsInternal = new WebSocket('wss://' + location.host + '/ws?' + page + '&' + pageQueryParams);
+      var wsInternal = new WebSocket('wss://' + location.host + '/ws/public?' + page + '&' + pageQueryParams);
       wsInternal.onopen = function () {
         console.log('opened WebSocket connection:', wsInternal)
       };
@@ -120,7 +120,7 @@
       document.getElementById('login-form-background').style.background = 'rgb(34, 36, 55, ' + (opacity / 100) + ')';
       //Register Service worker for mobile app
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/static/assets/js/shared/service-worker.js', {scope: '/'})
+        navigator.serviceWorker.register('/static/assets/js/shared/service-worker.js', { scope: '/' })
           .then(function (registration) {
             console.error('Service Worker Registered');
           });

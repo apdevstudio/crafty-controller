@@ -32,6 +32,8 @@ from app.classes.shared.console import Console
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.null_writer import NullWriter
+from app.classes.shared.websocket_manager import WebSocketManager
+from app.classes.shared.websocket_manager import WebSocketManager
 
 with redirect_stderr(NullWriter()):
     import psutil
@@ -92,12 +94,13 @@ class ServerOutBuf:
 
         # TODO: Do not send data to clients who do not have permission to view
         # this server's console
-        self.helper.websocket_helper.broadcast_page_params(
-            "/panel/server_detail",
-            {"id": self.server_id},
-            "vterm_new_line",
-            {"line": highlighted + "<br />"},
-        )
+        if len(WebSocketManager().auth_clients) > 0:
+            WebSocketManager().broadcast_page_params(
+                "/panel/server_detail",
+                {"id": self.server_id},
+                "vterm_new_line",
+                {"line": highlighted + "<br />"},
+            )
 
 
 # **********************************************************************************
@@ -322,7 +325,7 @@ class ServerInstance:
         # Checks if user is currently attempting to move global server
         # dir
         if self.helper.dir_migration:
-            self.helper.websocket_helper.broadcast_user(
+            WebSocketManager().broadcast_user(
                 user_id,
                 "send_start_error",
                 {
@@ -337,7 +340,7 @@ class ServerInstance:
 
         if self.stats_helper.get_import_status() and not forge_install:
             if user_id:
-                self.helper.websocket_helper.broadcast_user(
+                WebSocketManager().broadcast_user(
                     user_id,
                     "send_start_error",
                     {
@@ -383,7 +386,7 @@ class ServerInstance:
             e_flag = True
         if not e_flag and self.settings["type"] == "minecraft-java":
             if user_id:
-                self.helper.websocket_helper.broadcast_user(
+                WebSocketManager().broadcast_user(
                     user_id, "send_eula_bootbox", {"id": self.server_id}
                 )
             else:
@@ -416,7 +419,7 @@ class ServerInstance:
 
         except:
             if user_id:
-                self.helper.websocket_helper.broadcast_user(
+                WebSocketManager().broadcast_user(
                     user_id,
                     "send_start_error",
                     {
@@ -452,7 +455,7 @@ class ServerInstance:
                     f"Server {self.name} failed to start with error code: {ex}"
                 )
                 if user_id:
-                    self.helper.websocket_helper.broadcast_user(
+                    WebSocketManager().broadcast_user(
                         user_id,
                         "send_start_error",
                         {
@@ -479,7 +482,7 @@ class ServerInstance:
                 # Checks for java on initial fail
                 if not self.helper.detect_java():
                     if user_id:
-                        self.helper.websocket_helper.broadcast_user(
+                        WebSocketManager().broadcast_user(
                             user_id,
                             "send_start_error",
                             {
@@ -493,7 +496,7 @@ class ServerInstance:
                     f"Server {self.name} failed to start with error code: {ex}"
                 )
                 if user_id:
-                    self.helper.websocket_helper.broadcast_user(
+                    WebSocketManager().broadcast_user(
                         user_id,
                         "send_start_error",
                         {
@@ -540,7 +543,7 @@ class ServerInstance:
                 self.stats_helper.set_first_run()
                 loc_server_port = self.stats_helper.get_server_stats()["server_port"]
                 # Sends port reminder message.
-                self.helper.websocket_helper.broadcast_user(
+                WebSocketManager().broadcast_user(
                     user_id,
                     "send_start_error",
                     {
@@ -552,15 +555,11 @@ class ServerInstance:
                 server_users = PermissionsServers.get_server_user_list(self.server_id)
                 for user in server_users:
                     if user != user_id:
-                        self.helper.websocket_helper.broadcast_user(
-                            user, "send_start_reload", {}
-                        )
+                        WebSocketManager().broadcast_user(user, "send_start_reload", {})
             else:
                 server_users = PermissionsServers.get_server_user_list(self.server_id)
                 for user in server_users:
-                    self.helper.websocket_helper.broadcast_user(
-                        user, "send_start_reload", {}
-                    )
+                    WebSocketManager().broadcast_user(user, "send_start_reload", {})
         else:
             logger.warning(
                 f"Server PID {self.process.pid} died right after starting "
@@ -592,7 +591,7 @@ class ServerInstance:
     def check_internet_thread(self, user_id, user_lang):
         if user_id:
             if not Helpers.check_internet():
-                self.helper.websocket_helper.broadcast_user(
+                WebSocketManager().broadcast_user(
                     user_id,
                     "send_start_error",
                     {
@@ -719,9 +718,7 @@ class ServerInstance:
                 server_users = PermissionsServers.get_server_user_list(self.server_id)
 
                 for user in server_users:
-                    self.helper.websocket_helper.broadcast_user(
-                        user, "send_start_reload", {}
-                    )
+                    WebSocketManager().broadcast_user(user, "send_start_reload", {})
                 break
 
     def stop_crash_detection(self):
@@ -834,7 +831,7 @@ class ServerInstance:
         self.record_server_stats()
 
         for user in server_users:
-            self.helper.websocket_helper.broadcast_user(user, "send_start_reload", {})
+            WebSocketManager().broadcast_user(user, "send_start_reload", {})
 
     def restart_threaded_server(self, user_id):
         bu_conf = HelpersManagement.get_backup_config(self.server_id)
@@ -1034,8 +1031,8 @@ class ServerInstance:
         logger.info(f"Backup Thread started for server {self.settings['server_name']}.")
 
     def a_backup_server(self):
-        if len(self.helper.websocket_helper.clients) > 0:
-            self.helper.websocket_helper.broadcast_page_params(
+        if len(WebSocketManager().auth_clients) > 0:
+            WebSocketManager().broadcast_page_params(
                 "/panel/server_detail",
                 {"id": str(self.server_id)},
                 "backup_reload",
@@ -1045,7 +1042,7 @@ class ServerInstance:
         logger.info(f"Starting server {self.name} (ID {self.server_id}) backup")
         server_users = PermissionsServers.get_server_user_list(self.server_id)
         for user in server_users:
-            self.helper.websocket_helper.broadcast_user(
+            WebSocketManager().broadcast_user(
                 user,
                 "notification",
                 self.helper.translation.translate(
@@ -1120,8 +1117,8 @@ class ServerInstance:
             self.is_backingup = False
             logger.info(f"Backup of server: {self.name} completed")
             results = {"percent": 100, "total_files": 0, "current_file": 0}
-            if len(self.helper.websocket_helper.clients) > 0:
-                self.helper.websocket_helper.broadcast_page_params(
+            if len(WebSocketManager().auth_clients) > 0:
+                WebSocketManager().broadcast_page_params(
                     "/panel/server_detail",
                     {"id": str(self.server_id)},
                     "backup_status",
@@ -1129,7 +1126,7 @@ class ServerInstance:
                 )
             server_users = PermissionsServers.get_server_user_list(self.server_id)
             for user in server_users:
-                self.helper.websocket_helper.broadcast_user(
+                WebSocketManager().broadcast_user(
                     user,
                     "notification",
                     self.helper.translation.translate(
@@ -1158,8 +1155,8 @@ class ServerInstance:
                 f"Failed to create backup of server {self.name} (ID {self.server_id})"
             )
             results = {"percent": 100, "total_files": 0, "current_file": 0}
-            if len(self.helper.websocket_helper.clients) > 0:
-                self.helper.websocket_helper.broadcast_page_params(
+            if len(WebSocketManager().clients) > 0:
+                WebSocketManager().broadcast_page_params(
                     "/panel/server_detail",
                     {"id": str(self.server_id)},
                     "backup_status",
@@ -1176,8 +1173,8 @@ class ServerInstance:
     def backup_status(self, source_path, dest_path):
         results = Helpers.calc_percent(source_path, dest_path)
         self.backup_stats = results
-        if len(self.helper.websocket_helper.clients) > 0:
-            self.helper.websocket_helper.broadcast_page_params(
+        if len(WebSocketManager().auth_clients) > 0:
+            WebSocketManager().broadcast_page_params(
                 "/panel/server_detail",
                 {"id": str(self.server_id)},
                 "backup_status",
@@ -1280,14 +1277,14 @@ class ServerInstance:
             self.stop_threaded_server()
         else:
             was_started = False
-        if len(self.helper.websocket_helper.clients) > 0:
+        if len(WebSocketManager().auth_clients) > 0:
             # There are clients
             self.check_update()
             message = (
                 '<a data-id="' + str(self.server_id) + '" class=""> UPDATING...</i></a>'
             )
         for user in server_users:
-            self.helper.websocket_helper.broadcast_user_page(
+            WebSocketManager().broadcast_user_page(
                 "/panel/server_detail",
                 user,
                 "update_button_status",
@@ -1340,7 +1337,7 @@ class ServerInstance:
         # check if backup was successful
         if self.last_backup_failed:
             for user in server_users:
-                self.helper.websocket_helper.broadcast_user(
+                WebSocketManager().broadcast_user(
                     user,
                     "notification",
                     "Backup failed for " + self.name + ". canceling update.",
@@ -1386,11 +1383,11 @@ class ServerInstance:
             logger.info("Executable updated successfully. Starting Server")
 
             self.stats_helper.set_update(False)
-            if len(self.helper.websocket_helper.clients) > 0:
+            if len(WebSocketManager().auth_clients) > 0:
                 # There are clients
                 self.check_update()
                 for user in server_users:
-                    self.helper.websocket_helper.broadcast_user(
+                    WebSocketManager().broadcast_user(
                         user,
                         "notification",
                         "Executable update finished for " + self.name,
@@ -1398,7 +1395,7 @@ class ServerInstance:
                 # sleep so first notif can completely run
                 time.sleep(3)
             for user in server_users:
-                self.helper.websocket_helper.broadcast_user_page(
+                WebSocketManager().broadcast_user_page(
                     "/panel/server_detail",
                     user,
                     "update_button_status",
@@ -1408,10 +1405,10 @@ class ServerInstance:
                         "wasRunning": was_started,
                     },
                 )
-                self.helper.websocket_helper.broadcast_user_page(
+                WebSocketManager().broadcast_user_page(
                     user, "/panel/dashboard", "send_start_reload", {}
                 )
-                self.helper.websocket_helper.broadcast_user(
+                WebSocketManager().broadcast_user(
                     user,
                     "notification",
                     "Executable update finished for " + self.name,
@@ -1428,7 +1425,7 @@ class ServerInstance:
                 self.run_threaded_server(HelperUsers.get_user_id_by_name("system"))
         else:
             for user in server_users:
-                self.helper.websocket_helper.broadcast_user(
+                WebSocketManager().broadcast_user(
                     user,
                     "notification",
                     "Executable update failed for "
@@ -1438,7 +1435,7 @@ class ServerInstance:
             logger.error("Executable download failed.")
             self.stats_helper.set_update(False)
         for user in server_users:
-            self.helper.websocket_helper.broadcast_user(user, "remove_spinner", {})
+            WebSocketManager().broadcast_user(user, "remove_spinner", {})
 
     def start_dir_calc_task(self):
         server_dt = HelperServers.get_server_data_by_id(self.server_id)
@@ -1467,7 +1464,7 @@ class ServerInstance:
     def realtime_stats(self):
         # only get stats if clients are connected.
         # no point in burning cpu
-        if len(self.helper.websocket_helper.clients) > 0:
+        if len(WebSocketManager().public_clients | WebSocketManager().auth_clients) > 0:
             total_players = 0
             max_players = 0
             servers_ping = []
@@ -1498,8 +1495,8 @@ class ServerInstance:
                     "crashed": self.is_crashed,
                 }
             )
-            if len(self.helper.websocket_helper.clients) > 0:
-                self.helper.websocket_helper.broadcast_page_params(
+            if len(WebSocketManager().auth_clients) > 0:
+                WebSocketManager().broadcast_page_params(
                     "/panel/server_detail",
                     {"id": str(self.server_id)},
                     "update_server_details",
@@ -1532,14 +1529,17 @@ class ServerInstance:
 
             self.record_server_stats()
 
-            if (len(servers_ping) > 0) & (
-                len(self.helper.websocket_helper.clients) > 0
-            ):
+            if (len(servers_ping) > 0) & (len(WebSocketManager().auth_clients) > 0):
                 try:
-                    self.helper.websocket_helper.broadcast_page(
+                    WebSocketManager().broadcast_page(
                         "/panel/dashboard", "update_server_status", servers_ping
                     )
-                    self.helper.websocket_helper.broadcast_page(
+                except:
+                    Console.critical("Can't broadcast server status to websocket")
+
+            if (len(servers_ping) > 0) & (len(WebSocketManager().public_clients) > 0):
+                try:
+                    WebSocketManager().broadcast_page(
                         "/status", "update_server_status", servers_ping
                     )
                 except:

@@ -29,7 +29,6 @@ from app.classes.shared.null_writer import NullWriter
 from app.classes.shared.console import Console
 from app.classes.shared.installer import installer
 from app.classes.shared.translation import Translation
-from app.classes.web.websocket_helper import WebSocketHelper
 
 with redirect_stderr(NullWriter()):
     import psutil
@@ -78,7 +77,6 @@ class Helpers:
         self.passhasher = PasswordHasher()
         self.exiting = False
 
-        self.websocket_helper = WebSocketHelper(self)
         self.translation = Translation(self)
         self.update_available = False
         self.ignored_names = ["crafty_managed.txt", "db_stats"]
@@ -1215,23 +1213,6 @@ class Helpers:
                       </span>
                     </input></div><li>"""
         return output
-
-    def unzip_server(self, zip_path, user_id):
-        if Helpers.check_file_perms(zip_path):
-            temp_dir = tempfile.mkdtemp()
-            with zipfile.ZipFile(zip_path, "r") as zip_ref:
-                # extracts archive to temp directory
-                zip_ref.extractall(temp_dir)
-            if user_id:
-                self.websocket_helper.broadcast_user(
-                    user_id, "send_temp_path", {"path": temp_dir}
-                )
-
-    def backup_select(self, path, user_id):
-        if user_id:
-            self.websocket_helper.broadcast_user(
-                user_id, "send_temp_path", {"path": path}
-            )
 
     @staticmethod
     def unzip_backup_archive(backup_path, zip_name):

@@ -34,7 +34,7 @@ from app.classes.web.api_handler import (
     ListServers,
     SendCommand,
 )
-from app.classes.web.websocket_handler import SocketHandler
+from app.classes.web.websocket_handler import AuthSocketHandler, PublicSocketHandler
 from app.classes.web.static_handler import CustomStaticHandler
 from app.classes.web.upload_handler import UploadHandler
 from app.classes.web.http_handler import HTTPHandler, HTTPHandlerPage
@@ -48,7 +48,7 @@ class Webserver:
     controller: Controller
     helper: Helpers
 
-    def __init__(self, helper, controller, tasks_manager):
+    def __init__(self, helper: Helpers, controller: Controller, tasks_manager):
         self.ioloop = None
         self.http_server = None
         self.https_server = None
@@ -153,7 +153,8 @@ class Webserver:
             (r"/server/(.*)", ServerHandler, handler_args),
             (r"/ajax/(.*)", AjaxHandler, handler_args),
             (r"/files/(.*)", FileHandler, handler_args),
-            (r"/ws", SocketHandler, handler_args),
+            (r"/ws/auth", AuthSocketHandler, handler_args),
+            (r"/ws/public", PublicSocketHandler, handler_args),
             (r"/upload", UploadHandler, handler_args),
             (r"/status", StatusHandler, handler_args),
             # API Routes V1

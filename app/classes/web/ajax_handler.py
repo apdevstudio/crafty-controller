@@ -12,8 +12,10 @@ import tornado.escape
 from app.classes.models.server_permissions import EnumPermissionsServer
 from app.classes.shared.console import Console
 from app.classes.shared.helpers import Helpers
+from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.server import ServerOutBuf
 from app.classes.web.base_handler import BaseHandler
+from app.classes.shared.websocket_manager import WebSocketManager
 
 logger = logging.getLogger(__name__)
 
@@ -558,13 +560,13 @@ class AjaxHandler(BaseHandler):
                     urllib.parse.unquote(self.get_argument("file", "")),
                 )
             if Helpers.check_file_exists(path):
-                self.helper.unzip_server(path, exec_user["user_id"])
+                FileHelpers.ajax_unzip_server(path, exec_user["user_id"])
             else:
                 user_id = exec_user["user_id"]
                 if user_id:
                     time.sleep(5)
                     user_lang = self.controller.users.get_user_lang_by_id(user_id)
-                    self.helper.websocket_helper.broadcast_user(
+                    WebSocketManager().broadcast_user(
                         user_id,
                         "send_start_error",
                         {
@@ -577,7 +579,7 @@ class AjaxHandler(BaseHandler):
 
         elif page == "backup_select":
             path = self.get_argument("path", None)
-            self.helper.backup_select(path, exec_user["user_id"])
+            FileHelpers.ajax_backup_select(path, exec_user["user_id"])
             return
 
         elif page == "jar_cache":
@@ -593,7 +595,7 @@ class AjaxHandler(BaseHandler):
                 return
             for server in self.controller.servers.get_all_servers_stats():
                 if server["stats"]["running"]:
-                    self.helper.websocket_helper.broadcast_user(
+                    WebSocketManager().broadcast_user(
                         exec_user["user_id"],
                         "send_start_error",
                         {

@@ -30,9 +30,6 @@
           </tr>
         </thead>
         <tbody>
-          {% if data['running'] != 0 %}
-          <span id="sync" style="margin-left: 5px;"><i class="fas fa-sync fa-spin"></i></span></h4>
-          {% end %}
           {% for server in data['servers'] %}
           {% if server['server_data']['show_status'] %}
           <tr>
@@ -47,8 +44,7 @@
             </td>
             <td id="server_motd_{{ server['stats']['server_id']['server_id'] }}">
               {% if server['stats']['desc'] != 'False' %}
-              <img src="/static/assets/images/pack.png" alt="icon"
-                style="-webkit-filter:grayscale(100%); filter:grayscale(100%)" />
+              <img src="/static/assets/images/pack.png" alt="icon" style="-webkit-filter:grayscale(100%); filter:grayscale(100%)" />
               <span id="input_motd_{{ server['stats']['server_id']['server_id'] }}" class="input_motd">{{
                 server['stats']['desc'] }}</span> <br />
               {% end %}
@@ -89,12 +85,9 @@
 </div>
 <!-- View for Small screen -->
 <div class="row justify-content-center align-items-sm-center">
-  <div class="content-wrapper login-modal d-sm-none d-block"  style="background-color: var(--dropdown-bg);">
+  <div class="content-wrapper login-modal d-sm-none d-block" style="background-color: var(--dropdown-bg);">
     <img src="/static/assets/images/logo_long.png" style='width: 100%;'>
     <hr />
-    {% if data['running'] != 0 %}
-    <span id="m_sync" style="margin-left: 5px;"><i class="fas fa-sync fa-spin"></i></span></h4>
-    {% end %}
     <div class="accordion" id="accordionServers">
       {% for server in data['servers'] %}
       <div class="card mb-0">
@@ -102,17 +95,13 @@
           <h2 class="mb-0 container overflow-hidden">
             <div class="row">
               <div class="col-8 mx-0 px-0">
-                <a id="m_server_name_{{ server['stats']['server_id']['server_id'] }}"
-                  class="btn btn-link d-flex justify-content-center" type="button" data-toggle="collapse"
-                  data-target="#collapse-{{server['server_data']['server_id']}}" aria-expanded="false"
-                  aria-controls="collapse-{{server['server_data']['server_id']}}">
+                <a id="m_server_name_{{ server['stats']['server_id']['server_id'] }}" class="btn btn-link d-flex justify-content-center" type="button" data-toggle="collapse" data-target="#collapse-{{server['server_data']['server_id']}}" aria-expanded="false" aria-controls="collapse-{{server['server_data']['server_id']}}">
                   <i class="fas fa-server"></i>
                   {{ server['server_data']['server_name'] }}
                 </a>
               </div>
               <div class="col-4 mx-0 px-0">
-                <a id="m_server_online_status_{{ server['stats']['server_id']['server_id'] }}"
-                  class="btn btn-link d-flex justify-content-center" type="button">
+                <a id="m_server_online_status_{{ server['stats']['server_id']['server_id'] }}" class="btn btn-link d-flex justify-content-center" type="button">
                   {% if server['stats']['running'] %}
                   <div id="m_server_players_{{ server['stats']['server_id']['server_id'] }}">
                     <span class="text-success"><i class="fas fa-signal"></i> {{ server['stats']['online'] }} / {{
@@ -128,14 +117,12 @@
           </h2>
         </div>
 
-        <div id="collapse-{{server['server_data']['server_id']}}" class="collapse"
-          aria-labelledby="heading-{{server['server_data']['server_id']}}" data-parent="#accordionServers">
+        <div id="collapse-{{server['server_data']['server_id']}}" class="collapse" aria-labelledby="heading-{{server['server_data']['server_id']}}" data-parent="#accordionServers">
           <div class="card-body">
             {% if server['stats']['int_ping_results'] != 'False' %}
             <div id="m_server_motd_{{ server['stats']['server_id']['server_id'] }}" class="media">
               {% if server['stats']['desc'] != 'False' %}
-              <img src="/static/assets/images/pack.png" class="w-25 mr-3" alt="icon"
-                style="-webkit-filter:grayscale(100%); filter:grayscale(100%);" />
+              <img src="/static/assets/images/pack.png" class="w-25 mr-3" alt="icon" style="-webkit-filter:grayscale(100%); filter:grayscale(100%);" />
               {% end %}
               <div class="media-body">
                 {% if server['stats']['desc'] != 'False' %}
@@ -197,8 +184,6 @@
 
     /* TODO Update each element */
     if (server.int_ping_results) {
-      document.getElementById('sync').innerHTML = '';
-      document.getElementById('m_sync').innerHTML = '';
       /* Update Players */
       if (server.players) {
         server_players.innerHTML = server.online + ` / ` + server.max + ` {{ translate('dashboard', 'max', data['lang']) }}<br />`
