@@ -232,6 +232,7 @@
 
     let usingWebSockets = false;
     let webSocket = null;
+    let websocketTimeoutId = null;
     // {% if request.protocol == 'https' %}
     usingWebSockets = true;
 
@@ -282,17 +283,18 @@
           wsOpen = false;
           console.log('Closed WebSocket', closeEvent);
 
-          if (typeof reconnectorId !== 'number') {
-            setTimeout(sendWssError, 7000);
+          if (!document.hidden) {
+            if (typeof reconnectorId !== 'number') {
+              setTimeout(sendWssError, 7000);
+            }
+            console.info("Reconnecting with a timeout of", (getRandomArbitrary(0, 2 ** failedConnectionCounter - 1) + 5) * 1000, "milliseconds");
+            // Discard old websocket and create a new one in 5 seconds
+            wsInternal = null
+            reconnectorId = setTimeout(startWebSocket, (getRandomArbitrary(0, 2 ** failedConnectionCounter - 1) + 5) * 1000)
+
+            failedConnectionCounter++;
           }
-          console.info("Reconnecting with a timeout of", (getRandomArbitrary(0, 2 ** failedConnectionCounter - 1) + 5) * 1000, "milliseconds");
-          // Discard old websocket and create a new one in 5 seconds
-          wsInternal = null
-          reconnectorId = setTimeout(startWebSocket, (getRandomArbitrary(0, 2 ** failedConnectionCounter - 1) + 5) * 1000)
-
-          failedConnectionCounter++;
         };
-
 
         webSocket = {
           on: function (event, callback) {
@@ -318,6 +320,21 @@
     // {% else %}
     warn('WebSockets are not supported in Crafty if not using the https protocol')
     // {% end%}
+
+    // Managing Connexions for Multi Tab opened to reduce bandwith usage
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        websocketTimeoutId = setTimeout(() => {
+          webSocket.close(1000, "Closed due to Inactivity");
+          console.log('%c[Crafty Controller] %cClose Websocket due to Tab not active after 5s', 'font-weight: 900; color: #800080;', 'font-weight: 900; color: #eee;');
+        }, 5000);
+      } else {
+        clearTimeout(websocketTimeoutId)
+        if (webSocket.getStatus() == WebSocket.CLOSED) {
+          startWebSocket();
+        }
+      }
+    });
 
     if (webSocket) {
       webSocket.on('send_start_error', function (start_error) {
@@ -509,10 +526,10 @@
 
     document.addEventListener('alpine:init', () => {
       console.log('%c[Crafty Controller] %cAlpine.js pre-initialization!', 'font-weight: 900; color: #800080;', 'color: #eee;');
-    })
+    });
     document.addEventListener('alpine:initialized', () => {
       console.log('%c[Crafty Controller] %cAlpine.js initialized!', 'font-weight: 900; color: #800080;', 'color: #eee;');
-    })
+    });
 
     $(document).ready(function () {
       console.log('%c[Crafty Controller] %cReady for JS!', 'font-weight: 900; color: #800080;', 'font-weight: 900; color: #eee;');
