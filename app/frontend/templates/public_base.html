@@ -54,9 +54,7 @@
   <script src="/static/assets/js/shared/off-canvas.js"></script>
   <script src="/static/assets/js/shared/hoverable-collapse.js"></script>
   <script src="/static/assets/js/shared/misc.js"></script>
-  <!-- endinject -->
-  {% block js %}
-  <!-- Custom js for this page -->
+
   <script>
     /* Script for WebSockets */
     let usingWebSockets = false;
@@ -137,6 +135,12 @@
             }
 
             wsInternal.send(JSON.stringify(message));
+          },
+          close: function (code, reason) {
+            wsInternal.close(code, reason);
+          },
+          getStatus: function () {
+            return wsInternal.readyState;
           }
         }
       } catch (error) {
@@ -152,7 +156,7 @@
 
     // Managing Connexions for Multi Tab opened to reduce bandwith usage
     document.addEventListener("visibilitychange", () => {
-      if (document.hidden) {
+      if (document.visibilityState == "hidden") {
         websocketTimeoutId = setTimeout(() => {
           webSocket.close(1000, "Closed due to Inactivity");
           console.log('%c[Crafty Controller] %cClose Websocket due to Tab not active after 5s', 'font-weight: 900; color: #800080;', 'font-weight: 900; color: #eee;');
@@ -165,7 +169,9 @@
       }
     });
   </script>
-
+  <!-- endinject -->
+  {% block js %}
+  <!-- Custom js for this page -->
   <script>
     $(document).ready(function () {
       let login_opacity_div = document.getElementById('login_opacity');
