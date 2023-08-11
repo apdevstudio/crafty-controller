@@ -333,7 +333,7 @@
         websocketTimeoutId = setTimeout(() => {
           webSocket.close(1000, "Closed due to Inactivity");
           console.log('%c[Crafty Controller] %cClose Websocket due to Tab not active after 5s', 'font-weight: 900; color: #800080;', 'font-weight: 900; color: #eee;');
-        }, 5000);
+        }, 10000);
       } else {
         clearTimeout(websocketTimeoutId)
         if (webSocket.getStatus() == WebSocket.CLOSED) {
