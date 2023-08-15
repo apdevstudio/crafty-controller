@@ -86,9 +86,13 @@ class Controller:
         self.project_root = root_dir
 
     def set_config_json(self, data):
-        keys = list(data.keys())
+        current_config = self.helper.get_all_settings()
+        for key in current_config:
+            if key in data:
+                current_config[key] = data[key]
+        keys = list(current_config.keys())
         keys.sort()
-        sorted_data = {i: data[i] for i in keys}
+        sorted_data = {i: current_config[i] for i in keys}
         with open(self.helper.settings_file, "w", encoding="utf-8") as f:
             json.dump(sorted_data, f, indent=4)
 
