@@ -99,7 +99,7 @@
                   <textarea id="monitored_mounts" name="{{item[0]}}" class="form-control list hidden" rows="{{ len(data['all_partitions']) }}" value="{{','.join(item[1])}}" hidden>{{','.join(item[1])}}</textarea>
                 </div>
                 {% elif isinstance(item[1], list) %}
-                <textarea value="{{','.join(item[1])}}" type="text" name="{{item[0]}}" class="form-control list">{{','.join(item[1])}}</textarea>
+                <textarea id="{{item[0]}}" value="{{','.join(item[1])}}" type="text" name="{{item[0]}}" class="form-control list">{{','.join(item[1])}}</textarea>
                 {% elif isinstance(item[1], bool) %}
                 <div style="margin-left: 30px;">
                   {% if item[1] == True %}
@@ -184,6 +184,7 @@
     //We need to make sure these are sent regardless of whether or not they're checked
     formDataObject.disabled_language_files = $('#lang_select').val();
     formDataObject.monitored_mounts = $('#mount_select').val();
+    formDataObject.keywords = $('#keywords').val().split(",");
     $('#config-form input[type="radio"]:checked').each(function() {
       if ($(this).val() == 'True'){
         formDataObject[this.name] = true;

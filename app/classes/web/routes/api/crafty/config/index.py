@@ -22,7 +22,7 @@ config_json_schema = {
         "max_audit_entries": {"type": "integer"},
         "disabled_language_files": {"type": "array"},
         "stream_size_GB": {"type": "integer"},
-        "keywords": {"type": "string"},
+        "keywords": {"type": "array"},
         "allow_nsfw_profile_pictures": {"type": "boolean"},
         "enable_user_self_delete": {"type": "boolean"},
         "reset_secrets_on_next_boot": {"type": "boolean"},
