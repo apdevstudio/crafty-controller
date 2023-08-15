@@ -50,7 +50,6 @@
           <!-- Page Title Header Ends-->
 
           <form id="config-form" class="forms-sample" method="post" action="/panel/config_json">
-            {% raw xsrf_form_html() %}
 
             {% for item in data['config-json'].items() %}
             {% if item[0] == "reset_secrets_on_next_boot" %}
@@ -156,37 +155,66 @@
 
 {% block js %}
 <script>
-  $("#config-form").submit(function (e) {
-    let uuid = uuidv4();
-    var token = getCookie("_xsrf")
+    function replacer(key, value) {
+    if (key == "disabled_language_files") {
+      if (value == 0){
+        return []
+      } else {
+        return value
+      }
+    }
+    if (typeof value == "boolean") {
+      return value
+    } else {
+      return (isNaN(value) ? value : +value);
+    }
+  }
+  $("#config-form").on("submit", async function (e) {
     e.preventDefault();
-
     $("#submit-status").html('<i class="fa fa-spinner fa-spin"></i>');
-    /* Convert multiple select to text list */
-    let selected_Lang = $('#lang_select').val();
-    $('#disabled_lang').val(selected_Lang);
+    var token = getCookie("_xsrf")
+    let configForm = document.getElementById("config-form");
 
-    let mounts = $('#mount_select').val();
-    $('#monitored_mounts').val(mounts);
+    let formData = new FormData(configForm);
+    formData.delete("disabled_lang");
+    formData.delete("lang_select");
 
-    let class_list = document.getElementsByClassName("list");
-    let form_json = convertFormToJSON($("#config-form"));
-    for (let i = 0; i < class_list.length; i++) {
-      let str = String($(class_list.item(i)).val())
-      form_json[$(class_list.item(i)).attr("name")] = uuid + "," + str.replace(/\s/g, '');
-    };
-    form_json['uuid'] = uuid;
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      dataType: "text",
-      url: '/panel/config_json',
-      data: form_json,
-      success: function (data) {
-        $("#submit-status").html('<i class="fa fa-check"></i>');
-      },
+    //Create an object from the form data entries
+    let formDataObject = Object.fromEntries(formData.entries());
+    //We need to make sure these are sent regardless of whether or not they're checked
+    formDataObject.disabled_language_files = $('#lang_select').val();
+    formDataObject.monitored_mounts = $('#mount_select').val();
+    $('#config-form input[type="radio"]:checked').each(function() {
+      if ($(this).val() == 'True'){
+        formDataObject[this.name] = true;
+      }else{
+        formDataObject[this.name] = false;
+      }
     });
-  });
+    console.log(formDataObject);
+    // Format the plain form data as JSON
+    let formDataJsonString = JSON.stringify(formDataObject, replacer);
+
+    console.log(formDataJsonString);
+
+    let res = await fetch(`/api/v2/crafty/config/`, {
+      method: 'PATCH',
+      headers: {
+        'X-XSRFToken': token
+      },
+      body: formDataJsonString,
+    });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      $("#submit-status").html('<i class="fa fa-check"></i>');
+    } else {
+
+      bootbox.alert({
+        title: responseData.error,
+        message: responseData.error_data
+      });
+    }
+});
 
   function uuidv4() {
     return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>

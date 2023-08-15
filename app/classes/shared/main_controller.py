@@ -5,6 +5,7 @@ from datetime import datetime
 import platform
 import shutil
 import time
+import json
 import logging
 import threading
 from peewee import DoesNotExist
@@ -83,6 +84,13 @@ class Controller:
 
     def set_project_root(self, root_dir):
         self.project_root = root_dir
+
+    def set_config_json(self, data):
+        keys = list(data.keys())
+        keys.sort()
+        sorted_data = {i: data[i] for i in keys}
+        with open(self.helper.settings_file, "w", encoding="utf-8") as f:
+            json.dump(sorted_data, f, indent=4)
 
     def package_support_logs(self, exec_user):
         if exec_user["preparing"]:
