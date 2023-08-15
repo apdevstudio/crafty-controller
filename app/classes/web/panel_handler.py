@@ -1568,42 +1568,7 @@ class PanelHandler(BaseHandler):
                 role = self.controller.roles.get_role(r)
                 exec_user_role.add(role["role_name"])
 
-        if page == "config_json":
-            try:
-                data = {}
-                with open(self.helper.settings_file, "r", encoding="utf-8") as f:
-                    keys = json.load(f).keys()
-                this_uuid = self.get_argument("uuid")
-                for key in keys:
-                    arg_data = self.get_argument(key)
-                    if arg_data.startswith(this_uuid):
-                        arg_data = arg_data.split(",")
-                        arg_data.pop(0)
-                        data[key] = arg_data
-                    else:
-                        try:
-                            data[key] = int(arg_data)
-                        except:
-                            if arg_data == "True":
-                                data[key] = True
-                            elif arg_data == "False":
-                                data[key] = False
-                            else:
-                                data[key] = arg_data
-                keys = list(data.keys())
-                keys.sort()
-                sorted_data = {i: data[i] for i in keys}
-                with open(self.helper.settings_file, "w", encoding="utf-8") as f:
-                    json.dump(sorted_data, f, indent=4)
-            except Exception as e:
-                logger.critical(
-                    "Config File Error: Unable to read "
-                    f"{self.helper.settings_file} due to {e}"
-                )
-
-            self.redirect("/panel/config_json")
-
-        elif page == "edit_user":
+        if page == "edit_user":
             if bleach.clean(self.get_argument("username", None)).lower() == "system":
                 self.redirect(
                     "/panel/error?error=Unauthorized access: "
