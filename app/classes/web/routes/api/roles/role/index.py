@@ -153,9 +153,18 @@ class ApiRolesRoleIndexHandler(BaseApiHandler):
                 },
             )
 
+        manager = data.get(
+            "manager", self.controller.roles.get_role(role_id)["manager"]
+        )
+        if manager == self.controller.users.get_id_by_name("system") or manager == 0:
+            manager = None
+
         try:
             self.controller.roles.update_role_advanced(
-                role_id, data.get("role_name", None), data.get("servers", None)
+                role_id,
+                data.get("name", None),
+                data.get("servers", None),
+                manager,
             )
         except DoesNotExist:
             return self.finish_json(404, {"status": "error", "error": "ROLE_NOT_FOUND"})

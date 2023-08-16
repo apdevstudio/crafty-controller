@@ -50,9 +50,6 @@
           <div class="">
             <div class="">
               <form id="role_form" class="forms-sample" method="post" action="{{ '/panel/add_role' if data['new_role'] else '/panel/edit_role' }}">
-                {% raw xsrf_form_html() %}
-                <input type="hidden" name="id" value="{{ data['role']['role_id'] }}">
-                <input type="hidden" name="subpage" value="config">
 
                 <div class="card">
                   <div class="card-header header-sm d-flex justify-content-between align-items-center">
@@ -61,7 +58,7 @@
                   <div class="card-body">
                     <div class="form-group">
                       <label for="role_name">{{ translate('rolesConfig', 'roleName', data['lang']) }} <small class="text-muted ml-1"> - {{ translate('rolesConfig', 'roleDesc', data['lang']) }}</small> </label>
-                      <input type="text" class="form-control" name="role_name" id="role_name" value="{{ data['role']['role_name']  }}" placeholder="Role Name" >
+                      <input type="text" class="form-control" name="name" id="role_name" value="{{ data['role']['role_name']  }}" placeholder="Role Name" >
                     </div>
 
                     <br />
@@ -188,11 +185,11 @@
                             <tr>
                               <td>{{ server['server_name'] }}</td>
                               <td>
-                                <input type="checkbox" class="" onclick="enable_disable(event)" data-id="{{server['server_id']}}"
+                                <input type="checkbox" class="access" onclick="enable_disable(event)" data-id="{{server['server_id']}}"
                                 id="server_{{ server['server_id'] }}_access"
                                 name="server_{{ server['server_id'] }}_access"
                                 {{ 'checked' if server['server_id'] in data['role']['servers'] else '' }}
-                                autocomplete="off" value="1">
+                                autocomplete="off" value="1" form="dummy">
                               </td>
                               {% for permission in data['permissions_all'] %}
                               {% if server['server_id'] in data['role']['servers'] %}
@@ -201,14 +198,14 @@
                                   id="permission_{{ server['server_id'] }}_{{ permission.name }}"
                                   name="permission_{{ server['server_id'] }}_{{ permission.name }}"
                                   {{ 'checked' if permission in data['permissions_dict'].get(server['server_id'], []) else '' }}
-                                  autocomplete="off" value="1">
+                                  autocomplete="off" value="1" form="dummy">
                                 </td>
                               {% else %}
                               <td>
                                 <input type="checkbox" class="{{server['server_id']}}_perms"
                                 id="permission_{{ server['server_id'] }}_{{ permission.name }}"
                                 name="permission_{{ server['server_id'] }}_{{ permission.name }}"
-                                autocomplete="off" value="1" disabled>
+                                autocomplete="off" value="1" disabled form="dummy">
                               </td>
                               {% end %}
                               {% end %}
@@ -284,7 +281,7 @@
                       <a class="btn btn-sm btn-danger disabled"><i class="fas fa-trash"></i>{{ translate('rolesConfig', 'delRole', data['lang']) }}</a><br />
                       <small>{{ translate('rolesConfig', 'doesNotExist', data['lang']) }}</small>
                     {% else %}
-                      <a href="/panel/remove_role?id={{ data['role']['role_id'] }}" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i>{{ translate('rolesConfig', 'delRole', data['lang']) }}</a>
+                      <button onclick="del_role()" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i>{{ translate('rolesConfig', 'delRole', data['lang']) }}</button>
                     {% end %}
                 </div>
               </div>
@@ -341,24 +338,87 @@
         console.log( "ready!" );
     });
     const roleId = new URLSearchParams(document.location.search).get('id');
+    
+    function replacer(key, value) {
+      if (key === "permissions"){
+        return value;
+      }
+      if (key === "servers" && value.length === 0){
+        return value;
+      }
+      if (typeof value == "boolean") {
+        console.log(value);
+        return value
+      } else {
+        return (isNaN(value) ? value : +value);
+      }
+  }
 
-    $("#config_form").on("submit", async function (e) {
+  async function del_role(){
+    var token = getCookie("_xsrf")
+    let res = await fetch(`/api/v2/roles/${roleId}`, {
+        method: "DELETE",
+        headers: {
+          'X-XSRFToken': token
+        },
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        window.location.href = "/panel/panel_config";
+      } else {
+
+        bootbox.alert({
+          title: responseData.error,
+          message: responseData.error_data
+        });
+      }
+  }
+
+    $("#role_form").on("submit", async function (e) {
       e.preventDefault();
       var token = getCookie("_xsrf")
-      let configForm = document.getElementById("config_form");
+      let roleForm = document.getElementById("role_form");
 
-      let formData = new FormData(configForm);
+      let server_ids = $('.access').map(function() {
+        if ($(this).is(':checked')){
+          return $(this).data('id');
+        }
+      }).get();
+
+      let servers = []
+      for(i=0; i < server_ids.length; i++){
+        arrchecked = $(`.${server_ids[i]}_perms`).map(function() {
+        if(this.checked){
+          return "1";
+        }else{
+          return "0"
+        }
+      }).get();
+        servers.push({"server_id": server_ids[i], "permissions": arrchecked.join("")});
+      }
+      console.log(servers)
+
+      let formData = new FormData(roleForm);
       //Create an object from the form data entries
       let formDataObject = Object.fromEntries(formData.entries());
-      let send_object = Object()
-      send_object.servers = []
-      send_object.name = formDataObject.role_name
+      formDataObject.servers = servers;
+      console.log(formDataObject);
+
+      //We need to make sure these are sent regardless of whether or not they're checked
 
       // Format the plain form data as JSON
       let formDataJsonString = JSON.stringify(formDataObject, replacer);
 
-      let res = await fetch(`/api/v2/roles/${roleId}`, {
-        method: 'PATCH',
+      console.log(formDataJsonString);
+      if (roleId){
+        url = `/api/v2/roles/${roleId}`
+        method = 'PATCH'
+      }else{
+        url = `/api/v2/roles/`
+        method = 'POST'
+      }
+      let res = await fetch(url, {
+        method: method,
         headers: {
           'X-XSRFToken': token
         },
@@ -366,14 +426,14 @@
       });
       let responseData = await res.json();
       if (responseData.status === "ok") {
-        window.location.reload();
+        window.location.href = "/panel/panel_config";
       } else {
 
         bootbox.alert({
           title: responseData.error,
           message: responseData.error_data
-          });
-      } 
+        });
+      }
     });
 
 

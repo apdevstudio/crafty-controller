@@ -1538,17 +1538,6 @@ class PanelHandler(BaseHandler):
         if api_key is not None:
             superuser = superuser and api_key.superuser
 
-        server_id = self.get_argument("id", None)
-        permissions = {
-            "Commands": EnumPermissionsServer.COMMANDS,
-            "Terminal": EnumPermissionsServer.TERMINAL,
-            "Logs": EnumPermissionsServer.LOGS,
-            "Schedule": EnumPermissionsServer.SCHEDULE,
-            "Backup": EnumPermissionsServer.BACKUP,
-            "Files": EnumPermissionsServer.FILES,
-            "Config": EnumPermissionsServer.CONFIG,
-            "Players": EnumPermissionsServer.PLAYERS,
-        }
         if superuser:
             # defined_servers = self.controller.servers.list_defined_servers()
             exec_user_role = {"Super User"}
@@ -1869,97 +1858,6 @@ class PanelHandler(BaseHandler):
             self.controller.management.add_to_audit_log(
                 exec_user["user_id"],
                 f"Edited user {username} (UID:{user_id}) with roles {roles}",
-                server_id=0,
-                source_ip=self.get_remote_ip(),
-            )
-            self.redirect("/panel/panel_config")
-
-        elif page == "edit_role":
-            role_id = bleach.clean(self.get_argument("id", None))
-            role_name = bleach.clean(self.get_argument("role_name", None))
-
-            role = self.controller.roles.get_role(role_id)
-
-            if (
-                EnumPermissionsCrafty.ROLES_CONFIG not in exec_user_crafty_permissions
-                and exec_user["user_id"] != role["manager"]
-                and not exec_user["superuser"]
-            ):
-                self.redirect(
-                    "/panel/error?error=Unauthorized access: not a role editor"
-                )
-                return
-            if role_name is None or role_name == "":
-                self.redirect("/panel/error?error=Invalid username")
-                return
-            if role_id is None:
-                self.redirect("/panel/error?error=Invalid Role ID")
-                return
-            # does this user id exist?
-            if not self.controller.roles.role_id_exists(role_id):
-                self.redirect("/panel/error?error=Invalid Role ID")
-                return
-
-            if exec_user["superuser"]:
-                manager = self.get_argument("manager", None)
-                if manager == "":
-                    manager = None
-            else:
-                manager = role["manager"]
-
-            servers = self.get_role_servers()
-
-            self.controller.roles.update_role_advanced(
-                role_id, role_name, servers, manager
-            )
-
-            self.controller.management.add_to_audit_log(
-                exec_user["user_id"],
-                f"edited role {role_name} (RID:{role_id}) with servers {servers}",
-                server_id=0,
-                source_ip=self.get_remote_ip(),
-            )
-            self.redirect("/panel/panel_config")
-
-        elif page == "add_role":
-            role_name = bleach.clean(self.get_argument("role_name", None))
-            if exec_user["superuser"]:
-                manager = self.get_argument("manager", None)
-                if manager == "":
-                    manager = None
-            else:
-                manager = exec_user["user_id"]
-
-            if EnumPermissionsCrafty.ROLES_CONFIG not in exec_user_crafty_permissions:
-                self.redirect(
-                    "/panel/error?error=Unauthorized access: not a role editor"
-                )
-                return
-            if (
-                not self.controller.crafty_perms.can_add_role(exec_user["user_id"])
-                and not exec_user["superuser"]
-            ):
-                self.redirect(
-                    "/panel/error?error=Unauthorized access: quantity limit reached"
-                )
-                return
-            if role_name is None or role_name == "":
-                self.redirect("/panel/error?error=Invalid role name")
-                return
-            # does this user id exist?
-            if self.controller.roles.get_roleid_by_name(role_name) is not None:
-                self.redirect("/panel/error?error=Role exists")
-                return
-
-            servers = self.get_role_servers()
-
-            role_id = self.controller.roles.add_role_advanced(
-                role_name, servers, manager
-            )
-
-            self.controller.management.add_to_audit_log(
-                exec_user["user_id"],
-                f"created role {role_name} (RID:{role_id})",
                 server_id=0,
                 source_ip=self.get_remote_ip(),
             )
