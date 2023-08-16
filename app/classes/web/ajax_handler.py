@@ -114,8 +114,6 @@ class AjaxHandler(BaseHandler):
         if api_key is not None:
             superuser = superuser and api_key.superuser
 
-        server_id = self.get_argument("id", None)
-
         if page == "send_order":
             self.controller.users.update_server_order(
                 exec_user["user_id"], bleach.clean(self.get_argument("order"))
