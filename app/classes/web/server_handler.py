@@ -297,172 +297,6 @@ class ServerHandler(BaseHandler):
                     exec_user["user_id"], server_id, self.get_remote_ip(), command
                 )
 
-        if page == "step1":
-            if not superuser and not self.controller.crafty_perms.can_create_server(
-                exec_user["user_id"]
-            ):
-                self.redirect(
-                    "/panel/error?error=Unauthorized access: "
-                    "not a server creator or server limit reached"
-                )
-                return
-
-            if not superuser:
-                user_roles = self.controller.roles.get_all_roles()
-            else:
-                user_roles = self.get_user_roles()
-            server = bleach.clean(self.get_argument("server", ""))
-            server_name = bleach.clean(self.get_argument("server_name", ""))
-            min_mem = bleach.clean(self.get_argument("min_memory", ""))
-            max_mem = bleach.clean(self.get_argument("max_memory", ""))
-            port = bleach.clean(self.get_argument("port", ""))
-            if int(port) < 1 or int(port) > 65535:
-                self.redirect(
-                    "/panel/error?error=Constraint Error: "
-                    "Port must be greater than 0 and less than 65535"
-                )
-                return
-            import_type = bleach.clean(self.get_argument("create_type", ""))
-            import_server_path = bleach.clean(self.get_argument("server_path", ""))
-            import_server_jar = bleach.clean(self.get_argument("server_jar", ""))
-            server_parts = server.split("|")
-            captured_roles = []
-            for role in user_roles:
-                if bleach.clean(self.get_argument(str(role), "")) == "on":
-                    captured_roles.append(role)
-
-            if not server_name:
-                self.redirect("/panel/error?error=Server name cannot be empty!")
-                return
-
-            if import_type == "import_jar":
-                if self.helper.is_subdir(
-                    self.controller.project_root, import_server_path
-                ):
-                    self.redirect(
-                        "/panel/error?error=Loop Error: The selected path will cause"
-                        " an infinite copy loop. Make sure Crafty's directory is not"
-                        " in your server path."
-                    )
-                    return
-                good_path = self.controller.verify_jar_server(
-                    import_server_path, import_server_jar
-                )
-
-                if not good_path:
-                    self.redirect(
-                        "/panel/error?error=Server path or Server Jar not found!"
-                    )
-                    return
-
-                new_server_id = self.controller.import_jar_server(
-                    server_name,
-                    import_server_path,
-                    import_server_jar,
-                    min_mem,
-                    max_mem,
-                    port,
-                    exec_user["user_id"],
-                )
-                self.controller.management.add_to_audit_log(
-                    exec_user["user_id"],
-                    f'imported a jar server named "{server_name}"',
-                    new_server_id,
-                    self.get_remote_ip(),
-                )
-            elif import_type == "import_zip":
-                # here import_server_path means the zip path
-                zip_path = bleach.clean(self.get_argument("root_path"))
-                good_path = Helpers.check_path_exists(zip_path)
-                if not good_path:
-                    self.redirect("/panel/error?error=Temp path not found!")
-                    return
-
-                new_server_id = self.controller.import_zip_server(
-                    server_name,
-                    zip_path,
-                    import_server_jar,
-                    min_mem,
-                    max_mem,
-                    port,
-                    exec_user["user_id"],
-                )
-                if new_server_id == "false":
-                    self.redirect(
-                        f"/panel/error?error=Zip file not accessible! "
-                        f"You can fix this permissions issue with "
-                        f"sudo chown -R crafty:crafty {import_server_path} "
-                        f"And sudo chmod 2775 -R {import_server_path}"
-                    )
-                    return
-                self.controller.management.add_to_audit_log(
-                    exec_user["user_id"],
-                    f'imported a zip server named "{server_name}"',
-                    new_server_id,
-                    self.get_remote_ip(),
-                )
-            else:
-                if len(server_parts) != 3:
-                    self.redirect("/panel/error?error=Invalid server data")
-                    return
-                jar_type, server_type, server_version = server_parts
-                # TODO: add server type check here and call the correct server
-                # add functions if not a jar
-                if server_type == "forge" and not self.helper.detect_java():
-                    translation = self.helper.translation.translate(
-                        "error",
-                        "installerJava",
-                        self.controller.users.get_user_lang_by_id(exec_user["user_id"]),
-                    ).format(server_name)
-                    self.redirect(f"/panel/error?error={translation}")
-                    return
-                new_server_id = self.controller.create_jar_server(
-                    jar_type,
-                    server_type,
-                    server_version,
-                    server_name,
-                    min_mem,
-                    max_mem,
-                    port,
-                    exec_user["user_id"],
-                )
-                self.controller.management.add_to_audit_log(
-                    exec_user["user_id"],
-                    f"created a {server_version} {str(server_type).capitalize()}"
-                    f' server named "{server_name}"',
-                    # Example: Admin created a 1.16.5 Bukkit server named "survival"
-                    new_server_id,
-                    self.get_remote_ip(),
-                )
-
-            # These lines create a new Role for the Server with full permissions
-            # and add the user to it if he's not a superuser
-            if len(captured_roles) == 0:
-                if not superuser:
-                    new_server_uuid = self.controller.servers.get_server_data_by_id(
-                        new_server_id
-                    ).get("server_uuid")
-                    role_id = self.controller.roles.add_role(
-                        f"Creator of Server with uuid={new_server_uuid}",
-                        exec_user["user_id"],
-                    )
-                    self.controller.server_perms.add_role_server(
-                        new_server_id, role_id, "11111111"
-                    )
-                    self.controller.users.add_role_to_user(
-                        exec_user["user_id"], role_id
-                    )
-
-            else:
-                for role in captured_roles:
-                    role_id = role
-                    self.controller.server_perms.add_role_server(
-                        new_server_id, role_id, "11111111"
-                    )
-
-            self.controller.servers.stats.record_stats()
-            self.redirect("/panel/dashboard")
-
         if page == "bedrock_step1":
             if not superuser and not self.controller.crafty_perms.can_create_server(
                 exec_user["user_id"]
@@ -476,7 +310,6 @@ class ServerHandler(BaseHandler):
                 user_roles = self.controller.roles.get_all_roles()
             else:
                 user_roles = self.controller.roles.get_all_roles()
-            server = bleach.clean(self.get_argument("server", ""))
             server_name = bleach.clean(self.get_argument("server_name", ""))
             port = bleach.clean(self.get_argument("port", ""))
 
@@ -491,7 +324,6 @@ class ServerHandler(BaseHandler):
             import_type = bleach.clean(self.get_argument("create_type", ""))
             import_server_path = bleach.clean(self.get_argument("server_path", ""))
             import_server_exe = bleach.clean(self.get_argument("server_jar", ""))
-            server_parts = server.split("|")
             captured_roles = []
             for role in user_roles:
                 if bleach.clean(self.get_argument(str(role), "")) == "on":
