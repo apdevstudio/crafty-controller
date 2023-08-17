@@ -362,6 +362,7 @@ class Controller:
             elif root_create_data["create_type"] == "import_zip":
                 # TODO: Copy files from the zip file to the new server directory
                 server_file = create_data["jarfile"]
+                self.import_zip_server()
                 raise NotImplementedError("Not yet implemented")
             _create_server_properties_if_needed(
                 create_data["server_properties_port"],
@@ -518,107 +519,6 @@ class Controller:
             )
 
         return new_server_id, server_fs_uuid
-
-    def create_jar_server(
-        self,
-        jar: str,
-        server: str,
-        version: str,
-        name: str,
-        min_mem: int,
-        max_mem: int,
-        port: int,
-        user_id: int,
-    ):
-        server_id = Helpers.create_uuid()
-        server_dir = os.path.join(self.helper.servers_dir, server_id)
-        backup_path = os.path.join(self.helper.backup_path, server_id)
-        if Helpers.is_os_windows():
-            server_dir = Helpers.wtol_path(server_dir)
-            backup_path = Helpers.wtol_path(backup_path)
-            server_dir.replace(" ", "^ ")
-            backup_path.replace(" ", "^ ")
-
-        server_file = f"{server}-{version}.jar"
-
-        # make the dir - perhaps a UUID?
-        Helpers.ensure_dir_exists(server_dir)
-        Helpers.ensure_dir_exists(backup_path)
-
-        try:
-            # do a eula.txt
-            with open(
-                os.path.join(server_dir, "eula.txt"), "w", encoding="utf-8"
-            ) as file:
-                file.write("eula=false")
-                file.close()
-
-            # setup server.properties with the port
-            with open(
-                os.path.join(server_dir, "server.properties"), "w", encoding="utf-8"
-            ) as file:
-                file.write(f"server-port={port}")
-                file.close()
-
-        except Exception as e:
-            logger.error(f"Unable to create required server files due to :{e}")
-            return False
-
-        if Helpers.is_os_windows():
-            # Let's check for and setup for install server commands
-            if server == "forge":
-                server_command = (
-                    f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                    f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                    f'-jar "{server_file}" --installServer'
-                )
-            else:
-                server_command = (
-                    f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                    f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                    f'-jar "{server_file}" nogui'
-                )
-        else:
-            if server == "forge":
-                server_command = (
-                    f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                    f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                    f"-jar {server_file} --installServer"
-                )
-            else:
-                server_command = (
-                    f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                    f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                    f"-jar {server_file} nogui"
-                )
-        server_log_file = "./logs/latest.log"
-        server_stop = "stop"
-
-        new_id = self.register_server(
-            name,
-            server_id,
-            server_dir,
-            backup_path,
-            server_command,
-            server_file,
-            server_log_file,
-            server_stop,
-            port,
-            user_id,
-            server_type="minecraft-java",
-        )
-        # modded update urls from server jars will only update the installer
-        if jar != "modded":
-            server_obj = self.servers.get_server_obj(new_id)
-            url = f"https://serverjars.com/api/fetchJar/{jar}/{server}/{version}"
-            server_obj.executable_update_url = url
-            self.servers.update_server(server_obj)
-        # download the jar
-        self.server_jars.download_jar(
-            jar, server, version, os.path.join(server_dir, server_file), new_id
-        )
-
-        return new_id
 
     @staticmethod
     def verify_jar_server(server_path: str, server_jar: str):

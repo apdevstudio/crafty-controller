@@ -302,7 +302,7 @@
           <br />
           <p class="card-description">
 
-          <form name="zip" method="post" class="server-wizard" onSubmit="wait_msg(true)">
+          <form name="zip" id="import-zip" class="server-wizard">
             {% raw xsrf_form_html() %}
             <input type="hidden" value="import_zip" name="create_type">
 
@@ -311,7 +311,7 @@
                 <div class="col-sm-12">
                   <div class="form-group">
                     <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-                    <input type="text" class="form-control" id="server_name" name="server_name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+                    <input type="text" class="form-control" id="server_name" name="name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
                   </div>
                 </div>
 
@@ -354,7 +354,7 @@
                   <div class="form-group">
                     <label for="min_memory3">{{ translate('serverWizard', 'minMem', data['lang']) }} <small> - {{
                         translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                    <input type="number" class="form-control" id="min_memory3" name="min_memory" value="1" step="0.5" min="0.5" required>
+                    <input type="number" class="form-control" id="min_memory3" name="mem_min" value="1" step="0.5" min="0.5" required>
                   </div>
                 </div>
 
@@ -362,7 +362,7 @@
                   <div class="form-group">
                     <label for="max_memory3">{{ translate('serverWizard', 'maxMem', data['lang']) }} <small> - {{
                         translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                    <input type="number" class="form-control" id="max_memory3" name="max_memory" value="2" step="0.5" min="0.5" required>
+                    <input type="number" class="form-control" id="max_memory3" name="mem_max" value="2" step="0.5" min="0.5" required>
                   </div>
                 </div>
 
@@ -455,13 +455,13 @@
           <br />
           <p class="card-description">
 
-          <form name="zip" method="post" class="server-wizard" onSubmit="wait_msg(true)">
+          <form name="zip" id="import-upload" class="server-wizard">
             {% raw xsrf_form_html() %}
             <input type="hidden" value="import_zip" name="create_type">
 
             <div class="form-group">
               <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-              <input type="text" class="form-control" id="server_name" name="server_name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+              <input type="text" class="form-control" id="server_name" name="name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
             </div>
             <div class="form-group">
               <label for="server">{{ translate('serverWizard', 'serverUpload', data['lang']) }}</label>
@@ -498,13 +498,13 @@
               <div class="form-group">
                 <label for="min_memory3">{{ translate('serverWizard', 'minMem', data['lang']) }} <small> - {{
                     translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                <input type="number" class="form-control" id="min_memory3" name="min_memory" value="1" step="0.5" min="0.5" required>
+                <input type="number" class="form-control" id="min_memory3" name="mem_min" value="1" step="0.5" min="0.5" required>
               </div>
 
               <div class="form-group">
                 <label for="max_memory3">{{ translate('serverWizard', 'maxMem', data['lang']) }} <small> - {{
                     translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                <input type="number" class="form-control" id="max_memory3" name="max_memory" value="2" step="0.5" min="0.5" required>
+                <input type="number" class="form-control" id="max_memory3" name="mem_max" value="2" step="0.5" min="0.5" required>
               </div>
 
               <div class="form-group">
@@ -905,12 +905,31 @@
           return value;
         }
       }
+      async function send_server(data){
+        let token = getCookie("_xsrf")
+        let res = await fetch(`/api/v2/servers/`, {
+          method: 'POST',
+          headers: {
+            'X-XSRFToken': token
+          },
+          body: data,
+        });
+        let responseData = await res.json();
+        if (responseData.status === "ok") {
+          window.location.href = '/panel/dashboard';
+        } else {
+
+          bootbox.alert({
+            title: responseData.error,
+            message: responseData.error_data
+          });
+        }
+      }
     $(document).ready(function () {
 
       $("#download_jar").on("submit", async function (e) {
         wait_msg();
       e.preventDefault();
-      var token = getCookie("_xsrf")
       let jarForm = document.getElementById("download_jar");
 
       let formData = new FormData(jarForm);
@@ -944,29 +963,12 @@
 
       console.log(formDataJsonString);
 
-      let res = await fetch(`/api/v2/servers/`, {
-        method: 'POST',
-        headers: {
-          'X-XSRFToken': token
-        },
-        body: formDataJsonString,
-      });
-      let responseData = await res.json();
-      if (responseData.status === "ok") {
-        window.location.href = '/panel/dashboard';
-      } else {
-
-        bootbox.alert({
-          title: responseData.error,
-          message: responseData.error_data
-        });
-      }
+      send_server(formDataJsonString);
     });
 
   $("#import-jar").on("submit", async function (e) {
-        wait_msg();
+        wait_msg(true);
       e.preventDefault();
-      var token = getCookie("_xsrf")
       let jarForm = document.getElementById("import-jar");
 
       let formData = new FormData(jarForm);
@@ -996,24 +998,78 @@
       // Format the plain form data as JSON
       let formDataJsonString = JSON.stringify(send_data, replacer);
 
-      let res = await fetch(`/api/v2/servers/`, {
-        method: 'POST',
-        headers: {
-          'X-XSRFToken': token
-        },
-        body: formDataJsonString,
-      });
-      let responseData = await res.json();
-      if (responseData.status === "ok") {
-        window.location.href = '/panel/dashboard';
-      } else {
-
-        bootbox.alert({
-          title: responseData.error,
-          message: responseData.error_data
-        });
-      }
+      send_server(formDataJsonString);
     });
+
+      $("#import-zip").on("submit", async function (e) {
+        wait_msg(true);
+      e.preventDefault();
+      let jarForm = document.getElementById("import-zip");
+
+      let formData = new FormData(jarForm);
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      console.log(formDataObject);
+      let send_data = {
+        "name": formDataObject.name, 
+        "monitoring_type": "minecraft_java", 
+        "minecraft_java_monitoring_data": {
+          "host": "127.0.0.1",
+          "port": formDataObject.port
+        },
+        "create_type": "minecraft_java",
+        "minecraft_java_create_data": {
+        "create_type": "import_server",
+        "import_server_create_data": {
+          "existing_server_path": formDataObject.root_path,
+          "jarfile": formDataObject.server_jar,
+          "mem_min": formDataObject.mem_min,
+          "mem_max": formDataObject.mem_max,
+          "server_properties_port": formDataObject.port
+        }
+        }
+      }
+      console.log(send_data);
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(send_data, replacer);
+
+      send_server(formDataJsonString);
+    });
+
+    $("#import-upload").on("submit", async function (e) {
+        wait_msg(true);
+      e.preventDefault();
+      let jarForm = document.getElementById("import-upload");
+
+      let formData = new FormData(jarForm);
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      console.log(formDataObject);
+      let send_data = {
+        "name": formDataObject.name, 
+        "monitoring_type": "minecraft_java", 
+        "minecraft_java_monitoring_data": {
+          "host": "127.0.0.1",
+          "port": formDataObject.port
+        },
+        "create_type": "minecraft_java",
+        "minecraft_java_create_data": {
+        "create_type": "import_server",
+        "import_server_create_data": {
+          "existing_server_path": formDataObject.root_path,
+          "jarfile": formDataObject.server_jar,
+          "mem_min": formDataObject.mem_min,
+          "mem_max": formDataObject.mem_max,
+          "server_properties_port": formDataObject.port
+        }
+        }
+      }
+      console.log(send_data);
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(send_data, replacer);
+      send_server(formDataJsonString);
+    });
+
   });
 </script>
 
@@ -1199,7 +1255,7 @@
     }
 
     function refreshCache() {
-      var token = getCookie("_xsrf")
+      let token = getCookie("_xsrf")
       document.getElementById("refresh-cache").classList.add("fa-spin")
       $.ajax({
         type: "POST",
