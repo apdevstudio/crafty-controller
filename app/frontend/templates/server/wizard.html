@@ -29,7 +29,7 @@
           <br />
           <p class="card-description">
 
-          <form method="post" class="server-wizard" onSubmit="wait_msg()">
+          <form method="post" id="download_jar">
             {% if data["server_api"] and data["online"] %}
             <fieldset>
               {% else %}
@@ -89,7 +89,7 @@
                   <div class="col-sm-12">
                     <div class="form-group">
                       <label for="server_type">{{ translate('serverWizard', 'serverSelect', data['lang']) }}</label>
-                      <select required class="form-control form-control-lg select-css" id="server_type" name="server_type" onchange="serverTypeChange(this)">
+                      <select required class="form-control form-control-lg select-css" id="server_type" name="type" onchange="serverTypeChange(this)">
                         <option value="">{{ translate('serverWizard', 'selectServer', data['lang']) }}</option>
                       </select>
                     </div>
@@ -98,7 +98,7 @@
                   <div class="col-sm-12">
                     <div class="form-group">
                       <label for="server_version">{{ translate('serverWizard', 'serverVersion', data['lang']) }}</label>
-                      <select required class="form-control form-control-lg select-css" id="server" name="server">
+                      <select required class="form-control form-control-lg select-css" id="server" name="version">
                         <option value="">{{ translate('serverWizard', 'selectVersion', data['lang']) }}</option>
                       </select>
                     </div>
@@ -107,7 +107,7 @@
                   <div class="col-sm-12">
                     <div class="form-group">
                       <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-                      <input type="text" class="form-control" id="server_name" name="server_name" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+                      <input type="text" class="form-control" id="server_name" name="name" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
                     </div>
                   </div>
 
@@ -122,7 +122,7 @@
                     <div class="form-group">
                       <label for="min_memory1">{{ translate('serverWizard', 'minMem', data['lang']) }} <small> - {{
                           translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                      <input type="number" class="form-control" id="min_memory1" name="min_memory" value="1" step="0.5" min="0.5" required>
+                      <input type="number" class="form-control" id="min_memory1" name="mem_min" value="1" step="0.5" min="0.5" required>
                     </div>
                   </div>
 
@@ -130,7 +130,7 @@
                     <div class="form-group">
                       <label for="max_memory1">{{ translate('serverWizard', 'maxMem', data['lang']) }} <small> - {{
                           translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                      <input type="number" class="form-control" id="max_memory1" name="max_memory" value="2" step="0.5" min="0.5" required>
+                      <input type="number" class="form-control" id="max_memory1" name="mem_max" value="2" step="0.5" min="0.5" required>
                     </div>
                   </div>
 
@@ -197,7 +197,7 @@
           <br />
           <p class="card-description">
 
-          <form method="post" class="server-wizard" onSubmit="wait_msg(true)">
+          <form class="server-wizard" id="jar-import">
             {% raw xsrf_form_html() %}
             <input type="hidden" value="import_jar" name="create_type">
             <div class="row">
@@ -205,7 +205,7 @@
               <div class="col-sm-12">
                 <div class="form-group">
                   <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-                  <input type="text" class="form-control" id="server_name" name="server_name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+                  <input type="text" class="form-control" id="server_name" name="name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
                 </div>
               </div>
 
@@ -237,7 +237,7 @@
                 <div class="form-group">
                   <label for="min_memory2">{{ translate('serverWizard', 'minMem', data['lang']) }} <small> - {{
                       translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                  <input type="number" class="form-control" id="min_memory2" name="min_memory" value="1" step="0.5" min="0.5" required>
+                  <input type="number" class="form-control" id="min_memory2" name="mem_min" value="1" step="0.5" min="0.5" required>
                 </div>
               </div>
 
@@ -245,7 +245,7 @@
                 <div class="form-group">
                   <label for="max_memory2">{{ translate('serverWizard', 'maxMem', data['lang']) }} <small> - {{
                       translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                  <input type="number" class="form-control" id="max_memory2" name="max_memory" value="2" step="0.5" min="0.5" required>
+                  <input type="number" class="form-control" id="max_memory2" name="mem_max" value="2" step="0.5" min="0.5" required>
                 </div>
               </div>
 
@@ -759,7 +759,7 @@
 
 {% end %}
 
-{% block js%}
+{% block js %}
 
 <script>
   document.getElementById("root_files_button").addEventListener("click", function () {
@@ -891,6 +891,130 @@
         bootbox.alert("You must input a path before selecting this button");
       }
     });
+</script>
+
+<script>
+      function replacer(key, value) {
+        if (key != "ignored_exits") {
+          if (typeof value == "boolean" || key === "host" || key === "version") {
+            return value
+          } else {
+            return (isNaN(value) ? value : +value);
+          }
+        } else {
+          return value;
+        }
+      }
+    $(document).ready(function () {
+
+      $("#download_jar").on("submit", async function (e) {
+        wait_msg();
+      e.preventDefault();
+      var token = getCookie("_xsrf")
+      let jarForm = document.getElementById("download_jar");
+
+      let formData = new FormData(jarForm);
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      console.log(formDataObject);
+      let send_data = {
+        "name": formDataObject.name, 
+        "monitoring_type": "minecraft_java", 
+        "minecraft_java_monitoring_data": {
+          "host": "127.0.0.1",
+          "port": formDataObject.port
+        },
+        "create_type": "minecraft_java",
+        "minecraft_java_create_data": {
+        "create_type": "download_jar",
+        "download_jar_create_data": {
+          "category": formDataObject.version.split("|")[0],
+          "type": formDataObject.version.split("|")[1],
+          "version": formDataObject.version.split("|")[2],
+          "mem_min": formDataObject.mem_min,
+          "mem_max": formDataObject.mem_max,
+          "server_properties_port": formDataObject.port
+        }
+        }
+      }
+      console.log(send_data);
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(send_data, replacer);
+
+
+      console.log(formDataJsonString);
+
+      let res = await fetch(`/api/v2/servers/`, {
+        method: 'POST',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: formDataJsonString,
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        window.location.href = '/panel/dashboard';
+      } else {
+
+        bootbox.alert({
+          title: responseData.error,
+          message: responseData.error_data
+        });
+      }
+    });
+
+  $("#import-jar").on("submit", async function (e) {
+        wait_msg();
+      e.preventDefault();
+      var token = getCookie("_xsrf")
+      let jarForm = document.getElementById("import-jar");
+
+      let formData = new FormData(jarForm);
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      console.log(formDataObject);
+      let send_data = {
+        "name": formDataObject.name, 
+        "monitoring_type": "minecraft_java", 
+        "minecraft_java_monitoring_data": {
+          "host": "127.0.0.1",
+          "port": formDataObject.port
+        },
+        "create_type": "minecraft_java",
+        "minecraft_java_create_data": {
+        "create_type": "import_server",
+        "import_server_create_data": {
+          "existing_server_path": formDataObject.server_path,
+          "jarfile": formDataObject.server_jar,
+          "mem_min": formDataObject.mem_min,
+          "mem_max": formDataObject.mem_max,
+          "server_properties_port": formDataObject.port
+        }
+        }
+      }
+      console.log(send_data);
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(send_data, replacer);
+
+      let res = await fetch(`/api/v2/servers/`, {
+        method: 'POST',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: formDataJsonString,
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        window.location.href = '/panel/dashboard';
+      } else {
+
+        bootbox.alert({
+          title: responseData.error,
+          message: responseData.error_data
+        });
+      }
+    });
+  });
 </script>
 
 <script>

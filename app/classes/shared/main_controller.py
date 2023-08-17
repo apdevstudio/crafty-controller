@@ -348,12 +348,14 @@ class Controller:
                 server_file = f"{create_data['type']}-{create_data['version']}.jar"
 
                 # Create an EULA file
-                with open(
-                    os.path.join(new_server_path, "eula.txt"), "w", encoding="utf-8"
-                ) as file:
-                    file.write(
-                        "eula=" + ("true" if create_data["agree_to_eula"] else "false")
-                    )
+                if "agree_to_eula" in create_data:
+                    with open(
+                        os.path.join(new_server_path, "eula.txt"), "w", encoding="utf-8"
+                    ) as file:
+                        file.write(
+                            "eula="
+                            + ("true" if create_data["agree_to_eula"] else "false")
+                        )
             elif root_create_data["create_type"] == "import_server":
                 _copy_import_dir_files(create_data["existing_server_path"])
                 server_file = create_data["jarfile"]
@@ -376,11 +378,41 @@ class Controller:
             def _wrap_jar_if_windows():
                 return f'"{server_file}"' if Helpers.is_os_windows() else server_file
 
-            server_command = (
-                f"java -Xms{_gibs_to_mibs(min_mem)}M "
-                f"-Xmx{_gibs_to_mibs(max_mem)}M "
-                f"-jar {_wrap_jar_if_windows()} nogui"
-            )
+            if root_create_data["create_type"] == "download_jar":
+                if Helpers.is_os_windows():
+                    # Let's check for and setup for install server commands
+                    if create_data["type"] == "forge":
+                        server_command = (
+                            f"java -Xms{Helpers.float_to_string(min_mem)}M "
+                            f"-Xmx{Helpers.float_to_string(max_mem)}M "
+                            f'-jar "{server_file}" --installServer'
+                        )
+                    else:
+                        server_command = (
+                            f"java -Xms{Helpers.float_to_string(min_mem)}M "
+                            f"-Xmx{Helpers.float_to_string(max_mem)}M "
+                            f'-jar "{server_file}" nogui'
+                        )
+                else:
+                    if create_data["type"] == "forge":
+                        server_command = (
+                            f"java -Xms{Helpers.float_to_string(min_mem)}M "
+                            f"-Xmx{Helpers.float_to_string(max_mem)}M "
+                            f"-jar {server_file} --installServer"
+                        )
+                    else:
+                        server_command = (
+                            f"java -Xms{Helpers.float_to_string(min_mem)}M "
+                            f"-Xmx{Helpers.float_to_string(max_mem)}M "
+                            f"-jar {server_file} nogui"
+                        )
+            else:
+                server_command = (
+                    f"java -Xms{_gibs_to_mibs(min_mem)}M "
+                    f"-Xmx{_gibs_to_mibs(max_mem)}M "
+                    f"-jar {_wrap_jar_if_windows()} nogui"
+                )
+
         elif data["create_type"] == "minecraft_bedrock":
             if root_create_data["create_type"] == "import_server":
                 existing_server_path = Helpers.get_os_understandable_path(
