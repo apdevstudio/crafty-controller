@@ -133,8 +133,13 @@ new_server_schema = {
                         "mem_min",
                         "mem_max",
                         "server_properties_port",
-                        "agree_to_eula",
+                        "category",
                     ],
+                    "category": {
+                        "title": "Jar Category",
+                        "type": "string",
+                        "examples": ["modded", "vanilla"],
+                    },
                     "properties": {
                         "type": {
                             "title": "Server JAR Type",
@@ -185,7 +190,6 @@ new_server_schema = {
                         "mem_min",
                         "mem_max",
                         "server_properties_port",
-                        "agree_to_eula",
                     ],
                     "properties": {
                         "existing_server_path": {
@@ -240,7 +244,6 @@ new_server_schema = {
                         "mem_min",
                         "mem_max",
                         "server_properties_port",
-                        "agree_to_eula",
                     ],
                     "properties": {
                         "zip_path": {
