@@ -24,6 +24,7 @@ new_server_schema = {
             "examples": ["My Server"],
             "minLength": 2,
         },
+        "roles": {"title": "Roles to add", "type": "array", "examples": [1, 2, 3]},
         "stop_command": {
             "title": "Stop command",
             "description": '"" means the default for the server creation type.',

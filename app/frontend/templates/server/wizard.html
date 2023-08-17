@@ -156,7 +156,7 @@
                             <div class="card-body scroll">
                               <div class="form-group">
                                 {% for r in data['roles'] %}
-                                <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}" type="checkbox">&nbsp; {{ r['role_name'].capitalize() }}</label></span>
+                                <span class="d-block menu-option"><label><input class="roles" name="{{ r['role_id'] }}" type="checkbox" value="{{ r['role_id'] }}">&nbsp; {{ r['role_name'].capitalize() }}</label></span>
                                 {% end %}
                               </div>
                             </div>
@@ -271,7 +271,7 @@
                         <div class="card-body scroll">
                           <div class="form-group">
                             {% for r in data['roles'] %}
-                            <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}" type="checkbox">&nbsp;
+                            <span class="d-block menu-option"><label><input class="roles" name="{{ r['role_id'] }}" type="checkbox" value="{{ r['role_id'] }}">&nbsp;
                                 {{ r['role_name'].capitalize() }}</label></span>
                             {% end %}
                           </div>
@@ -389,7 +389,7 @@
                           <div class="card-body scroll">
                             <div class="form-group">
                               {% for r in data['roles'] %}
-                              <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}" type="checkbox">&nbsp;
+                              <span class="d-block menu-option"><label><input class="roles" name="{{ r['role_id'] }}" type="checkbox" value="{{ r['role_id'] }}">&nbsp;
                                   {{ r['role_name'].capitalize() }}</label></span>
                               {% end %}
                             </div>
@@ -528,7 +528,7 @@
                       <div class="card-body scroll">
                         <div class="form-group">
                           {% for r in data['roles'] %}
-                          <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}" type="checkbox">&nbsp;
+                          <span class="d-block menu-option"><label><input class="roles" name="{{ r['role_id'] }}" type="checkbox" value="{{ r['role_id'] }}">&nbsp;
                               {{ r['role_name'].capitalize() }}</label></span>
                           {% end %}
                         </div>
@@ -895,6 +895,9 @@
 
 <script>
       function replacer(key, value) {
+        if (key === "roles"){
+          return value
+        }
         if (key != "ignored_exits") {
           if (typeof value == "boolean" || key === "host" || key === "version") {
             return value
@@ -904,6 +907,15 @@
         } else {
           return value;
         }
+      }
+      function calcRoles() {
+        let role_ids = $('.roles').map(function() {
+        if ($(this).is(':checked')){
+          return $(this).val();
+        }
+        }).get();
+        console.log(role_ids)
+        return role_ids
       }
       async function send_server(data){
         let token = getCookie("_xsrf")
@@ -937,7 +949,8 @@
       let formDataObject = Object.fromEntries(formData.entries());
       console.log(formDataObject);
       let send_data = {
-        "name": formDataObject.name, 
+        "name": formDataObject.name,
+        "roles": calcRoles(), 
         "monitoring_type": "minecraft_java", 
         "minecraft_java_monitoring_data": {
           "host": "127.0.0.1",
@@ -976,7 +989,8 @@
       let formDataObject = Object.fromEntries(formData.entries());
       console.log(formDataObject);
       let send_data = {
-        "name": formDataObject.name, 
+        "name": formDataObject.name,
+        "roles": calcRoles(),
         "monitoring_type": "minecraft_java", 
         "minecraft_java_monitoring_data": {
           "host": "127.0.0.1",
@@ -1011,7 +1025,8 @@
       let formDataObject = Object.fromEntries(formData.entries());
       console.log(formDataObject);
       let send_data = {
-        "name": formDataObject.name, 
+        "name": formDataObject.name,
+        "roles": calcRoles(), 
         "monitoring_type": "minecraft_java", 
         "minecraft_java_monitoring_data": {
           "host": "127.0.0.1",
@@ -1046,7 +1061,8 @@
       let formDataObject = Object.fromEntries(formData.entries());
       console.log(formDataObject);
       let send_data = {
-        "name": formDataObject.name, 
+        "name": formDataObject.name,
+        "roles": calcRoles(),
         "monitoring_type": "minecraft_java", 
         "minecraft_java_monitoring_data": {
           "host": "127.0.0.1",

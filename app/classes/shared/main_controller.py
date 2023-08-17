@@ -518,6 +518,31 @@ class Controller:
                 new_server_id,
             )
 
+            exec_user = self.users.get_user_by_id(int(user_id))
+            captured_roles = data.get("roles", [])
+            # These lines create a new Role for the Server with full permissions
+            # and add the user to it if he's not a superuser
+            if len(captured_roles) == 0:
+                if not exec_user["superuser"]:
+                    new_server_uuid = self.servers.get_server_data_by_id(
+                        new_server_id
+                    ).get("server_uuid")
+                    role_id = self.roles.add_role(
+                        f"Creator of Server with uuid={new_server_uuid}",
+                        exec_user["user_id"],
+                    )
+                    self.server_perms.add_role_server(
+                        new_server_id, role_id, "11111111"
+                    )
+                    self.users.add_role_to_user(exec_user["user_id"], role_id)
+
+            else:
+                for role in captured_roles:
+                    role_id = role
+                    self.server_perms.add_role_server(
+                        new_server_id, role_id, "11111111"
+                    )
+
         return new_server_id, server_fs_uuid
 
     @staticmethod
