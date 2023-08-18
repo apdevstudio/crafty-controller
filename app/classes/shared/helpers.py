@@ -118,7 +118,7 @@ class Helpers:
         Get latest bedrock executable url \n\n
         returns url if successful, False if not
         """
-        url = "https://minecraft.net/en-us/download/server/bedrock/"
+        url = "https://www.minecraft.net/en-us/download/server/bedrock/"
         headers = {
             "Accept-Encoding": "identity",
             "Accept-Language": "en",
