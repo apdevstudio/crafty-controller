@@ -345,7 +345,7 @@ new_server_schema = {
                 "import_server_create_data": {
                     "title": "Import server data",
                     "type": "object",
-                    "required": ["existing_server_path", "command"],
+                    "required": ["existing_server_path"],
                     "properties": {
                         "existing_server_path": {
                             "title": "Server path",
@@ -353,6 +353,14 @@ new_server_schema = {
                             "type": "string",
                             "examples": ["/var/opt/server"],
                             "minLength": 1,
+                        },
+                        "executable": {
+                            "title": "Executable File",
+                            "description": "File Crafty should execute"
+                            "on server launch",
+                            "type": "string",
+                            "examples": "bedrock_server.exe",
+                            "minlength": 1,
                         },
                         "command": {
                             "title": "Command",
@@ -374,6 +382,14 @@ new_server_schema = {
                             "type": "string",
                             "examples": ["/var/opt/server.zip"],
                             "minLength": 1,
+                        },
+                        "executable": {
+                            "title": "Executable File",
+                            "description": "File Crafty should execute"
+                            "on server launch",
+                            "type": "string",
+                            "examples": "bedrock_server.exe",
+                            "minlength": 1,
                         },
                         "zip_root": {
                             "title": "Server root directory",

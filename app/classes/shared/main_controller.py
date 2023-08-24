@@ -312,15 +312,6 @@ class Controller:
         Helpers.ensure_dir_exists(new_server_path)
         Helpers.ensure_dir_exists(backup_path)
 
-        def _copy_import_dir_files(existing_server_path):
-            existing_server_path = Helpers.get_os_understandable_path(
-                existing_server_path
-            )
-            try:
-                FileHelpers.copy_dir(existing_server_path, new_server_path, True)
-            except shutil.Error as ex:
-                logger.error(f"Server import failed with error: {ex}")
-
         def _create_server_properties_if_needed(port, empty=False):
             properties_file = os.path.join(new_server_path, "server.properties")
             has_properties = os.path.exists(properties_file)
@@ -357,7 +348,6 @@ class Controller:
                             + ("true" if create_data["agree_to_eula"] else "false")
                         )
             elif root_create_data["create_type"] == "import_server":
-                _copy_import_dir_files(create_data["existing_server_path"])
                 server_file = create_data["jarfile"]
             elif root_create_data["create_type"] == "import_zip":
                 # TODO: Copy files from the zip file to the new server directory
@@ -419,10 +409,13 @@ class Controller:
                 existing_server_path = Helpers.get_os_understandable_path(
                     create_data["existing_server_path"]
                 )
-                try:
-                    FileHelpers.copy_dir(existing_server_path, new_server_path, True)
-                except shutil.Error as ex:
-                    logger.error(f"Server import failed with error: {ex}")
+                if Helpers.is_os_windows():
+                    server_command = (
+                        f'"{os.path.join(new_server_path, create_data["executable"])}"'
+                    )
+                else:
+                    server_command = f"./{create_data['executable']}"
+                logger.debug("command: " + server_command)
             elif root_create_data["create_type"] == "import_zip":
                 # TODO: Copy files from the zip file to the new server directory
                 raise NotImplementedError("Not yet implemented")
@@ -496,52 +489,80 @@ class Controller:
             server_host=monitoring_host,
             server_type=monitoring_type,
         )
-
-        if (
-            data["create_type"] == "minecraft_java"
-            and root_create_data["create_type"] == "download_jar"
-        ):
-            # modded update urls from server jars will only update the installer
-            if create_data["category"] != "modded":
-                server_obj = self.servers.get_server_obj(new_server_id)
-                url = (
-                    f"https://serverjars.com/api/fetchJar/{create_data['category']}"
-                    f"/{create_data['type']}/{create_data['version']}"
+        if data["create_type"] == "minecraft_java":
+            if root_create_data["create_type"] == "download_jar":
+                # modded update urls from server jars will only update the installer
+                if create_data["category"] != "modded":
+                    server_obj = self.servers.get_server_obj(new_server_id)
+                    url = (
+                        f"https://serverjars.com/api/fetchJar/{create_data['category']}"
+                        f"/{create_data['type']}/{create_data['version']}"
+                    )
+                    server_obj.executable_update_url = url
+                    self.servers.update_server(server_obj)
+                self.server_jars.download_jar(
+                    create_data["category"],
+                    create_data["type"],
+                    create_data["version"],
+                    full_jar_path,
+                    new_server_id,
                 )
-                server_obj.executable_update_url = url
-                self.servers.update_server(server_obj)
-            self.server_jars.download_jar(
-                create_data["category"],
-                create_data["type"],
-                create_data["version"],
-                full_jar_path,
-                new_server_id,
-            )
+            elif root_create_data["create_type"] == "import_server":
+                ServersController.set_import(new_server_id)
+                self.import_helper.import_jar_server(
+                    create_data["existing_server_path"],
+                    os.path.join(new_server_path, server_fs_uuid),
+                    monitoring_port,
+                    new_server_id,
+                )
+            elif root_create_data["create_type"] == "import_zip":
+                ServersController.set_import(new_server_id)
 
-            exec_user = self.users.get_user_by_id(int(user_id))
-            captured_roles = data.get("roles", [])
-            # These lines create a new Role for the Server with full permissions
-            # and add the user to it if he's not a superuser
-            if len(captured_roles) == 0:
-                if not exec_user["superuser"]:
-                    new_server_uuid = self.servers.get_server_data_by_id(
-                        new_server_id
-                    ).get("server_uuid")
-                    role_id = self.roles.add_role(
-                        f"Creator of Server with uuid={new_server_uuid}",
-                        exec_user["user_id"],
-                    )
-                    self.server_perms.add_role_server(
-                        new_server_id, role_id, "11111111"
-                    )
-                    self.users.add_role_to_user(exec_user["user_id"], role_id)
+        elif data["create_type"] == "minecraft-bedrock":
+            if root_create_data["create_type"] == "download_executable":
+                ServersController.set_import(new_server_id)
+                self.import_helper.download_bedrock_server(
+                    new_server_path, new_server_id
+                )
+            elif root_create_data["create_type"] == "import_executable":
+                full_exe_path = os.path.join(new_server_path, create_data["executable"])
+                self.import_helper.import_bedrock_server(
+                    create_data["existing_server_path"],
+                    os.path.join(new_server_path, server_fs_uuid),
+                    monitoring_port,
+                    full_exe_path,
+                    new_server_id,
+                )
+            elif root_create_data["create_type"] == "import_zip":
+                full_exe_path = os.path.join(new_server_path, create_data["executable"])
+                self.import_helper.import_bedrock_zip_server(
+                    create_data["zip_path"],
+                    new_server_path,
+                    os.path.join(create_data["zip_root"], create_data["executable"]),
+                    monitoring_port,
+                    new_server_id,
+                )
 
-            else:
-                for role in captured_roles:
-                    role_id = role
-                    self.server_perms.add_role_server(
-                        new_server_id, role_id, "11111111"
-                    )
+        exec_user = self.users.get_user_by_id(int(user_id))
+        captured_roles = data.get("roles", [])
+        # These lines create a new Role for the Server with full permissions
+        # and add the user to it if he's not a superuser
+        if len(captured_roles) == 0:
+            if not exec_user["superuser"]:
+                new_server_uuid = self.servers.get_server_data_by_id(new_server_id).get(
+                    "server_uuid"
+                )
+                role_id = self.roles.add_role(
+                    f"Creator of Server with uuid={new_server_uuid}",
+                    exec_user["user_id"],
+                )
+                self.server_perms.add_role_server(new_server_id, role_id, "11111111")
+                self.users.add_role_to_user(exec_user["user_id"], role_id)
+
+        else:
+            for role in captured_roles:
+                role_id = role
+                self.server_perms.add_role_server(new_server_id, role_id, "11111111")
 
         return new_server_id, server_fs_uuid
 
@@ -561,123 +582,6 @@ class Controller:
         if not zip_check:
             return False
         return True
-
-    def import_jar_server(
-        self,
-        server_name: str,
-        server_path: str,
-        server_jar: str,
-        min_mem: int,
-        max_mem: int,
-        port: int,
-        user_id: int,
-    ):
-        server_id = Helpers.create_uuid()
-        new_server_dir = os.path.join(self.helper.servers_dir, server_id)
-        backup_path = os.path.join(self.helper.backup_path, server_id)
-        if Helpers.is_os_windows():
-            new_server_dir = Helpers.wtol_path(new_server_dir)
-            backup_path = Helpers.wtol_path(backup_path)
-            new_server_dir.replace(" ", "^ ")
-            backup_path.replace(" ", "^ ")
-
-        Helpers.ensure_dir_exists(new_server_dir)
-        Helpers.ensure_dir_exists(backup_path)
-        server_path = Helpers.get_os_understandable_path(server_path)
-
-        full_jar_path = os.path.join(new_server_dir, server_jar)
-
-        if Helpers.is_os_windows():
-            server_command = (
-                f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                f'-jar "{full_jar_path}" nogui'
-            )
-        else:
-            server_command = (
-                f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                f"-jar {full_jar_path} nogui"
-            )
-        server_log_file = "./logs/latest.log"
-        server_stop = "stop"
-
-        new_id = self.register_server(
-            server_name,
-            server_id,
-            new_server_dir,
-            backup_path,
-            server_command,
-            server_jar,
-            server_log_file,
-            server_stop,
-            port,
-            user_id,
-            server_type="minecraft-java",
-        )
-        ServersController.set_import(new_id)
-        self.import_helper.import_jar_server(server_path, new_server_dir, port, new_id)
-        return new_id
-
-    def import_zip_server(
-        self,
-        server_name: str,
-        zip_path: str,
-        server_jar: str,
-        min_mem: int,
-        max_mem: int,
-        port: int,
-        user_id: int,
-    ):
-        server_id = Helpers.create_uuid()
-        new_server_dir = os.path.join(self.helper.servers_dir, server_id)
-        backup_path = os.path.join(self.helper.backup_path, server_id)
-        if Helpers.is_os_windows():
-            new_server_dir = Helpers.wtol_path(new_server_dir)
-            backup_path = Helpers.wtol_path(backup_path)
-            new_server_dir.replace(" ", "^ ")
-            backup_path.replace(" ", "^ ")
-
-        temp_dir = Helpers.get_os_understandable_path(zip_path)
-        Helpers.ensure_dir_exists(new_server_dir)
-        Helpers.ensure_dir_exists(backup_path)
-
-        full_jar_path = os.path.join(new_server_dir, server_jar)
-
-        if Helpers.is_os_windows():
-            server_command = (
-                f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                f'-jar "{full_jar_path}" nogui'
-            )
-        else:
-            server_command = (
-                f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                f"-jar {full_jar_path} nogui"
-            )
-        logger.debug("command: " + server_command)
-        server_log_file = "./logs/latest.log"
-        server_stop = "stop"
-
-        new_id = self.register_server(
-            server_name,
-            server_id,
-            new_server_dir,
-            backup_path,
-            server_command,
-            server_jar,
-            server_log_file,
-            server_stop,
-            port,
-            user_id,
-            server_type="minecraft-java",
-        )
-        ServersController.set_import(new_id)
-        self.import_helper.import_java_zip_server(
-            temp_dir, new_server_dir, port, new_id
-        )
-        return new_id
 
     # **********************************************************************************
     #                                   BEDROCK IMPORTS
