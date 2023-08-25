@@ -352,11 +352,12 @@ class Controller:
             elif root_create_data["create_type"] == "import_zip":
                 # TODO: Copy files from the zip file to the new server directory
                 server_file = create_data["jarfile"]
-                self.import_zip_server()
                 raise NotImplementedError("Not yet implemented")
-            _create_server_properties_if_needed(
-                create_data["server_properties_port"],
-            )
+                self.import_helper.import_java_zip_server()
+            if create_data["minecraft_java"]:
+                _create_server_properties_if_needed(
+                    create_data["server_properties_port"],
+                )
 
             min_mem = create_data["mem_min"]
             max_mem = create_data["mem_max"]
@@ -419,13 +420,21 @@ class Controller:
             elif root_create_data["create_type"] == "import_zip":
                 # TODO: Copy files from the zip file to the new server directory
                 raise NotImplementedError("Not yet implemented")
+            else:
+                server_file = "bedrock_server"
+                if Helpers.is_os_windows():
+                    # if this is windows we will override the linux bedrock server name.
+                    server_file = "bedrock_server.exe"
 
+                full_jar_path = os.path.join(new_server_path, server_file)
+
+                if self.helper.is_os_windows():
+                    create_data["command"] = f'"{full_jar_path}"'
+                else:
+                    create_data["command"] = f"./{server_file}"
             _create_server_properties_if_needed(0, True)
 
             server_command = create_data["command"]
-            server_file = (
-                "./bedrock_server"  # HACK: This is a hack to make the server start
-            )
         elif data["create_type"] == "custom":
             # TODO: working_directory, executable_update
             if root_create_data["create_type"] == "raw_exec":
@@ -518,8 +527,8 @@ class Controller:
             elif root_create_data["create_type"] == "import_zip":
                 ServersController.set_import(new_server_id)
 
-        elif data["create_type"] == "minecraft-bedrock":
-            if root_create_data["create_type"] == "download_executable":
+        elif data["create_type"] == "minecraft_bedrock":
+            if root_create_data["create_type"] == "download_exe":
                 ServersController.set_import(new_server_id)
                 self.import_helper.download_bedrock_server(
                     new_server_path, new_server_id

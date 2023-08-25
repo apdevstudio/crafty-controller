@@ -340,7 +340,13 @@ new_server_schema = {
                     "title": "Creation type",
                     "type": "string",
                     "default": "import_server",
-                    "enum": ["import_server", "import_zip"],
+                    "enum": ["download_exe", "import_server", "import_zip"],
+                },
+                "download_exe_create_data": {
+                    "title": "Import server data",
+                    "type": "object",
+                    "required": [],
+                    "properties": {},
                 },
                 "import_server_create_data": {
                     "title": "Import server data",
@@ -359,7 +365,7 @@ new_server_schema = {
                             "description": "File Crafty should execute"
                             "on server launch",
                             "type": "string",
-                            "examples": "bedrock_server.exe",
+                            "examples": ["bedrock_server.exe"],
                             "minlength": 1,
                         },
                         "command": {
@@ -388,7 +394,7 @@ new_server_schema = {
                             "description": "File Crafty should execute"
                             "on server launch",
                             "type": "string",
-                            "examples": "bedrock_server.exe",
+                            "examples": ["bedrock_server.exe"],
                             "minlength": 1,
                         },
                         "zip_root": {
@@ -424,11 +430,18 @@ new_server_schema = {
                             },
                             "then": {"required": ["import_zip_create_data"]},
                         },
+                        {
+                            "if": {
+                                "properties": {"create_type": {"const": "download_exe"}}
+                            },
+                            "then": {"required": []},
+                        },
                     ],
                 },
                 {
                     "title": "Only one creation data",
                     "oneOf": [
+                        {"required": []},
                         {"required": ["import_server_create_data"]},
                         {"required": ["import_zip_create_data"]},
                     ],
@@ -671,7 +684,7 @@ class ApiServersIndexHandler(BaseApiHandler):
             return self.finish_json(
                 400, {"status": "error", "error": "INVALID_JSON", "error_data": str(e)}
             )
-
+        print(data)
         try:
             validate(data, new_server_schema)
         except ValidationError as e:

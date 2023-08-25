@@ -24,7 +24,7 @@
           <h4>{{ translate('serverWizard', 'newServer', data['lang']) }}</h4>
           <br />
 
-          <form method="post" name="create_server" class="server-wizard" onSubmit="wait_msg()">
+          <form method="post" id="download_exe" name="create_server" class="server-wizard">
             {% if data["server_api"] and data["online"] %}
             <fieldset>
             {% else %}
@@ -54,10 +54,9 @@
                 }
               </style>
             {% end %}
-            {% raw xsrf_form_html() %}
             <div class="form-group">
               <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-              <input type="text" class="form-control" id="server_name" name="server_name" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+              <input type="text" class="form-control" id="server_name" name="name" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
             </div>
 
             <div class="form-group">
@@ -110,12 +109,10 @@
           <h4>{{ translate('serverWizard', 'importServer', data['lang']) }}</h4>
           <br />
 
-          <form method="post" class="server-wizard" onSubmit="wait_msg(true)">
-            {% raw xsrf_form_html() %}
-            <input type="hidden" value="import_jar" name="create_type">
+          <form method="post" id="import-jar" class="server-wizard">
             <div class="form-group">
               <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-              <input type="text" class="form-control" id="server_name" name="server_name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+              <input type="text" class="form-control" id="server_name" name="name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
             </div>
             <div class="form-group">
               <label for="server">{{ translate('serverWizard', 'serverPath', data['lang']) }} <small>{{
@@ -172,13 +169,11 @@
 
           <h4>{{ translate('serverWizard', 'importZip', data['lang']) }}</h4>
           <br />
-          <form name="zip" method="post" class="server-wizard" onSubmit="wait_msg(true)">
-            {% raw xsrf_form_html() %}
-            <input type="hidden" value="import_zip" name="create_type">
+          <form name="zip" id="import-zip" method="post" class="server-wizard">\
 
             <div class="form-group">
               <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-              <input type="text" class="form-control" id="server_name" name="server_name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+              <input type="text" class="form-control" id="server_name" name="name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
             </div>
 
             <div class="form-group">
@@ -281,13 +276,11 @@
           <br />
           <p class="card-description">
 
-          <form name="zip" method="post" class="server-wizard" onSubmit="wait_msg(true)">
-            {% raw xsrf_form_html() %}
-            <input type="hidden" value="import_zip" name="create_type">
+          <form name="zip" id="import-upload" method="post" class="server-wizard">
 
             <div class="form-group">
               <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-              <input type="text" class="form-control" id="server_name" name="server_name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+              <input type="text" class="form-control" id="server_name" name="name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
             </div>
 
             <div class="form-group">
@@ -587,7 +580,7 @@
       },
       callback: function (result) {
         if (result == true) {
-          document.create_server.submit();
+          $("#download_exe").submit();
         }
         else {
           return;
@@ -781,6 +774,186 @@
       console.log("File changed good");
     }
   });
+  function replacer(key, value) {
+    if (key === "roles"){
+      return value
+    }
+    if (key != "ignored_exits") {
+      if (typeof value == "boolean" || key === "host" || key === "version") {
+        return value
+      } else {
+        return (isNaN(value) ? value : +value);
+      }
+    } else {
+      return value;
+    }
+  }
+  function calcRoles() {
+    let role_ids = $('.roles').map(function() {
+    if ($(this).is(':checked')){
+      return $(this).val();
+    }
+    }).get();
+    console.log(role_ids)
+    return role_ids
+  }
+  async function send_server(data){
+    let token = getCookie("_xsrf")
+    console.log(token)
+    let res = await fetch(`/api/v2/servers/`, {
+      method: 'POST',
+      headers: {
+        'X-XSRFToken': token
+      },
+      body: data,
+    });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      window.location.href = '/panel/dashboard';
+    } else {
 
+      bootbox.alert({
+        title: responseData.error,
+        message: responseData.error_data
+      });
+    }
+  }
+$(document).ready(function () {
+
+  $("#download_exe").on("submit", async function (e) {
+    wait_msg();
+  e.preventDefault();
+  let jarForm = document.getElementById("download_exe");
+
+  let formData = new FormData(jarForm);
+  //Create an object from the form data entries
+  let formDataObject = Object.fromEntries(formData.entries());
+  console.log(formDataObject);
+  let send_data = {
+    "name": formDataObject.name,
+    "roles": calcRoles(), 
+    "monitoring_type": "minecraft_bedrock", 
+    "minecraft_bedrock_monitoring_data": {
+      "host": "127.0.0.1",
+      "port": 19132
+    },
+    "create_type": "minecraft_bedrock",
+    "minecraft_bedrock_create_data": {
+    "create_type": "download_exe",
+    "download_exe_create_data": {}
+    }
+  }
+  console.log(send_data);
+  // Format the plain form data as JSON
+  let formDataJsonString = JSON.stringify(send_data, replacer);
+
+
+  console.log(formDataJsonString);
+
+  send_server(formDataJsonString);
+});
+
+$("#import-jar").on("submit", async function (e) {
+    wait_msg(true);
+  e.preventDefault();
+  let jarForm = document.getElementById("import-jar");
+
+  let formData = new FormData(jarForm);
+  //Create an object from the form data entries
+  let formDataObject = Object.fromEntries(formData.entries());
+  console.log(formDataObject);
+  let send_data = {
+    "name": formDataObject.name,
+    "roles": calcRoles(),
+    "monitoring_type": "minecraft_bedrock", 
+    "minecraft_bedrock_monitoring_data": {
+      "host": "127.0.0.1",
+      "port": formDataObject.port
+    },
+    "create_type": "minecraft_bedrock",
+    "minecraft_bedrock_create_data": {
+    "create_type": "import_server",
+    "import_server_create_data": {
+      "existing_server_path": formDataObject.server_path,
+      "executable": formDataObject.server_jar,
+      "server_properties_port": formDataObject.port
+    }
+    }
+  }
+  console.log(send_data);
+  // Format the plain form data as JSON
+  let formDataJsonString = JSON.stringify(send_data, replacer);
+
+  send_server(formDataJsonString);
+});
+
+  $("#import-zip").on("submit", async function (e) {
+    wait_msg(true);
+  e.preventDefault();
+  let jarForm = document.getElementById("import-zip");
+
+  let formData = new FormData(jarForm);
+  //Create an object from the form data entries
+  let formDataObject = Object.fromEntries(formData.entries());
+  console.log(formDataObject);
+  let send_data = {
+    "name": formDataObject.name,
+    "roles": calcRoles(), 
+    "monitoring_type": "minecraft_bedrock", 
+    "minecraft_bedrock_monitoring_data": {
+      "host": "127.0.0.1",
+      "port": formDataObject.port
+    },
+    "create_type": "minecraft_bedrock",
+    "minecraft_bedrock_create_data": {
+    "create_type": "import_server",
+    "import_server_create_data": {
+      "existing_server_path": formDataObject.root_path,
+      "executable": formDataObject.server_jar,
+      "server_properties_port": formDataObject.port
+    }
+    }
+  }
+  console.log(send_data);
+  // Format the plain form data as JSON
+  let formDataJsonString = JSON.stringify(send_data, replacer);
+
+  send_server(formDataJsonString);
+});
+
+$("#import-upload").on("submit", async function (e) {
+    wait_msg(true);
+  e.preventDefault();
+  let jarForm = document.getElementById("import-upload");
+
+  let formData = new FormData(jarForm);
+  //Create an object from the form data entries
+  let formDataObject = Object.fromEntries(formData.entries());
+  console.log(formDataObject);
+  let send_data = {
+    "name": formDataObject.name,
+    "roles": calcRoles(),
+    "monitoring_type": "minecraft_bedrock", 
+    "minecraft_bedrock_monitoring_data": {
+      "host": "127.0.0.1",
+      "port": formDataObject.port
+    },
+    "create_type": "minecraft_bedrock",
+    "minecraft_bedrock_create_data": {
+    "create_type": "import_server",
+    "import_server_create_data": {
+      "existing_server_path": formDataObject.root_path,
+      "executable": formDataObject.server_jar,
+      "server_properties_port": formDataObject.port
+    }
+    }
+  }
+  console.log(send_data);
+  // Format the plain form data as JSON
+  let formDataJsonString = JSON.stringify(send_data, replacer);
+  send_server(formDataJsonString);
+});
+
+});
 </script>
 {% end %}
