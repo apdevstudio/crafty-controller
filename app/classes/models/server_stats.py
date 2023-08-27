@@ -148,7 +148,7 @@ class HelperServerStats:
             ServerStats.select()
             .where(ServerStats.created > max_age)
             .where(ServerStats.server_id == server_id)
-            #.order_by(ServerStats.created.desc())
+            # .order_by(ServerStats.created.desc())
             .execute(self.database)
         )
         server_stats = []
