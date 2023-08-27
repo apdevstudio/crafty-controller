@@ -840,7 +840,10 @@ $(document).ready(function () {
     "create_type": "minecraft_bedrock",
     "minecraft_bedrock_create_data": {
     "create_type": "download_exe",
-    "download_exe_create_data": {}
+    "download_exe_create_data": {
+      //agree to eula since we confirmed before calling this function
+      "agree_to_eula": true,
+    }
     }
   }
   console.log(send_data);
@@ -876,7 +879,6 @@ $("#import-jar").on("submit", async function (e) {
     "import_server_create_data": {
       "existing_server_path": formDataObject.server_path,
       "executable": formDataObject.server_jar,
-      "server_properties_port": formDataObject.port
     }
     }
   }
@@ -910,7 +912,6 @@ $("#import-jar").on("submit", async function (e) {
     "import_server_create_data": {
       "existing_server_path": formDataObject.root_path,
       "executable": formDataObject.server_jar,
-      "server_properties_port": formDataObject.port
     }
     }
   }
@@ -944,7 +945,6 @@ $("#import-upload").on("submit", async function (e) {
     "import_server_create_data": {
       "existing_server_path": formDataObject.root_path,
       "executable": formDataObject.server_jar,
-      "server_properties_port": formDataObject.port
     }
     }
   }

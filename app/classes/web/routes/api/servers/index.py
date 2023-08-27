@@ -346,12 +346,18 @@ new_server_schema = {
                     "title": "Import server data",
                     "type": "object",
                     "required": [],
-                    "properties": {},
+                    "properties": {
+                        "agree_to_eula": {
+                            "title": "Agree to the EULA",
+                            "type": "boolean",
+                            "enum": [True],
+                        },
+                    },
                 },
                 "import_server_create_data": {
                     "title": "Import server data",
                     "type": "object",
-                    "required": ["existing_server_path"],
+                    "required": ["existing_server_path", "executable"],
                     "properties": {
                         "existing_server_path": {
                             "title": "Server path",
@@ -420,7 +426,9 @@ new_server_schema = {
                     "allOf": [
                         {
                             "if": {
-                                "properties": {"create_type": {"const": "import_exec"}}
+                                "properties": {
+                                    "create_type": {"const": "import_server"}
+                                }
                             },
                             "then": {"required": ["import_server_create_data"]},
                         },
@@ -434,16 +442,20 @@ new_server_schema = {
                             "if": {
                                 "properties": {"create_type": {"const": "download_exe"}}
                             },
-                            "then": {"required": []},
+                            "then": {
+                                "required": [
+                                    "download_exe_create_data",
+                                ]
+                            },
                         },
                     ],
                 },
                 {
                     "title": "Only one creation data",
                     "oneOf": [
-                        {"required": []},
                         {"required": ["import_server_create_data"]},
                         {"required": ["import_zip_create_data"]},
+                        {"required": ["download_exe_create_data"]},
                     ],
                 },
             ],
@@ -684,7 +696,6 @@ class ApiServersIndexHandler(BaseApiHandler):
             return self.finish_json(
                 400, {"status": "error", "error": "INVALID_JSON", "error_data": str(e)}
             )
-        print(data)
         try:
             validate(data, new_server_schema)
         except ValidationError as e:
