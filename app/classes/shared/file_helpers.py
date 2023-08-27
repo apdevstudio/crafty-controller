@@ -327,7 +327,8 @@ class FileHelpers:
             return "false"
         return
 
-    # TODO Look if not redundant with the precendent function prefixed ajax_ de differentiate and not broke things
+    # TODO Look if not redundant with the precendent function
+    # TODO Prefixed ajax_ to differentiate and not broke things
 
     def ajax_unzip_server(self, zip_path, user_id):
         if Helpers.check_file_perms(zip_path):

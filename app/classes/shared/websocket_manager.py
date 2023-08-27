@@ -111,7 +111,8 @@ class WebSocketManager(metaclass=Singleton):
         static_clients = self.public_clients | self.auth_clients
         clients = list(filter(filter_fn, static_clients))
         logger.debug(
-            f"Sending to {len(clients)} out of {len(self.public_clients | self.auth_clients)} "
+            f"Sending to {len(clients)}  \
+            out of {len(self.public_clients | self.auth_clients)} "
             f"clients: {json.dumps({'event': event_type, 'data': data})}"
         )
 

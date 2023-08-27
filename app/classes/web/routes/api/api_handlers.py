@@ -22,7 +22,9 @@ from app.classes.web.routes.api.servers.server.public import (
     ApiServersServerPublicHandler,
 )
 from app.classes.web.routes.api.servers.server.stats import ApiServersServerStatsHandler
-from app.classes.web.routes.api.servers.server.history import ApiServersServerHistoryHandler
+from app.classes.web.routes.api.servers.server.history import (
+    ApiServersServerHistoryHandler,
+)
 from app.classes.web.routes.api.servers.server.stdin import ApiServersServerStdinHandler
 from app.classes.web.routes.api.servers.server.tasks.index import (
     ApiServersServerTasksIndexHandler,
