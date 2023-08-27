@@ -144,13 +144,17 @@ class HelperServerStats:
     def get_history_stats(self, server_id, num_days):
         self.database.connect(reuse_if_open=True)
         max_age = datetime.datetime.now() - timedelta(days=num_days)
-        server_stats = (
+        query_stats = (
             ServerStats.select()
             .where(ServerStats.created > max_age)
             .where(ServerStats.server_id == server_id)
+            #.order_by(ServerStats.created.desc())
             .execute(self.database)
         )
-        self.database.connect(reuse_if_open=True)
+        server_stats = []
+        for stat in query_stats:
+            server_stats.append(DatabaseShortcuts.get_data_obj(stat))
+        self.database.close()
         return server_stats
 
     def insert_server_stats(self, server_stats):

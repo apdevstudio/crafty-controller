@@ -22,6 +22,7 @@ from app.classes.web.routes.api.servers.server.public import (
     ApiServersServerPublicHandler,
 )
 from app.classes.web.routes.api.servers.server.stats import ApiServersServerStatsHandler
+from app.classes.web.routes.api.servers.server.history import ApiServersServerHistoryHandler
 from app.classes.web.routes.api.servers.server.stdin import ApiServersServerStdinHandler
 from app.classes.web.routes.api.servers.server.tasks.index import (
     ApiServersServerTasksIndexHandler,
@@ -130,6 +131,11 @@ def api_handlers(handler_args):
         (
             r"/api/v2/servers/([0-9]+)/stats/?",
             ApiServersServerStatsHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/servers/([0-9]+)/history/?",
+            ApiServersServerHistoryHandler,
             handler_args,
         ),
         (

@@ -33,7 +33,6 @@ from app.classes.shared.helpers import Helpers
 from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.null_writer import NullWriter
 from app.classes.shared.websocket_manager import WebSocketManager
-from app.classes.shared.websocket_manager import WebSocketManager
 
 with redirect_stderr(NullWriter()):
     import psutil
@@ -1805,3 +1804,7 @@ class ServerInstance:
         minimum_to_exist = now - datetime.timedelta(days=max_age)
 
         self.stats_helper.remove_old_stats(minimum_to_exist)
+
+    def get_server_history(self):
+        history = self.stats_helper.get_history_stats(self.server_id, 3)
+        return history
