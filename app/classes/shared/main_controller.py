@@ -429,12 +429,12 @@ class Controller:
                 full_jar_path = os.path.join(new_server_path, server_file)
 
                 if self.helper.is_os_windows():
-                    create_data["command"] = f'"{full_jar_path}"'
+                    server_command = f'"{full_jar_path}"'
                 else:
-                    create_data["command"] = f"./{server_file}"
+                    server_command = f"./{server_file}"
             _create_server_properties_if_needed(0, True)
 
-            server_command = create_data["command"]
+            server_command = create_data.get("command", server_command)
         elif data["create_type"] == "custom":
             # TODO: working_directory, executable_update
             if root_create_data["create_type"] == "raw_exec":
@@ -533,11 +533,11 @@ class Controller:
                 self.import_helper.download_bedrock_server(
                     new_server_path, new_server_id
                 )
-            elif root_create_data["create_type"] == "import_executable":
+            elif root_create_data["create_type"] == "import_server":
                 full_exe_path = os.path.join(new_server_path, create_data["executable"])
                 self.import_helper.import_bedrock_server(
                     create_data["existing_server_path"],
-                    os.path.join(new_server_path, server_fs_uuid),
+                    new_server_path,
                     monitoring_port,
                     full_exe_path,
                     new_server_id,
