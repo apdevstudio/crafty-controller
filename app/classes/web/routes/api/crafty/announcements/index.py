@@ -63,10 +63,8 @@ class ApiAnnounceIndexHandler(BaseApiHandler):
             _,
             _user,
         ) = auth_data
-        print(self.request)
         try:
             data = json.loads(self.request.body)
-            print(data)
         except json.decoder.JSONDecodeError as e:
             return self.finish_json(
                 400, {"status": "error", "error": "INVALID_JSON", "error_data": str(e)}
