@@ -1135,17 +1135,6 @@ class Helpers:
                     </input></div><li>"""
         return output
 
-    def unzip_server(self, zip_path, user_id):
-        if Helpers.check_file_perms(zip_path):
-            temp_dir = tempfile.mkdtemp()
-            with zipfile.ZipFile(zip_path, "r") as zip_ref:
-                # extracts archive to temp directory
-                zip_ref.extractall(temp_dir)
-            if user_id:
-                self.websocket_helper.broadcast_user(
-                    user_id, "send_temp_path", {"path": temp_dir}
-                )
-
     @staticmethod
     def unzip_backup_archive(backup_path, zip_name):
         zip_path = os.path.join(backup_path, zip_name)

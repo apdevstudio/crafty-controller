@@ -48,13 +48,14 @@ class Webserver:
     controller: Controller
     helper: Helpers
 
-    def __init__(self, helper, controller, tasks_manager):
+    def __init__(self, helper, controller, tasks_manager, file_helper):
         self.ioloop = None
         self.http_server = None
         self.https_server = None
         self.helper = helper
         self.controller = controller
         self.tasks_manager = tasks_manager
+        self.file_helper = file_helper
         self._asyncio_patch()
 
     @staticmethod
@@ -146,6 +147,7 @@ class Webserver:
             "controller": self.controller,
             "tasks_manager": self.tasks_manager,
             "translator": self.helper.translation,
+            "file_helper": self.file_helper,
         }
         handlers = [
             (r"/", DefaultHandler, handler_args),

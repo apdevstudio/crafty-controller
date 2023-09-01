@@ -9,7 +9,7 @@ import bleach
 import tornado.web
 import tornado.escape
 
-from app.classes.shared.console import Console
+from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.server import ServerOutBuf
 from app.classes.web.base_handler import BaseHandler
@@ -148,32 +148,6 @@ class AjaxHandler(BaseHandler):
                         self.controller.cached_login = "login_1.jpg"
             return
 
-        elif page == "unzip_server":
-            path = urllib.parse.unquote(self.get_argument("path", ""))
-            if not path:
-                path = os.path.join(
-                    self.controller.project_root,
-                    "imports",
-                    urllib.parse.unquote(self.get_argument("file", "")),
-                )
-            if Helpers.check_file_exists(path):
-                self.helper.unzip_server(path, exec_user["user_id"])
-            else:
-                user_id = exec_user["user_id"]
-                if user_id:
-                    time.sleep(5)
-                    user_lang = self.controller.users.get_user_lang_by_id(user_id)
-                    self.helper.websocket_helper.broadcast_user(
-                        user_id,
-                        "send_start_error",
-                        {
-                            "error": self.helper.translation.translate(
-                                "error", "no-file", user_lang
-                            )
-                        },
-                    )
-            return
-
         elif page == "jar_cache":
             if not superuser:
                 self.redirect("/panel/error?error=Not a super user")
@@ -208,25 +182,3 @@ class AjaxHandler(BaseHandler):
             new_dir = urllib.parse.unquote(self.get_argument("server_dir"))
             self.controller.update_master_server_dir(new_dir, exec_user["user_id"])
             return
-
-    def check_server_id(self, server_id, page_name):
-        if server_id is None:
-            logger.warning(
-                f"Server ID not defined in {page_name} ajax call ({server_id})"
-            )
-            Console.warning(
-                f"Server ID not defined in {page_name} ajax call ({server_id})"
-            )
-            return
-        server_id = bleach.clean(server_id)
-
-        # does this server id exist?
-        if not self.controller.servers.server_id_exists(server_id):
-            logger.warning(
-                f"Server ID not found in {page_name} ajax call ({server_id})"
-            )
-            Console.warning(
-                f"Server ID not found in {page_name} ajax call ({server_id})"
-            )
-            return
-        return True

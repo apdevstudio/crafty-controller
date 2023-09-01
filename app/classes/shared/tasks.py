@@ -41,10 +41,10 @@ scheduler_intervals = {
 class TasksManager:
     controller: Controller
 
-    def __init__(self, helper, controller):
+    def __init__(self, helper, controller, file_helper):
         self.helper: Helpers = helper
         self.controller: Controller = controller
-        self.tornado: Webserver = Webserver(helper, controller, self)
+        self.tornado: Webserver = Webserver(helper, controller, self, file_helper)
         try:
             self.tz = get_localzone()
         except ZoneInfoNotFoundError as e:

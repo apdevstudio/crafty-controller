@@ -51,6 +51,7 @@ from app.classes.web.routes.api.users.user.pfp import ApiUsersUserPfpHandler
 from app.classes.web.routes.api.users.user.public import ApiUsersUserPublicHandler
 from app.classes.web.routes.api.crafty.config.index import ApiCraftyConfigIndexHandler
 from app.classes.web.routes.api.crafty.clogs.index import ApiCraftyLogIndexHandler
+from app.classes.web.routes.api.crafty.imports.index import ApiImportFilesIndexHandler
 
 
 def api_handlers(handler_args):
@@ -74,6 +75,11 @@ def api_handlers(handler_args):
         (
             r"/api/v2/crafty/logs/([a-z0-9_]+)/?",
             ApiCraftyLogIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/import/file/unzip/?",
+            ApiImportFilesIndexHandler,
             handler_args,
         ),
         # User routes
