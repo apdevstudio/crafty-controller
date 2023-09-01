@@ -40,6 +40,7 @@ from app.classes.web.routes.api.users.user.permissions import (
 )
 from app.classes.web.routes.api.users.user.pfp import ApiUsersUserPfpHandler
 from app.classes.web.routes.api.users.user.public import ApiUsersUserPublicHandler
+from app.classes.web.routes.api.crafty.announcements.index import ApiAnnounceIndexHandler
 
 
 def api_handlers(handler_args):
@@ -53,6 +54,11 @@ def api_handlers(handler_args):
         (
             r"/api/v2/auth/invalidate_tokens/?",
             ApiAuthInvalidateTokensHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/crafty/announcements/?",
+            ApiAnnounceIndexHandler,
             handler_args,
         ),
         # User routes

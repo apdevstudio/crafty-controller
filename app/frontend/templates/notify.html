@@ -1,27 +1,32 @@
 <ul class="navbar-nav ml-auto">
   <li class="nav-item dropdown">
-    <a class="nav-link count-indicator">
+    <a class="nav-link count-indicator dropdown-toggle" id="notifDropdown" href="#" data-toggle="dropdown"
+      aria-expanded="false">
       <i class="fas fa-broadcast-tower
         {% if data.get('update_available') %}
             text-danger
         {% end %}
-        "></i>
-      <!--        <span class="count bg-success">3</span>-->
-    </a>
+        "></i><span id="notif-count" class="badge badge-notify"></span> </a>
+    <div class="dropdown-menu dropdown-menu-right navbar-dropdown" style="width: 40vw;" aria-labelledby="notifDropdown">
+      <ul id="announcements">
+      </ul>
+    </div>
   </li>
 
   <li class="nav-item dropdown">
-    <a class="nav-link count-indicator" href="/panel/panel_config">
+    <a class="nav-link" href="/panel/panel_config">
       <i class="fas fa-cogs"></i>
     </a>
   </li>
 
   <li class="nav-item dropdown user-dropdown">
     <a class="nav-link dropdown-toggle" id="UserDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
-      <img class="img-xs rounded-circle profile-picture" onerror="pfpError(this)" src="{{ data['user_data']['pfp'] }}" alt="Profile image"> </a>
+      <img class="img-xs rounded-circle profile-picture" onerror="pfpError(this)" src="{{ data['user_data']['pfp'] }}"
+        alt="Profile image"> </a>
     <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
       <div class="dropdown-header text-center">
-        <img class="img-md rounded-circle profile-picture" onerror="pfpError(this)" src="{{ data['user_data']['pfp'] }}" alt="Profile image">
+        <img class="img-md rounded-circle profile-picture" onerror="pfpError(this)" src="{{ data['user_data']['pfp'] }}"
+          alt="Profile image">
         <p class="mb-1 mt-3 font-weight-semibold">{{ data['user_data']['username'] }}</p>
         <p class="font-weight-light text-muted mb-0">Roles: </p>
         {% for r in data['user_role'] %}
@@ -33,27 +38,118 @@
         <p class="font-weight-light text-muted mb-0">Email: {{ data['user_data']['email'] }}</p>
       </div>
       {% if data['user_data']['preparing'] %}
-      <span class="dropdown-item" id="support_progress"><i class="dropdown-item-icon mdi mdi-download-outline text-primary"></i>{{ translate('notify', 'supportLogs', data['lang']) }}<br><br></span>
+      <span class="dropdown-item" id="support_progress"><i
+          class="dropdown-item-icon mdi mdi-download-outline text-primary"></i>{{ translate('notify', 'supportLogs',
+        data['lang']) }}<br><br></span>
       <span class="dropdown-item" id="support_progress">
         <div class="support_progress" style="height: 15px; width: 100%;">
-          <div class="progress-bar progress-bar-striped progress-bar-animated" id="logs_progress_bar" role="progressbar" style="width:0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+          <div class="progress-bar progress-bar-striped progress-bar-animated" id="logs_progress_bar" role="progressbar"
+            style="width:0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
         </div>
       </span>
       {% else %}
-      <a class="dropdown-item" id="support_logs"><i class="dropdown-item-icon mdi mdi-download-outline text-primary"></i>{{ translate('notify', 'supportLogs', data['lang']) }}</i></a>
+      <a class="dropdown-item" id="support_logs"><i
+          class="dropdown-item-icon mdi mdi-download-outline text-primary"></i>{{ translate('notify', 'supportLogs',
+        data['lang']) }}</i></a>
       {% end %}
       {% if data['superuser'] %}
-      <a class="dropdown-item" href="/panel/activity_logs"><i class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary"></i>{{ translate('notify', 'activityLog', data['lang']) }}</a>
+      <a class="dropdown-item" href="/panel/activity_logs"><i
+          class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary"></i>{{ translate('notify',
+        'activityLog', data['lang']) }}</a>
       {% end %}
-      <a class="dropdown-item" href="/logout"><i class="dropdown-item-icon mdi mdi-power text-primary"></i>{{ translate('notify', 'logout', data['lang']) }}</a>
+      <a class="dropdown-item" href="/logout"><i class="dropdown-item-icon mdi mdi-power text-primary"></i>{{
+        translate('notify', 'logout', data['lang']) }}</a>
     </div>
   </li>
 </ul>
+<style>
+  .badge-notify {
+    background: var(--purple);
+    position: absolute;
+    -moz-transform: translate(-70%, -70%);
+    /* For Firefox */
+    -ms-transform: translate(-70%, -70%);
+    /* for IE */
+    -webkit-transform: translate(-70%, -70%);
+    /* For Safari, Chrome, iOS */
+    -o-transform: translate(-70%, -70%);
+  }
 
+  .clear-button:hover {
+    cursor: pointer;
+  }
+</style>
 <script>
   function pfpError(image) {
     image.onerror = "";
     image.src = "/static/assets/images/faces-clipart/pic-3.png";
     return true;
   }
+  function updateAnnouncements(data) {
+    console.log(data)
+    let text = "";
+    for (i = 0; i < data.length; i++) {
+      text += `<li id="${data[i].id}"><p style="float: right;"><i data-id="${data[i].id}"class="clear-button fa-regular fa-x"></i></p><a style="color: var(--purple);" href=${data[i].link} target="_blank"><h6>${data[i].title}</h6><small><p>${data[i].date}</p></small><p>${data[i].desc}</p></li></a>`
+    }
+    if (data.length > 0) {
+      localStorage.setItem("notif-count", data.length);
+      $("#notif-count").html(data.length);
+      $("#announcements").html(text);
+    } else {
+      $("#announcements").html("<p style='margin-top: 15px;' class='text-center'>No notifications</p>");
+    }
+    $(".clear-button").on("click", function (event) {
+      console.log("CLEAR BUTTON")
+      let uuid = event.target.getAttribute("data-id");
+      $(`#${uuid}`).remove();
+      send_clear(uuid);
+      notif_count = localStorage.getItem("notif-count") - 1;
+      if (notif_count > 0) {
+        localStorage.setItem("notif-count", notif_count);
+        $("#notif-count").html(notif_count);
+      } else {
+        $("#announcements").html("<p style='margin-top: 15px;' class='text-center'>No notifications</p>")
+        $("#notif-count").html("");
+      }
+
+    });
+  }
+  async function getAnnouncements() {
+    var token = getCookie("_xsrf");
+    let res = await fetch(`/api/v2/crafty/announcements/`, {
+      method: 'GET',
+      headers: {
+        'X-XSRFToken': token
+      },
+    });
+    let responseData = await res.json();
+    console.log(responseData);
+    if (responseData.status === "ok") {
+      updateAnnouncements(responseData.data)
+    } else {
+      updateAnnouncements("<li><p>Trouble Getting Annoucements</p></li>")
+    }
+  }
+  async function send_clear(uuid) {
+    var token = getCookie("_xsrf");
+    let body = JSON.stringify({ "id": uuid });
+    console.log(body)
+    let res = await fetch(`/api/v2/crafty/announcements/`, {
+      method: 'POST',
+      headers: {
+        'X-XSRFToken': token,
+      },
+      body: body,
+    });
+    let responseData = await res.json();
+    console.log(responseData);
+    if (responseData.status === "ok") {
+      return
+    } else {
+      bootbox.alert(responseData.error)
+    }
+  }
+  $(document).ready(function () {
+    getAnnouncements();
+  })
 </script>

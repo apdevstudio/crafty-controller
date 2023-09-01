@@ -581,12 +581,16 @@ class Helpers:
 
     @staticmethod
     def get_announcements():
-        data = (
-            '[{"id":"1","date":"Unknown",'
-            '"title":"Error getting Announcements",'
-            '"desc":"Error getting Announcements","link":""}]'
-        )
-
+        data = []
+        data = [
+            {
+                "id": "4db1a43b-d451-4abc-bb10-5a45676d95f7",
+                "date": "Unknown",
+                "title": "Error getting Announcements",
+                "desc": "Error getting Announcements",
+                "link": "",
+            }
+        ]
         try:
             response = requests.get("https://craftycontrol.com/notify.json", timeout=2)
             data = json.loads(response.content)
