@@ -44,9 +44,14 @@
             </td>
             <td id="server_motd_{{ server['stats']['server_id']['server_id'] }}">
               {% if server['stats']['desc'] != 'False' %}
-              <img src="/static/assets/images/pack.png" alt="icon" style="-webkit-filter:grayscale(100%); filter:grayscale(100%)" />
-              <span id="input_motd_{{ server['stats']['server_id']['server_id'] }}" class="input_motd">{{
-                server['stats']['desc'] }}</span> <br />
+              <div class="row">
+                <div class="col-auto">
+                  <img src="/static/assets/images/pack.png" alt="icon" style="-webkit-filter:grayscale(100%); filter:grayscale(100%)" />
+                </div>
+                <div class="col-auto">
+                  <span id="input_motd_{{ server['stats']['server_id']['server_id'] }}" class="input_motd">{{ server['stats']['desc'] }}</span>
+                </div>
+              </div>
               {% end %}
             </td>
             <td id="server_version_{{ server['stats']['server_id']['server_id'] }}">
@@ -183,7 +188,7 @@
     m_server_online_status = document.getElementById('m_server_online_status_' + server.id);
 
     /* TODO Update each element */
-    if (server.int_ping_results) {
+    if (server.running) {
       /* Update Players */
       if (server.players) {
         server_players.innerHTML = server.online + ` / ` + server.max + ` {{ translate('dashboard', 'max', data['lang']) }}<br />`
@@ -193,16 +198,18 @@
       var motd = "";
       if (server.desc) {
         if (server.icon) {
-          motd = `<img src="data:image/png;base64,` + server.icon + `" alt="icon" /> `;
+          img_motd = `<img src="data:image/png;base64,` + server.icon + `" alt="icon" /> `;
           m_motd = `<img src="data:image/png;base64,` + server.icon + `" alt="icon" /> `;
         }
         else {
-          motd = `<img src="/static/assets/images/pack.png" alt="icon" /> `;
+          img_motd = `<img src="/static/assets/images/pack.png" alt="icon" /> `;
           m_motd = `<img class="w-25 mr-3" src="/static/assets/images/pack.png" alt="icon" /> `;
         }
 
-        motd = motd + `<span id="input_motd_` + server.id + `" class="input_motd">` + server.desc + `</span> <br />`;
+        desc_motd = `<span id="input_motd_` + server.id + `" class="input_motd">` + server.desc + `</span> <br />`;
         m_motd = m_motd + `<div class="media-body"><span id="m_input_motd_` + server.id + `" class="input_motd">` + server.desc + `</span></div>`;
+
+        motd = `<div class="row"><div class="col-auto">` + img_motd + `</div><div class="col-auto">` + desc_motd + `</div></div>`;
         server_motd.innerHTML = motd;
         m_server_motd.innerHTML = m_motd;
       }
@@ -235,17 +242,31 @@
   }
 
   function update_servers_status(data) {
-    console.log(data);
-    update_one_server_status(data[0]);
+    console.log("update servers");
+    data.forEach(server => {
+      console.log(server);
+      update_one_server_status(server);
+    });
     display_motd();
+  }
+
+  function refreshStatus() {
+    let xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        var myData = JSON.parse(this.responseText);
+        update_servers_status(myData.data);
+      }
+    };
+    xmlHttp.open('GET', '/api/v2/servers/status', true);
+    xmlHttp.send();
+
+    setTimeout(refreshStatus, 30000);
   }
 
   $(document).ready(function () {
     console.log("ready!");
-
-    if (webSocket) {
-      webSocket.on('update_server_status', update_servers_status);
-    }
+    refreshStatus();
   }());
 </script>
 

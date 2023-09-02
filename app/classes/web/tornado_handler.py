@@ -34,7 +34,7 @@ from app.classes.web.api_handler import (
     ListServers,
     SendCommand,
 )
-from app.classes.web.websocket_handler import AuthSocketHandler, PublicSocketHandler
+from app.classes.web.websocket_handler import AuthSocketHandler
 from app.classes.web.static_handler import CustomStaticHandler
 from app.classes.web.upload_handler import UploadHandler
 from app.classes.web.http_handler import HTTPHandler, HTTPHandlerPage
@@ -154,7 +154,6 @@ class Webserver:
             (r"/ajax/(.*)", AjaxHandler, handler_args),
             (r"/files/(.*)", FileHandler, handler_args),
             (r"/ws/auth", AuthSocketHandler, handler_args),
-            (r"/ws/public", PublicSocketHandler, handler_args),
             (r"/upload", UploadHandler, handler_args),
             (r"/status", StatusHandler, handler_args),
             # API Routes V1

@@ -50,6 +50,7 @@ class ServerStats(Model):
     max = IntegerField(default=0)
     players = CharField(default="")
     desc = CharField(default="Unable to Connect")
+    icon = CharField(default="")
     version = CharField(default="")
     updating = BooleanField(default=False)
     waiting_start = BooleanField(default=False)
@@ -183,6 +184,7 @@ class HelperServerStats:
                 ServerStats.max: server_stats.get("max", False),
                 ServerStats.players: server_stats.get("players", False),
                 ServerStats.desc: server_stats.get("desc", False),
+                ServerStats.icon: server_stats.get("icon", None),
                 ServerStats.version: server_stats.get("version", False),
             }
         ).execute(self.database)

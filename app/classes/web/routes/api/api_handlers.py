@@ -12,6 +12,7 @@ from app.classes.web.routes.api.roles.index import ApiRolesIndexHandler
 from app.classes.web.routes.api.roles.role.index import ApiRolesRoleIndexHandler
 from app.classes.web.routes.api.roles.role.servers import ApiRolesRoleServersHandler
 from app.classes.web.routes.api.roles.role.users import ApiRolesRoleUsersHandler
+
 from app.classes.web.routes.api.servers.index import ApiServersIndexHandler
 from app.classes.web.routes.api.servers.server.action import (
     ApiServersServerActionHandler,
@@ -20,6 +21,9 @@ from app.classes.web.routes.api.servers.server.index import ApiServersServerInde
 from app.classes.web.routes.api.servers.server.logs import ApiServersServerLogsHandler
 from app.classes.web.routes.api.servers.server.public import (
     ApiServersServerPublicHandler,
+)
+from app.classes.web.routes.api.servers.server.status import (
+    ApiServersServerStatusHandler,
 )
 from app.classes.web.routes.api.servers.server.stats import ApiServersServerStatsHandler
 from app.classes.web.routes.api.servers.server.history import (
@@ -108,6 +112,11 @@ def api_handlers(handler_args):
         (
             r"/api/v2/servers/?",
             ApiServersIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/servers/status/?",
+            ApiServersServerStatusHandler,
             handler_args,
         ),
         (

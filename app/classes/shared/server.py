@@ -1536,14 +1536,6 @@ class ServerInstance:
                 except:
                     Console.critical("Can't broadcast server status to websocket")
 
-            if (len(servers_ping) > 0) & (len(WebSocketManager().public_clients) > 0):
-                try:
-                    WebSocketManager().broadcast_page(
-                        "/status", "update_server_status", servers_ping
-                    )
-                except:
-                    Console.critical("Can't broadcast server status to websocket")
-
     def get_servers_stats(self):
         server_stats = {}
 
@@ -1605,6 +1597,7 @@ class ServerInstance:
                 "players": ping_data.get("players", False),
                 "desc": ping_data.get("server_description", False),
                 "version": ping_data.get("server_version", False),
+                "icon": ping_data.get("server_icon"),
             }
         else:
             server_stats = {
@@ -1623,6 +1616,7 @@ class ServerInstance:
                 "players": False,
                 "desc": False,
                 "version": False,
+                "icon": None,
             }
 
         return server_stats
@@ -1671,7 +1665,6 @@ class ServerInstance:
             }
 
         server_stats = {}
-        server = HelperServers.get_server_obj(server_id)
         if not server:
             return {}
         server_dt = HelperServers.get_server_data_by_id(server_id)
