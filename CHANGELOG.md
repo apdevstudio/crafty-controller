@@ -3,7 +3,7 @@
 ### New features
 TBD
 ### Bug fixes
-TBD
+- PWA: Removed the custom offline page in favour of browser default ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/607))
 ### Tweaks
 TBD
 ### Lang
