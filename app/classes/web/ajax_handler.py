@@ -83,11 +83,6 @@ class AjaxHandler(BaseHandler):
                 except Exception as e:
                     logger.warning(f"Skipping Log Line due to error: {e}")
 
-        elif page == "announcements":
-            data = Helpers.get_announcements()
-            page_data["notify_data"] = data
-            self.render_page("ajax/notify.html", page_data)
-
         elif page == "get_zip_tree":
             path = self.get_argument("path", None)
 
