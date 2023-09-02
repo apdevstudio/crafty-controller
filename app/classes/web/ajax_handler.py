@@ -5,7 +5,7 @@ import re
 import logging
 import time
 import urllib.parse
-import bleach
+import nh3
 import tornado.web
 import tornado.escape
 
@@ -31,7 +31,7 @@ class AjaxHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, page):
         _, _, exec_user = self.current_user
-        error = bleach.clean(self.get_argument("error", "WTF Error!"))
+        error = nh3.clean(self.get_argument("error", "WTF Error!"))
 
         template = "panel/denied.html"
 
@@ -50,7 +50,7 @@ class AjaxHandler(BaseHandler):
                 self.redirect("/panel/error?error=Server ID Not Found")
                 return
 
-            server_id = bleach.clean(server_id)
+            server_id = nh3.clean(server_id)
 
             server_data = self.controller.servers.get_server_data_by_id(server_id)
             if not server_data:
@@ -248,7 +248,7 @@ class AjaxHandler(BaseHandler):
 
             if not self.check_server_id(server_id, "get_tree"):
                 return
-            server_id = bleach.clean(server_id)
+            server_id = nh3.clean(server_id)
 
             if Helpers.validate_traversal(
                 self.controller.servers.get_server_data_by_id(server_id)["path"], path
@@ -329,7 +329,7 @@ class AjaxHandler(BaseHandler):
 
         elif page == "send_order":
             self.controller.users.update_server_order(
-                exec_user["user_id"], bleach.clean(self.get_argument("order"))
+                exec_user["user_id"], nh3.clean(self.get_argument("order"))
             )
             return
 
@@ -394,8 +394,8 @@ class AjaxHandler(BaseHandler):
                 if not superuser:
                     self.redirect("/panel/error?error=Unauthorized access to Backups")
                     return
-            server_id = bleach.clean(self.get_argument("id", None))
-            zip_name = bleach.clean(self.get_argument("zip_file", None))
+            server_id = nh3.clean(self.get_argument("id", None))
+            zip_name = nh3.clean(self.get_argument("zip_file", None))
             svr_obj = self.controller.servers.get_server_obj(server_id)
             server_data = self.controller.servers.get_server_data_by_id(server_id)
 
@@ -654,7 +654,7 @@ class AjaxHandler(BaseHandler):
 
             if not self.check_server_id(server_id, "del_backup"):
                 return
-            server_id = bleach.clean(server_id)
+            server_id = nh3.clean(server_id)
 
             server_info = self.controller.servers.get_server_data_by_id(server_id)
             if not (
@@ -686,7 +686,7 @@ class AjaxHandler(BaseHandler):
                 f"Server ID not defined in {page_name} ajax call ({server_id})"
             )
             return
-        server_id = bleach.clean(server_id)
+        server_id = nh3.clean(server_id)
 
         # does this server id exist?
         if not self.controller.servers.server_id_exists(server_id):

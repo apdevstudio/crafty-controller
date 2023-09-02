@@ -4,7 +4,7 @@ import os
 import time
 import tornado.web
 import tornado.escape
-import bleach
+import nh3
 
 from app.classes.models.crafty_permissions import EnumPermissionsCrafty
 from app.classes.shared.helpers import Helpers
@@ -196,8 +196,8 @@ class ServerHandler(BaseHandler):
         }
 
         if page == "command":
-            server_id = bleach.clean(self.get_argument("id", None))
-            command = bleach.clean(self.get_argument("command", None))
+            server_id = nh3.clean(self.get_argument("id", None))
+            command = nh3.clean(self.get_argument("command", None))
 
             if server_id is not None:
                 if command == "clone_server":
@@ -312,24 +312,24 @@ class ServerHandler(BaseHandler):
                 user_roles = self.controller.roles.get_all_roles()
             else:
                 user_roles = self.get_user_roles()
-            server = bleach.clean(self.get_argument("server", ""))
-            server_name = bleach.clean(self.get_argument("server_name", ""))
-            min_mem = bleach.clean(self.get_argument("min_memory", ""))
-            max_mem = bleach.clean(self.get_argument("max_memory", ""))
-            port = bleach.clean(self.get_argument("port", ""))
+            server = nh3.clean(self.get_argument("server", ""))
+            server_name = nh3.clean(self.get_argument("server_name", ""))
+            min_mem = nh3.clean(self.get_argument("min_memory", ""))
+            max_mem = nh3.clean(self.get_argument("max_memory", ""))
+            port = nh3.clean(self.get_argument("port", ""))
             if int(port) < 1 or int(port) > 65535:
                 self.redirect(
                     "/panel/error?error=Constraint Error: "
                     "Port must be greater than 0 and less than 65535"
                 )
                 return
-            import_type = bleach.clean(self.get_argument("create_type", ""))
-            import_server_path = bleach.clean(self.get_argument("server_path", ""))
-            import_server_jar = bleach.clean(self.get_argument("server_jar", ""))
+            import_type = nh3.clean(self.get_argument("create_type", ""))
+            import_server_path = nh3.clean(self.get_argument("server_path", ""))
+            import_server_jar = nh3.clean(self.get_argument("server_jar", ""))
             server_parts = server.split("|")
             captured_roles = []
             for role in user_roles:
-                if bleach.clean(self.get_argument(str(role), "")) == "on":
+                if nh3.clean(self.get_argument(str(role), "")) == "on":
                     captured_roles.append(role)
 
             if not server_name:
@@ -373,7 +373,7 @@ class ServerHandler(BaseHandler):
                 )
             elif import_type == "import_zip":
                 # here import_server_path means the zip path
-                zip_path = bleach.clean(self.get_argument("root_path"))
+                zip_path = nh3.clean(self.get_argument("root_path"))
                 good_path = Helpers.check_path_exists(zip_path)
                 if not good_path:
                     self.redirect("/panel/error?error=Temp path not found!")
@@ -477,9 +477,9 @@ class ServerHandler(BaseHandler):
                 user_roles = self.controller.roles.get_all_roles()
             else:
                 user_roles = self.controller.roles.get_all_roles()
-            server = bleach.clean(self.get_argument("server", ""))
-            server_name = bleach.clean(self.get_argument("server_name", ""))
-            port = bleach.clean(self.get_argument("port", ""))
+            server = nh3.clean(self.get_argument("server", ""))
+            server_name = nh3.clean(self.get_argument("server_name", ""))
+            port = nh3.clean(self.get_argument("port", ""))
 
             if not port:
                 port = 19132
@@ -489,13 +489,13 @@ class ServerHandler(BaseHandler):
                     "Port must be greater than 0 and less than 65535"
                 )
                 return
-            import_type = bleach.clean(self.get_argument("create_type", ""))
-            import_server_path = bleach.clean(self.get_argument("server_path", ""))
-            import_server_exe = bleach.clean(self.get_argument("server_jar", ""))
+            import_type = nh3.clean(self.get_argument("create_type", ""))
+            import_server_path = nh3.clean(self.get_argument("server_path", ""))
+            import_server_exe = nh3.clean(self.get_argument("server_jar", ""))
             server_parts = server.split("|")
             captured_roles = []
             for role in user_roles:
-                if bleach.clean(self.get_argument(str(role), "")) == "on":
+                if nh3.clean(self.get_argument(str(role), "")) == "on":
                     captured_roles.append(role)
 
             if not server_name:
@@ -537,7 +537,7 @@ class ServerHandler(BaseHandler):
                 )
             elif import_type == "import_zip":
                 # here import_server_path means the zip path
-                zip_path = bleach.clean(self.get_argument("root_path"))
+                zip_path = nh3.clean(self.get_argument("root_path"))
                 good_path = Helpers.check_path_exists(zip_path)
                 if not good_path:
                     self.redirect("/panel/error?error=Temp path not found!")
