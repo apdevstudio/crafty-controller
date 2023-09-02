@@ -579,8 +579,7 @@ class Helpers:
 
         return version_data
 
-    @staticmethod
-    def get_announcements():
+    def get_announcements(self):
         data = []
         try:
             response = requests.get("https://craftycontrol.com/notify.json", timeout=2)
@@ -588,6 +587,8 @@ class Helpers:
         except Exception as e:
             logger.error(f"Failed to fetch notifications with error: {e}")
 
+        if self.update_available:
+            data.append(self.update_available)
         return data
 
     def get_version_string(self):

@@ -726,12 +726,23 @@ class TasksManager:
     def check_for_updates(self):
         logger.info("Checking for Crafty updates...")
         self.helper.update_available = self.helper.check_remote_version()
+        remote = self.helper.update_available
         if self.helper.update_available:
             logger.info(f"Found new version {self.helper.update_available}")
         else:
             logger.info(
                 "No updates found! You are on the most up to date Crafty version."
             )
+        if self.helper.update_available:
+            self.helper.update_available = {
+                "id": str(remote),
+                "title": f"{remote} Update Available",
+                "date": "",
+                "desc": "Instructions for updating can be found"
+                " by clicking this notification.",
+                "link": "https://docs.craftycontrol.com/pages/"
+                "getting-started/installation/linux/?h=updating#updating-crafty",
+            }
         logger.info("Refreshing Gravatar PFPs...")
         for user in HelperUsers.get_all_users():
             if user.email:

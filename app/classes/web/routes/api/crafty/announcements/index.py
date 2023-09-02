@@ -40,6 +40,8 @@ class ApiAnnounceIndexHandler(BaseApiHandler):
         for item in cleared[:]:
             if item not in res:
                 cleared.remove(item)
+        updata = {"cleared_notifs": ",".join(cleared)}
+        self.controller.users.update_user(auth_data[4]["user_id"], updata)
         if len(cleared) > 0:
             for item in data[:]:
                 if item["id"] in cleared:
@@ -93,7 +95,7 @@ class ApiAnnounceIndexHandler(BaseApiHandler):
         for item in cleared_notifs[:]:
             if item not in res:
                 cleared_notifs.remove(item)
-        if is_valid_uuid(data["id"]):
+        if str(data["id"]) in str(res):
             cleared_notifs.append(data["id"])
         else:
             self.finish_json(200, {"status": "error", "error": "INVALID_DATA"})
@@ -107,12 +109,3 @@ class ApiAnnounceIndexHandler(BaseApiHandler):
                 "data": {},
             },
         )
-
-
-def is_valid_uuid(value):
-    try:
-        uuid.UUID(str(value))
-
-        return True
-    except ValueError:
-        return False
