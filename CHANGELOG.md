@@ -10,6 +10,7 @@ TBD
 - Refractor/Replace bleach with nh3 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/616))
 ### Tweaks
 - Polish/Enhance display for InApp Documentation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/613))
+- Add get_users command to Crafty's console ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/620))
 ### Lang
 TBD
 <br><br>
