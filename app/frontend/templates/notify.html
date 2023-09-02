@@ -8,7 +8,7 @@
         {% end %}
         "></i><span id="notif-count" class="badge badge-notify"></span> </a>
     <div class="dropdown-menu dropdown-menu-right navbar-dropdown" style="width: 40vw;" aria-labelledby="notifDropdown">
-      <ul id="announcements">
+      <ul style="padding-top: 10px;" id="announcements">
       </ul>
     </div>
   </li>
@@ -96,7 +96,8 @@
       $("#notif-count").html(data.length);
       $("#announcements").html(text);
     } else {
-      $("#announcements").html("<p style='margin-top: 15px;' class='text-center'>No notifications</p>");
+      $("#announcements").html(`<p style='margin-top: 15px;' class='text-center'><i class="fa fa-bell-slash" aria-hidden="true"></i>
+</p>`);
     }
     $(".clear-button").on("click", function (event) {
       console.log("CLEAR BUTTON")
@@ -108,7 +109,8 @@
         localStorage.setItem("notif-count", notif_count);
         $("#notif-count").html(notif_count);
       } else {
-        $("#announcements").html("<p style='margin-top: 15px;' class='text-center'>No notifications</p>")
+        $("#announcements").html(`<p style='margin-top: 15px;' class='text-center'><i class="fa fa-bell-slash" aria-hidden="true"></i>
+</p>`)
         $("#notif-count").html("");
       }
 
