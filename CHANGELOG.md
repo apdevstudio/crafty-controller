@@ -3,9 +3,13 @@
 ### New features
 TBD
 ### Bug fixes
-TBD
+- PWA: Removed the custom offline page in favour of browser default ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/607))
+- Fix hidden servers appearing visible on public mobile status page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/612))
+- Correctly handle if a server returns a string instead of json data on socket ping ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/614))
+### Refactor
+- Refractor/Replace bleach with nh3 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/616))
 ### Tweaks
-TBD
+- Polish/Enhance display for InApp Documentation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/613))
 ### Lang
 TBD
 <br><br>
