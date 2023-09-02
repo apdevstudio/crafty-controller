@@ -1,5 +1,6 @@
 import logging
 import json
+import uuid
 from jsonschema import ValidationError, validate
 from app.classes.web.base_api_handler import BaseApiHandler
 
@@ -92,7 +93,11 @@ class ApiAnnounceIndexHandler(BaseApiHandler):
         for item in cleared_notifs[:]:
             if item not in res:
                 cleared_notifs.remove(item)
-        cleared_notifs.append(data["id"])
+        if is_valid_uuid(data["id"]):
+            cleared_notifs.append(data["id"])
+        else:
+            self.finish_json(200, {"status": "error", "error": "INVALID_DATA"})
+            return
         updata = {"cleared_notifs": ",".join(cleared_notifs)}
         self.controller.users.update_user(auth_data[4]["user_id"], updata)
         self.finish_json(
@@ -102,3 +107,12 @@ class ApiAnnounceIndexHandler(BaseApiHandler):
                 "data": {},
             },
         )
+
+
+def is_valid_uuid(value):
+    try:
+        uuid.UUID(str(value))
+
+        return True
+    except ValueError:
+        return False
