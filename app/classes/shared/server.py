@@ -253,6 +253,23 @@ class ServerInstance:
                 seconds=5,
                 id="stats_" + str(self.server_id),
             )
+        logger.info(f"Saving server statistics {self.name} every {30} seconds")
+        Console.info(f"Saving server statistics {self.name} every {30} seconds")
+        try:
+            self.server_scheduler.add_job(
+                self.record_server_stats,
+                "interval",
+                seconds=30,
+                id="save_stats_" + str(self.server_id),
+            )
+        except:
+            self.server_scheduler.remove_job("save_" + str(self.server_id))
+            self.server_scheduler.add_job(
+                self.record_server_stats,
+                "interval",
+                seconds=30,
+                id="save_" + str(self.server_id),
+            )
 
     def setup_server_run_command(self):
         # configure the server
@@ -1526,7 +1543,7 @@ class ServerInstance:
             total_players += int(raw_ping_result.get("online"))
             max_players += int(raw_ping_result.get("max"))
 
-            self.record_server_stats()
+            # self.record_server_stats()
 
             if (len(servers_ping) > 0) & (len(WebSocketManager().auth_clients) > 0):
                 try:
