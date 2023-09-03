@@ -87,26 +87,6 @@ class AjaxHandler(BaseHandler):
             page_data["notify_data"] = data
             self.render_page("ajax/notify.html", page_data)
 
-        elif page == "get_zip_tree":
-            path = self.get_argument("path", None)
-
-            self.write(
-                Helpers.get_os_understandable_path(path)
-                + "\n"
-                + Helpers.generate_zip_tree(path)
-            )
-            self.finish()
-
-        elif page == "get_zip_dir":
-            path = self.get_argument("path", None)
-
-            self.write(
-                Helpers.get_os_understandable_path(path)
-                + "\n"
-                + Helpers.generate_zip_dir(path)
-            )
-            self.finish()
-
     @tornado.web.authenticated
     def post(self, page):
         api_key, _, exec_user = self.current_user
