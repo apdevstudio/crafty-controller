@@ -738,10 +738,8 @@ class TasksManager:
                 "id": str(remote),
                 "title": f"{remote} Update Available",
                 "date": "",
-                "desc": "Instructions for updating can be found"
-                " by clicking this notification.",
-                "link": "https://docs.craftycontrol.com/pages/"
-                "getting-started/installation/linux/?h=updating#updating-crafty",
+                "desc": "Release notes are available by clicking this notification.",
+                "link": "https://gitlab.com/crafty-controller/crafty-4/-/releases",
             }
         logger.info("Refreshing Gravatar PFPs...")
         for user in HelperUsers.get_all_users():
