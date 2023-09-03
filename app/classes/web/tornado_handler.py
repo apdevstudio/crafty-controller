@@ -20,6 +20,7 @@ from app.classes.web.public_handler import PublicHandler
 from app.classes.web.panel_handler import PanelHandler
 from app.classes.web.default_handler import DefaultHandler
 from app.classes.web.routes.api.api_handlers import api_handlers
+from app.classes.web.routes.metrics.metrics_handlers import metrics_handlers
 from app.classes.web.server_handler import ServerHandler
 from app.classes.web.ajax_handler import AjaxHandler
 from app.classes.web.api_handler import (
@@ -169,6 +170,8 @@ class Webserver:
             (r"/api/v1/users/delete_user", DeleteUser, handler_args),
             # API Routes V2
             *api_handlers(handler_args),
+            # API Routes OpenMetrics
+            *metrics_handlers(handler_args),
             # Using this one at the end
             # to catch all the other requests to Public Handler
             (r"/(.*)", PublicHandler, handler_args),
