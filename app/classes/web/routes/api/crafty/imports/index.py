@@ -14,6 +14,7 @@ files_get_schema = {
     "properties": {
         "page": {"type": "string", "minLength": 1},
         "folder": {"type": "string"},
+        "upload": {"type": "boolean", "default": "False"},
         "unzip": {"type": "boolean", "default": "True"},
     },
     "additionalProperties": False,
@@ -59,6 +60,11 @@ class ApiImportFilesIndexHandler(BaseApiHandler):
         user_id = auth_data[4]["user_id"]
         root_path = False
         if data["unzip"]:
+            # This is awful. Once uploads go to return
+            # JSON we need to remove this and just send
+            # the path.
+            if data["upload"]:
+                folder = os.path.join(self.controller.project_root, "imports", folder)
             if Helpers.check_file_exists(folder):
                 folder = self.file_helper.unzip_server(folder, user_id)
                 root_path = True
