@@ -15,7 +15,6 @@ from app.classes.models.management import HelpersManagement
 from app.classes.shared.console import Console
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.main_controller import Controller
-from app.classes.web.file_handler import FileHandler
 from app.classes.web.public_handler import PublicHandler
 from app.classes.web.panel_handler import PanelHandler
 from app.classes.web.default_handler import DefaultHandler
@@ -154,7 +153,6 @@ class Webserver:
             (r"/panel/(.*)", PanelHandler, handler_args),
             (r"/server/(.*)", ServerHandler, handler_args),
             (r"/ajax/(.*)", AjaxHandler, handler_args),
-            (r"/files/(.*)", FileHandler, handler_args),
             (r"/ws", SocketHandler, handler_args),
             (r"/upload", UploadHandler, handler_args),
             (r"/status", StatusHandler, handler_args),
