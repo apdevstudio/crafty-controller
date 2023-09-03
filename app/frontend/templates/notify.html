@@ -89,7 +89,7 @@
     console.log(data)
     let text = "";
     for (i = 0; i < data.length; i++) {
-      text += `<li id="${data[i].id}"><p style="float: right;"><i data-id="${data[i].id}"class="clear-button fa-regular fa-x"></i></p><a style="color: var(--purple);" href=${data[i].link} target="_blank"><h6>${data[i].title}</h6><small><p>${data[i].date}</p></small><p>${data[i].desc}</p></li></a>`
+      text += `<li class="card-header header-sm justify-content-between align-items-center" id="${data[i].id}"><p style="float: right;"><i data-id="${data[i].id}"class="clear-button fa-regular fa-x"></i></p><a style="color: var(--purple);" href=${data[i].link} target="_blank"><h6>${data[i].title}</h6><small><p>${data[i].date}</p></small><p>${data[i].desc}</p></li></a>`
     }
     if (data.length > 0) {
       localStorage.setItem("notif-count", data.length);
