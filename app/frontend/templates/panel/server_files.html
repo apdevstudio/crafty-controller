@@ -398,32 +398,36 @@
     },
   ];
 
-  let filePath = '', serverFileContent = '';
+  let path = '', serverFileContent = '';
 
-  function clickOnFile(event) {
-    filePath = event.target.getAttribute('data-path');
-    $.ajax({
-      type: 'GET',
-      url: "/files/get_file?id=" + serverId + "&file_path=" + encodeURIComponent(filePath),
-      dataType: 'text',
-      success: function (data) {
+  async function clickOnFile(event) {
+    var token = getCookie("_xsrf");
+    path = event.target.getAttribute('data-path');
+    let res = await fetch(`/api/v2/servers/${serverId}/files`, {
+        method: 'POST',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: JSON.stringify({"page": "files", "path": path}),
+      });
+      let responseData = await res.json();
+      console.log(responseData)
+      if (responseData.status === "ok") {
         console.log('Got File Contents From Server');
-        json = JSON.parse(data)
-        if (json.error) {
-          $('#editorParent').toggle(false) // hide
-          $('#fileError').toggle(true)     // show
-          $('#fileError').text("{{ translate('serverFiles', 'fileReadError', data['lang']) }}: " + json.error) // show error
-          editor.blur()
-        } else {
           $('#editorParent').toggle(true) // show
           $('#fileError').toggle(false)   // hide
           setFileName(event.target.innerText);
-          editor.session.setValue(json.content);
-          serverFileContent = json.content;
+          editor.session.setValue(responseData.data);
+          serverFileContent = responseData.data;
           setSaveStatus(true);
         }
-      },
-    });
+      else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+        });
+      }
   }
 
   function setFileName(name) {
@@ -578,74 +582,96 @@
 
 
 
-  function save() {
+  async function save() {
     let text = editor.session.getValue();
 
     var token = getCookie("_xsrf")
-    $.ajax({
-      type: "PUT",
-      headers: { 'X-XSRFToken': token },
-      url: "/files/save_file?id=" + serverId,
-      data: {
-        file_contents: text,
-        file_path: filePath
-      },
-      success: (data) => {
+    let res = await fetch(`/api/v2/servers/${serverId}/files`, {
+        method: 'PATCH',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: JSON.stringify({"path": path, "contents": text}),
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
         serverFileContent = text;
         setSaveStatus(true)
+
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+        });
       }
-    });
   }
 
-  function createFile(parent, name, callback) {
+  async function createFile(parent, name, callback) {
     var token = getCookie("_xsrf")
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      url: "/files/create_file?id=" + serverId,
-      data: {
-        file_parent: parent,
-        file_name: name
-      },
-      success: function (data) {
-        console.log("got response:");
-        callback();
-      },
-    });
+    let res = await fetch(`/api/v2/servers/${serverId}/files/create/`, {
+        method: 'PUT',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: JSON.stringify({"parent": parent, "name": name, "directory": false}),
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        getTreeView($('#root_dir').data('path'));
+        setTreeViewContext();
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+        });
+      }
   }
 
-  function createDir(parent, name, callback) {
+
+  async function createDir(parent, name, callback) {
     var token = getCookie("_xsrf")
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      url: "/files/create_dir?id=" + serverId,
-      data: {
-        dir_parent: parent,
-        dir_name: name
-      },
-      success: function (data) {
-        console.log("got response:");
-        callback();
-      },
-    });
+    let res = await fetch(`/api/v2/servers/${serverId}/files/create/`, {
+        method: 'PUT',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: JSON.stringify({"parent": parent, "name": name, "directory": true}),
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        getTreeView($('#root_dir').data('path'));
+        setTreeViewContext();
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+        });
+      }
   }
 
-  function renameItem(path, name, callback) {
+  async function renameItem(path, name, callback) {
     var token = getCookie("_xsrf")
-    $.ajax({
-      type: "PATCH",
-      headers: { 'X-XSRFToken': token },
-      url: "/files/rename_file?id=" + serverId,
-      data: {
-        item_path: path,
-        new_item_name: name
-      },
-      success: function (data) {
-        console.log("got response:");
-        callback();
-      },
-    });
+    let res = await fetch(`/api/v2/servers/${serverId}/files/create/`, {
+        method: 'PATCH',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: JSON.stringify({"path": path, "new_name": name}),
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        getTreeView($('#root_dir').data('path'));
+        setTreeViewContext();
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+        });
+      }
   }
 
   async function deleteItem(path, el, callback) {
@@ -671,20 +697,26 @@
       }
   }
 
-  function unZip(path, callback) {
-    console.log('path: ', path)
+  async function unZip(path, callback) {
     var token = getCookie("_xsrf")
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      url: "/files/unzip_file?id=" + serverId,
-      data: {
-        path: path
-      },
-      success: function (data) {
-        window.location.href = "/panel/server_detail?id=" + serverId + "&subpage=files";
-      },
-    });
+    let res = await fetch(`/api/v2/servers/${serverId}/files/zip/`, {
+        method: 'POST',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: JSON.stringify({"folder": path}),
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        getTreeView($('#root_dir').data('path'));
+        setTreeViewContext();
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+        });
+      }
   }
 
   async function sendFile(file, path, serverId, left, i, onProgress) {
@@ -888,7 +920,7 @@
         headers: {
           'X-XSRFToken': token
         },
-        body: JSON.stringify({"page": "files", "folder": path}),
+        body: JSON.stringify({"page": "files", "path": path}),
       });
       let responseData = await res.json();
       if (responseData.status === "ok") {
