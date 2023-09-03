@@ -354,7 +354,7 @@ class Controller:
                 server_file = create_data["jarfile"]
                 raise NotImplementedError("Not yet implemented")
                 self.import_helper.import_java_zip_server()
-            if create_data["minecraft_java"]:
+            if data["create_type"] == "minecraft_java":
                 _create_server_properties_if_needed(
                     create_data["server_properties_port"],
                 )
@@ -417,6 +417,7 @@ class Controller:
                 else:
                     server_command = f"./{create_data['executable']}"
                 logger.debug("command: " + server_command)
+                server_file = create_data["executable"]
             elif root_create_data["create_type"] == "import_zip":
                 # TODO: Copy files from the zip file to the new server directory
                 raise NotImplementedError("Not yet implemented")
@@ -520,7 +521,7 @@ class Controller:
                 ServersController.set_import(new_server_id)
                 self.import_helper.import_jar_server(
                     create_data["existing_server_path"],
-                    os.path.join(new_server_path, server_fs_uuid),
+                    new_server_path,
                     monitoring_port,
                     new_server_id,
                 )
@@ -534,6 +535,7 @@ class Controller:
                     new_server_path, new_server_id
                 )
             elif root_create_data["create_type"] == "import_server":
+                ServersController.set_import(new_server_id)
                 full_exe_path = os.path.join(new_server_path, create_data["executable"])
                 self.import_helper.import_bedrock_server(
                     create_data["existing_server_path"],
@@ -543,6 +545,7 @@ class Controller:
                     new_server_id,
                 )
             elif root_create_data["create_type"] == "import_zip":
+                ServersController.set_import(new_server_id)
                 full_exe_path = os.path.join(new_server_path, create_data["executable"])
                 self.import_helper.import_bedrock_zip_server(
                     create_data["zip_path"],
