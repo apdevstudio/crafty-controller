@@ -582,7 +582,7 @@ class Helpers:
     def get_announcements(self):
         data = []
         try:
-            response = requests.get("https://craftycontrol.com/notify.json", timeout=2)
+            response = requests.get("https://craftycontrol.com/notify", timeout=2)
             data = json.loads(response.content)
         except Exception as e:
             logger.error(f"Failed to fetch notifications with error: {e}")
