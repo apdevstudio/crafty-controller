@@ -81,18 +81,17 @@ class ApiImportFilesIndexHandler(BaseApiHandler):
                         },
                     )
         else:
-            if not self.helper.check_path_exists(folder):
-                if user_id:
-                    user_lang = self.controller.users.get_user_lang_by_id(user_id)
-                    self.helper.websocket_helper.broadcast_user(
-                        user_id,
-                        "send_start_error",
-                        {
-                            "error": self.helper.translation.translate(
-                                "error", "no-file", user_lang
-                            )
-                        },
-                    )
+            if not self.helper.check_path_exists(folder) and user_id:
+                user_lang = self.controller.users.get_user_lang_by_id(user_id)
+                self.helper.websocket_helper.broadcast_user(
+                    user_id,
+                    "send_start_error",
+                    {
+                        "error": self.helper.translation.translate(
+                            "error", "no-file", user_lang
+                        )
+                    },
+                )
         return_json = {
             "root_path": {
                 "path": folder,
