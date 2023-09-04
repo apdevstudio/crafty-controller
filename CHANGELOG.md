@@ -1,5 +1,5 @@
 # Changelog
-## --- [4.1.4] - 2023/TBD
+## --- [4.2.0] - 2023/TBD
 ### New features
 TBD
 ### Bug fixes
