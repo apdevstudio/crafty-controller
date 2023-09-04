@@ -128,14 +128,6 @@ class AjaxHandler(BaseHandler):
                         self.controller.cached_login = "login_1.jpg"
             return
 
-        elif page == "jar_cache":
-            if not superuser:
-                self.redirect("/panel/error?error=Not a super user")
-                return
-
-            self.controller.server_jars.manual_refresh_cache()
-            return
-
         elif page == "update_server_dir":
             if self.helper.dir_migration:
                 return

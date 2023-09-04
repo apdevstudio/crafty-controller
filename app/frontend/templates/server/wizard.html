@@ -1104,24 +1104,31 @@
       }
     }
 
-    function refreshCache() {
-      let token = getCookie("_xsrf")
+    async function refreshCache() {
       document.getElementById("refresh-cache").classList.add("fa-spin")
-      $.ajax({
-        type: "POST",
-        headers: { 'X-XSRFToken': token },
-        url: '/ajax/jar_cache',
-        success: function () {
+      let token = getCookie("_xsrf")
+        let res = await fetch(`/api/v2/crafty/exeCache`, {
+          method: 'GET',
+          headers: {
+            'X-XSRFToken': token
+          },
+        });
+        let responseData = await res.json();
+        if (responseData.status === "ok") {
           document.getElementById("refresh-cache").classList.remove("fa-sync");
           document.getElementById("refresh-cache").classList.remove("fa-spin");
           document.getElementById("refresh-cache").classList.add("fa-check");
-
-          setTimeout(function () {
+          setTimeout(() => {
             location.reload();
           }, 2000);
-        },
-      });
-    }
+        } else {
+
+          bootbox.alert({
+            title: responseData.error,
+            message: responseData.error
+          });
+        }
+      }
 
     $('#file').change(function () {
       console.log("File changed");
