@@ -200,6 +200,14 @@ class TasksManager:
             id="update_watcher",
             start_date=datetime.datetime.now(),
         )
+        self.helper.refresh_announcements()
+        self.scheduler.add_job(
+            self.helper.refresh_announcements,
+            "interval",
+            hours=1,
+            id="annoucement_watcher",
+            start_date=datetime.datetime.now(),
+        )
         # self.scheduler.add_job(
         #    self.scheduler.print_jobs, "interval", seconds=10, id="-1"
         # )

@@ -7,7 +7,8 @@
             text-danger
         {% end %}
         "></i><span id="notif-count" class="badge badge-notify"></span> </a>
-    <div class="dropdown-menu dropdown-menu-right navbar-dropdown" style="width: 40vw;" aria-labelledby="notifDropdown">
+    <div class="dropdown-menu dropdown-menu-right navbar-dropdown notif-drop"
+      style="width: 40vw; max-height: 80vh; overflow-y: scroll;" aria-labelledby="notifDropdown">
       <ul style="padding-top: 10px;" id="announcements">
       </ul>
     </div>
@@ -78,6 +79,19 @@
   .clear-button:hover {
     cursor: pointer;
   }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .notif-drop::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .notif-drop {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
 </style>
 <script>
   function pfpError(image) {
@@ -117,6 +131,10 @@
     });
   }
   async function getAnnouncements() {
+    setTimeout(() => {
+      getAnnouncements();
+      console.log("Notifications Refreshed")
+    }, 5 * 60 * 1000);
     var token = getCookie("_xsrf");
     let res = await fetch(`/api/v2/crafty/announcements/`, {
       method: 'GET',
