@@ -327,30 +327,29 @@
   }
 
   $("#server-path").submit(async function (e) {
-    var token = getCookie("_xsrf")
+    const token = getCookie("_xsrf")
     e.preventDefault();
 
     $("#submit-status").html('<i class="fa fa-spinner fa-spin"></i>');
 
     let path = $("#global_server_path").val();
-    var token = getCookie("_xsrf")
     let res = await fetch(`/api/v2/crafty/config/servers_dir`, {
-        method: 'PATCH',
-        headers: {
-          'X-XSRFToken': token
-        },
-        body: JSON.stringify({"new_dir": path}),
-      });
-      let responseData = await res.json();
-      if (responseData.status === "ok") {
-        return
-      } else {
+      method: 'PATCH',
+      headers: {
+        'X-XSRFToken': token
+      },
+      body: JSON.stringify({ "new_dir": path }),
+    });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      return
+    } else {
 
-        bootbox.alert({
-          title: responseData.status,
-          message: responseData.error
-        });
-      }
+      bootbox.alert({
+        title: responseData.status,
+        message: responseData.error
+      });
+    }
   });
 
   $(document).ready(function () {

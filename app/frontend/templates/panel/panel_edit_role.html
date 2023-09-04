@@ -355,7 +355,7 @@
   }
 
   async function del_role(){
-    var token = getCookie("_xsrf")
+    const token = getCookie("_xsrf")
     let res = await fetch(`/api/v2/roles/${roleId}`, {
         method: "DELETE",
         headers: {
@@ -376,7 +376,7 @@
 
     $("#role_form").on("submit", async function (e) {
       e.preventDefault();
-      var token = getCookie("_xsrf")
+      const token = getCookie("_xsrf")
       let roleForm = document.getElementById("role_form");
 
       let server_ids = $('.access').map(function() {

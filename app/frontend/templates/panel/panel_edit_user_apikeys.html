@@ -199,7 +199,7 @@
     $(document).ready(function () {
         $("#user_api_form").on("submit", async function (e) {
             e.preventDefault();
-            var token = getCookie("_xsrf")
+            const token = getCookie("_xsrf")
             let apiForm = document.getElementById("user_api_form");
 
             let formData = new FormData(apiForm);
@@ -269,7 +269,7 @@
         $('.delete-api-key').click(async function () {
             let keyId = $(this).data("key-id");
             let keyName = $(this).data("key-name");
-            let token = getCookie("_xsrf");
+            const token = getCookie("_xsrf");
             let res = await fetch(`/api/v2/users/${userId}/key/${keyId}`, {
                 method: 'DELETE',
                 headers: {
@@ -290,7 +290,7 @@
         $('.get-a-token').click(async function () {
             let keyId = $(this).data("key-id");
             let keyName = $(this).data("key-name");
-            let token = getCookie("_xsrf");
+            const token = getCookie("_xsrf");
             let res = await fetch(`/api/v2/users/${userId}/key/${keyId}`, {
                 method: 'GET',
                 headers: {

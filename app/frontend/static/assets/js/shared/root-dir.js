@@ -1,11 +1,11 @@
 
 function show_file_tree() {
-        $("#dir_select").modal();
+    $("#dir_select").modal();
 }
 function getDirView(event = false) {
     if (event) {
         try {
-            path = event.target.parentElement.getAttribute('data-path');
+            let path = event.target.parentElement.getAttribute('data-path');
             if (event.target.parentElement.classList.contains('clicked')) {
 
                 if ($(`#${path}span`).hasClass('files-tree-title')) {
@@ -19,20 +19,18 @@ function getDirView(event = false) {
         } catch {
             console.log("Well that failed");
         }
+    } else if ($("#root_files_button").hasClass("clicked")) {
+        path = $("#zip_server_path").val();
+        getTreeView(path, true);
     } else {
-        if ($("#root_files_button").hasClass("clicked")) {
-            path = $("#zip_server_path").val();
-            getTreeView(path, true);
-        } else {
-            path = $("#file-uploaded").val();
-            getTreeView(path, true, true);
-        }
+        path = $("#file-uploaded").val();
+        getTreeView(path, true, true);
     }
-
 }
 
+
 async function getTreeView(path, unzip = false, upload = false) {
-    var token = getCookie("_xsrf");
+    const token = getCookie("_xsrf");
     console.log("IN TREE VIEW")
     console.log({ "page": "import", "folder": path, "upload": upload, "unzip": unzip });
     let res = await fetch(`/api/v2/import/file/unzip/`, {

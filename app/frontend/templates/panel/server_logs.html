@@ -189,10 +189,10 @@
   // Populate logs and filter if present
   const serverId = new URLSearchParams(document.location.search).get('id')
   async function get_server_log() {
-    var token = getCookie("_xsrf")
-    let colors=true;
+    const token = getCookie("_xsrf")
+    let colors = true;
     if (!$("#stop_scroll").is(':checked')) {
-    let res = await fetch(`/api/v2/servers/${serverId}/logs?colors=${colors}`, {
+      let res = await fetch(`/api/v2/servers/${serverId}/logs?colors=${colors}`, {
         method: 'GET',
         headers: {
           'X-XSRFToken': token
@@ -201,7 +201,7 @@
       let responseData = await res.json();
       html = ``
       if (responseData.status === "ok") {
-        for(i=0; i < responseData.data.length; i++) {
+        for (i = 0; i < responseData.data.length; i++) {
           html += `<span class='box'>${responseData.data[i]}<br /></span>`
         }
         console.log('Got Log From Server')
@@ -216,7 +216,7 @@
           message: responseData.error
         });
       }
-  }
+    }
   }
   $(document).ready(function () {
     console.log("ready!");

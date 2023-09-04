@@ -260,7 +260,7 @@
       console.log("ready!");
       $("#new_schedule_form").on("submit", async function (e) {
       e.preventDefault();
-      var token = getCookie("_xsrf")
+      const token = getCookie("_xsrf")
       let schForm = document.getElementById("new_schedule_form");
 
       let formData = new FormData(schForm);
@@ -305,7 +305,7 @@
 
     $("#schedule_form").on("submit", async function (e) {
       e.preventDefault();
-      var token = getCookie("_xsrf")
+      const token = getCookie("_xsrf")
       let schForm = document.getElementById("schedule_form");
 
       let formData = new FormData(schForm);

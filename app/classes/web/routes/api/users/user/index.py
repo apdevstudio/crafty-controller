@@ -242,12 +242,11 @@ class ApiUsersUserIndexHandler(BaseApiHandler):
                     user_id, removed_roles
                 )
 
-        if "manager" in data:
-            if (
-                data["manager"] == self.controller.users.get_id_by_name("SYSTEM")
-                or data["manager"] == 0
-            ):
-                data["manager"] = None
+        if "manager" in data and (
+            data["manager"] == self.controller.users.get_id_by_name("SYSTEM")
+            or data["manager"] == 0
+        ):
+            data["manager"] = None
 
         if "permissions" in data:
             permissions: t.List[UsersController.ApiPermissionDict] = data.pop(
