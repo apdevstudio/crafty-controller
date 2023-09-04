@@ -52,7 +52,10 @@ from app.classes.web.routes.api.users.user.permissions import (
 from app.classes.web.routes.api.users.user.api import ApiUsersUserKeyHandler
 from app.classes.web.routes.api.users.user.pfp import ApiUsersUserPfpHandler
 from app.classes.web.routes.api.users.user.public import ApiUsersUserPublicHandler
-from app.classes.web.routes.api.crafty.config.index import ApiCraftyConfigIndexHandler
+from app.classes.web.routes.api.crafty.config.index import (
+    ApiCraftyConfigIndexHandler,
+    ApiCraftyCustomizeIndexHandler,
+)
 from app.classes.web.routes.api.crafty.config.server_dir import (
     ApiCraftyConfigServerDirHandler,
 )
@@ -77,6 +80,11 @@ def api_handlers(handler_args):
         (
             r"/api/v2/crafty/config/?",
             ApiCraftyConfigIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/crafty/config/customize/?",
+            ApiCraftyCustomizeIndexHandler,
             handler_args,
         ),
         (
