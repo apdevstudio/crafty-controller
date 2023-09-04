@@ -353,7 +353,7 @@ class Controller:
                 # TODO: Copy files from the zip file to the new server directory
                 server_file = create_data["jarfile"]
                 raise NotImplementedError("Not yet implemented")
-                self.import_helper.import_java_zip_server()
+                # self.import_helper.import_java_zip_server()
             if data["create_type"] == "minecraft_java":
                 _create_server_properties_if_needed(
                     create_data["server_properties_port"],

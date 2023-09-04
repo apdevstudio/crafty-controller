@@ -13,13 +13,6 @@ class ApiUsersUserKeyHandler(BaseApiHandler):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
-        (
-            _,
-            _exec_user_crafty_permissions,
-            _,
-            _,
-            _user,
-        ) = auth_data
         if key_id:
             key = self.controller.users.get_user_api_key(key_id)
             # does this user id exist?
