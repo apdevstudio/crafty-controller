@@ -310,13 +310,12 @@
   }
 
   async function backup_started() {
-    var token = getCookie("_xsrf")
+    const token = getCookie("_xsrf")
     document.getElementById('backup_button').style.visibility = 'hidden';
     var dialog = bootbox.dialog({
       message: "{{ translate('serverBackups', 'backupTask', data['lang']) }}",
       closeButton: false
     });
-    var token = getCookie("_xsrf");
     let res = await fetch(`/api/v2/servers/${server_id}/action/backup_server`, {
         method: 'POST',
         headers: {
@@ -338,7 +337,7 @@
     return;
   }
   async function del_backup(filename, id) {
-    var token = getCookie("_xsrf")
+    const token = getCookie("_xsrf")
     let contents = JSON.stringify({"filename": filename})
     let res = await fetch(`/api/v2/servers/${id}/backups/backup/`, {
       method: 'DELETE',
@@ -357,7 +356,7 @@
   }
 
   async function restore_backup(filename, id) {
-    var token = getCookie("_xsrf")
+    const token = getCookie("_xsrf")
     let contents = JSON.stringify({"filename": filename})
     var dialog = bootbox.dialog({
       message: "<i class='fa fa-spin fa-spinner'></i> {{ translate('serverBackups', 'restoring', data['lang']) }}",
@@ -411,7 +410,7 @@
   $(document).ready(function () {
     $("#backup-form").on("submit", async function (e) {
       e.preventDefault();
-      var token = getCookie("_xsrf")
+      const token = getCookie("_xsrf")
       let backupForm = document.getElementById("backup-form");
 
       let formData = new FormData(backupForm);
@@ -568,7 +567,7 @@
       }
       path = $("#root_files_button").data('server_path')
       console.log($("#root_files_button").data('server_path'))
-      var token = getCookie("_xsrf");
+      const token = getCookie("_xsrf");
       var dialog = bootbox.dialog({
         message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
         closeButton: false
@@ -618,13 +617,14 @@
 
   }
   async function getTreeView(path){
-    var token = getCookie("_xsrf");
+    console.log(path)
+    const token = getCookie("_xsrf");
     let res = await fetch(`/api/v2/servers/${server_id}/files`, {
         method: 'POST',
         headers: {
           'X-XSRFToken': token
         },
-        body: JSON.stringify({"page": "backups", "folder": path}),
+        body: JSON.stringify({"page": "backups", "path": path}),
       });
       let responseData = await res.json();
       if (responseData.status === "ok") {
