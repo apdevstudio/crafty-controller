@@ -15,7 +15,7 @@ pyjwt==2.4.0
 PyYAML==6.0.1
 requests==2.31
 termcolor==1.1
-tornado==6.3.2
+tornado==6.3.3
 tzlocal==4.0
 jsonschema==4.5.1
 orjson==3.8.12
