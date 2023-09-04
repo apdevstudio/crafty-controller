@@ -44,11 +44,11 @@ async function getTreeView(path, unzip = false, upload = false) {
     if (responseData.status === "ok") {
         console.log(responseData);
         process_tree_response(responseData);
-        var x = document.querySelector('.bootbox');
+        let x = document.querySelector('.bootbox');
         if (x) {
             x.remove()
         }
-        var x = document.querySelector('.modal-backdrop');
+        x = document.querySelector('.modal-backdrop');
         if (x) {
             x.remove()
         }
@@ -73,7 +73,7 @@ function process_tree_response(response) {
     }
     let path = response.data.root_path.path;
     $(".root-input").val(response.data.root_path.path);
-    text = `<ul class="tree-nested d-block" id="${path}ul">`;
+    let text = `<ul class="tree-nested d-block" id="${path}ul">`;
     Object.entries(response.data).forEach(([key, value]) => {
         if (key === "root_path" || key === "db_stats") {
             //continue is not valid in for each. Return acts as a continue.
@@ -120,7 +120,7 @@ function process_tree_response(response) {
             console.log("Bad")
         }
 
-        var toggler = document.getElementById(path + "span");
+        let toggler = document.getElementById(path + "span");
 
         if (toggler.classList.contains('files-tree-title')) {
             document.getElementById(path + "span").addEventListener("click", function caretListener() {
