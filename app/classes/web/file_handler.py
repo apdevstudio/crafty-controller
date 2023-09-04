@@ -1,6 +1,6 @@
 import os
 import logging
-import nh3
+import bleach
 import tornado.web
 import tornado.escape
 
@@ -55,7 +55,7 @@ class FileHandler(BaseHandler):
 
             if not self.check_server_id(server_id, "get_file"):
                 return
-            server_id = nh3.clean(server_id)
+            server_id = bleach.clean(server_id)
 
             if not self.helper.is_subdir(
                 file_path,
@@ -92,7 +92,7 @@ class FileHandler(BaseHandler):
 
             if not self.check_server_id(server_id, "get_tree"):
                 return
-            server_id = nh3.clean(server_id)
+            server_id = bleach.clean(server_id)
 
             if Helpers.validate_traversal(
                 self.controller.servers.get_server_data_by_id(server_id)["path"], path
@@ -113,7 +113,7 @@ class FileHandler(BaseHandler):
 
             if not self.check_server_id(server_id, "get_tree"):
                 return
-            server_id = nh3.clean(server_id)
+            server_id = bleach.clean(server_id)
 
             if Helpers.validate_traversal(
                 self.controller.servers.get_server_data_by_id(server_id)["path"], path
@@ -161,7 +161,7 @@ class FileHandler(BaseHandler):
 
             if not self.check_server_id(server_id, "create_file"):
                 return
-            server_id = nh3.clean(server_id)
+            server_id = bleach.clean(server_id)
 
             if not self.helper.is_subdir(
                 file_path,
@@ -194,7 +194,7 @@ class FileHandler(BaseHandler):
 
             if not self.check_server_id(server_id, "create_dir"):
                 return
-            server_id = nh3.clean(server_id)
+            server_id = bleach.clean(server_id)
 
             if not self.helper.is_subdir(
                 dir_path,
@@ -259,7 +259,7 @@ class FileHandler(BaseHandler):
 
             if not self.check_server_id(server_id, "del_file"):
                 return
-            server_id = nh3.clean(server_id)
+            server_id = bleach.clean(server_id)
 
             server_info = self.controller.servers.get_server_data_by_id(server_id)
             if not (
@@ -293,7 +293,7 @@ class FileHandler(BaseHandler):
 
             if not self.check_server_id(server_id, "del_dir"):
                 return
-            server_id = nh3.clean(server_id)
+            server_id = bleach.clean(server_id)
 
             server_info = self.controller.servers.get_server_data_by_id(server_id)
             if not self.helper.is_subdir(
@@ -346,7 +346,7 @@ class FileHandler(BaseHandler):
 
             if not self.check_server_id(server_id, "save_file"):
                 return
-            server_id = nh3.clean(server_id)
+            server_id = bleach.clean(server_id)
 
             if not self.helper.is_subdir(
                 file_path,
@@ -401,7 +401,7 @@ class FileHandler(BaseHandler):
 
             if not self.check_server_id(server_id, "rename_file"):
                 return
-            server_id = nh3.clean(server_id)
+            server_id = bleach.clean(server_id)
 
             if item_path is None or new_item_name is None:
                 logger.warning("Invalid path(s) in rename_file file ajax call")
@@ -450,7 +450,7 @@ class FileHandler(BaseHandler):
                 f"Server ID not defined in {page_name} file ajax call ({server_id})"
             )
             return
-        server_id = nh3.clean(server_id)
+        server_id = bleach.clean(server_id)
 
         # does this server id exist?
         if not self.controller.servers.server_id_exists(server_id):
