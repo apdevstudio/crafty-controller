@@ -82,7 +82,6 @@ class Helpers:
         self.translation = Translation(self)
         self.update_available = False
         self.ignored_names = ["crafty_managed.txt", "db_stats"]
-        self.announcements = []
 
     @staticmethod
     def auto_installer_fix(ex):
@@ -580,7 +579,7 @@ class Helpers:
 
         return version_data
 
-    def refresh_announcements(self):
+    def get_announcements(self):
         data = []
         try:
             response = requests.get("https://craftycontrol.com/notify", timeout=2)
@@ -588,10 +587,6 @@ class Helpers:
         except Exception as e:
             logger.error(f"Failed to fetch notifications with error: {e}")
 
-        self.announcements = data
-
-    def get_announcements(self):
-        data = self.announcements
         if self.update_available:
             data.append(self.update_available)
         return data
