@@ -2,7 +2,7 @@ import logging
 import re
 import typing as t
 import orjson
-import nh3
+import bleach
 import tornado.web
 
 from app.classes.models.crafty_permissions import EnumPermissionsCrafty
@@ -93,7 +93,7 @@ class BaseHandler(tornado.web.RequestHandler):
         if type(text) in self.nobleach:
             logger.debug("Auto-bleaching - bypass type")
             return text
-        return nh3.clean(text)
+        return bleach.clean(text)
 
     def get_argument(
         self,

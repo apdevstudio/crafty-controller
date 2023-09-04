@@ -7,7 +7,7 @@ import json
 import logging
 import threading
 import urllib.parse
-import nh3
+import bleach
 import requests
 import tornado.web
 import tornado.escape
@@ -67,7 +67,9 @@ class PanelHandler(BaseHandler):
         ) in self.controller.crafty_perms.list_defined_crafty_permissions():
             argument = int(
                 float(
-                    nh3.clean(self.get_argument(f"permission_{permission.name}", "0"))
+                    bleach.clean(
+                        self.get_argument(f"permission_{permission.name}", "0")
+                    )
                 )
             )
             if argument:
@@ -76,7 +78,9 @@ class PanelHandler(BaseHandler):
                 )
 
             q_argument = int(
-                float(nh3.clean(self.get_argument(f"quantity_{permission.name}", "0")))
+                float(
+                    bleach.clean(self.get_argument(f"quantity_{permission.name}", "0"))
+                )
             )
             if q_argument:
                 server_quantity[permission.name] = q_argument
@@ -475,7 +479,7 @@ class PanelHandler(BaseHandler):
             template = "panel/dashboard.html"
 
         elif page == "server_detail":
-            subpage = nh3.clean(self.get_argument("subpage", ""))
+            subpage = bleach.clean(self.get_argument("subpage", ""))
 
             server_id = self.check_server_id()
             if server_id is None:
@@ -1280,7 +1284,7 @@ class PanelHandler(BaseHandler):
             template = "panel/panel_edit_user_apikeys.html"
 
         elif page == "remove_user":
-            user_id = nh3.clean(self.get_argument("id", None))
+            user_id = bleach.clean(self.get_argument("id", None))
 
             if (
                 not superuser
@@ -1412,7 +1416,7 @@ class PanelHandler(BaseHandler):
             template = "panel/panel_edit_role.html"
 
         elif page == "remove_role":
-            role_id = nh3.clean(self.get_argument("id", None))
+            role_id = bleach.clean(self.get_argument("id", None))
 
             if (
                 not superuser
@@ -1600,7 +1604,7 @@ class PanelHandler(BaseHandler):
                     backup_path = Helpers.wtol_path(backup_path)
             else:
                 backup_path = server_obj.backup_path
-            max_backups = nh3.clean(self.get_argument("max_backups", None))
+            max_backups = bleach.clean(self.get_argument("max_backups", None))
 
             server_obj = self.controller.servers.get_server_obj(server_id)
 
@@ -1661,15 +1665,15 @@ class PanelHandler(BaseHandler):
             self.redirect("/panel/config_json")
 
         elif page == "edit_user":
-            if nh3.clean(self.get_argument("username", None)).lower() == "system":
+            if bleach.clean(self.get_argument("username", None)).lower() == "system":
                 self.redirect(
                     "/panel/error?error=Unauthorized access: "
                     "system user is not editable"
                 )
-            user_id = nh3.clean(self.get_argument("id", None))
+            user_id = bleach.clean(self.get_argument("id", None))
             user = self.controller.users.get_user_by_id(user_id)
-            username = nh3.clean(self.get_argument("username", None).lower())
-            theme = nh3.clean(self.get_argument("theme", "default"))
+            username = bleach.clean(self.get_argument("username", None).lower())
+            theme = bleach.clean(self.get_argument("theme", "default"))
             if (
                 username != self.controller.users.get_user_by_id(user_id)["username"]
                 and username in self.controller.users.get_all_usernames()
@@ -1677,16 +1681,16 @@ class PanelHandler(BaseHandler):
                 self.redirect(
                     "/panel/error?error=Duplicate User: Useranme already exists."
                 )
-            password0 = nh3.clean(self.get_argument("password0", None))
-            password1 = nh3.clean(self.get_argument("password1", None))
-            email = nh3.clean(self.get_argument("email", "default@example.com"))
+            password0 = bleach.clean(self.get_argument("password0", None))
+            password1 = bleach.clean(self.get_argument("password1", None))
+            email = bleach.clean(self.get_argument("email", "default@example.com"))
             enabled = int(float(self.get_argument("enabled", "0")))
             try:
-                hints = int(nh3.clean(self.get_argument("hints")))
+                hints = int(bleach.clean(self.get_argument("hints")))
                 hints = True
             except:
                 hints = False
-            lang = nh3.clean(
+            lang = bleach.clean(
                 self.get_argument("language"), self.helper.get_setting("language")
             )
 
@@ -1695,7 +1699,7 @@ class PanelHandler(BaseHandler):
                 # We don't want that. Automatically make them stay super user
                 # since we know they are.
                 if str(exec_user["user_id"]) != str(user_id):
-                    superuser = int(nh3.clean(self.get_argument("superuser", "0")))
+                    superuser = int(bleach.clean(self.get_argument("superuser", "0")))
                 else:
                     superuser = 1
             else:
@@ -1873,7 +1877,7 @@ class PanelHandler(BaseHandler):
             self.finish()
 
         elif page == "add_user":
-            username = nh3.clean(self.get_argument("username", None).lower())
+            username = bleach.clean(self.get_argument("username", None).lower())
             if username.lower() == "system":
                 self.redirect(
                     "/panel/error?error=Unauthorized access: "
@@ -1881,18 +1885,18 @@ class PanelHandler(BaseHandler):
                     " Please choose a different username."
                 )
                 return
-            password0 = nh3.clean(self.get_argument("password0", None))
-            password1 = nh3.clean(self.get_argument("password1", None))
-            email = nh3.clean(self.get_argument("email", "default@example.com"))
+            password0 = bleach.clean(self.get_argument("password0", None))
+            password1 = bleach.clean(self.get_argument("password1", None))
+            email = bleach.clean(self.get_argument("email", "default@example.com"))
             enabled = int(float(self.get_argument("enabled", "0")))
-            theme = nh3.clean(self.get_argument("theme"), "default")
+            theme = bleach.clean(self.get_argument("theme"), "default")
             hints = True
-            lang = nh3.clean(
+            lang = bleach.clean(
                 self.get_argument("lang", self.helper.get_setting("language"))
             )
             # We don't want a non-super user to be able to create a super user.
             if superuser:
-                new_superuser = int(nh3.clean(self.get_argument("superuser", "0")))
+                new_superuser = int(bleach.clean(self.get_argument("superuser", "0")))
             else:
                 new_superuser = 0
 
@@ -1967,8 +1971,8 @@ class PanelHandler(BaseHandler):
             self.redirect("/panel/panel_config")
 
         elif page == "edit_role":
-            role_id = nh3.clean(self.get_argument("id", None))
-            role_name = nh3.clean(self.get_argument("role_name", None))
+            role_id = bleach.clean(self.get_argument("id", None))
+            role_name = bleach.clean(self.get_argument("role_name", None))
 
             role = self.controller.roles.get_role(role_id)
 
@@ -2014,7 +2018,7 @@ class PanelHandler(BaseHandler):
             self.redirect("/panel/panel_config")
 
         elif page == "add_role":
-            role_name = nh3.clean(self.get_argument("role_name", None))
+            role_name = bleach.clean(self.get_argument("role_name", None))
             if exec_user["superuser"]:
                 manager = self.get_argument("manager", None)
                 if manager == "":
@@ -2088,7 +2092,7 @@ class PanelHandler(BaseHandler):
         }
 
         if page == "remove_apikey":
-            key_id = nh3.clean(self.get_argument("id", None))
+            key_id = bleach.clean(self.get_argument("id", None))
 
             if not superuser:
                 self.redirect("/panel/error?error=Unauthorized access: not superuser")
