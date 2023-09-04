@@ -97,6 +97,11 @@ def api_handlers(handler_args):
             handler_args,
         ),
         (
+            r"/api/v2/users/([0-9]+)/key/([0-9]+)/?",
+            ApiUsersUserKeyHandler,
+            handler_args,
+        ),
+        (
             r"/api/v2/users/([0-9]+)/?",
             ApiUsersUserIndexHandler,
             handler_args,
