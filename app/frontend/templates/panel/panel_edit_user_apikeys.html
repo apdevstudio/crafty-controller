@@ -268,7 +268,6 @@
         console.log("ready!");
         $('.delete-api-key').click(async function () {
             let keyId = $(this).data("key-id");
-            let keyName = $(this).data("key-name");
             let token = getCookie("_xsrf");
             let res = await fetch(`/api/v2/users/${userId}/key/${keyId}`, {
                 method: 'DELETE',
