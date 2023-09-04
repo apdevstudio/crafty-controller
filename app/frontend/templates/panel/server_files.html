@@ -67,7 +67,7 @@
                     translate('serverFiles', 'download', data['lang']) }}</a>
                   <a onclick="deleteFileE(event)" href="javascript:void(0)" id="deleteFile" href="#"
                     style="color: red">{{ translate('serverFiles', 'delete', data['lang']) }}</a>
-                  <a onclick="deleteDirE(event)" href="javascript:void(0)" id="deleteDir" href="#" style="color: red">{{
+                  <a onclick="deleteFileE(event)" href="javascript:void(0)" id="deleteDir" href="#" style="color: red">{{
                     translate('serverFiles', 'delete', data['lang']) }}</a>
                   <a href="javascript:void(0)" class="closebtn" style="color: var(--info);"
                     onclick="document.getElementById('files-tree-nav').style.display = 'none';">{{
@@ -1157,31 +1157,6 @@
   }
 
   function deleteFileE(event) {
-    path = event.target.parentElement.getAttribute('data-path');
-    name = event.target.parentElement.getAttribute('data-name');
-    bootbox.confirm({
-      size: "",
-      title: "{% raw translate('serverFiles', 'deleteItemQuestion', data['lang']) %}",
-      closeButton: false,
-      message: "{% raw translate('serverFiles', 'deleteItemQuestionMessage', data['lang']) %}",
-      buttons: {
-        confirm: {
-          label: "{{ translate('serverFiles', 'yesDelete', data['lang']) }}",
-          className: 'btn-danger'
-        },
-        cancel: {
-          label: "{{ translate('serverFiles', 'noDelete', data['lang']) }}",
-          className: 'btn-link'
-        }
-      },
-      callback: function (result) {
-        if (!result) return;
-        deleteItem(path);
-      }
-    });
-  }
-
-  function deleteDirE(event) {
     path = event.target.parentElement.getAttribute('data-path');
     name = event.target.parentElement.getAttribute('data-name');
     bootbox.confirm({
