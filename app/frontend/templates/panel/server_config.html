@@ -576,7 +576,7 @@
       });
       let responseData = await res.json();
       if (responseData.status === "ok") {
-        window.location.reload();
+        location.reload(true);
       } else {
 
         bootbox.alert({
