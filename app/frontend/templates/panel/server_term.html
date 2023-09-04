@@ -229,17 +229,31 @@
   }
   //{% end %}
 
-  function get_server_log() {
-    $.ajax({
-      type: 'GET',
-      url: '/ajax/server_log?id=' + serverId,
-      dataType: 'text',
-      success: function (data) {
+  async function get_server_log() {
+    var token = getCookie("_xsrf")
+    let colors=true;
+    let res = await fetch(`/api/v2/servers/${serverId}/logs?colors=${colors}`, {
+        method: 'GET',
+        headers: {
+          'X-XSRFToken': token
+        },
+      });
+      let responseData = await res.json();
+      html = ``
+      if (responseData.status === "ok") {
+        for(i=0; i < responseData.data.length; i++) {
+          html += `<span class='box'>${responseData.data[i]}<br /></span>`
+        }
         console.log('Got Log From Server')
-        $('#virt_console').html(data);
+        $('#virt_console').html(html);
         scrollConsole();
-      },
-    });
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+        });
+      }
   }
 
 
