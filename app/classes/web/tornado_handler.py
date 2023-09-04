@@ -20,7 +20,6 @@ from app.classes.web.panel_handler import PanelHandler
 from app.classes.web.default_handler import DefaultHandler
 from app.classes.web.routes.api.api_handlers import api_handlers
 from app.classes.web.server_handler import ServerHandler
-from app.classes.web.ajax_handler import AjaxHandler
 from app.classes.web.api_handler import (
     ServersStats,
     NodeStats,
@@ -152,7 +151,6 @@ class Webserver:
             (r"/", DefaultHandler, handler_args),
             (r"/panel/(.*)", PanelHandler, handler_args),
             (r"/server/(.*)", ServerHandler, handler_args),
-            (r"/ajax/(.*)", AjaxHandler, handler_args),
             (r"/ws", SocketHandler, handler_args),
             (r"/upload", UploadHandler, handler_args),
             (r"/status", StatusHandler, handler_args),
