@@ -297,33 +297,50 @@
     });
   });
 
-  $('.delete-photo').click(function () {
-    var token = getCookie("_xsrf")
+  $('.delete-photo').click(async function () {
     let photo = $('#photo').find(":selected").val();
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      url: '/ajax/delete_photo?photo=' + encodeURIComponent(photo),
-      success: function (data) {
-        location.reload();
-      },
-    });
+    var token = getCookie("_xsrf")
+    let res = await fetch(`/api/v2/crafty/config/customize`, {
+        method: 'DELETE',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: JSON.stringify({"photo": photo}),
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        window.location.reload();
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+        });
+      }
   })
 
-  $('.select-photo').click(function () {
-    var token = getCookie("_xsrf")
+  $('.select-photo').click(async function () {
     let photo = $('#photo').find(":selected").val();
     let opacity = $('#modal_opacity').val();
-    let enc_photo = encodeURIComponent(photo);
-
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      url: '/ajax/select_photo?photo=' + enc_photo + '&opacity=' + opacity,
-      success: function (data) {
+    console.log(JSON.stringify({"photo": photo, "opacity": opacity}))
+    var token = getCookie("_xsrf")
+    let res = await fetch(`/api/v2/crafty/config/customize`, {
+        method: 'PATCH',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: JSON.stringify({"photo": photo, "opacity": opacity}),
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
         window.location.reload();
-      },
-    });
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+        });
+      }
   })
 
   $(document).ready(function () {
