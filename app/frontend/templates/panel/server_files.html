@@ -720,7 +720,7 @@
 
   async function sendFile(file, path, serverId, left, i, onProgress) {
     let xmlHttpRequest = new XMLHttpRequest();
-    const token = getCookie("_xsrf")
+    let token = getCookie("_xsrf")
     let fileName = file.name
     let target = '/upload?server_id=' + serverId
     let mimeType = file.type

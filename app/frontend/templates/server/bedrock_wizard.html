@@ -530,7 +530,7 @@
     file = $("#file")[0].files[0]
     document.getElementById("upload_input").innerHTML = '<div class="progress" style="width: 100%;"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>'
     let xmlHttpRequest = new XMLHttpRequest();
-    const token = getCookie("_xsrf")
+    let token = getCookie("_xsrf")
     let fileName = encodeURIComponent(file.name)
     let target = '/upload'
     let mimeType = file.type
@@ -697,7 +697,7 @@
     return role_ids
   }
   async function send_server(data) {
-    const token = getCookie("_xsrf")
+    let token = getCookie("_xsrf")
     console.log(token)
     let res = await fetch(`/api/v2/servers/`, {
       method: 'POST',
