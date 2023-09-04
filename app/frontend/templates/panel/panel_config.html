@@ -333,8 +333,6 @@
     $("#submit-status").html('<i class="fa fa-spinner fa-spin"></i>');
 
     let path = $("#global_server_path").val();
-    path;
-    console.log(path)
     var token = getCookie("_xsrf")
     let res = await fetch(`/api/v2/crafty/config/servers_dir`, {
         method: 'PATCH',
