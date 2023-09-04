@@ -245,14 +245,12 @@
       }else {
         return (isNaN(value) ? value : +value);
       }
-    } else {
-      if (value === "" && key == "start_time"){
+    } else if (value === "" && key == "start_time"){
         return "00:00";
       }else{
         return value;
       }
     }
-  }
 
     const serverId = new URLSearchParams(document.location.search).get('id');
     const schId = new URLSearchParams(document.location.search).get('sch_id');
