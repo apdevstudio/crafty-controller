@@ -31,7 +31,7 @@ class ApiServersServerActionHandler(BaseApiHandler):
 
         if action == "clone_server":
             return self._clone_server(server_id, auth_data[4]["user_id"])
-        elif action == "eula":
+        if action == "eula":
             return self._agree_eula(server_id, auth_data[4]["user_id"])
 
         self.controller.management.send_command(
