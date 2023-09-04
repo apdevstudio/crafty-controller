@@ -115,10 +115,7 @@
                                         'createNew', data['lang']) }}</h4>
                                 </div>
                                 <div class="card-body">
-                                    <form id="user_form" class="forms-sample" method="post"
-                                        action="/panel/edit_user_apikeys">
-                                        {% raw xsrf_form_html() %}
-                                        <input type="hidden" name="id" value="{{ data['user']['user_id'] }}">
+                                    <form id="user_api_form" class="forms-sample">
 
                                         <div class="form-group">
                                             <label class="form-label" for="username">{{ translate('apiKeys', 'name',
@@ -142,7 +139,7 @@
                                                             }}</label>
                                                     </td>
                                                     <td>
-                                                        <input type="checkbox" class=""
+                                                        <input type="checkbox" class="server_perm"
                                                             id="permission_{{ permission.name }}"
                                                             name="permission_{{ permission.name }}" value="1">
                                                     </td>
@@ -154,7 +151,7 @@
                                                             }}</label>
                                                     </td>
                                                     <td>
-                                                        <input type="checkbox" class=""
+                                                        <input type="checkbox" class="crafty_perm"
                                                             id="permission_{{ permission.name }}"
                                                             name="permission_{{ permission.name }}" value="1">
                                                     </td>
@@ -201,8 +198,74 @@
         var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
         return r ? r[1] : undefined;
     }
-
+    const userId = new URLSearchParams(document.location.search).get('id')
     $(document).ready(function () {
+        $("#user_api_form").on("submit", async function (e) {
+            e.preventDefault();
+            var token = getCookie("_xsrf")
+            let apiForm = document.getElementById("user_api_form");
+
+            let formData = new FormData(apiForm);
+
+            //Create an object from the form data entries
+            let formDataObject = Object.fromEntries(formData.entries());
+            //We need to make sure these are sent regardless of whether or not they're checked
+            formDataObject.disabled_language_files = $('#lang_select').val();
+            $('#user_api_form input[type="checkbox"]:checked').each(function () {
+                if ($(this).val() == 'True') {
+                    formDataObject[this.name] = true;
+                } else {
+                    formDataObject[this.name] = false;
+                }
+            });
+            let server_permissions = $('.server_perm').map(function () {
+                if (this.checked) {
+                    return "1";
+                } else {
+                    return "0"
+                }
+            }).get();
+            server_permissions = server_permissions.join("");
+
+            let crafty_permissions = $('.crafty_perm').map(function () {
+                if (this.checked) {
+                    return "1";
+                } else {
+                    return "0"
+                }
+            }).get();
+            crafty_permissions = crafty_permissions.join("");
+            console.log(server_permissions);
+            console.log(crafty_permissions);
+            console.log(formDataObject);
+            // Format the plain form data as JSON
+            let formDataJsonString = JSON.stringify({
+                "name": formDataObject.name,
+                "server_permissions_mask": server_permissions,
+                "crafty_permissions_mask": crafty_permissions,
+                "superuser": $("#superuser").prop('checked'),
+            });
+            console.log(formDataJsonString);
+
+            let res = await fetch(`/api/v2/users/${userId}/key/`, {
+                method: 'PATCH',
+                headers: {
+                    'X-XSRFToken': token
+                },
+                body: formDataJsonString,
+            });
+            let responseData = await res.json();
+            if (responseData.status === "ok") {
+                location.reload();
+            } else {
+
+                bootbox.alert({
+                    title: responseData.error,
+                    message: responseData.error_data
+                });
+            }
+        });
+
         console.log("ready!");
         $('.delete-api-key').click(function () {
             var keyId = $(this).data("key-id");

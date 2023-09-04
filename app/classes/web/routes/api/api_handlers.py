@@ -49,6 +49,7 @@ from app.classes.web.routes.api.users.user.index import ApiUsersUserIndexHandler
 from app.classes.web.routes.api.users.user.permissions import (
     ApiUsersUserPermissionsHandler,
 )
+from app.classes.web.routes.api.users.user.api import ApiUsersUserKeyHandler
 from app.classes.web.routes.api.users.user.pfp import ApiUsersUserPfpHandler
 from app.classes.web.routes.api.users.user.public import ApiUsersUserPublicHandler
 from app.classes.web.routes.api.crafty.config.index import ApiCraftyConfigIndexHandler
@@ -88,6 +89,11 @@ def api_handlers(handler_args):
         (
             r"/api/v2/users/?",
             ApiUsersIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/users/([0-9]+)/key/?",
+            ApiUsersUserKeyHandler,
             handler_args,
         ),
         (
