@@ -951,6 +951,8 @@ class Controller:
                     "the new directory."
                 },
             )
+            self.helper.dir_migration = False
+
             return
         # set the cached serve dir
         self.helper.servers_dir = new_server_path

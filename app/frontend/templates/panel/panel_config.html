@@ -326,24 +326,35 @@
     });
   }
 
-  $("#server-path").submit(function (e) {
+  $("#server-path").submit(async function (e) {
     var token = getCookie("_xsrf")
     e.preventDefault();
 
     $("#submit-status").html('<i class="fa fa-spinner fa-spin"></i>');
 
     let path = $("#global_server_path").val();
-    let encoded = encodeURIComponent(path);
+    path;
     console.log(path)
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      dataType: "text",
-      url: '/ajax/update_server_dir',
-      data: {
-        "server_dir": encoded,
-      },
-    });
+    var token = getCookie("_xsrf")
+    let res = await fetch(`/api/v2/crafty/config/servers_dir`, {
+        method: 'PATCH',
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: JSON.stringify({"new_dir": path}),
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        serverFileContent = text;
+        setSaveStatus(true)
+
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+        });
+      }
   });
 
   $(document).ready(function () {

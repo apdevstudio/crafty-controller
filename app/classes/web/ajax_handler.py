@@ -127,30 +127,3 @@ class AjaxHandler(BaseHandler):
                         self.controller.management.set_login_image("login_1.jpg")
                         self.controller.cached_login = "login_1.jpg"
             return
-
-        elif page == "update_server_dir":
-            if self.helper.dir_migration:
-                return
-            for server in self.controller.servers.get_all_servers_stats():
-                if server["stats"]["running"]:
-                    self.helper.websocket_helper.broadcast_user(
-                        exec_user["user_id"],
-                        "send_start_error",
-                        {
-                            "error": "You must stop all servers before "
-                            "starting a storage migration."
-                        },
-                    )
-                    return
-            if not superuser:
-                self.redirect("/panel/error?error=Not a super user")
-                return
-            if self.helper.is_env_docker():
-                self.redirect(
-                    "/panel/error?error=This feature is not"
-                    " supported on docker environments"
-                )
-                return
-            new_dir = urllib.parse.unquote(self.get_argument("server_dir"))
-            self.controller.update_master_server_dir(new_dir, exec_user["user_id"])
-            return
