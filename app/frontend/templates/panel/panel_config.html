@@ -345,9 +345,7 @@
       });
       let responseData = await res.json();
       if (responseData.status === "ok") {
-        serverFileContent = text;
-        setSaveStatus(true)
-
+        return
       } else {
 
         bootbox.alert({
