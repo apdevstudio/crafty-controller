@@ -401,7 +401,7 @@ class ApiServersServerFilesCreateHandler(BaseApiHandler):
         if not Helpers.validate_traversal(
             self.controller.servers.get_server_data_by_id(server_id)["path"],
             path,
-        ) and not Helpers.validate_traversal(
+        ) or not Helpers.validate_traversal(
             self.controller.servers.get_server_data_by_id(server_id)["path"],
             new_item_path,
         ):
