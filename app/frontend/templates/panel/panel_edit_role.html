@@ -387,7 +387,7 @@
 
       let servers = []
       for(i=0; i < server_ids.length; i++){
-        arrchecked = $(`.${server_ids[i]}_perms`).map(function() {
+        let arrchecked = $(`.${server_ids[i]}_perms`).map(function() {
         if(this.checked){
           return "1";
         }else{
@@ -410,12 +410,12 @@
       let formDataJsonString = JSON.stringify(formDataObject, replacer);
 
       console.log(formDataJsonString);
+
+      let url = `/api/v2/roles/`
+      let method = 'POST'
       if (roleId){
         url = `/api/v2/roles/${roleId}`
         method = 'PATCH'
-      }else{
-        url = `/api/v2/roles/`
-        method = 'POST'
       }
       let res = await fetch(url, {
         method: method,
