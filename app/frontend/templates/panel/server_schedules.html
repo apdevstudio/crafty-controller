@@ -60,7 +60,7 @@
                 </div>
                 <div class="card-body">
                   <table class="table table-hover d-none d-lg-block responsive-table" id="schedule_table" width="100%"
-                    style="table-layout:fixed;">
+                    style="table-layout:fixed;" aria-describedby="Schedule List">
                     <thead>
                       <tr class="rounded">
                         <th style="width: 2%; min-width: 10px;">{{ translate('serverSchedules', 'name', data['lang']) }}
@@ -129,7 +129,7 @@
                   </table>
                   <hr />
                   <table class="table table-hover d-block d-lg-none" id="mini_schedule_table" width="100%"
-                    style="table-layout:fixed;">
+                    style="table-layout:fixed;" aria-describedby="Schedule List Mobile">
                     <thead>
                       <tr class="rounded">
                         <th style="width: 25%; min-width: 50px;">{{ translate('serverSchedules', 'action', data['lang'])
