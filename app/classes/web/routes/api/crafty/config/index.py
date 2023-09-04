@@ -54,6 +54,7 @@ photo_delete_schema = {
     "additionalProperties": False,
     "minProperties": 1,
 }
+default_photo = "login_1.jpg"
 
 
 class ApiCraftyConfigIndexHandler(BaseApiHandler):
@@ -174,7 +175,6 @@ class ApiCraftyCustomizeIndexHandler(BaseApiHandler):
             superuser,
             user,
         ) = auth_data
-
         if not superuser:
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
@@ -222,8 +222,8 @@ class ApiCraftyCustomizeIndexHandler(BaseApiHandler):
             source_ip=self.get_remote_ip(),
         )
         self.controller.management.set_login_opacity(int(data["opacity"]))
-        if data["photo"] == "login_1.jpg":
-            self.controller.management.set_login_image("login_1.jpg")
+        if data["photo"] == default_photo:
+            self.controller.management.set_login_image(default_photo)
             self.controller.cached_login = f"{data['photo']}"
         else:
             self.controller.management.set_login_image(f"custom/{data['photo']}")
@@ -285,7 +285,7 @@ class ApiCraftyCustomizeIndexHandler(BaseApiHandler):
                     " NOT SUPPOSED TO BE ACCESSIBLE",
                 },
             )
-        if data["photo"] == "login_1.jpg":
+        if data["photo"] == default_photo:
             return self.finish_json(
                 400,
                 {
@@ -307,6 +307,6 @@ class ApiCraftyCustomizeIndexHandler(BaseApiHandler):
         else:
             current_photo = split[1]
         if current_photo == data["photo"]:
-            self.controller.management.set_login_image("login_1.jpg")
-            self.controller.cached_login = "login_1.jpg"
+            self.controller.management.set_login_image(default_photo)
+            self.controller.cached_login = default_photo
         return self.finish_json(200, {"status": "ok"})
