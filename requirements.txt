@@ -1,12 +1,12 @@
 
 apscheduler==3.8.1
 argon2-cffi==21.3
-nh3==0.2.14
 cached_property==1.5.2
 colorama==0.4
 croniter==1.3.5
 cryptography==41.0.3
 libgravatar==1.0.0
+nh3==0.2.14
 peewee==3.13
 pexpect==4.8
 psutil==5.9
