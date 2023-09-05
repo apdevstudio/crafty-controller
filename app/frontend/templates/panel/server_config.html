@@ -304,7 +304,7 @@
   });
 
   function deleteServerE(callback) {
-    var token = getCookie("_xsrf")
+    const token = getCookie("_xsrf")
     $.ajax({
       type: "DELETE",
       headers: { 'X-XSRFToken': token },
@@ -318,7 +318,7 @@
     });
   }
   function deleteServerFilesE(path, callback) {
-    var token = getCookie("_xsrf")
+    const token = getCookie("_xsrf")
     $.ajax({
       type: "DELETE",
       headers: { 'X-XSRFToken': token },
@@ -334,7 +334,7 @@
 
   function send_command(serverId, command) {
     //<!--  this getCookie function is in base.html-->
-    var token = getCookie("_xsrf");
+    const token = getCookie("_xsrf");
     if (command == "update_executable") {
       document.getElementById("update-spinner").style.visibility = "visible";
     }
@@ -460,7 +460,7 @@
           return;
         }
         else {
-          var token = getCookie("_xsrf")
+          const token = getCookie("_xsrf")
           setTimeout(function () { window.location = '/panel/dashboard'; }, 5000);
           bootbox.dialog({
             backdrop: true,
@@ -549,7 +549,7 @@
     });
     $("#config_form").on("submit", async function (e) {
       e.preventDefault();
-      var token = getCookie("_xsrf")
+      const token = getCookie("_xsrf")
       let configForm = document.getElementById("config_form");
 
       let formData = new FormData(configForm);
@@ -576,7 +576,7 @@
       });
       let responseData = await res.json();
       if (responseData.status === "ok") {
-        window.location.reload();
+        location.reload(true);
       } else {
 
         bootbox.alert({

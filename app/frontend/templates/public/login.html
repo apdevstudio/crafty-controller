@@ -156,7 +156,7 @@
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/static/assets/js/shared/service-worker.js', {scope: '/'})
           .then(function (registration) {
-            console.error('Service Worker Registered');
+            console.log('Service Worker Registered');
           });
       }
     });

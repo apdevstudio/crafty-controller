@@ -92,6 +92,9 @@ class MainPrompt(cmd.Cmd):
 
         self.controller.users.update_user(user_id, {"password": new_pass})
 
+    def do_get_users(self, _line):
+        Console.info(self.controller.users.get_all_usernames())
+
     @staticmethod
     def do_threads(_line):
         for thread in threading.enumerate():

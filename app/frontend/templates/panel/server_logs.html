@@ -77,8 +77,8 @@
 {% block js %}
 <script>
   // ##### Log Filter Block #####
-  var lines = [];
-  var words = [];
+  let lines = [];
+  let words = [];
   if (localStorage.getItem("words")) {
     try {
       words = JSON.parse(localStorage.getItem("words"));
@@ -188,23 +188,36 @@
 
   // Populate logs and filter if present
   const serverId = new URLSearchParams(document.location.search).get('id')
-  function get_server_log() {
+  async function get_server_log() {
+    const token = getCookie("_xsrf")
+    let colors = true;
     if (!$("#stop_scroll").is(':checked')) {
-      $.ajax({
-        type: 'GET',
-        url: '/ajax/server_log?id=' + serverId + '&full=1',
-        dataType: 'text',
-        success: function (data) {
-          console.log('Got Log From Server')
-          $('#virt_console').html(data);
-          scroll();
-          lines = document.querySelectorAll('.box');
-          hideFilteredWords();
+      let res = await fetch(`/api/v2/servers/${serverId}/logs?colors=${colors}`, {
+        method: 'GET',
+        headers: {
+          'X-XSRFToken': token
         },
       });
+      let responseData = await res.json();
+      let html = ``
+      if (responseData.status === "ok") {
+        for (let i = 0; i < responseData.data.length; i++) {
+          html += `<span class='box'>${responseData.data[i]}<br /></span>`
+        }
+        console.log('Got Log From Server')
+        $('#virt_console').html(html);
+        scroll();
+        lines = document.querySelectorAll('.box');
+        hideFilteredWords();
+      } else {
+
+        bootbox.alert({
+          title: responseData.status,
+          message: responseData.error
+        });
+      }
     }
   }
-
   $(document).ready(function () {
     console.log("ready!");
     get_server_log();
