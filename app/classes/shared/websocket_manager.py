@@ -45,7 +45,7 @@ class WebSocketManager(metaclass=Singleton):
 
     def broadcast_page(self, page: str, event_type: str, data):
         def filter_fn(client):
-            return client.check_policy(event_type) and client.page == page
+            return client.page == page
 
         self.broadcast_with_fn(filter_fn, event_type, data)
 

@@ -11,9 +11,7 @@ from app.classes.shared.websocket_manager import WebSocketManager
 logger = logging.getLogger(__name__)
 
 
-class BaseSocketHandler(tornado.websocket.WebSocketHandler):
-    ws_authorized_pages = {}  # Must be overridden at init
-    ws_authorized_events = {}  # Must be overridden at init
+class WebSocketHandler(tornado.websocket.WebSocketHandler):
     page = None
     page_query_params = None
     controller: Controller = None
@@ -43,93 +41,6 @@ class BaseSocketHandler(tornado.websocket.WebSocketHandler):
             or self.request.remote_ip
         )
         return remote_ip
-
-    # pylint: disable=arguments-differ
-    def open(self):
-        """
-        This method must be overridden
-        """
-        raise NotImplementedError
-
-    def handle(self):
-        """
-        This method must be overridden
-        """
-        raise NotImplementedError
-
-    def get_user_id(self):
-        """
-        This method must be overridden
-        """
-        raise NotImplementedError
-
-    def check_auth(self):
-        """
-        This method must be overridden
-        """
-        raise NotImplementedError
-
-    # pylint: disable=arguments-renamed
-    def on_message(self, raw_message):
-        logger.debug(f"Got message from WebSocket connection {raw_message}")
-        message = json.loads(raw_message)
-        logger.debug(f"Event Type: {message['event']}, Data: {message['data']}")
-
-    def on_close(self):
-        WebSocketManager().remove_client(self)
-        logger.debug("Closed WebSocket connection")
-
-    async def write_message_int(self, message):
-        self.write_message(message)
-
-    def write_message_async(self, message):
-        asyncio.run_coroutine_threadsafe(
-            self.write_message_int(message), self.io_loop.asyncio_loop
-        )
-
-    def send_message(self, event_type: str, data):
-        message = str(json.dumps({"event": event_type, "data": data}))
-        self.write_message_async(message)
-
-    def check_policy(self, event_type: str):
-        # Looking if the client is the right one for the page
-        if self.page.split("/")[1] not in self.ws_authorized_pages:
-            return False
-        # Looking if the event is send to the right page
-        if event_type not in self.ws_authorized_events:
-            return False
-        # All seams good so we can agree
-        return True
-
-
-class SocketHandler(BaseSocketHandler):
-    ws_authorized_pages = {"panel", "server", "ajax", "files", "upload", "api"}
-    ws_authorized_events = {
-        "notification",
-        "update_host_stats",
-        "update_server_details",
-        "update_server_status",
-        "send_start_reload",
-        "send_start_error",
-        # TODO "send_temp_path",
-        "support_status_update",
-        "send_logs_bootbox",
-        "move_status",
-        "vterm_new_line",
-        "send_eula_bootbox",
-        "backup_reload",
-        "backup_status",
-        "update_button_status",
-        "remove_spinner",
-        "close_upload_box",
-    }  # Must be overridden at init
-
-    def get_user_id(self):
-        _, _, user = self.controller.authentication.check(self.get_cookie("token"))
-        return user["user_id"]
-
-    def check_auth(self):
-        return self.controller.authentication.check_bool(self.get_cookie("token"))
 
     # pylint: disable=arguments-differ
     def open(self):
@@ -165,3 +76,32 @@ class SocketHandler(BaseSocketHandler):
         )
         WebSocketManager().add_client(self)
         logger.debug("Opened WebSocket connection")
+
+    # pylint: disable=arguments-renamed
+    def on_message(self, raw_message):
+        logger.debug(f"Got message from WebSocket connection {raw_message}")
+        message = json.loads(raw_message)
+        logger.debug(f"Event Type: {message['event']}, Data: {message['data']}")
+
+    def on_close(self):
+        WebSocketManager().remove_client(self)
+        logger.debug("Closed WebSocket connection")
+
+    async def write_message_int(self, message):
+        self.write_message(message)
+
+    def write_message_async(self, message):
+        asyncio.run_coroutine_threadsafe(
+            self.write_message_int(message), self.io_loop.asyncio_loop
+        )
+
+    def send_message(self, event_type: str, data):
+        message = str(json.dumps({"event": event_type, "data": data}))
+        self.write_message_async(message)
+
+    def get_user_id(self):
+        _, _, user = self.controller.authentication.check(self.get_cookie("token"))
+        return user["user_id"]
+
+    def check_auth(self):
+        return self.controller.authentication.check_bool(self.get_cookie("token"))
