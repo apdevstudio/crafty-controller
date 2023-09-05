@@ -93,10 +93,17 @@ class ApiUsersIndexHandler(BaseApiHandler):
                     "error_data": str(e),
                 },
             )
-
         username = data["username"]
         username = str(username).lower()
-        manager = int(user["user_id"])
+        manager = data.get("manager", None)
+        if user["superuser"]:
+            if (
+                manager == self.controller.users.get_id_by_name("SYSTEM")
+                or manager == 0
+            ):
+                manager = None
+        else:
+            manager = int(user["user_id"])
         password = data["password"]
         email = data.get("email", "default@example.com")
         enabled = data.get("enabled", True)

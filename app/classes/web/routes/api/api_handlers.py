@@ -26,6 +26,17 @@ from app.classes.web.routes.api.servers.server.stdin import ApiServersServerStdi
 from app.classes.web.routes.api.servers.server.tasks.index import (
     ApiServersServerTasksIndexHandler,
 )
+from app.classes.web.routes.api.servers.server.backups.index import (
+    ApiServersServerBackupsIndexHandler,
+)
+from app.classes.web.routes.api.servers.server.backups.backup.index import (
+    ApiServersServerBackupsBackupIndexHandler,
+)
+from app.classes.web.routes.api.servers.server.files import (
+    ApiServersServerFilesIndexHandler,
+    ApiServersServerFilesCreateHandler,
+    ApiServersServerFilesZipHandler,
+)
 from app.classes.web.routes.api.servers.server.tasks.task.children import (
     ApiServersServerTasksTaskChildrenHandler,
 )
@@ -38,8 +49,19 @@ from app.classes.web.routes.api.users.user.index import ApiUsersUserIndexHandler
 from app.classes.web.routes.api.users.user.permissions import (
     ApiUsersUserPermissionsHandler,
 )
+from app.classes.web.routes.api.users.user.api import ApiUsersUserKeyHandler
 from app.classes.web.routes.api.users.user.pfp import ApiUsersUserPfpHandler
 from app.classes.web.routes.api.users.user.public import ApiUsersUserPublicHandler
+from app.classes.web.routes.api.crafty.config.index import (
+    ApiCraftyConfigIndexHandler,
+    ApiCraftyCustomizeIndexHandler,
+)
+from app.classes.web.routes.api.crafty.config.server_dir import (
+    ApiCraftyConfigServerDirHandler,
+)
+from app.classes.web.routes.api.crafty.clogs.index import ApiCraftyLogIndexHandler
+from app.classes.web.routes.api.crafty.imports.index import ApiImportFilesIndexHandler
+from app.classes.web.routes.api.crafty.exe_cache import ApiCraftyExeCacheIndexHandler
 
 
 def api_handlers(handler_args):
@@ -55,10 +77,45 @@ def api_handlers(handler_args):
             ApiAuthInvalidateTokensHandler,
             handler_args,
         ),
+        (
+            r"/api/v2/crafty/config/?",
+            ApiCraftyConfigIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/crafty/config/customize/?",
+            ApiCraftyCustomizeIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/crafty/config/servers_dir/?",
+            ApiCraftyConfigServerDirHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/crafty/logs/([a-z0-9_]+)/?",
+            ApiCraftyLogIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/import/file/unzip/?",
+            ApiImportFilesIndexHandler,
+            handler_args,
+        ),
         # User routes
         (
             r"/api/v2/users/?",
             ApiUsersIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/users/([0-9]+)/key/?",
+            ApiUsersUserKeyHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/users/([0-9]+)/key/([0-9]+)/?",
+            ApiUsersUserKeyHandler,
             handler_args,
         ),
         (
@@ -108,8 +165,38 @@ def api_handlers(handler_args):
             handler_args,
         ),
         (
+            r"/api/v2/crafty/exeCache/?",
+            ApiCraftyExeCacheIndexHandler,
+            handler_args,
+        ),
+        (
             r"/api/v2/servers/([0-9]+)/?",
             ApiServersServerIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/servers/([0-9]+)/backups/?",
+            ApiServersServerBackupsIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/servers/([0-9]+)/backups/backup/?",
+            ApiServersServerBackupsBackupIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/servers/([0-9]+)/files/?",
+            ApiServersServerFilesIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/servers/([0-9]+)/files/create/?",
+            ApiServersServerFilesCreateHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/servers/([0-9]+)/files/zip/?",
+            ApiServersServerFilesZipHandler,
             handler_args,
         ),
         (
