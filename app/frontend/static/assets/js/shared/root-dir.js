@@ -20,11 +20,9 @@ function getDirView(event = false) {
             console.log("Well that failed");
         }
     } else if ($("#root_files_button").hasClass("clicked")) {
-        path = $("#zip_server_path").val();
-        getTreeView(path, true);
+        getTreeView($("#zip_server_path").val(), true);
     } else {
-        path = $("#file-uploaded").val();
-        getTreeView(path, true, true);
+        getTreeView($("#file-uploaded").val(), true, true);
     }
 }
 

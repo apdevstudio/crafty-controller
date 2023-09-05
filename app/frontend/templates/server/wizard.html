@@ -890,7 +890,6 @@
             window.location.reload();
           }
         });
-        let doUpload = false;
       }
     }, false);
     xmlHttpRequest.addEventListener('error', (e) => {
@@ -1198,7 +1197,7 @@
     let idx = document.getElementById('server_type').selectedIndex;
     // get the value of the selected option
     let cSelect = document.getElementById("server");
-    let which;
+    let which = {};
     try {
       which = document.getElementById('server_type').options[idx].value;
     } catch {
@@ -1234,10 +1233,10 @@
   }
 
   function serverJarChange(selectObj) {
-    let type_select = document.getElementById('server_jar')
-    let tidx = type_select.selectedIndex;
-    let val = type_select.options[tidx].value;
-    let jcSelect = "";
+    const type_select = document.getElementById('server_jar')
+    const tidx = type_select.selectedIndex;
+    const val = type_select.options[tidx].value;
+    let jcSelect = {};
     if (val == 'None') {
       jcSelect = document.getElementById("server_type");
       while (jcSelect.options.length > 0) {
@@ -1251,7 +1250,7 @@
     // get the value of the selected option
     let jwhich = selectObj.options[jidx].value;
     // use the selected option value to retrieve the list of items from the serverTypesLists array
-    jcList = Object.keys(serverTypesLists[jwhich]);
+    let jcList = Object.keys(serverTypesLists[jwhich]);
     // get the country select element via its known id
     jcSelect = document.getElementById("server_type");
     // remove the current options from the country select
