@@ -125,22 +125,6 @@ class SocketHandler(BaseSocketHandler):
         "remove_spinner",
         "close_upload_box",
     }  # Must be overridden at init
-    page = None
-    page_query_params = None
-    controller = None
-    tasks_manager = None
-    translator = None
-    io_loop = None
-
-    #Removed because exactly as the mother class
-    #def initialize(
-    #    self, helper=None, controller=None, tasks_manager=None, translator=None, file_helper=None
-    #):
-    #    self.helper = helper
-    #    self.controller = controller
-    #    self.tasks_manager = tasks_manager
-    #    self.translator = translator
-    #    self.io_loop = tornado.ioloop.IOLoop.current()
 
     def get_user_id(self):
         _, _, user = self.controller.authentication.check(self.get_cookie("token"))
