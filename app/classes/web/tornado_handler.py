@@ -33,7 +33,7 @@ from app.classes.web.api_handler import (
     ListServers,
     SendCommand,
 )
-from app.classes.web.websocket_handler import SocketHandler
+from app.classes.web.websocket_handler import WebSocketHandler
 from app.classes.web.static_handler import CustomStaticHandler
 from app.classes.web.upload_handler import UploadHandler
 from app.classes.web.http_handler import HTTPHandler, HTTPHandlerPage
@@ -158,7 +158,7 @@ class Webserver:
             (r"/", DefaultHandler, handler_args),
             (r"/panel/(.*)", PanelHandler, handler_args),
             (r"/server/(.*)", ServerHandler, handler_args),
-            (r"/ws", SocketHandler, handler_args),
+            (r"/ws", WebSocketHandler, handler_args),
             (r"/upload", UploadHandler, handler_args),
             (r"/status", StatusHandler, handler_args),
             # API Routes V1
