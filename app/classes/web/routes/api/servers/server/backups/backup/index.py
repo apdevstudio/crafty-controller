@@ -1,6 +1,7 @@
 import logging
 import json
 import os
+from apscheduler.jobstores.base import JobLookupError
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 from app.classes.models.server_permissions import EnumPermissionsServer
@@ -192,8 +193,8 @@ class ApiServersServerBackupsBackupIndexHandler(BaseApiHandler):
                     # remove old server's tasks
                     try:
                         self.tasks_manager.remove_all_server_tasks(server_id)
-                    except:
-                        logger.info("No active tasks found for server")
+                    except JobLookupError as e:
+                        logger.info("No active tasks found for server: {e}")
                     self.controller.remove_server(server_id, True)
         except Exception:
             return self.finish_json(

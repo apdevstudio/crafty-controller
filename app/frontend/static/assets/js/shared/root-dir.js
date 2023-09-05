@@ -130,7 +130,7 @@ function process_tree_response(response) {
 }
 
 function getToggleMain(event) {
-    path = event.target.parentElement.getAttribute('data-path');
+    const path = event.target.parentElement.getAttribute('data-path');
     document.getElementById("files-tree").classList.toggle("d-block");
     document.getElementById(path + "span").classList.toggle("tree-caret-down");
     document.getElementById(path + "span").classList.toggle("tree-caret");
