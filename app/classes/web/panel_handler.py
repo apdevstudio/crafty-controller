@@ -67,9 +67,7 @@ class PanelHandler(BaseHandler):
         ) in self.controller.crafty_perms.list_defined_crafty_permissions():
             argument = int(
                 float(
-                    nh3.clean(
-                        self.get_argument(f"permission_{permission.name}", "0")
-                    )
+                    nh3.clean(self.get_argument(f"permission_{permission.name}", "0"))
                 )
             )
             if argument:
@@ -78,9 +76,7 @@ class PanelHandler(BaseHandler):
                 )
 
             q_argument = int(
-                float(
-                    nh3.clean(self.get_argument(f"quantity_{permission.name}", "0"))
-                )
+                float(nh3.clean(self.get_argument(f"quantity_{permission.name}", "0")))
             )
             if q_argument:
                 server_quantity[permission.name] = q_argument
