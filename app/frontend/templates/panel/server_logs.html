@@ -77,8 +77,8 @@
 {% block js %}
 <script>
   // ##### Log Filter Block #####
-  var lines = [];
-  var words = [];
+  let lines = [];
+  let words = [];
   if (localStorage.getItem("words")) {
     try {
       words = JSON.parse(localStorage.getItem("words"));
@@ -199,9 +199,9 @@
         },
       });
       let responseData = await res.json();
-      html = ``
+      let html = ``
       if (responseData.status === "ok") {
-        for (i = 0; i < responseData.data.length; i++) {
+        for (let i = 0; i < responseData.data.length; i++) {
           html += `<span class='box'>${responseData.data[i]}<br /></span>`
         }
         console.log('Got Log From Server')

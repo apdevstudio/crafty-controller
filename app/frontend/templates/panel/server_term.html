@@ -196,12 +196,10 @@
           document.getElementById('control_buttons').innerHTML = '<button onclick="" id="start-btn" style="max-width: 7rem;" class="btn btn-primary m-1 flex-grow-1">{{ translate("serverTerm", "updating", data["lang"]) }}</button><button onclick="" id="restart-btn" style="max-width: 7rem;" class="btn btn-outline-primary m-1 flex-grow-1">{% raw translate("serverTerm", "restart", data["lang"]) %}</button><button onclick="" id="stop-btn" style="max-width: 7rem;" class="btn btn-danger m-1 flex-grow-1 disabled">{{ translate("serverTerm", "stop", data["lang"]) }}</button>';
         }
       }
-      else {
-        if (updateButton.server_id == serverId) {
+      else if (updateButton.server_id == serverId) {
           window.location.reload()
           document.getElementById('update_control_buttons').innerHTML = '<button onclick="send_command(serverId, "start_server");" id="start-btn" style="max-width: 7rem;" class="btn btn-primary m-1 flex-grow-1">{{ translate("serverTerm", "start", data["lang"]) }}</button><button onclick="send_command(serverId, "restart_server");" id="restart-btn" style="max-width: 7rem;" class="btn btn-outline-primary m-1 flex-grow-1">{% raw translate("serverTerm", "restart", data["lang"]) %}</button><button onclick="" id="stop-btn" style="max-width: 7rem;" class="btn btn-danger m-1 flex-grow-1 disabled">{{ translate("serverTerm", "stop", data["lang"]) }}</button>';
         }
-      }
     });
   }
   // Convert running to lower case (example: 'True' converts to 'true') and
@@ -240,9 +238,9 @@
       },
     });
     let responseData = await res.json();
-    html = ``
+    let html = ``
     if (responseData.status === "ok") {
-      for (i = 0; i < responseData.data.length; i++) {
+      for (let i = 0; i < responseData.data.length; i++) {
         html += `<span class='box'>${responseData.data[i]}<br /></span>`
       }
       console.log('Got Log From Server')
@@ -273,7 +271,7 @@
 
   //used to get cookies from browser - this is part of tornados xsrf protection - it's for extra security
   function getCookie(name) {
-    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+    let r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
     return r ? r[1] : undefined;
   }
 
@@ -308,7 +306,7 @@
   });
 
   function scrollConsole() {
-    var logview = $('#virt_console');
+    let logview = $('#virt_console');
     if (logview.length)
       logview.scrollTop(logview[0].scrollHeight - logview.height());
   }
@@ -387,7 +385,7 @@
   }
 
   $(document).ready(() => {
-    var scrolled = false;
+    let scrolled = false;
     $('#virt_console').on('scroll', chkScroll);
     $('#to-bottom').on('click', scrollToBottom)
   });

@@ -822,8 +822,7 @@
       } else {
         document.getElementById('root_files_button').classList.add('clicked')
       }
-      const token = getCookie("_xsrf");
-      var dialog = bootbox.dialog({
+      bootbox.dialog({
         message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
         closeButton: false
       });
@@ -840,8 +839,7 @@
     } else {
       document.getElementById('root_upload_button').classList.add('clicked')
     }
-    const token = getCookie("_xsrf");
-    var dialog = bootbox.dialog({
+    bootbox.dialog({
       message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
       closeButton: false
     });
@@ -885,8 +883,6 @@
         document.getElementById("lower_half").hidden = false;
       }
       else {
-        let response_text = JSON.parse(event.target.responseText);
-        var x = document.querySelector('.bootbox');
         console.log(JSON.parse(event.target.responseText).info)
         bootbox.alert({
           message: JSON.parse(event.target.responseText).info,
@@ -894,7 +890,7 @@
             window.location.reload();
           }
         });
-        doUpload = false;
+        let doUpload = false;
       }
     }, false);
     xmlHttpRequest.addEventListener('error', (e) => {
@@ -1111,7 +1107,7 @@
   }
 
   function hide(event) {
-    var items = document.getElementsByClassName('menu');
+    let items = document.getElementsByClassName('menu');
     items.forEach(item => {
       item.classList.add("d-none");
     })
@@ -1121,11 +1117,11 @@
 
   $(document).ready(function () {
     console.log('ready');
-    var forms = $('form.server-wizard');
+    let forms = $('form.server-wizard');
     forms.each(function (i, formEl) {
-      var form = $(formEl);
-      var min = form.find('[name=min_memory]');
-      var max = form.find('[name=max_memory]');
+      let form = $(formEl);
+      let min = form.find('[name=min_memory]');
+      let max = form.find('[name=max_memory]');
       console.log(form, min, max)
       min.change(function () {
         check_sizes(max, min, 'min');
@@ -1145,8 +1141,8 @@
 
 
   function check_sizes(a, b, changed) {
-    max_mem = parseFloat(a.val());
-    min_mem = parseFloat(b.val());
+    let max_mem = parseFloat(a.val());
+    let min_mem = parseFloat(b.val());
     if (max_mem < min_mem && changed === 'min') {
       a.val(min_mem)
     }
@@ -1192,18 +1188,19 @@
 
 </script>
 <script type="text/javascript">
-  var text = '{% raw data["js_server_types"] %}';
-  var serverTypesLists = JSON.parse(text);
+  const text = '{% raw data["js_server_types"] %}';
+  const serverTypesLists = JSON.parse(text);
   /* CountryChange() is called from the onchange event of a select element.
   * param selectObj - the select object which fired the on change event.
   */
   function serverTypeChange(selectObj) {
     // get the index of the selected option
-    var idx = document.getElementById('server_type').selectedIndex;
+    let idx = document.getElementById('server_type').selectedIndex;
     // get the value of the selected option
-    var cSelect = document.getElementById("server");
+    let cSelect = document.getElementById("server");
+    let which;
     try {
-      var which = document.getElementById('server_type').options[idx].value;
+      which = document.getElementById('server_type').options[idx].value;
     } catch {
       while (cSelect.options.length > 0) {
         cSelect.remove(0);
@@ -1215,13 +1212,12 @@
     // use the selected option value to retrieve the list of items from the serverTypesLists array
     let cList = serverTypesLists[server_type];
     // get the country select element via its known id
-    var cSelect = document.getElementById("server");
+    cSelect = document.getElementById("server");
     // remove the current options from the country select
-    var len = cSelect.options.length;
     while (cSelect.options.length > 0) {
       cSelect.remove(0);
     }
-    var newOption;
+    let newOption;
     // create new options ordered by ascending
     cList[server].forEach(type => {
       newOption = document.createElement("option");
@@ -1241,8 +1237,9 @@
     let type_select = document.getElementById('server_jar')
     let tidx = type_select.selectedIndex;
     let val = type_select.options[tidx].value;
+    let jcSelect = "";
     if (val == 'None') {
-      var jcSelect = document.getElementById("server_type");
+      jcSelect = document.getElementById("server_type");
       while (jcSelect.options.length > 0) {
         jcSelect.remove(0);
       }
@@ -1250,19 +1247,18 @@
       return;
     }
     // get the index of the selected option
-    var jidx = selectObj.selectedIndex;
+    let jidx = selectObj.selectedIndex;
     // get the value of the selected option
-    var jwhich = selectObj.options[jidx].value;
+    let jwhich = selectObj.options[jidx].value;
     // use the selected option value to retrieve the list of items from the serverTypesLists array
     jcList = Object.keys(serverTypesLists[jwhich]);
     // get the country select element via its known id
-    var jcSelect = document.getElementById("server_type");
+    jcSelect = document.getElementById("server_type");
     // remove the current options from the country select
-    var jlen = jcSelect.options.length;
     while (jcSelect.options.length > 0) {
       jcSelect.remove(0);
     }
-    var jnewOption;
+    let jnewOption;
     // create new options ordered by ascending
     jcList.forEach(type => {
       jnewOption = document.createElement("option");
