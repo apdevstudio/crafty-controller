@@ -48,12 +48,12 @@ class Webserver:
     helper: Helpers
 
     def __init__(
-            self,
-            helper: Helpers,
-            controller: Controller,
-            tasks_manager,
-            file_helper: FileHelpers
-        ):
+        self,
+        helper: Helpers,
+        controller: Controller,
+        tasks_manager,
+        file_helper: FileHelpers,
+    ):
         self.ioloop = None
         self.http_server = None
         self.https_server = None
