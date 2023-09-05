@@ -19,3 +19,4 @@ tornado==6.3.3
 tzlocal==4.0
 jsonschema==4.5.1
 orjson==3.8.12
+packaging==23.1
