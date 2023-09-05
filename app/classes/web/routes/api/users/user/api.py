@@ -17,8 +17,14 @@ class ApiUsersUserKeyHandler(BaseApiHandler):
             key = self.controller.users.get_user_api_key(key_id)
             # does this user id exist?
             if key is None:
-                self.redirect("/panel/error?error=Invalid Key ID")
-                return
+                return self.finish_json(
+                    400,
+                    {
+                        "status": "error",
+                        "error": "INVALID DATA",
+                        "error_data": "INVALID KEY",
+                    },
+                )
 
             if (
                 str(key.user_id) != str(auth_data[4]["user_id"])
@@ -48,37 +54,37 @@ class ApiUsersUserKeyHandler(BaseApiHandler):
                 200,
                 {"status": "ok", "data": data_key},
             )
-        else:
-            if (
-                str(user_id) != str(auth_data[4]["user_id"])
-                and not auth_data[4]["superuser"]
-            ):
-                return self.finish_json(
-                    400,
-                    {
-                        "status": "error",
-                        "error": "NOT AUTHORIZED",
-                        "error_data": "TRIED TO EDIT KEY WIHTOUT AUTH",
-                    },
-                )
-            keys = []
-            for key in self.controller.users.get_user_api_keys(str(user_id)):
-                keys.append(
-                    {
-                        "id": key.token_id,
-                        "name": key.name,
-                        "server_permissions": key.server_permissions,
-                        "crafty_permissions": key.crafty_permissions,
-                        "superuser": key.superuser,
-                    }
-                )
-            self.finish_json(
-                200,
+
+        if (
+            str(user_id) != str(auth_data[4]["user_id"])
+            and not auth_data[4]["superuser"]
+        ):
+            return self.finish_json(
+                400,
                 {
-                    "status": "ok",
-                    "data": keys,
+                    "status": "error",
+                    "error": "NOT AUTHORIZED",
+                    "error_data": "TRIED TO EDIT KEY WIHTOUT AUTH",
                 },
             )
+        keys = []
+        for key in self.controller.users.get_user_api_keys(str(user_id)):
+            keys.append(
+                {
+                    "id": key.token_id,
+                    "name": key.name,
+                    "server_permissions": key.server_permissions,
+                    "crafty_permissions": key.crafty_permissions,
+                    "superuser": key.superuser,
+                }
+            )
+        self.finish_json(
+            200,
+            {
+                "status": "ok",
+                "data": keys,
+            },
+        )
 
     def patch(self, user_id: str):
         user_key_schema = {
@@ -187,8 +193,14 @@ class ApiUsersUserKeyHandler(BaseApiHandler):
             key = self.controller.users.get_user_api_key(key_id)
             # does this user id exist?
             if key is None:
-                self.redirect("/panel/error?error=Invalid Key ID")
-                return
+                return self.finish_json(
+                    400,
+                    {
+                        "status": "error",
+                        "error": "INVALID DATA",
+                        "error_data": "INVALID KEY",
+                    },
+                )
 
             # does this user id exist?
             target_key = self.controller.users.get_user_api_key(key_id)
