@@ -327,20 +327,11 @@ class FileHelpers:
             return "false"
         return
 
-    # TODO Look if not redundant with the precendent function
-    # TODO Prefixed ajax_ to differentiate and not broke things
-
-    def ajax_unzip_server(self, zip_path, user_id):
+    def unzip_server(self, zip_path, user_id):
         if Helpers.check_file_perms(zip_path):
             temp_dir = tempfile.mkdtemp()
             with zipfile.ZipFile(zip_path, "r") as zip_ref:
                 # extracts archive to temp directory
                 zip_ref.extractall(temp_dir)
             if user_id:
-                WebSocketManager().broadcast_user(
-                    user_id, "send_temp_path", {"path": temp_dir}
-                )
-
-    def ajax_backup_select(self, path, user_id):
-        if user_id:
-            WebSocketManager().broadcast_user(user_id, "send_temp_path", {"path": path})
+                return temp_dir

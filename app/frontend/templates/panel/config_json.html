@@ -6,7 +6,8 @@
 {% block title %}Crafty Controller - {{ translate('panelConfig', 'pageTitle', data['lang']) }}{% end %}
 
 {% block content %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/css/bootstrap-select.min.css">
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/css/bootstrap-select.min.css">
 
 
 <div class="content-wrapper">
@@ -50,7 +51,6 @@
           <!-- Page Title Header Ends-->
 
           <form id="config-form" class="forms-sample" method="post" action="/panel/config_json">
-            {% raw xsrf_form_html() %}
 
             {% for item in data['config-json'].items() %}
             {% if item[0] == "reset_secrets_on_next_boot" %}
@@ -73,8 +73,11 @@
                 </select>
                 {% elif item[0] == 'disabled_language_files' %}
                 <div class="input-group">
-                  <button type="button" class="btn btn-outline-default custom-picker" onclick="$('option', $('#lang_select')).each(function(element) {$(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')});">{{ translate('panelConfig', 'enableLang', data['lang']) }}</button>
-                  <select id="lang_select" class="form-control selectpicker show-tick custom-picker" data-icon-base="fas" data-tick-icon="fa-check" multiple data-style="custom-picker">
+                  <button type="button" class="btn btn-outline-default custom-picker"
+                    onclick="$('option', $('#lang_select')).each(function(element) {$(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')});">{{
+                    translate('panelConfig', 'enableLang', data['lang']) }}</button>
+                  <select id="lang_select" class="form-control selectpicker show-tick custom-picker"
+                    data-icon-base="fas" data-tick-icon="fa-check" multiple data-style="custom-picker">
                     {% for lang in data['all_languages'] %}
                     {% if lang in item[1] %}
                     <option selected>{{lang}}</option>
@@ -83,12 +86,17 @@
                     {% end %}
                     {% end %}
                   </select>
-                  <textarea id="disabled_lang" name="{{item[0]}}" class="form-control list hidden" rows="{{ len(data['all_languages']) }}" value="{{','.join(item[1])}}" hidden>{{','.join(item[1])}}</textarea>
+                  <textarea id="disabled_lang" name="{{item[0]}}" class="form-control list hidden"
+                    rows="{{ len(data['all_languages']) }}" value="{{','.join(item[1])}}"
+                    hidden>{{','.join(item[1])}}</textarea>
                 </div>
                 {% elif item[0] == 'monitored_mounts'%}
                 <div class="input-group">
-                  <button type="button" class="btn btn-outline-default custom-picker" onclick="$('option', $('#mount_select')).each(function(element) {$(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')});">{{ translate('panelConfig', 'noMounts', data['lang']) }}</button>
-                  <select id="mount_select" class="form-control selectpicker show-tick" data-icon-base="fas" data-tick-icon="fa-check" multiple data-style="custom-picker">
+                  <button type="button" class="btn btn-outline-default custom-picker"
+                    onclick="$('option', $('#mount_select')).each(function(element) {$(this).removeAttr('selected').prop('selected', false); $('.selectpicker').selectpicker('refresh')});">{{
+                    translate('panelConfig', 'noMounts', data['lang']) }}</button>
+                  <select id="mount_select" class="form-control selectpicker show-tick" data-icon-base="fas"
+                    data-tick-icon="fa-check" multiple data-style="custom-picker">
                     {% for mount in data['all_partitions'] %}
                     {% if mount in item[1] %}
                     <option selected>{{mount}}</option>
@@ -97,10 +105,13 @@
                     {% end %}
                     {% end %}
                   </select>
-                  <textarea id="monitored_mounts" name="{{item[0]}}" class="form-control list hidden" rows="{{ len(data['all_partitions']) }}" value="{{','.join(item[1])}}" hidden>{{','.join(item[1])}}</textarea>
+                  <textarea id="monitored_mounts" name="{{item[0]}}" class="form-control list hidden"
+                    rows="{{ len(data['all_partitions']) }}" value="{{','.join(item[1])}}"
+                    hidden>{{','.join(item[1])}}</textarea>
                 </div>
                 {% elif isinstance(item[1], list) %}
-                <textarea value="{{','.join(item[1])}}" type="text" name="{{item[0]}}" class="form-control list">{{','.join(item[1])}}</textarea>
+                <textarea id="{{item[0]}}" value="{{','.join(item[1])}}" type="text" name="{{item[0]}}"
+                  class="form-control list">{{','.join(item[1])}}</textarea>
                 {% elif isinstance(item[1], bool) %}
                 <div style="margin-left: 30px;">
                   {% if item[1] == True %}
@@ -116,9 +127,11 @@
                   {% end %}
                 </div>
                 {% elif isinstance(item[1], int) %}
-                <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}" step="1" min="0" required>
+                <input type="number" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
+                  step="1" min="0" required>
                 {% else %}
-                <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}" step="2" min="0" required>
+                <input type="text" class="form-control" name="{{item[0]}}" id="{{item[0]}}" value="{{ item[1]  }}"
+                  step="2" min="0" required>
                 {% end %}
               </div>
               {% end %}
@@ -156,36 +169,66 @@
 
 {% block js %}
 <script>
-  $("#config-form").submit(function (e) {
-    let uuid = uuidv4();
-    var token = getCookie("_xsrf")
+  function replacer(key, value) {
+    if (key == "disabled_language_files") {
+      if (value == 0) {
+        return []
+      } else {
+        return value
+      }
+    }
+    if (typeof value == "boolean") {
+      return value
+    } else {
+      return (isNaN(value) ? value : +value);
+    }
+  }
+  $("#config-form").on("submit", async function (e) {
     e.preventDefault();
-
     $("#submit-status").html('<i class="fa fa-spinner fa-spin"></i>');
-    /* Convert multiple select to text list */
-    let selected_Lang = $('#lang_select').val();
-    $('#disabled_lang').val(selected_Lang);
+    const token = getCookie("_xsrf")
+    let configForm = document.getElementById("config-form");
 
-    let mounts = $('#mount_select').val();
-    $('#monitored_mounts').val(mounts);
+    let formData = new FormData(configForm);
+    formData.delete("disabled_lang");
+    formData.delete("lang_select");
 
-    let class_list = document.getElementsByClassName("list");
-    let form_json = convertFormToJSON($("#config-form"));
-    for (let i = 0; i < class_list.length; i++) {
-      let str = String($(class_list.item(i)).val())
-      form_json[$(class_list.item(i)).attr("name")] = uuid + "," + str.replace(/\s/g, '');
-    };
-    form_json['uuid'] = uuid;
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      dataType: "text",
-      url: '/panel/config_json',
-      data: form_json,
-      success: function (data) {
-        $("#submit-status").html('<i class="fa fa-check"></i>');
-      },
+    //Create an object from the form data entries
+    let formDataObject = Object.fromEntries(formData.entries());
+    //We need to make sure these are sent regardless of whether or not they're checked
+    formDataObject.disabled_language_files = $('#lang_select').val();
+    formDataObject.monitored_mounts = $('#mount_select').val();
+    formDataObject.keywords = $('#keywords').val().split(",");
+    $('#config-form input[type="radio"]:checked').each(function () {
+      if ($(this).val() == 'True') {
+        formDataObject[this.name] = true;
+      } else {
+        formDataObject[this.name] = false;
+      }
     });
+    console.log(formDataObject);
+    // Format the plain form data as JSON
+    let formDataJsonString = JSON.stringify(formDataObject, replacer);
+
+    console.log(formDataJsonString);
+
+    let res = await fetch(`/api/v2/crafty/config/`, {
+      method: 'PATCH',
+      headers: {
+        'X-XSRFToken': token
+      },
+      body: formDataJsonString,
+    });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      $("#submit-status").html('<i class="fa fa-check"></i>');
+    } else {
+
+      bootbox.alert({
+        title: responseData.error,
+        message: responseData.error_data
+      });
+    }
   });
 
   function uuidv4() {
@@ -257,7 +300,7 @@
   });
 
   $('.clear-comm').click(function () {
-    var token = getCookie("_xsrf")
+    const token = getCookie("_xsrf")
     $.ajax({
       type: "POST",
       headers: { 'X-XSRFToken': token },
@@ -268,7 +311,7 @@
   })
 
   $('.delete-photo').click(function () {
-    var token = getCookie("_xsrf")
+    const token = getCookie("_xsrf")
     let photo = $('#photo').find(":selected").val();
     $.ajax({
       type: "POST",
@@ -281,7 +324,7 @@
   })
 
   $('.select-photo').click(function () {
-    var token = getCookie("_xsrf")
+    const token = getCookie("_xsrf")
     let photo = $('#photo').find(":selected").val();
     $.ajax({
       type: "POST",

@@ -42,10 +42,10 @@ scheduler_intervals = {
 class TasksManager:
     controller: Controller
 
-    def __init__(self, helper, controller):
+    def __init__(self, helper, controller, file_helper):
         self.helper: Helpers = helper
         self.controller: Controller = controller
-        self.tornado: Webserver = Webserver(helper, controller, self)
+        self.tornado: Webserver = Webserver(helper, controller, self, file_helper)
         try:
             self.tz = get_localzone()
         except ZoneInfoNotFoundError as e:
@@ -727,12 +727,21 @@ class TasksManager:
     def check_for_updates(self):
         logger.info("Checking for Crafty updates...")
         self.helper.update_available = self.helper.check_remote_version()
+        remote = self.helper.update_available
         if self.helper.update_available:
             logger.info(f"Found new version {self.helper.update_available}")
         else:
             logger.info(
                 "No updates found! You are on the most up to date Crafty version."
             )
+        if self.helper.update_available:
+            self.helper.update_available = {
+                "id": str(remote),
+                "title": f"{remote} Update Available",
+                "date": "",
+                "desc": "Release notes are available by clicking this notification.",
+                "link": "https://gitlab.com/crafty-controller/crafty-4/-/releases",
+            }
         logger.info("Refreshing Gravatar PFPs...")
         for user in HelperUsers.get_all_users():
             if user.email:

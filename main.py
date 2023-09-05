@@ -174,7 +174,7 @@ if __name__ == "__main__":
     Console.info("Remote change complete.")
 
     import3 = Import3(helper, controller)
-    tasks_manager = TasksManager(helper, controller)
+    tasks_manager = TasksManager(helper, controller, file_helper)
     tasks_manager.start_webserver()
 
     def signal_handler(signum, _frame):

@@ -256,7 +256,7 @@
     function startWebSocket() {
       console.log('%c[Crafty Controller] %cConnecting the WebSocket', 'font-weight: 900; color: #800080;', 'font-weight: 900; color: #eee;');
       try {
-        var wsInternal = new WebSocket('wss://' + location.host + '/ws/auth?' + wsPage + '&' + wsPageQueryParams);
+        var wsInternal = new WebSocket('wss://' + location.host + '/ws?' + wsPage + '&' + wsPageQueryParams);
         wsInternal.onopen = function () {
           console.log('opened WebSocket connection:', wsInternal)
           wsOpen = true;
@@ -426,20 +426,26 @@
       });
     }
 
-    function eulaAgree(server_id, command) {
+    async function eulaAgree(server_id, command) {
       //< !--this getCookie function is in base.html-- >
-      var token = getCookie("_xsrf");
+      const token = getCookie("_xsrf");
 
-      $.ajax({
-        type: "POST",
-        headers: { 'X-XSRFToken': token },
-        url: '/ajax/eula?id=' + server_id,
-        success: function (data) {
-          console.log("got response:");
-          console.log(data);
-          location.reload();
-        }
+      let res = await fetch(`/api/v2/servers/${server_id}/action/eula/`, {
+        method: 'POST',
+        headers: {
+          'X-XSRFToken': token
+        },
       });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        window.location.reload();
+      } else {
+
+        bootbox.alert({
+          title: responseData.error,
+          message: responseData.error_data
+        });
+      }
     }
 
 

@@ -45,6 +45,7 @@ class Users(BaseModel):
     manager = IntegerField(default=None, null=True)
     pfp = CharField(default="/static/assets/images/faces-clipart/pic-3.png")
     theme = CharField(default="default")
+    cleared_notifs = CharField(default="default")
 
     class Meta:
         table_name = "users"
@@ -171,6 +172,7 @@ class HelperUsers:
                 "roles": [],
                 "servers": [],
                 "support_logs": "",
+                "cleared_notifs": "",
             }
         user = model_to_dict(Users.get(Users.user_id == user_id))
 

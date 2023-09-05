@@ -1,5 +1,5 @@
 import logging
-import nh3
+import bleach
 
 from app.classes.shared.helpers import Helpers
 from app.classes.models.users import HelperUsers
@@ -28,8 +28,8 @@ class PublicHandler(BaseHandler):
             # self.clear_cookie("user_data")
 
     def get(self, page=None):
-        error = nh3.clean(self.get_argument("error", "Invalid Login!"))
-        error_msg = nh3.clean(self.get_argument("error_msg", ""))
+        error = bleach.clean(self.get_argument("error", "Invalid Login!"))
+        error_msg = bleach.clean(self.get_argument("error_msg", ""))
 
         page_data = {
             "version": self.helper.get_version_string(),
@@ -82,8 +82,8 @@ class PublicHandler(BaseHandler):
         )
 
     def post(self, page=None):
-        error = nh3.clean(self.get_argument("error", "Invalid Login!"))
-        error_msg = nh3.clean(self.get_argument("error_msg", ""))
+        error = bleach.clean(self.get_argument("error", "Invalid Login!"))
+        error_msg = bleach.clean(self.get_argument("error_msg", ""))
 
         page_data = {
             "version": self.helper.get_version_string(),
@@ -100,8 +100,8 @@ class PublicHandler(BaseHandler):
             if self.request.query:
                 next_page = "/login?" + self.request.query
 
-            entered_username = nh3.clean(self.get_argument("username"))
-            entered_password = nh3.clean(self.get_argument("password"))
+            entered_username = bleach.clean(self.get_argument("username"))
+            entered_password = bleach.clean(self.get_argument("password"))
 
             # pylint: disable=no-member
             try:

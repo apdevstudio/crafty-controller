@@ -23,12 +23,18 @@ class BaseSocketHandler(tornado.websocket.WebSocketHandler):
     io_loop = None
 
     def initialize(
-        self, helper=None, controller=None, tasks_manager=None, translator=None
+        self,
+        helper=None,
+        controller=None,
+        tasks_manager=None,
+        translator=None,
+        file_helper=None,
     ):
         self.helper = helper
         self.controller = controller
         self.tasks_manager = tasks_manager
         self.translator = translator
+        self.file_helper = file_helper
         self.io_loop = tornado.ioloop.IOLoop.current()
 
     def get_remote_ip(self):
@@ -97,7 +103,7 @@ class BaseSocketHandler(tornado.websocket.WebSocketHandler):
         return True
 
 
-class AuthSocketHandler(BaseSocketHandler):
+class SocketHandler(BaseSocketHandler):
     ws_state = EnumWebSocketState.WS_USER_AUTH
     ws_authorized_pages = {"panel", "server", "ajax", "files", "upload", "api"}
     ws_authorized_events = {
@@ -126,14 +132,15 @@ class AuthSocketHandler(BaseSocketHandler):
     translator = None
     io_loop = None
 
-    def initialize(
-        self, helper=None, controller=None, tasks_manager=None, translator=None
-    ):
-        self.helper = helper
-        self.controller = controller
-        self.tasks_manager = tasks_manager
-        self.translator = translator
-        self.io_loop = tornado.ioloop.IOLoop.current()
+    #Removed because exactly as the mother class
+    #def initialize(
+    #    self, helper=None, controller=None, tasks_manager=None, translator=None, file_helper=None
+    #):
+    #    self.helper = helper
+    #    self.controller = controller
+    #    self.tasks_manager = tasks_manager
+    #    self.translator = translator
+    #    self.io_loop = tornado.ioloop.IOLoop.current()
 
     def get_user_id(self):
         _, _, user = self.controller.authentication.check(self.get_cookie("token"))

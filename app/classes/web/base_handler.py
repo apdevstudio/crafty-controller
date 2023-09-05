@@ -2,12 +2,13 @@ import logging
 import re
 import typing as t
 import orjson
-import nh3
+import bleach
 import tornado.web
 
 from app.classes.models.crafty_permissions import EnumPermissionsCrafty
 from app.classes.models.users import ApiKeys
 from app.classes.shared.helpers import Helpers
+from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.main_controller import Controller
 from app.classes.shared.translation import Translation
 from app.classes.models.management import DatabaseShortcuts
@@ -24,15 +25,22 @@ class BaseHandler(tornado.web.RequestHandler):
     helper: Helpers
     controller: Controller
     translator: Translation
+    file_helper: FileHelpers
 
     # noinspection PyAttributeOutsideInit
     def initialize(
-        self, helper=None, controller=None, tasks_manager=None, translator=None
+        self,
+        helper=None,
+        controller=None,
+        tasks_manager=None,
+        translator=None,
+        file_helper=None,
     ):
         self.helper = helper
         self.controller = controller
         self.tasks_manager = tasks_manager
         self.translator = translator
+        self.file_helper = file_helper
 
     def set_default_headers(self) -> None:
         """
@@ -93,7 +101,7 @@ class BaseHandler(tornado.web.RequestHandler):
         if type(text) in self.nobleach:
             logger.debug("Auto-bleaching - bypass type")
             return text
-        return nh3.clean(text)
+        return bleach.clean(text)
 
     def get_argument(
         self,

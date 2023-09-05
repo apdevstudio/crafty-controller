@@ -87,7 +87,7 @@
 
   async function send_command_to_server(command) {
     console.log(command)
-    var token = getCookie("_xsrf")
+    const token = getCookie("_xsrf")
     console.log('sending command: ' + command)
 
     let res = await fetch(`/api/v2/servers/${serverId}/stdin`, {

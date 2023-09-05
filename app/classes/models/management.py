@@ -146,7 +146,7 @@ class HelpersManagement:
     #                                   Audit_Log Methods
     # **********************************************************************************
     @staticmethod
-    def get_actity_log():
+    def get_activity_log():
         query = AuditLog.select()
         return DatabaseShortcuts.return_db_rows(query)
 
