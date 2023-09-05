@@ -689,7 +689,7 @@ class TasksManager:
                 # Stats are different
 
                 host_stats = HelpersManagement.get_latest_hosts_stats()
-                if len(WebSocketManager().auth_clients) > 0:
+                if len(WebSocketManager().clients) > 0:
                     # There are clients
                     try:
                         WebSocketManager().broadcast_page(

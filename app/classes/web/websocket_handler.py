@@ -6,13 +6,12 @@ import tornado.websocket
 
 from app.classes.shared.main_controller import Controller
 from app.classes.shared.helpers import Helpers
-from app.classes.shared.websocket_manager import WebSocketManager, EnumWebSocketState
+from app.classes.shared.websocket_manager import WebSocketManager
 
 logger = logging.getLogger(__name__)
 
 
 class BaseSocketHandler(tornado.websocket.WebSocketHandler):
-    ws_state = EnumWebSocketState.WS_UNKNOWN  # Must be overridden at init
     ws_authorized_pages = {}  # Must be overridden at init
     ws_authorized_events = {}  # Must be overridden at init
     page = None
@@ -104,7 +103,6 @@ class BaseSocketHandler(tornado.websocket.WebSocketHandler):
 
 
 class SocketHandler(BaseSocketHandler):
-    ws_state = EnumWebSocketState.WS_USER_AUTH
     ws_authorized_pages = {"panel", "server", "ajax", "files", "upload", "api"}
     ws_authorized_events = {
         "notification",

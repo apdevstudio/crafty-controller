@@ -93,7 +93,7 @@ class ServerOutBuf:
 
         # TODO: Do not send data to clients who do not have permission to view
         # this server's console
-        if len(WebSocketManager().auth_clients) > 0:
+        if len(WebSocketManager().clients) > 0:
             WebSocketManager().broadcast_page_params(
                 "/panel/server_detail",
                 {"id": self.server_id},
@@ -1047,7 +1047,7 @@ class ServerInstance:
         logger.info(f"Backup Thread started for server {self.settings['server_name']}.")
 
     def a_backup_server(self):
-        if len(WebSocketManager().auth_clients) > 0:
+        if len(WebSocketManager().clients) > 0:
             WebSocketManager().broadcast_page_params(
                 "/panel/server_detail",
                 {"id": str(self.server_id)},
@@ -1133,7 +1133,7 @@ class ServerInstance:
             self.is_backingup = False
             logger.info(f"Backup of server: {self.name} completed")
             results = {"percent": 100, "total_files": 0, "current_file": 0}
-            if len(WebSocketManager().auth_clients) > 0:
+            if len(WebSocketManager().clients) > 0:
                 WebSocketManager().broadcast_page_params(
                     "/panel/server_detail",
                     {"id": str(self.server_id)},
@@ -1189,7 +1189,7 @@ class ServerInstance:
     def backup_status(self, source_path, dest_path):
         results = Helpers.calc_percent(source_path, dest_path)
         self.backup_stats = results
-        if len(WebSocketManager().auth_clients) > 0:
+        if len(WebSocketManager().clients) > 0:
             WebSocketManager().broadcast_page_params(
                 "/panel/server_detail",
                 {"id": str(self.server_id)},
@@ -1293,7 +1293,7 @@ class ServerInstance:
             self.stop_threaded_server()
         else:
             was_started = False
-        if len(WebSocketManager().auth_clients) > 0:
+        if len(WebSocketManager().clients) > 0:
             # There are clients
             self.check_update()
             message = (
@@ -1399,7 +1399,7 @@ class ServerInstance:
             logger.info("Executable updated successfully. Starting Server")
 
             self.stats_helper.set_update(False)
-            if len(WebSocketManager().auth_clients) > 0:
+            if len(WebSocketManager().clients) > 0:
                 # There are clients
                 self.check_update()
                 for user in server_users:
@@ -1480,7 +1480,7 @@ class ServerInstance:
     def realtime_stats(self):
         # only get stats if clients are connected.
         # no point in burning cpu
-        if len(WebSocketManager().public_clients | WebSocketManager().auth_clients) > 0:
+        if len(WebSocketManager().clients) > 0:
             total_players = 0
             max_players = 0
             servers_ping = []
@@ -1511,41 +1511,39 @@ class ServerInstance:
                     "crashed": self.is_crashed,
                 }
             )
-            if len(WebSocketManager().auth_clients) > 0:
-                WebSocketManager().broadcast_page_params(
-                    "/panel/server_detail",
-                    {"id": str(self.server_id)},
-                    "update_server_details",
-                    {
-                        "id": raw_ping_result.get("id"),
-                        "started": raw_ping_result.get("started"),
-                        "running": raw_ping_result.get("running"),
-                        "cpu": raw_ping_result.get("cpu"),
-                        "mem": raw_ping_result.get("mem"),
-                        "mem_percent": raw_ping_result.get("mem_percent"),
-                        "world_name": raw_ping_result.get("world_name"),
-                        "world_size": raw_ping_result.get("world_size"),
-                        "server_port": raw_ping_result.get("server_port"),
-                        "int_ping_results": raw_ping_result.get("int_ping_results"),
-                        "online": raw_ping_result.get("online"),
-                        "max": raw_ping_result.get("max"),
-                        "players": raw_ping_result.get("players"),
-                        "desc": raw_ping_result.get("desc"),
-                        "version": raw_ping_result.get("version"),
-                        "icon": raw_ping_result.get("icon"),
-                        "crashed": self.is_crashed,
-                        "created": datetime.datetime.now().strftime(
-                            "%Y/%m/%d, %H:%M:%S"
-                        ),
-                        "players_cache": self.player_cache,
-                    },
-                )
+
+            WebSocketManager().broadcast_page_params(
+                "/panel/server_detail",
+                {"id": str(self.server_id)},
+                "update_server_details",
+                {
+                    "id": raw_ping_result.get("id"),
+                    "started": raw_ping_result.get("started"),
+                    "running": raw_ping_result.get("running"),
+                    "cpu": raw_ping_result.get("cpu"),
+                    "mem": raw_ping_result.get("mem"),
+                    "mem_percent": raw_ping_result.get("mem_percent"),
+                    "world_name": raw_ping_result.get("world_name"),
+                    "world_size": raw_ping_result.get("world_size"),
+                    "server_port": raw_ping_result.get("server_port"),
+                    "int_ping_results": raw_ping_result.get("int_ping_results"),
+                    "online": raw_ping_result.get("online"),
+                    "max": raw_ping_result.get("max"),
+                    "players": raw_ping_result.get("players"),
+                    "desc": raw_ping_result.get("desc"),
+                    "version": raw_ping_result.get("version"),
+                    "icon": raw_ping_result.get("icon"),
+                    "crashed": self.is_crashed,
+                    "created": datetime.datetime.now().strftime("%Y/%m/%d, %H:%M:%S"),
+                    "players_cache": self.player_cache,
+                },
+            )
             total_players += int(raw_ping_result.get("online"))
             max_players += int(raw_ping_result.get("max"))
 
             # self.record_server_stats()
 
-            if (len(servers_ping) > 0) & (len(WebSocketManager().auth_clients) > 0):
+            if len(servers_ping) > 0:
                 try:
                     WebSocketManager().broadcast_page(
                         "/panel/dashboard", "update_server_status", servers_ping
