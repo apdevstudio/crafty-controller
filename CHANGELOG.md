@@ -9,7 +9,7 @@ TBD
 - Bump tornado to resolve #269 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/623))
 - Bump crypto to resolve #267 & #268 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/622))
 ### Refactor
-TBD
+- Consolidate remaining frontend functions into API V2, and remove ajax internal API ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/585))
 ### Tweaks
 - Polish/Enhance display for InApp Documentation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/613))
 - Add get_users command to Crafty's console ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/620))
