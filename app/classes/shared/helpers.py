@@ -579,20 +579,16 @@ class Helpers:
 
         return version_data
 
-    @staticmethod
-    def get_announcements():
-        data = (
-            '[{"id":"1","date":"Unknown",'
-            '"title":"Error getting Announcements",'
-            '"desc":"Error getting Announcements","link":""}]'
-        )
-
+    def get_announcements(self):
+        data = []
         try:
-            response = requests.get("https://craftycontrol.com/notify.json", timeout=2)
+            response = requests.get("https://craftycontrol.com/notify", timeout=2)
             data = json.loads(response.content)
         except Exception as e:
             logger.error(f"Failed to fetch notifications with error: {e}")
 
+        if self.update_available:
+            data.append(self.update_available)
         return data
 
     def get_version_string(self):

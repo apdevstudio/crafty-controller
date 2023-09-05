@@ -20,11 +20,9 @@ function getDirView(event = false) {
             console.log("Well that failed");
         }
     } else if ($("#root_files_button").hasClass("clicked")) {
-        path = $("#zip_server_path").val();
-        getTreeView(path, true);
+        getTreeView($("#zip_server_path").val(), true);
     } else {
-        path = $("#file-uploaded").val();
-        getTreeView(path, true, true);
+        getTreeView($("#file-uploaded").val(), true, true);
     }
 }
 
@@ -132,7 +130,7 @@ function process_tree_response(response) {
 }
 
 function getToggleMain(event) {
-    path = event.target.parentElement.getAttribute('data-path');
+    const path = event.target.parentElement.getAttribute('data-path');
     document.getElementById("files-tree").classList.toggle("d-block");
     document.getElementById(path + "span").classList.toggle("tree-caret-down");
     document.getElementById(path + "span").classList.toggle("tree-caret");
