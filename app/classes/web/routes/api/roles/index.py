@@ -28,9 +28,39 @@ create_role_schema = {
                 "required": ["server_id", "permissions"],
             },
         },
+        "manager": {"type": ["integer", "null"]},
     },
-    "required": ["name"],
     "additionalProperties": False,
+    "minProperties": 1,
+}
+
+basic_create_role_schema = {
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1,
+        },
+        "servers": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "server_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                    },
+                    "permissions": {
+                        "type": "string",
+                        "pattern": "^[01]{8}$",  # 8 bits, see EnumPermissionsServer
+                    },
+                },
+                "required": ["server_id", "permissions"],
+            },
+        },
+    },
+    "additionalProperties": False,
+    "minProperties": 1,
 }
 
 
@@ -86,7 +116,10 @@ class ApiRolesIndexHandler(BaseApiHandler):
             )
 
         try:
-            validate(data, create_role_schema)
+            if auth_data[4]["superuser"]:
+                validate(data, create_role_schema)
+            else:
+                validate(data, basic_create_role_schema)
         except ValidationError as e:
             return self.finish_json(
                 400,
@@ -98,6 +131,9 @@ class ApiRolesIndexHandler(BaseApiHandler):
             )
 
         role_name = data["name"]
+        manager = data.get("manager", None)
+        if manager == self.controller.users.get_id_by_name("SYSTEM") or manager == 0:
+            manager = None
 
         # Get the servers
         servers_dict = {server["server_id"]: server for server in data["servers"]}
@@ -116,9 +152,7 @@ class ApiRolesIndexHandler(BaseApiHandler):
                 400, {"status": "error", "error": "ROLE_NAME_ALREADY_EXISTS"}
             )
 
-        role_id = self.controller.roles.add_role_advanced(
-            role_name, servers, user["user_id"]
-        )
+        role_id = self.controller.roles.add_role_advanced(role_name, servers, manager)
 
         self.controller.management.add_to_audit_log(
             user["user_id"],

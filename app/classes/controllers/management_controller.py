@@ -79,8 +79,8 @@ class ManagementController:
     #                                   Audit_Log Methods
     # **********************************************************************************
     @staticmethod
-    def get_actity_log():
-        return HelpersManagement.get_actity_log()
+    def get_activity_log():
+        return HelpersManagement.get_activity_log()
 
     def add_to_audit_log(self, user_id, log_msg, server_id=None, source_ip=None):
         return self.management_helper.add_to_audit_log(

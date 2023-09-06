@@ -31,6 +31,8 @@ class ApiServersServerActionHandler(BaseApiHandler):
 
         if action == "clone_server":
             return self._clone_server(server_id, auth_data[4]["user_id"])
+        if action == "eula":
+            return self._agree_eula(server_id, auth_data[4]["user_id"])
 
         self.controller.management.send_command(
             auth_data[4]["user_id"], server_id, self.get_remote_ip(), action
@@ -40,6 +42,11 @@ class ApiServersServerActionHandler(BaseApiHandler):
             200,
             {"status": "ok"},
         )
+
+    def _agree_eula(self, server_id, user):
+        svr = self.controller.servers.get_server_instance_by_id(server_id)
+        svr.agree_eula(user)
+        return self.finish_json(200, {"status": "ok"})
 
     def _clone_server(self, server_id, user_id):
         def is_name_used(name):

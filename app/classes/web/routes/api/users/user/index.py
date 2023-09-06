@@ -166,7 +166,13 @@ class ApiUsersUserIndexHandler(BaseApiHandler):
                 return self.finish_json(
                     400, {"status": "error", "error": "INVALID_USERNAME"}
                 )
-            if self.controller.users.get_id_by_name(data["username"]) is not None:
+            if self.controller.users.get_id_by_name(
+                data["username"]
+            ) is not None and self.controller.users.get_id_by_name(
+                data["username"]
+            ) != int(
+                user_id
+            ):
                 return self.finish_json(
                     400, {"status": "error", "error": "USER_EXISTS"}
                 )
@@ -210,13 +216,13 @@ class ApiUsersUserIndexHandler(BaseApiHandler):
                     400, {"status": "error", "error": "INVALID_ROLES_MODIFY"}
                 )
 
-        if "password" in data and str(user["user_id"] == str(user_id)):
-            # TODO: edit your own password
-            return self.finish_json(
-                400, {"status": "error", "error": "INVALID_PASSWORD_MODIFY"}
-            )
-
         user_obj = HelperUsers.get_user_model(user_id)
+        if "password" in data and str(user["user_id"]) != str(user_id):
+            if str(user["user_id"]) != str(user_obj.manager):
+                # TODO: edit your own password
+                return self.finish_json(
+                    400, {"status": "error", "error": "INVALID_PASSWORD_MODIFY"}
+                )
 
         if "roles" in data:
             roles: t.Set[str] = set(data.pop("roles"))
@@ -236,6 +242,12 @@ class ApiUsersUserIndexHandler(BaseApiHandler):
                     user_id, removed_roles
                 )
 
+        if "manager" in data and (
+            data["manager"] == self.controller.users.get_id_by_name("SYSTEM")
+            or data["manager"] == 0
+        ):
+            data["manager"] = None
+
         if "permissions" in data:
             permissions: t.List[UsersController.ApiPermissionDict] = data.pop(
                 "permissions"
@@ -246,7 +258,7 @@ class ApiUsersUserIndexHandler(BaseApiHandler):
             limit_role_creation = 0
 
             for permission in permissions:
-                self.controller.crafty_perms.set_permission(
+                permissions_mask = self.controller.crafty_perms.set_permission(
                     permissions_mask,
                     EnumPermissionsCrafty.__members__[permission["name"]],
                     "1" if permission["enabled"] else "0",

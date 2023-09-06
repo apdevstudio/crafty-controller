@@ -18,7 +18,7 @@
     href="https://cdn.datatables.net/v/bs4/dt-1.10.22/fh-3.1.7/r-2.2.6/sc-2.0.3/sp-1.2.2/datatables.min.css" />
   <link rel="stylesheet" href="/static/assets/vendors/css/vendor.bundle.base.css">
   <link rel="stylesheet" href="/static/assets/css/crafty.css">
-  
+
   <link rel="manifest" href="/static/assets/crafty.webmanifest">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -412,20 +412,26 @@
       });
     }
 
-    function eulaAgree(server_id, command) {
+    async function eulaAgree(server_id, command) {
       //< !--this getCookie function is in base.html-- >
-      var token = getCookie("_xsrf");
+      const token = getCookie("_xsrf");
 
-      $.ajax({
-        type: "POST",
-        headers: { 'X-XSRFToken': token },
-        url: '/ajax/eula?id=' + server_id,
-        success: function (data) {
-          console.log("got response:");
-          console.log(data);
-          location.reload();
-        }
+      let res = await fetch(`/api/v2/servers/${server_id}/action/eula/`, {
+        method: 'POST',
+        headers: {
+          'X-XSRFToken': token
+        },
       });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        window.location.reload();
+      } else {
+
+        bootbox.alert({
+          title: responseData.error,
+          message: responseData.error_data
+        });
+      }
     }
 
 
@@ -538,7 +544,7 @@
     });
     $(document).ready(() => {
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/static/assets/js/shared/service-worker.js', {scope: '/'})
+        navigator.serviceWorker.register('/static/assets/js/shared/service-worker.js', { scope: '/' })
           .then(function (registration) {
             console.log('Service Worker Registered');
           });
