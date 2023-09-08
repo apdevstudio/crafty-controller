@@ -16,6 +16,12 @@ logger = logging.getLogger(__name__)
 
 class Server:
     def __init__(self, data):
+        if isinstance(data, str):
+            logger.error(
+                "Failed to calculate stats. Expected object. "
+                f"Server returned string: {data}"
+            )
+            return
         self.description = data.get("description")
         # print(self.description)
         if isinstance(self.description, dict):

@@ -35,15 +35,16 @@
       <div class="card" id="creation_wizard">
         <div class="card-body">
           {% if data["server_api"] and data["online"] %}
-          <a href="https://serverjars.com/" target="_blank" alt="serverjars icon"><img src="../../static/assets/images/serverjars/ICON.svg"
-             style="float: right; width: 40px; position: relative;"></a>
+          <a href="https://serverjars.com/" target="_blank" alt="serverjars icon"><img
+              src="../../static/assets/images/serverjars/ICON.svg"
+              style="float: right; width: 40px; position: relative;"></a>
           {% end %}
 
           <h4>{{ translate('serverWizard', 'newServer', data['lang']) }}</h4>
           <br />
           <p class="card-description">
 
-          <form method="post" class="server-wizard" onSubmit="wait_msg()">
+          <form method="post" id="download_jar">
             {% if data["server_api"] and data["online"] %}
             <fieldset>
               {% else %}
@@ -85,7 +86,8 @@
                       <label for="server_jar">{{ translate('serverWizard', 'serverType', data['lang'])
                         }}</label>
                       <div class="input-group">
-                        <select required class="form-control form-control-lg select-css" id="server_jar" name="server_jar" onchange="serverJarChange(this)">
+                        <select required class="form-control form-control-lg select-css" id="server_jar"
+                          name="server_jar" onchange="serverJarChange(this)">
                           <option value="None">{{ translate('serverWizard', 'selectType', data['lang']) }}</option>
                           {% for s in data['server_types'] %}
                           <option value="{{ s }}">{{ s.capitalize() }}</option>
@@ -93,7 +95,8 @@
                         </select>
                         {% if data['super_user'] %}
                         <div class="input-group-append">
-                          <button class="btn custom-picker" type="button" onclick="refreshCache()"><i id="refresh-cache" class="refresh-class fas fa-sync"></i></button>
+                          <button class="btn custom-picker" type="button" onclick="refreshCache()"><i id="refresh-cache"
+                              class="refresh-class fas fa-sync"></i></button>
                         </div>
                         {% end %}
                       </div>
@@ -103,7 +106,8 @@
                   <div class="col-sm-12">
                     <div class="form-group">
                       <label for="server_type">{{ translate('serverWizard', 'serverSelect', data['lang']) }}</label>
-                      <select required class="form-control form-control-lg select-css" id="server_type" name="server_type" onchange="serverTypeChange(this)">
+                      <select required class="form-control form-control-lg select-css" id="server_type" name="type"
+                        onchange="serverTypeChange(this)">
                         <option value="">{{ translate('serverWizard', 'selectServer', data['lang']) }}</option>
                       </select>
                     </div>
@@ -112,7 +116,7 @@
                   <div class="col-sm-12">
                     <div class="form-group">
                       <label for="server_version">{{ translate('serverWizard', 'serverVersion', data['lang']) }}</label>
-                      <select required class="form-control form-control-lg select-css" id="server" name="server">
+                      <select required class="form-control form-control-lg select-css" id="server" name="version">
                         <option value="">{{ translate('serverWizard', 'selectVersion', data['lang']) }}</option>
                       </select>
                     </div>
@@ -121,13 +125,15 @@
                   <div class="col-sm-12">
                     <div class="form-group">
                       <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-                      <input type="text" class="form-control" id="server_name" name="server_name" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+                      <input type="text" class="form-control" id="server_name" name="name"
+                        placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
                     </div>
                   </div>
 
                 </div>
                 <br />
-                <h4 class="card-title">{{ translate('serverWizard', 'quickSettings', data['lang']) }} <small style="text-transform: none;"> - {{ translate('serverWizard', 'quickSettingsDescription',
+                <h4 class="card-title">{{ translate('serverWizard', 'quickSettings', data['lang']) }} <small
+                    style="text-transform: none;"> - {{ translate('serverWizard', 'quickSettingsDescription',
                     data['lang']) }}</small></h4>
                 <hr>
                 <div class="row">
@@ -136,7 +142,8 @@
                     <div class="form-group">
                       <label for="min_memory1">{{ translate('serverWizard', 'minMem', data['lang']) }} <small> - {{
                           translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                      <input type="number" class="form-control" id="min_memory1" name="min_memory" value="1" step="0.5" min="0.5" required>
+                      <input type="number" class="form-control" id="min_memory1" name="mem_min" value="1" step="0.5"
+                        min="0.5" required>
                     </div>
                   </div>
 
@@ -144,7 +151,8 @@
                     <div class="form-group">
                       <label for="max_memory1">{{ translate('serverWizard', 'maxMem', data['lang']) }} <small> - {{
                           translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                      <input type="number" class="form-control" id="max_memory1" name="max_memory" value="2" step="0.5" min="0.5" required>
+                      <input type="number" class="form-control" id="max_memory1" name="mem_max" value="2" step="0.5"
+                        min="0.5" required>
                     </div>
                   </div>
 
@@ -152,7 +160,8 @@
                     <div class="form-group">
                       <label for="port1">{{ translate('serverWizard', 'serverPort', data['lang']) }} <small> - {{
                           translate('serverWizard', 'defaultPort', data['lang']) }}</small></label>
-                      <input type="number" class="form-control" id="port1" name="port" value="25565" step="1" min="1" max="65535 " required>
+                      <input type="number" class="form-control" id="port1" name="port" value="25565" step="1" min="1"
+                        max="65535 " required>
                     </div>
                   </div>
                   <div class="col-sm-12">
@@ -160,8 +169,10 @@
                       <div id="accordion-1">
                         <div class="card">
                           <div class="card-header p-2" id="Role-1">
-                            <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-1" aria-expanded="true" aria-controls="collapseRole-1">
-                              <i class="fas fa-chevron-down"></i> {{ translate('serverWizard', 'addRole', data['lang']) }}
+                            <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-1"
+                              aria-expanded="true" aria-controls="collapseRole-1">
+                              <i class="fas fa-chevron-down"></i> {{ translate('serverWizard', 'addRole', data['lang'])
+                              }}
                               <small style="text-transform: none;"> - {{ translate('serverWizard', 'autoCreate',
                                 data['lang']) }}</small>
                             </p>
@@ -170,7 +181,9 @@
                             <div class="card-body scroll">
                               <div class="form-group">
                                 {% for r in data['roles'] %}
-                                <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}" type="checkbox">&nbsp; {{ r['role_name'].capitalize() }}</label></span>
+                                <span class="d-block menu-option"><label><input class="roles" name="{{ r['role_id'] }}"
+                                      type="checkbox" value="{{ r['role_id'] }}">&nbsp; {{ r['role_name'].capitalize()
+                                    }}</label></span>
                                 {% end %}
                               </div>
                             </div>
@@ -186,19 +199,24 @@
                 <button type="reset" class="btn btn-danger mr-2">{{ translate('serverWizard', 'resetForm', data['lang'])
                   }}</button>
               </fieldset>
-            </div>
-          </fieldset>
-          {% if not data["server_api"] and data["online"] %}
-          <div class="api-alert" style="position: absolute; top: -5px; z-index: 100; opacity: .99;">
-            <p style="color: white !important;"><i class="fas fa-exclamation-triangle" style="color: red;"></i>&nbsp;{{ translate('error', 'serverJars1', data['lang']) }}<a style="color: red;"; href="https://status.craftycontrol.com/status/craftycontrol" 
-              target="_blank">&nbsp;{{ translate('error', 'craftyStatus', data['lang']) }}</a>
-              &nbsp;{{ translate('error', 'serverJars2', data['lang']) }}</p></div>
-          {% end %}
-          {% if not data["online"] %}
-          <div class="api-alert" style="position: absolute; top: -5px; z-index: 100; opacity: .99;">
-            <p style="color: white !important;"><i class="fas fa-exclamation-triangle" style="color: red;"></i>&nbsp;{{ translate('error', 'noInternet', data['lang']) }}</p></div>
-          {% end %}
         </div>
+        </fieldset>
+        {% if not data["server_api"] and data["online"] %}
+        <div class="api-alert" style="position: absolute; top: -5px; z-index: 100; opacity: .99;">
+          <p style="color: white !important;"><i class="fas fa-exclamation-triangle" style="color: red;"></i>&nbsp;{{
+            translate('error', 'serverJars1', data['lang']) }}<a style="color: red;" ;
+              href="https://status.craftycontrol.com/status/craftycontrol" target="_blank" rel="noopener">&nbsp;{{ translate('error',
+              'craftyStatus', data['lang']) }}</a>
+            &nbsp;{{ translate('error', 'serverJars2', data['lang']) }}</p>
+        </div>
+        {% end %}
+        {% if not data["online"] %}
+        <div class="api-alert" style="position: absolute; top: -5px; z-index: 100; opacity: .99;">
+          <p style="color: white !important;"><i class="fas fa-exclamation-triangle" style="color: red;"></i>&nbsp;{{
+            translate('error', 'noInternet', data['lang']) }}</p>
+        </div>
+        {% end %}
+      </div>
       </form>
     </div>
 
@@ -211,7 +229,7 @@
           <br />
           <p class="card-description">
 
-          <form method="post" class="server-wizard" onSubmit="wait_msg(true)">
+          <form class="server-wizard" id="import-jar">
             {% raw xsrf_form_html() %}
             <input type="hidden" value="import_jar" name="create_type">
             <div class="row">
@@ -219,7 +237,8 @@
               <div class="col-sm-12">
                 <div class="form-group">
                   <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-                  <input type="text" class="form-control" id="server_name" name="server_name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+                  <input type="text" class="form-control" id="server_name" name="name" value=""
+                    placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
                 </div>
               </div>
 
@@ -227,14 +246,16 @@
                 <div class="form-group">
                   <label for="server">{{ translate('serverWizard', 'serverPath', data['lang']) }} <small>{{
                       translate('serverWizard', 'absoluteServerPath', data['lang']) }}</small></label>
-                  <input type="text" class="form-control" id="server_path" name="server_path" placeholder="/var/opt/server" required>
+                  <input type="text" class="form-control" id="server_path" name="server_path"
+                    placeholder="/var/opt/server" required>
                 </div>
               </div>
 
               <div class="col-sm-12">
                 <div class="form-group">
                   <label for="server_jar">{{ translate('serverWizard', 'serverJar', data['lang']) }}</label>
-                  <input type="text" class="form-control" id="server_jar" name="server_jar" value="" placeholder="paper.jar" required>
+                  <input type="text" class="form-control" id="server_jar" name="server_jar" value=""
+                    placeholder="paper.jar" required>
                 </div>
               </div>
 
@@ -242,7 +263,8 @@
 
             </div>
             <br />
-            <h4 class="card-title">{{ translate('serverWizard', 'quickSettings', data['lang']) }} <small style="text-transform: none;"> - {{ translate('serverWizard', 'quickSettingsDescription',
+            <h4 class="card-title">{{ translate('serverWizard', 'quickSettings', data['lang']) }} <small
+                style="text-transform: none;"> - {{ translate('serverWizard', 'quickSettingsDescription',
                 data['lang']) }}</small></h4>
             <hr>
             <div class="row">
@@ -251,7 +273,8 @@
                 <div class="form-group">
                   <label for="min_memory2">{{ translate('serverWizard', 'minMem', data['lang']) }} <small> - {{
                       translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                  <input type="number" class="form-control" id="min_memory2" name="min_memory" value="1" step="0.5" min="0.5" required>
+                  <input type="number" class="form-control" id="min_memory2" name="mem_min" value="1" step="0.5"
+                    min="0.5" required>
                 </div>
               </div>
 
@@ -259,7 +282,8 @@
                 <div class="form-group">
                   <label for="max_memory2">{{ translate('serverWizard', 'maxMem', data['lang']) }} <small> - {{
                       translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                  <input type="number" class="form-control" id="max_memory2" name="max_memory" value="2" step="0.5" min="0.5" required>
+                  <input type="number" class="form-control" id="max_memory2" name="mem_max" value="2" step="0.5"
+                    min="0.5" required>
                 </div>
               </div>
 
@@ -267,7 +291,8 @@
                 <div class="form-group">
                   <label for="port2">{{ translate('serverWizard', 'serverPort', data['lang']) }} <small> - {{
                       translate('serverWizard', 'defaultPort', data['lang']) }}</small></label>
-                  <input type="number" class="form-control" id="port2" name="port" value="25565" step="1" min="1" max="65535" required>
+                  <input type="number" class="form-control" id="port2" name="port" value="25565" step="1" min="1"
+                    max="65535" required>
                 </div>
               </div>
               <div class="col-sm-12">
@@ -275,7 +300,8 @@
                   <div id="accordion-2">
                     <div class="card">
                       <div class="card-header p-2" id="Role-2">
-                        <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-2" aria-expanded="true" aria-controls="collapseRole-2">
+                        <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-2" aria-expanded="true"
+                          aria-controls="collapseRole-2">
                           <i class="fas fa-chevron-down"></i> {{ translate('serverWizard', 'addRole', data['lang']) }}
                           <small style="text-transform: none;"> - {{ translate('serverWizard', 'autoCreate',
                             data['lang']) }}</small>
@@ -285,7 +311,8 @@
                         <div class="card-body scroll">
                           <div class="form-group">
                             {% for r in data['roles'] %}
-                            <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}" type="checkbox">&nbsp;
+                            <span class="d-block menu-option"><label><input class="roles" name="{{ r['role_id'] }}"
+                                  type="checkbox" value="{{ r['role_id'] }}">&nbsp;
                                 {{ r['role_name'].capitalize() }}</label></span>
                             {% end %}
                           </div>
@@ -316,7 +343,7 @@
           <br />
           <p class="card-description">
 
-          <form name="zip" method="post" class="server-wizard" onSubmit="wait_msg(true)">
+          <form name="zip" id="import-zip" class="server-wizard">
             {% raw xsrf_form_html() %}
             <input type="hidden" value="import_zip" name="create_type">
 
@@ -325,7 +352,8 @@
                 <div class="col-sm-12">
                   <div class="form-group">
                     <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-                    <input type="text" class="form-control" id="server_name" name="server_name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+                    <input type="text" class="form-control" id="server_name" name="name" value=""
+                      placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
                   </div>
                 </div>
 
@@ -333,7 +361,8 @@
                   <div class="form-group">
                     <label for="server">{{ translate('serverWizard', 'zipPath', data['lang']) }} <small>{{
                         translate('serverWizard', 'absoluteZipPath', data['lang']) }}</small></label>
-                    <input type="text" class="form-control" id="server_path" name="server_path" placeholder="/var/opt/server.zip" required>
+                    <input type="text" class="form-control" id="zip_server_path" name="server_path"
+                      placeholder="/var/opt/server.zip" required>
                   </div>
                 </div>
 
@@ -351,7 +380,8 @@
                 <div class="col-sm-12">
                   <div class="form-group">
                     <label for="server_jar">{{ translate('serverWizard', 'serverJar', data['lang']) }}</label>
-                    <input type="text" class="form-control" id="server_jar" name="server_jar" value="" placeholder="paper.jar" required>
+                    <input type="text" class="form-control" id="server_jar" name="server_jar" value=""
+                      placeholder="paper.jar" required>
                   </div>
                 </div>
               </div>
@@ -360,7 +390,8 @@
 
 
             <div class="col-sm-12">
-              <h4 class="card-title">{{ translate('serverWizard', 'quickSettings', data['lang']) }} <small style="text-transform: none;"> - {{ translate('serverWizard', 'quickSettingsDescription',
+              <h4 class="card-title">{{ translate('serverWizard', 'quickSettings', data['lang']) }} <small
+                  style="text-transform: none;"> - {{ translate('serverWizard', 'quickSettingsDescription',
                   data['lang']) }}</small></h4>
               <hr>
               <div class="row">
@@ -368,7 +399,8 @@
                   <div class="form-group">
                     <label for="min_memory3">{{ translate('serverWizard', 'minMem', data['lang']) }} <small> - {{
                         translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                    <input type="number" class="form-control" id="min_memory3" name="min_memory" value="1" step="0.5" min="0.5" required>
+                    <input type="number" class="form-control" id="min_memory3" name="mem_min" value="1" step="0.5"
+                      min="0.5" required>
                   </div>
                 </div>
 
@@ -376,7 +408,8 @@
                   <div class="form-group">
                     <label for="max_memory3">{{ translate('serverWizard', 'maxMem', data['lang']) }} <small> - {{
                         translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                    <input type="number" class="form-control" id="max_memory3" name="max_memory" value="2" step="0.5" min="0.5" required>
+                    <input type="number" class="form-control" id="max_memory3" name="mem_max" value="2" step="0.5"
+                      min="0.5" required>
                   </div>
                 </div>
 
@@ -384,7 +417,8 @@
                   <div class="form-group">
                     <label for="port3">{{ translate('serverWizard', 'serverPort', data['lang']) }} <small> - {{
                         translate('serverWizard', 'defaultPort', data['lang']) }}</small></label>
-                    <input type="number" class="form-control" id="port3" name="port" value="25565" step="1" min="1" max="65535" required>
+                    <input type="number" class="form-control" id="port3" name="port" value="25565" step="1" min="1"
+                      max="65535" required>
                   </div>
                 </div>
 
@@ -393,7 +427,8 @@
                     <div id="accordion-3">
                       <div class="card">
                         <div class="card-header p-2" id="Role-3">
-                          <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-3" aria-expanded="true" aria-controls="collapseRole-3">
+                          <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-3" aria-expanded="true"
+                            aria-controls="collapseRole-3">
                             <i class="fas fa-chevron-down"></i> {{ translate('serverWizard', 'addRole', data['lang'])
                             }} <small style="text-transform: none;"> - {{ translate('serverWizard', 'autoCreate',
                               data['lang']) }}</small>
@@ -403,7 +438,8 @@
                           <div class="card-body scroll">
                             <div class="form-group">
                               {% for r in data['roles'] %}
-                              <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}" type="checkbox">&nbsp;
+                              <span class="d-block menu-option"><label><input class="roles" name="{{ r['role_id'] }}"
+                                    type="checkbox" value="{{ r['role_id'] }}">&nbsp;
                                   {{ r['role_name'].capitalize() }}</label></span>
                               {% end %}
                             </div>
@@ -418,7 +454,8 @@
                     <input type="text" class="form-control" id="zip_root_path" name="zip_root_path">
                   </div>
                 </div>
-                <div class="modal fade" id="dir_select" tabindex="-1" role="dialog" aria-labelledby="dir_select" aria-hidden="true">
+                <div class="modal fade" id="dir_select" tabindex="-1" role="dialog" aria-labelledby="dir_select"
+                  aria-hidden="true">
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
                       <div class="modal-header">
@@ -429,8 +466,9 @@
                         </button>
                       </div>
                       <div class="modal-body">
-                        <div class="tree-ctx-item" id="main-tree-div" data-path="" style="overflow: scroll; max-height:75%;">
-                          <input type="radio" id="main-tree-input" name="root_path" value="" checked>
+                        <div class="tree-ctx-item" id="main-tree-div" data-path=""
+                          style="overflow: scroll; max-height:75%;">
+                          <input type="radio" class="root-input" id="main-tree-input" name="root_path" value="" checked>
                           <span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path="">
                             <i class="far fa-folder"></i>
                             <i class="far fa-folder-open"></i>
@@ -449,7 +487,8 @@
                   </div>
                 </div>
               </div>
-              <button id="zip_submit" type="submit" title="You must select server root dir first" disabled class="btn btn-primary mr-2">{{ translate('serverWizard', 'importServerButton', data['lang'])
+              <button id="zip_submit" type="submit" title="You must select server root dir first" disabled
+                class="btn btn-primary mr-2">{{ translate('serverWizard', 'importServerButton', data['lang'])
                 }}</button>
               <button type="button" class="btn btn-danger mr-2 tree-reset">{{ translate('serverWizard', 'resetForm',
                 data['lang'])
@@ -469,23 +508,26 @@
           <br />
           <p class="card-description">
 
-          <form name="zip" method="post" class="server-wizard" onSubmit="wait_msg(true)">
+          <form name="zip" id="import-upload" class="server-wizard">
             {% raw xsrf_form_html() %}
             <input type="hidden" value="import_zip" name="create_type">
 
             <div class="form-group">
               <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-              <input type="text" class="form-control" id="server_name" name="server_name" value="" placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
+              <input type="text" class="form-control" id="server_name" name="name" value=""
+                placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
             </div>
             <div class="form-group">
               <label for="server">{{ translate('serverWizard', 'serverUpload', data['lang']) }}</label>
               <div id="upload_input" class="input-group">
                 <div class="custom-file">
                   <input type="file" multiple="false" class="custom-file-input" id="file" name="file" required>
-                  <label id="fileLabel" class="custom-file-label" for="file">{{ translate('serverWizard', 'labelZipFile', data['lang']) }}</label>
+                  <label id="fileLabel" class="custom-file-label" for="file">{{ translate('serverWizard',
+                    'labelZipFile', data['lang']) }}</label>
                 </div>
                 <div class="input-group-append">
-                  <button type="button" class="btn btn-info upload-button" id="upload-button" onclick="sendFile()" disabled>{{ translate('serverWizard',
+                  <button type="button" class="btn btn-info upload-button" id="upload-button" onclick="sendFile()"
+                    disabled>{{ translate('serverWizard',
                     'uploadButton', data['lang']) }}</button>
                 </div>
               </div>
@@ -502,36 +544,42 @@
 
               <div class="form-group">
                 <label for="server_jar">{{ translate('serverWizard', 'serverJar', data['lang']) }}</label>
-                <input type="text" class="form-control" id="server_jar" name="server_jar" value="" placeholder="paper.jar" required>
+                <input type="text" class="form-control" id="server_jar" name="server_jar" value=""
+                  placeholder="paper.jar" required>
               </div>
 
-              <h4 class="card-title">{{ translate('serverWizard', 'quickSettings', data['lang']) }} <small style="text-transform: none;"> - {{ translate('serverWizard', 'quickSettingsDescription',
+              <h4 class="card-title">{{ translate('serverWizard', 'quickSettings', data['lang']) }} <small
+                  style="text-transform: none;"> - {{ translate('serverWizard', 'quickSettingsDescription',
                   data['lang']) }}</small></h4>
               <hr>
 
               <div class="form-group">
                 <label for="min_memory3">{{ translate('serverWizard', 'minMem', data['lang']) }} <small> - {{
                     translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                <input type="number" class="form-control" id="min_memory3" name="min_memory" value="1" step="0.5" min="0.5" required>
+                <input type="number" class="form-control" id="min_memory3" name="mem_min" value="1" step="0.5" min="0.5"
+                  required>
               </div>
 
               <div class="form-group">
                 <label for="max_memory3">{{ translate('serverWizard', 'maxMem', data['lang']) }} <small> - {{
                     translate('serverWizard', 'sizeInGB', data['lang']) }}</small></label>
-                <input type="number" class="form-control" id="max_memory3" name="max_memory" value="2" step="0.5" min="0.5" required>
+                <input type="number" class="form-control" id="max_memory3" name="mem_max" value="2" step="0.5" min="0.5"
+                  required>
               </div>
 
               <div class="form-group">
                 <label for="port3">{{ translate('serverWizard', 'serverPort', data['lang']) }} <small> - {{
                     translate('serverWizard', 'defaultPort', data['lang']) }}</small></label>
-                <input type="number" class="form-control" id="port3" name="port" value="25565" step="1" min="1" max="65535" required>
+                <input type="number" class="form-control" id="port3" name="port" value="25565" step="1" min="1"
+                  max="65535" required>
               </div>
 
               <div class="form-group">
                 <div id="accordion-3">
                   <div class="card">
                     <div class="card-header p-2" id="Role-3">
-                      <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-3" aria-expanded="true" aria-controls="collapseRole-3">
+                      <p class="mb-0 p-0" data-toggle="collapse" data-target="#collapseRole-3" aria-expanded="true"
+                        aria-controls="collapseRole-3">
                         <i class="fas fa-chevron-down"></i> {{ translate('serverWizard', 'addRole',
                         data['lang'])
                         }} <small style="text-transform: none;"> - {{ translate('serverWizard', 'autoCreate',
@@ -542,7 +590,8 @@
                       <div class="card-body scroll">
                         <div class="form-group">
                           {% for r in data['roles'] %}
-                          <span class="d-block menu-option"><label><input name="{{ r['role_id'] }}" type="checkbox">&nbsp;
+                          <span class="d-block menu-option"><label><input class="roles" name="{{ r['role_id'] }}"
+                                type="checkbox" value="{{ r['role_id'] }}">&nbsp;
                               {{ r['role_name'].capitalize() }}</label></span>
                           {% end %}
                         </div>
@@ -556,49 +605,53 @@
                   <input type="text" class="form-control" id="zip_root_path" name="zip_root_path">
                 </div>
               </div>
-                <div class="modal fade" id="dir_upload_select" tabindex="-1" role="dialog" aria-labelledby="dir_select" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">{{ translate('serverWizard',
-                          'selectZipDir', data['lang']) }}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
+              <div class="modal fade" id="dir_upload_select" tabindex="-1" role="dialog" aria-labelledby="dir_select"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLongTitle">{{ translate('serverWizard',
+                        'selectZipDir', data['lang']) }}</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="tree-ctx-item" id="main-tree-div-upload" data-path=""
+                        style="overflow: scroll; max-height:75%;">
+                        <input type="radio" class="root-input" id="main-tree-input-upload" name="root_path" value=""
+                          checked>
+                        <span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path="">
+                          <i class="far fa-folder"></i>
+                          <i class="far fa-folder-open"></i>
+                          {{ translate('serverFiles', 'files', data['lang']) }}
+                        </span>
+                        </input>
                       </div>
-                      <div class="modal-body">
-                        <div class="tree-ctx-item" id="main-tree-div-upload" data-path="" style="overflow: scroll; max-height:75%;">
-                          <input type="radio" id="main-tree-input-upload" name="root_path" value="" checked>
-                          <span id="main-tree-upload" class="files-tree-title tree-caret-down root-dir" data-path="">
-                            <i class="far fa-folder"></i>
-                            <i class="far fa-folder-open"></i>
-                            {{ translate('serverFiles', 'files', data['lang']) }}
-                          </span>
-                          </input>
-                        </div>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{
-                          translate('serverWizard', 'close', data['lang']) }}</button>
-                        <button type="button" id="modal-okay" data-dismiss="modal" class="btn btn-primary">{{
-                          translate('serverWizard', 'save', data['lang']) }}</button>
-                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">{{
+                        translate('serverWizard', 'close', data['lang']) }}</button>
+                      <button type="button" id="modal-okay" data-dismiss="modal" class="btn btn-primary">{{
+                        translate('serverWizard', 'save', data['lang']) }}</button>
                     </div>
                   </div>
                 </div>
               </div>
-              <button id="upload_submit" type="submit" title="You must select server root dir first" disabled class="btn btn-primary mr-2">{{ translate('serverWizard', 'importServerButton', data['lang'])
-                }}</button>
-              <button type="button" class="btn btn-danger mr-2 tree-reset">{{ translate('serverWizard', 'resetForm',
-                data['lang'])
-                }}</button>
             </div>
-          </form>
-          </p>
+            <button id="upload_submit" type="submit" title="You must select server root dir first" disabled
+              class="btn btn-primary mr-2">{{ translate('serverWizard', 'importServerButton', data['lang'])
+              }}</button>
+            <button type="button" class="btn btn-danger mr-2 tree-reset">{{ translate('serverWizard', 'resetForm',
+              data['lang'])
+              }}</button>
         </div>
+        </form>
+        </p>
       </div>
     </div>
   </div>
+</div>
 <style>
   button>i.refresh-class {
     margin: 0px;
@@ -779,446 +832,473 @@
 
 {% end %}
 
-{% block js%}
-
+{% block js %}
 <script>
-  document.getElementById("root_files_button").addEventListener("click", function () {
+  document.getElementById("root_files_button").addEventListener("click", function (event) {
     if (document.forms["zip"]["server_path"].value != "") {
       if (document.getElementById('root_files_button').classList.contains('clicked')) {
-        document.getElementById('main-tree-div').innerHTML = '<input type="radio" id="main-tree-input" name="root_path" value="" checked><span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path=""><i class="far fa-folder"></i><i class="far fa-folder-open"></i>{{ translate("serverFiles", "files", data["lang"]) }}</span></input>'
+        show_file_tree();
+        return;
       } else {
         document.getElementById('root_files_button').classList.add('clicked')
       }
-      path = document.forms["zip"]["server_path"].value;
-      console.log(document.forms["zip"]["server_path"].value)
-      var token = getCookie("_xsrf");
-      var dialog = bootbox.dialog({
+      bootbox.dialog({
         message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
         closeButton: false
       });
-      $.ajax({
-        type: "POST",
-        headers: { 'X-XSRFToken': token },
-        url: '/ajax/unzip_server?id=-1&path=' + encodeURIComponent(path),
-      });
+      console.log("CALLING DIR")
+      getDirView();
     } else {
       bootbox.alert("You must input a path before selecting this button");
     }
-</script>
-{% end %}
-
-{% block js %}
-<script>
-    var upload = false;
-    var file;
-    function sendFile() {
-      file = $("#file")[0].files[0]
-      document.getElementById("upload_input").innerHTML = '<div class="progress" style="width: 100%;"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>'
-      let xmlHttpRequest = new XMLHttpRequest();
-      let token = getCookie("_xsrf")
-      let fileName = file.name
-      let target = '/upload'
-      let mimeType = file.type
-      let size = file.size
-      let type = 'server_import'
-
-      xmlHttpRequest.upload.addEventListener('progress', function (e) {
-
-        if (e.loaded <= size) {
-          var percent = Math.round(e.loaded / size * 100);
-          $(`#upload-progress-bar`).css('width', percent + '%');
-          $(`#upload-progress-bar`).html(percent + '%');
-        }
-      });
-
-      xmlHttpRequest.open('POST', target, true);
-      xmlHttpRequest.setRequestHeader('X-Content-Type', mimeType);
-      xmlHttpRequest.setRequestHeader('X-XSRFToken', token);
-      xmlHttpRequest.setRequestHeader('X-Content-Length', size);
-      xmlHttpRequest.setRequestHeader('X-Content-Disposition', 'attachment; filename="' + fileName + '"');
-      xmlHttpRequest.setRequestHeader('X-Content-Upload-Type', type);
-      xmlHttpRequest.setRequestHeader('X-FileName', fileName);
-      xmlHttpRequest.addEventListener('load', (event) => {
-        if (event.target.responseText == 'success') {
-          console.log('Upload for file', file.name, 'was successful!')
-          document.getElementById("upload_input").innerHTML = '<div class="card-header header-sm d-flex justify-content-between align-items-center" style="width: 100%;"><span id="file-uploaded" style="color: gray;">' + fileName + '</span> 🔒</div>';
-          document.getElementById("lower_half").style.visibility = "visible";
-          document.getElementById("lower_half").hidden = false;
-        }
-        else {
-          let response_text = JSON.parse(event.target.responseText);
-          var x = document.querySelector('.bootbox');
-          console.log(JSON.parse(event.target.responseText).info)
-          bootbox.alert({
-            message: JSON.parse(event.target.responseText).info,
-            callback: function () {
-              window.location.reload();
-            }
-          });
-          doUpload = false;
-        }
-      }, false);
-      xmlHttpRequest.addEventListener('error', (e) => {
-        console.error('Error while uploading file', file.name + '.', 'Event:', e)
-      }, false);
-      xmlHttpRequest.send(file);
+  });
+  document.getElementById("root_upload_button").addEventListener("click", function (event) {
+    if (document.getElementById('root_upload_button').classList.contains('clicked')) {
+      show_file_tree();
+      return;
+    } else {
+      document.getElementById('root_upload_button').classList.add('clicked')
     }
+    bootbox.dialog({
+      message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
+      closeButton: false
+    });
+    console.log("CALLING DIR")
+    getDirView();
+  });
+  var upload = false;
+  var file;
+  function sendFile() {
+    file = $("#file")[0].files[0]
+    document.getElementById("upload_input").innerHTML = '<div class="progress" style="width: 100%;"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>'
+    let xmlHttpRequest = new XMLHttpRequest();
+    let token = getCookie("_xsrf")
+    let fileName = file.name
+    let target = '/upload'
+    let mimeType = file.type
+    let size = file.size
+    let type = 'server_import'
 
+    xmlHttpRequest.upload.addEventListener('progress', function (e) {
 
-    document.getElementById("root_files_button").addEventListener("click", function () {
-      if (document.forms["zip"]["server_path"].value != "") {
-        if (document.getElementById('root_files_button').classList.contains('clicked')) {
-          document.getElementById('main-tree-div').innerHTML = '<input type="radio" id="main-tree-input" name="root_path" value="" checked><span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path=""><i class="far fa-folder"></i><i class="far fa-folder-open"></i>{{ translate("serverFiles", "files", data["lang"]) }}</span></input>'
-        } else {
-          document.getElementById('root_files_button').classList.add('clicked')
-        }
-        path = document.forms["zip"]["server_path"].value;
-        console.log(document.forms["zip"]["server_path"].value)
-        var token = getCookie("_xsrf");
-        var dialog = bootbox.dialog({
-          message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
-          closeButton: false
-        });
-        $.ajax({
-          type: "POST",
-          headers: { 'X-XSRFToken': token },
-          url: '/ajax/unzip_server?id=-1&path=' + encodeURIComponent(path),
-        });
-      } else {
-        bootbox.alert("You must input a path before selecting this button");
+      if (e.loaded <= size) {
+        var percent = Math.round(e.loaded / size * 100);
+        $(`#upload-progress-bar`).css('width', percent + '%');
+        $(`#upload-progress-bar`).html(percent + '%');
       }
     });
 
-    document.getElementById("root_upload_button").addEventListener("click", function () {
-      if (file) {
-        upload = true;
-        if (document.getElementById('root_upload_button').classList.contains('clicked')) {
-          document.getElementById('main-tree-div-upload').innerHTML = '<input type="radio" id="main-tree-input-upload" name="root_path" value="" checked><span id="main-tree-upload" class="files-tree-title tree-caret-down root-dir" data-path=""><i class="far fa-folder"></i><i class="far fa-folder-open"></i>{{ translate("serverFiles", "files", data["lang"]) }}</span></input>'
-        } else {
-          document.getElementById('root_upload_button').classList.add('clicked')
-        }
-        var token = getCookie("_xsrf");
-        var dialog = bootbox.dialog({
-          message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
-          closeButton: false
-        });
-        $.ajax({
-          type: "POST",
-          headers: { 'X-XSRFToken': token },
-          url: '/ajax/unzip_server?id=-1&file=' + encodeURIComponent(file.name),
-        });
-      } else {
-        bootbox.alert("You must input a path before selecting this button");
+    xmlHttpRequest.open('POST', target, true);
+    xmlHttpRequest.setRequestHeader('X-Content-Type', mimeType);
+    xmlHttpRequest.setRequestHeader('X-XSRFToken', token);
+    xmlHttpRequest.setRequestHeader('X-Content-Length', size);
+    xmlHttpRequest.setRequestHeader('X-Content-Disposition', 'attachment; filename="' + fileName + '"');
+    xmlHttpRequest.setRequestHeader('X-Content-Upload-Type', type);
+    xmlHttpRequest.setRequestHeader('X-FileName', fileName);
+    xmlHttpRequest.addEventListener('load', (event) => {
+      if (event.target.responseText == 'success') {
+        console.log('Upload for file', file.name, 'was successful!')
+        document.getElementById("upload_input").innerHTML = `<div class="card-header header-sm d-flex justify-content-between align-items-center" style="width: 100%;"><input value=${fileName} type="text" id="file-uploaded" disabled></input> 🔒</div>`;
+        document.getElementById("lower_half").style.visibility = "visible";
+        document.getElementById("lower_half").hidden = false;
       }
-    });
+      else {
+        console.log(JSON.parse(event.target.responseText).info)
+        bootbox.alert({
+          message: JSON.parse(event.target.responseText).info,
+          callback: function () {
+            window.location.reload();
+          }
+        });
+      }
+    }, false);
+    xmlHttpRequest.addEventListener('error', (e) => {
+      console.error('Error while uploading file', file.name + '.', 'Event:', e)
+    }, false);
+    xmlHttpRequest.send(file);
+  }
 </script>
+<script type="text/javascript" src="../../static/assets/js/shared/root-dir.js"></script>
 
 <script>
-    $("#steam_link").mouseenter(function () {
+      $("#steam_link").mouseenter(function () {
       $('[data-toggle="popover"]').popover();
       $('.missing').popover("show");
     })
     $("#steam_link").mouseleave(function () {
       $('.missing').popover("hide");
     });
-    $(".tree-reset").on("click", function () {
-      location.href = "/server/bedrock_step1";
-    });
-    $(".tree-reset").on("click", function () {
-      location.href = "/server/step1";
-    });
-    function dropDown(event) {
-      event.target.parentElement.children[1].classList.remove("d-none");
-      document.getElementById("overlay").classList.remove("d-none");
+  function replacer(key, value) {
+    if (key === "roles") {
+      return value
     }
-
-    function hide(event) {
-      var items = document.getElementsByClassName('menu');
-      items.forEach(item => {
-        item.classList.add("d-none");
-      })
-
-      document.getElementById("overlay").classList.add("d-none");
+    if (key != "ignored_exits") {
+      if (typeof value == "boolean" || key === "host" || key === "version") {
+        return value
+      } else {
+        return (isNaN(value) ? value : +value);
+      }
+    } else {
+      return value;
     }
-
-    $(document).ready(function () {
-      console.log('ready');
-      var forms = $('form.server-wizard');
-      forms.each(function (i, formEl) {
-        var form = $(formEl);
-        var min = form.find('[name=min_memory]');
-        var max = form.find('[name=max_memory]');
-        console.log(form, min, max)
-        min.change(function () {
-          check_sizes(max, min, 'min');
-        });
-        max.change(function () {
-          check_sizes(max, min, 'max');
-        });
-      });
+  }
+  function calcRoles() {
+    let role_ids = $('.roles').map(function () {
+      if ($(this).is(':checked')) {
+        return $(this).val();
+      }
+    }).get();
+    console.log(role_ids)
+    return role_ids
+  }
+  async function send_server(data) {
+    let token = getCookie("_xsrf")
+    let res = await fetch(`/api/v2/servers/`, {
+      method: 'POST',
+      headers: {
+        'X-XSRFToken': token
+      },
+      body: data,
     });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      window.location.href = '/panel/dashboard';
+    } else {
 
-    function wait_msg(importing) {
       bootbox.alert({
-        title: importing ? '{% raw translate("serverWizard", "importing", data["lang"]) %}' : '{% raw translate("serverWizard", "downloading", data["lang"]) %}',
-        message: importing ? '<i class="fas fa-cloud-download"></i> {% raw translate("serverWizard", "bePatient", data["lang"]) %}': '<i class="fas fa-cloud-download"></i> {% raw translate("serverWizard", "bePatient", data["lang"]) %}<br><br><a href="https://serverjars.com" target="_blank" style="text-align: center;"><img src="../../static/assets/images/serverjars/FULL-WHITE.svg" alt="Powered by serverjars.com" width="40%"></a>',
+        title: responseData.error,
+        message: responseData.error_data
       });
     }
+  }
+  $(document).ready(function () {
 
-    function show_file_tree() {
-      if (upload) {
-        console.log("upload true")
-        $("#dir_upload_select").modal();
-      } else {
-        $("#dir_select").modal();
-      }
-    }
+    $("#download_jar").on("submit", async function (e) {
+      wait_msg();
+      e.preventDefault();
+      let jarForm = document.getElementById("download_jar");
 
-    function check_sizes(a, b, changed) {
-      max_mem = parseFloat(a.val());
-      min_mem = parseFloat(b.val());
-      if (max_mem < min_mem && changed === 'min') {
-        a.val(min_mem)
-      }
-      if (max_mem < min_mem && changed === 'max') {
-        b.val(max_mem)
-      }
-    }
-
-    function getTreeView(path) {
-      const styles = window.getComputedStyle(document.getElementById("lower_half"));
-      //If this value is still hidden we know the user is executing a zip import and not an upload
-      if (styles.visibility === "hidden") {
-        document.getElementById('zip_submit').disabled = false;
-      } else {
-        document.getElementById('upload_submit').disabled = false;
-      }
-      path = path
-
-      $.ajax({
-        type: "GET",
-        url: '/ajax/get_zip_tree?id=-1&path=' + path,
-        dataType: 'text',
-        success: function (data) {
-          console.log("got response:");
-          console.log(data);
-
-          dataArr = data.split('\n');
-          serverDir = dataArr.shift(); // Remove & return first element (server directory)
-          text = dataArr.join('\n');
-          if (styles.visibility === "hidden") {
-            try {
-              document.getElementById('main-tree-div').innerHTML += text;
-              document.getElementById('main-tree').parentElement.classList.add("clicked");
-            } catch {
-              document.getElementById('files-tree').innerHTML = text;
-            }
-          } else {
-            try {
-              document.getElementById('main-tree-div-upload').innerHTML += text;
-              document.getElementById('main-tree-upload').parentElement.classList.add("clicked");
-            } catch {
-              document.getElementById('files-tree').innerHTML = text;
-            }
-          }
-
-          document.getElementsByClassName('files-tree-title')[0].setAttribute('data-path', serverDir);
-          document.getElementsByClassName('files-tree-title')[0].setAttribute('data-name', 'Files');
-
+      let formData = new FormData(jarForm);
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      console.log(formDataObject);
+      let send_data = {
+        "name": formDataObject.name,
+        "roles": calcRoles(),
+        "monitoring_type": "minecraft_java",
+        "minecraft_java_monitoring_data": {
+          "host": "127.0.0.1",
+          "port": formDataObject.port
         },
-      });
-    }
-
-    function getToggleMain(event) {
-      path = event.target.parentElement.getAttribute('data-path');
-      document.getElementById("files-tree").classList.toggle("d-block");
-      document.getElementById(path + "span").classList.toggle("tree-caret-down");
-      document.getElementById(path + "span").classList.toggle("tree-caret");
-    }
-
-
-    function getDirView(event) {
-      path = event.target.parentElement.getAttribute('data-path');
-
-      if (document.getElementById(path).classList.contains('clicked')) {
-
-        var toggler = document.getElementById(path + "span");
-
-        if (toggler.classList.contains('files-tree-title')) {
-          document.getElementById(path + "ul").classList.toggle("d-block");
-          document.getElementById(path + "span").classList.toggle("tree-caret-down");
+        "create_type": "minecraft_java",
+        "minecraft_java_create_data": {
+          "create_type": "download_jar",
+          "download_jar_create_data": {
+            "category": formDataObject.version.split("|")[0],
+            "type": formDataObject.version.split("|")[1],
+            "version": formDataObject.version.split("|")[2],
+            "mem_min": formDataObject.mem_min,
+            "mem_max": formDataObject.mem_max,
+            "server_properties_port": formDataObject.port
+          }
         }
-        return;
-      } else {
-        $.ajax({
-          type: "GET",
-          url: '/ajax/get_zip_dir?id=-1&path=' + path,
-          dataType: 'text',
-          success: function (data) {
-            console.log("got response:");
-
-            dataArr = data.split('\n');
-            serverDir = dataArr.shift(); // Remove & return first element (server directory)
-            text = dataArr.join('\n');
-
-            try {
-              document.getElementById(path + "span").classList.add('tree-caret-down');
-              document.getElementById(path).innerHTML += text;
-              document.getElementById(path).classList.add("clicked");
-            } catch {
-              console.log("Bad")
-            }
-
-            var toggler = document.getElementById(path);
-
-            if (toggler.classList.contains('files-tree-title')) {
-              document.getElementById(path + "span").addEventListener("click", function caretListener() {
-                document.getElementById(path + "ul").classList.toggle("d-block");
-                document.getElementById(path + "span").classList.toggle("tree-caret-down");
-              });
-            }
-          },
-        });
       }
-    }
-    if (webSocket) {
-      webSocket.on('send_temp_path', function (data) {
-        setTimeout(function () {
-          var x = document.querySelector('.bootbox');
-          if (x) {
-            x.remove()
-          }
-          var x = document.querySelector('.modal-backdrop');
-          if (x) {
-            x.remove()
-          }
-          document.getElementById('main-tree-input').setAttribute('value', data.path)
-          document.getElementById('main-tree-input-upload').setAttribute('value', data.path)
-          getTreeView(data.path);
-          show_file_tree();
+      console.log(send_data);
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(send_data, replacer);
 
-          $("#root_files_button").attr("disabled", "disabled");
-          $("#root_upload_button").attr("disabled", "disabled");
 
-        }, 5000);
-      });
-    }
+      console.log(formDataJsonString);
 
-    function refreshCache() {
-      var token = getCookie("_xsrf")
-      document.getElementById("refresh-cache").classList.add("fa-spin")
-      $.ajax({
-        type: "POST",
-        headers: { 'X-XSRFToken': token },
-        url: '/ajax/jar_cache',
-        success: function () {
-          document.getElementById("refresh-cache").classList.remove("fa-sync");
-          document.getElementById("refresh-cache").classList.remove("fa-spin");
-          document.getElementById("refresh-cache").classList.add("fa-check");
-
-          setTimeout(function () {
-            location.reload();
-          }, 2000);
-        },
-      });
-    }
-
-    $('#file').change(function () {
-      console.log("File changed");
-      if ($('#file').val()) {
-        $('#upload-button').prop("disabled", false);
-        document.getElementById("fileLabel").innerHTML = $('#file').val().split('\\').pop().split('/').pop();
-        console.log("File changed good");
-      }
+      send_server(formDataJsonString);
     });
+
+    $("#import-jar").on("submit", async function (e) {
+      wait_msg(true);
+      e.preventDefault();
+      let jarForm = document.getElementById("import-jar");
+
+      let formData = new FormData(jarForm);
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      console.log(formDataObject);
+      let send_data = {
+        "name": formDataObject.name,
+        "roles": calcRoles(),
+        "monitoring_type": "minecraft_java",
+        "minecraft_java_monitoring_data": {
+          "host": "127.0.0.1",
+          "port": formDataObject.port
+        },
+        "create_type": "minecraft_java",
+        "minecraft_java_create_data": {
+          "create_type": "import_server",
+          "import_server_create_data": {
+            "existing_server_path": formDataObject.server_path,
+            "jarfile": formDataObject.server_jar,
+            "mem_min": formDataObject.mem_min,
+            "mem_max": formDataObject.mem_max,
+            "server_properties_port": formDataObject.port
+          }
+        }
+      }
+      console.log(send_data);
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(send_data, replacer);
+
+      send_server(formDataJsonString);
+    });
+
+    $("#import-zip").on("submit", async function (e) {
+      wait_msg(true);
+      e.preventDefault();
+      let jarForm = document.getElementById("import-zip");
+
+      let formData = new FormData(jarForm);
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      console.log(formDataObject);
+      let send_data = {
+        "name": formDataObject.name,
+        "roles": calcRoles(),
+        "monitoring_type": "minecraft_java",
+        "minecraft_java_monitoring_data": {
+          "host": "127.0.0.1",
+          "port": formDataObject.port
+        },
+        "create_type": "minecraft_java",
+        "minecraft_java_create_data": {
+          "create_type": "import_server",
+          "import_server_create_data": {
+            "existing_server_path": formDataObject.root_path,
+            "jarfile": formDataObject.server_jar,
+            "mem_min": formDataObject.mem_min,
+            "mem_max": formDataObject.mem_max,
+            "server_properties_port": formDataObject.port
+          }
+        }
+      }
+      console.log(send_data);
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(send_data, replacer);
+
+      send_server(formDataJsonString);
+    });
+
+    $("#import-upload").on("submit", async function (e) {
+      wait_msg(true);
+      e.preventDefault();
+      let jarForm = document.getElementById("import-upload");
+
+      let formData = new FormData(jarForm);
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      console.log(formDataObject);
+      let send_data = {
+        "name": formDataObject.name,
+        "roles": calcRoles(),
+        "monitoring_type": "minecraft_java",
+        "minecraft_java_monitoring_data": {
+          "host": "127.0.0.1",
+          "port": formDataObject.port
+        },
+        "create_type": "minecraft_java",
+        "minecraft_java_create_data": {
+          "create_type": "import_server",
+          "import_server_create_data": {
+            "existing_server_path": formDataObject.root_path,
+            "jarfile": formDataObject.server_jar,
+            "mem_min": formDataObject.mem_min,
+            "mem_max": formDataObject.mem_max,
+            "server_properties_port": formDataObject.port
+          }
+        }
+      }
+      console.log(send_data);
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(send_data, replacer);
+      send_server(formDataJsonString);
+    });
+
+  });
+</script>
+
+<script>
+  $(".tree-reset").on("click", function () {
+    location.href = "/server/step1";
+  });
+  function dropDown(event) {
+    event.target.parentElement.children[1].classList.remove("d-none");
+    document.getElementById("overlay").classList.remove("d-none");
+  }
+
+  function hide(event) {
+    let items = document.getElementsByClassName('menu');
+    items.forEach(item => {
+      item.classList.add("d-none");
+    })
+
+    document.getElementById("overlay").classList.add("d-none");
+  }
+
+  $(document).ready(function () {
+    console.log('ready');
+    let forms = $('form.server-wizard');
+    forms.each(function (i, formEl) {
+      let form = $(formEl);
+      let min = form.find('[name=min_memory]');
+      let max = form.find('[name=max_memory]');
+      console.log(form, min, max)
+      min.change(function () {
+        check_sizes(max, min, 'min');
+      });
+      max.change(function () {
+        check_sizes(max, min, 'max');
+      });
+    });
+  });
+
+  function wait_msg(importing) {
+    bootbox.alert({
+      title: importing ? '{% raw translate("serverWizard", "importing", data["lang"]) %}' : '{% raw translate("serverWizard", "downloading", data["lang"]) %}',
+      message: importing ? '<i class="fas fa-cloud-download"></i> {% raw translate("serverWizard", "bePatient", data["lang"]) %}' : '<i class="fas fa-cloud-download"></i> {% raw translate("serverWizard", "bePatient", data["lang"]) %}<br><br><a href="https://serverjars.com" target="_blank" style="text-align: center;"><img src="../../static/assets/images/serverjars/FULL-WHITE.svg" alt="Powered by serverjars.com" width="40%"></a>',
+    });
+  }
+
+
+  function check_sizes(a, b, changed) {
+    let max_mem = parseFloat(a.val());
+    let min_mem = parseFloat(b.val());
+    if (max_mem < min_mem && changed === 'min') {
+      a.val(min_mem)
+    }
+    if (max_mem < min_mem && changed === 'max') {
+      b.val(max_mem)
+    }
+  }
+
+  async function refreshCache() {
+    document.getElementById("refresh-cache").classList.add("fa-spin")
+    let token = getCookie("_xsrf")
+    let res = await fetch(`/api/v2/crafty/exeCache`, {
+      method: 'GET',
+      headers: {
+        'X-XSRFToken': token
+      },
+    });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      document.getElementById("refresh-cache").classList.remove("fa-sync");
+      document.getElementById("refresh-cache").classList.remove("fa-spin");
+      document.getElementById("refresh-cache").classList.add("fa-check");
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+    } else {
+
+      bootbox.alert({
+        title: responseData.error,
+        message: responseData.error
+      });
+    }
+  }
+
+  $('#file').change(function () {
+    console.log("File changed");
+    if ($('#file').val()) {
+      $('#upload-button').prop("disabled", false);
+      document.getElementById("fileLabel").innerHTML = $('#file').val().split('\\').pop().split('/').pop();
+      console.log("File changed good");
+    }
+  });
 
 </script>
 <script type="text/javascript">
-    var text = '{% raw data["js_server_types"] %}';
-    var serverTypesLists = JSON.parse(text);
-    /* CountryChange() is called from the onchange event of a select element.
-    * param selectObj - the select object which fired the on change event.
-    */
-    function serverTypeChange(selectObj) {
-      // get the index of the selected option
-      var idx = document.getElementById('server_type').selectedIndex;
-      // get the value of the selected option
-      var cSelect = document.getElementById("server");
-      try {
-        var which = document.getElementById('server_type').options[idx].value;
-      } catch {
-        while (cSelect.options.length > 0) {
-          cSelect.remove(0);
-        }
-        return;
-      }
-      let server_type = which.split('|')[0];
-      let server = which.split('|')[1];
-      // use the selected option value to retrieve the list of items from the serverTypesLists array
-      let cList = serverTypesLists[server_type];
-      // get the country select element via its known id
-      var cSelect = document.getElementById("server");
-      // remove the current options from the country select
-      var len = cSelect.options.length;
+  const text = '{% raw data["js_server_types"] %}';
+  const serverTypesLists = JSON.parse(text);
+  /* CountryChange() is called from the onchange event of a select element.
+  * param selectObj - the select object which fired the on change event.
+  */
+  function serverTypeChange(selectObj) {
+    // get the index of the selected option
+    let idx = document.getElementById('server_type').selectedIndex;
+    // get the value of the selected option
+    let cSelect = document.getElementById("server");
+    let which = {};
+    try {
+      which = document.getElementById('server_type').options[idx].value;
+    } catch {
       while (cSelect.options.length > 0) {
         cSelect.remove(0);
       }
-      var newOption;
-      // create new options ordered by ascending
-      cList[server].forEach(type => {
-        newOption = document.createElement("option");
-        newOption.value = which + "|" + type;  // assumes option string and value are the same
-        newOption.text = type;
-        // add the new option
-        try {
-          cSelect.add(newOption);  // this will fail in DOM browsers but is needed for IE
-        }
-        catch (e) {
-          cSelect.appendChild(newOption);
-        }
-      })
+      return;
     }
-
-    function serverJarChange(selectObj) {
-      let type_select = document.getElementById('server_jar')
-      let tidx = type_select.selectedIndex;
-      let val = type_select.options[tidx].value;
-      if (val == 'None') {
-        var jcSelect = document.getElementById("server_type");
-        while (jcSelect.options.length > 0) {
-          jcSelect.remove(0);
-        }
-        serverTypeChange(selectObj);
-        return;
+    let server_type = which.split('|')[0];
+    let server = which.split('|')[1];
+    // use the selected option value to retrieve the list of items from the serverTypesLists array
+    let cList = serverTypesLists[server_type];
+    // get the country select element via its known id
+    cSelect = document.getElementById("server");
+    // remove the current options from the country select
+    while (cSelect.options.length > 0) {
+      cSelect.remove(0);
+    }
+    let newOption;
+    // create new options ordered by ascending
+    cList[server].forEach(type => {
+      newOption = document.createElement("option");
+      newOption.value = which + "|" + type;  // assumes option string and value are the same
+      newOption.text = type;
+      // add the new option
+      try {
+        cSelect.add(newOption);  // this will fail in DOM browsers but is needed for IE
       }
-      // get the index of the selected option
-      var jidx = selectObj.selectedIndex;
-      // get the value of the selected option
-      var jwhich = selectObj.options[jidx].value;
-      // use the selected option value to retrieve the list of items from the serverTypesLists array
-      jcList = Object.keys(serverTypesLists[jwhich]);
-      // get the country select element via its known id
-      var jcSelect = document.getElementById("server_type");
-      // remove the current options from the country select
-      var jlen = jcSelect.options.length;
+      catch (e) {
+        cSelect.appendChild(newOption);
+      }
+    })
+  }
+
+  function serverJarChange(selectObj) {
+    const type_select = document.getElementById('server_jar')
+    const tidx = type_select.selectedIndex;
+    const val = type_select.options[tidx].value;
+    let jcSelect = {};
+    if (val == 'None') {
+      jcSelect = document.getElementById("server_type");
       while (jcSelect.options.length > 0) {
         jcSelect.remove(0);
       }
-      var jnewOption;
-      // create new options ordered by ascending
-      jcList.forEach(type => {
-        jnewOption = document.createElement("option");
-        jnewOption.value = jwhich + "|" + type;  // assumes option string and value are the same
-        jnewOption.text = type;
-        // add the new option
-        try {
-          jcSelect.add(jnewOption);  // this will fail in DOM browsers but is needed for IE
-        }
-        catch (e) {
-          jcSelect.appendChild(jnewOption);
-        }
-      })
       serverTypeChange(selectObj);
+      return;
     }
+    // get the index of the selected option
+    let jidx = selectObj.selectedIndex;
+    // get the value of the selected option
+    let jwhich = selectObj.options[jidx].value;
+    // use the selected option value to retrieve the list of items from the serverTypesLists array
+    let jcList = Object.keys(serverTypesLists[jwhich]);
+    // get the country select element via its known id
+    jcSelect = document.getElementById("server_type");
+    // remove the current options from the country select
+    while (jcSelect.options.length > 0) {
+      jcSelect.remove(0);
+    }
+    let jnewOption;
+    // create new options ordered by ascending
+    jcList.forEach(type => {
+      jnewOption = document.createElement("option");
+      jnewOption.value = jwhich + "|" + type;  // assumes option string and value are the same
+      jnewOption.text = type;
+      // add the new option
+      try {
+        jcSelect.add(jnewOption);  // this will fail in DOM browsers but is needed for IE
+      }
+      catch (e) {
+        jcSelect.appendChild(jnewOption);
+      }
+    })
+    serverTypeChange(selectObj);
+  }
 </script>
 {% end %}
