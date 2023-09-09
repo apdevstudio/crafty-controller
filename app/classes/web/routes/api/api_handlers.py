@@ -64,7 +64,10 @@ from app.classes.web.routes.api.crafty.config.server_dir import (
 )
 from app.classes.web.routes.api.crafty.clogs.index import ApiCraftyLogIndexHandler
 from app.classes.web.routes.api.crafty.imports.index import ApiImportFilesIndexHandler
-from app.classes.web.routes.api.crafty.exe_cache import ApiCraftyExeCacheIndexHandler
+from app.classes.web.routes.api.crafty.exe_cache import (
+    ApiCraftyJarCacheIndexHandler,
+    ApiCraftySteamCacheIndexHandler,
+)
 
 
 def api_handlers(handler_args):
@@ -173,8 +176,13 @@ def api_handlers(handler_args):
             handler_args,
         ),
         (
-            r"/api/v2/crafty/exeCache/?",
-            ApiCraftyExeCacheIndexHandler,
+            r"/api/v2/crafty/JarCache/?",
+            ApiCraftyJarCacheIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/crafty/SteamCache/?",
+            ApiCraftySteamCacheIndexHandler,
             handler_args,
         ),
         (
