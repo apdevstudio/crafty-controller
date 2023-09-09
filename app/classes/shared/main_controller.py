@@ -34,7 +34,6 @@ from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.import_helper import ImportHelpers
 from app.classes.minecraft.serverjars import ServerJars
 from app.classes.steamcmd.serverapps import SteamApps
-from app.classes.steamcmd.steamcmd import SteamCMD
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +45,6 @@ class Controller:
         self.import_helper: ImportHelpers = import_helper
         self.server_jars: ServerJars = ServerJars(helper)
         self.steam_apps: SteamApps = SteamApps(helper)
-        self.steam: SteamCMD()
         self.users_helper: HelperUsers = HelperUsers(database, self.helper)
         self.roles_helper: HelperRoles = HelperRoles(database)
         self.servers_helper: HelperServers = HelperServers(database)
@@ -464,7 +462,13 @@ class Controller:
             if server_file_new != "":
                 # HACK: Horrible hack to make the server start
                 server_file = server_file_new
-
+        elif data["create_type"] == "steam_cmd":
+            server_file = "steamcmd.exe"
+            full_jar_path = os.path.join(new_server_path, server_file)
+            if Helpers.is_os_windows():
+                server_command = f'"{full_jar_path}"'
+            else:
+                server_command = f"./{server_file}"
         stop_command = data.get("stop_command", "")
         if stop_command == "":
             # TODO: different default stop commands for server creation types
@@ -481,7 +485,11 @@ class Controller:
         elif data["monitoring_type"] == "minecraft_bedrock":
             monitoring_port = data["minecraft_bedrock_monitoring_data"]["port"]
             monitoring_host = data["minecraft_bedrock_monitoring_data"]["host"]
-            monitoring_type = "minecraft-bedrock"
+            monitoring_type = "raknet"
+        elif data["monitoring_type"] == "steam_cmd":
+            monitoring_port = data["steam_cmd_monitoring_data"]["port"]
+            monitoring_host = data["steam_cmd_monitoring_data"]["host"]
+            monitoring_type = "raknet"
         elif data["monitoring_type"] == "none":
             # TODO: this needs to be NUKED..
             # There shouldn't be anything set if there is nothing to monitor
@@ -558,7 +566,16 @@ class Controller:
                     monitoring_port,
                     new_server_id,
                 )
-
+        elif data["create_type"] == "steam_cmd":
+            server_exe = "steamcmd.exe"
+            if root_create_data["create_type"] == "download_exe":
+                ServersController.set_import(new_server_id)
+                self.import_helper.download_steam_server(
+                    create_data["app_id"],
+                    new_server_id,
+                    new_server_path,
+                    server_exe,
+                )
         exec_user = self.users.get_user_by_id(int(user_id))
         captured_roles = data.get("roles", [])
         # These lines create a new Role for the Server with full permissions
@@ -651,54 +668,6 @@ class Controller:
         self.import_helper.import_bedrock_server(
             server_path, new_server_dir, port, full_jar_path, new_id
         )
-        return new_id
-
-    def create_steam_server(self, app_id, server_name, user_id):
-        server_id = Helpers.create_uuid()
-        new_server_dir = os.path.join(self.helper.servers_dir, server_id)
-        backup_path = os.path.join(self.helper.backup_path, server_id)
-        # TODO: what is the server exe called @zedifus
-        server_exe = "steamcmd.exe"
-        if Helpers.is_os_windows():
-            new_server_dir = Helpers.wtol_path(new_server_dir)
-            backup_path = Helpers.wtol_path(backup_path)
-            new_server_dir.replace(" ", "^ ")
-            backup_path.replace(" ", "^ ")
-
-        Helpers.ensure_dir_exists(new_server_dir)
-        Helpers.ensure_dir_exists(backup_path)
-
-        # Sets the steamCMD install directory for next install.
-        self.steam = SteamCMD(new_server_dir)
-        self.steam.install()
-
-        full_jar_path = os.path.join(new_server_dir, server_exe)
-
-        if Helpers.is_os_windows():
-            server_command = f'"{full_jar_path}"'
-        else:
-            server_command = f"./{server_exe}"
-        logger.debug("command: " + server_command)
-        server_log_file = "bootstrap_log.txt"
-        server_stop = "stop"
-
-        new_id = self.register_server(
-            server_name,
-            server_id,
-            new_server_dir,
-            backup_path,
-            server_command,
-            server_exe,
-            server_log_file,
-            server_stop,
-            2456,
-            user_id,
-            server_type="steam",
-            app_id=app_id,
-        )
-        ServersController.set_import(new_id)
-        self.steam.app_update(app_id, "./gamefiles")
-        ServersController.finish_import(new_id)
         return new_id
 
     def create_bedrock_server(self, server_name, user_id):

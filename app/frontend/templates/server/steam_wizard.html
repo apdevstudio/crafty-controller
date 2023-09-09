@@ -32,8 +32,7 @@
           <h4>{{ translate('serverWizard', 'newServer', data['lang']) }}</h4>
           <br />
           <p class="card-description">
-          <form method="post" class="server-wizard" onSubmit="wait_msg()">
-            {% raw xsrf_form_html() %}
+          <form method="submit" id="server_creation" class="server-wizard">
             <div class="row">
               <div class="col-sm-12">
                 <div class="form-group">
@@ -41,7 +40,7 @@
                     }}</label></br>
                   <div class="input-group">
                   <select data-container="body" required class="selectpicker form-control form-control-lg select-css"
-                    id="steam_server" data-live-search="true" name="steam_server">
+                    id="steam_server" data-live-search="true" name="app_id">
                     <option value="None">None</option>
                     {% for s in data['servers'] %}
                     {% if data["windows"] and s["windows"] %}
@@ -63,7 +62,7 @@
               <div class="col-sm-12">
                 <div class="form-group">
                   <label for="server_name">{{ translate('serverWizard', 'serverName', data['lang']) }}</label>
-                  <input type="text" class="form-control" id="server_name" name="server_name"
+                  <input type="text" class="form-control" id="server_name" name="name"
                     placeholder="{{ translate('serverWizard', 'myNewServer', data['lang']) }}" required>
                 </div>
               </div>
@@ -349,142 +348,88 @@
 {% end %}
 
 {% block js%}
-<script>
-  document.getElementById("root_files_button").addEventListener("click", function () {
-    if (document.forms["zip"]["server_path"].value != "") {
-      if (document.getElementById('root_files_button').classList.contains('clicked')) {
-        document.getElementById('main-tree-div').innerHTML = '<input type="radio" id="main-tree-input" name="root_path" value="" checked><span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path=""><i class="far fa-folder"></i><i class="far fa-folder-open"></i>{{ translate("serverFiles", "files", data["lang"]) }}</span></input>'
-      } else {
-        document.getElementById('root_files_button').classList.add('clicked')
-      }
-      path = document.forms["zip"]["server_path"].value;
-      console.log(document.forms["zip"]["server_path"].value)
-      var token = getCookie("_xsrf");
-      var dialog = bootbox.dialog({
-        message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
-        closeButton: false
-      });
-      $.ajax({
-        type: "POST",
-        headers: { 'X-XSRFToken': token },
-        url: '/ajax/unzip_server?id=-1&path=' + encodeURIComponent(path),
-      });
-    } else {
-      bootbox.alert("You must input a path before selecting this button");
-    }
-</script>
 
 {% end %}
 
 {% block js %}
+
 <script>
-    var upload = false;
-    var file;
-    function sendFile() {
-      file = $("#file")[0].files[0]
-      document.getElementById("upload_input").innerHTML = '<div class="progress"><div id="upload-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">&nbsp;<i class="fa-solid fa-spinner"></i></div></div>'
-      let xmlHttpRequest = new XMLHttpRequest();
-      let token = getCookie("_xsrf")
-      let fileName = file.name
-      let target = '/upload'
-      let mimeType = file.type
-      let size = file.size
-      let type = 'server_import'
-
-      xmlHttpRequest.upload.addEventListener('progress', function (e) {
-
-        if (e.loaded <= size) {
-          var percent = Math.round(e.loaded / size * 100);
-          $(`#upload-progress-bar`).css('width', percent + '%');
-          $(`#upload-progress-bar`).html(percent + '%');
-        }
-      });
-
-      xmlHttpRequest.open('POST', target, true);
-      xmlHttpRequest.setRequestHeader('X-Content-Type', mimeType);
-      xmlHttpRequest.setRequestHeader('X-XSRFToken', token);
-      xmlHttpRequest.setRequestHeader('X-Content-Length', size);
-      xmlHttpRequest.setRequestHeader('X-Content-Disposition', 'attachment; filename="' + fileName + '"');
-      xmlHttpRequest.setRequestHeader('X-Content-Upload-Type', type);
-      xmlHttpRequest.setRequestHeader('X-FileName', fileName);
-      xmlHttpRequest.addEventListener('load', (event) => {
-        if (event.target.responseText == 'success') {
-          console.log('Upload for file', file.name, 'was successful!')
-          document.getElementById("upload_input").innerHTML = '<div class="card-header header-sm d-flex justify-content-between align-items-center"><span id="file-uploaded" style="color: gray;">' + fileName + '</span> 🔒</div>';
-          document.getElementById("lower_half").style.visibility = "visible";
-        }
-        else {
-          let response_text = JSON.parse(event.target.responseText);
-          var x = document.querySelector('.bootbox');
-          console.log(JSON.parse(event.target.responseText).info)
-          bootbox.alert({
-            message: JSON.parse(event.target.responseText).info,
-            callback: function () {
-              window.location.reload();
-            }
+        async function send_server(data) {
+          let token = getCookie("_xsrf")
+          let res = await fetch(`/api/v2/servers/`, {
+            method: 'POST',
+            headers: {
+              'X-XSRFToken': token
+            },
+            body: data,
           });
-          doUpload = false;
+          let responseData = await res.json();
+          if (responseData.status === "ok") {
+            window.location.href = '/panel/dashboard';
+          } else {
+
+            bootbox.alert({
+              title: responseData.error,
+              message: responseData.error_data
+            });
+          }
         }
-      }, false);
-      xmlHttpRequest.addEventListener('error', (e) => {
-        console.error('Error while uploading file', file.name + '.', 'Event:', e)
-      }, false);
-      xmlHttpRequest.send(file);
+
+      $("#server_creation").on("submit", async function (e) {
+      wait_msg();
+      e.preventDefault();
+      let jarForm = document.getElementById("server_creation");
+
+      let formData = new FormData(jarForm);
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      console.log(formDataObject);
+      let send_data = {
+        "name": formDataObject.name,
+        "roles": calcRoles(),
+        "monitoring_type": "steam_cmd",
+        "steam_cmd_monitoring_data": {
+          "host": "127.0.0.1",
+          "port": "27015"
+        },
+        "create_type": "steam_cmd",
+        "steam_cmd_create_data": {
+          "create_type": "download_exe",
+          "download_exe_create_data": {
+            "app_id": formDataObject.app_id,
+          }
+        }
+      }
+      console.log(send_data);
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(send_data, replacer);
+
+      console.log(formDataJsonString);
+      send_server(formDataJsonString);
+    });
+    function replacer(key, value) {
+    if (key === "roles") {
+      return value
     }
-
-
-    document.getElementById("root_files_button").addEventListener("click", function () {
-      if (document.forms["zip"]["server_path"].value != "") {
-        if (document.getElementById('root_files_button').classList.contains('clicked')) {
-          document.getElementById('main-tree-div').innerHTML = '<input type="radio" id="main-tree-input" name="root_path" value="" checked><span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path=""><i class="far fa-folder"></i><i class="far fa-folder-open"></i>{{ translate("serverFiles", "files", data["lang"]) }}</span></input>'
-        } else {
-          document.getElementById('root_files_button').classList.add('clicked')
-        }
-        path = document.forms["zip"]["server_path"].value;
-        console.log(document.forms["zip"]["server_path"].value)
-        var token = getCookie("_xsrf");
-        var dialog = bootbox.dialog({
-          message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
-          closeButton: false
-        });
-        $.ajax({
-          type: "POST",
-          headers: { 'X-XSRFToken': token },
-          url: '/ajax/unzip_server?id=-1&path=' + encodeURIComponent(path),
-        });
+    if (key != "ignored_exits") {
+      if (typeof value == "boolean" || key === "host" || key === "version") {
+        return value
       } else {
-        bootbox.alert("You must input a path before selecting this button");
+        return (isNaN(value) ? value : +value);
       }
-    });
-
-    document.getElementById("root_upload_button").addEventListener("click", function () {
-      if (file) {
-        upload = true;
-        if (document.getElementById('root_upload_button').classList.contains('clicked')) {
-          document.getElementById('main-tree-div-upload').innerHTML = '<input type="radio" id="main-tree-input-upload" name="root_path" value="" checked><span id="main-tree-upload" class="files-tree-title tree-caret-down root-dir" data-path=""><i class="far fa-folder"></i><i class="far fa-folder-open"></i>{{ translate("serverFiles", "files", data["lang"]) }}</span></input>'
-        } else {
-          document.getElementById('root_upload_button').classList.add('clicked')
-        }
-        var token = getCookie("_xsrf");
-        var dialog = bootbox.dialog({
-          message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
-          closeButton: false
-        });
-        $.ajax({
-          type: "POST",
-          headers: { 'X-XSRFToken': token },
-          url: '/ajax/unzip_server?id=-1&file=' + encodeURIComponent(file.name),
-        });
-      } else {
-        bootbox.alert("You must input a path before selecting this button");
+    } else {
+      return value;
+    }
+  }
+    function calcRoles() {
+    let role_ids = $('.roles').map(function () {
+      if ($(this).is(':checked')) {
+        return $(this).val();
       }
-    });
-</script>
-
-<script>
-    $(".tree-reset").on("click", function () {
-      location.href = "/server/step1";
-    });
+    }).get();
+    console.log(role_ids)
+    return role_ids
+  }
     function dropDown(event) {
       event.target.parentElement.children[1].classList.remove("d-none");
       document.getElementById("overlay").classList.remove("d-none");
@@ -520,144 +465,6 @@
       bootbox.alert({
         title: importing ? '{% raw translate("serverWizard", "importing", data["lang"]) %}' : '{% raw translate("serverWizard", "downloading", data["lang"]) %}',
         message: '<i class="fas fa-cloud-download"></i> {% raw translate("serverWizard", "bePatient", data["lang"]) %}',
-      });
-    }
-
-    function show_file_tree() {
-      if (upload) {
-        $("#dir_upload_select").modal();
-      } else {
-        $("#dir_select").modal();
-      }
-    }
-
-    function check_sizes(a, b, changed) {
-      max_mem = parseFloat(a.val());
-      min_mem = parseFloat(b.val());
-      if (max_mem < min_mem && changed === 'min') {
-        a.val(min_mem)
-      }
-      if (max_mem < min_mem && changed === 'max') {
-        b.val(max_mem)
-      }
-    }
-
-    function getTreeView(path) {
-      const styles = window.getComputedStyle(document.getElementById("lower_half"));
-      //If this value is still hidden we know the user is executing a zip import and not an upload
-      if (styles.visibility === "hidden") {
-        document.getElementById('zip_submit').disabled = false;
-      } else {
-        document.getElementById('upload_submit').disabled = false;
-      }
-      path = path
-
-      $.ajax({
-        type: "GET",
-        url: '/ajax/get_zip_tree?id=-1&path=' + path,
-        dataType: 'text',
-        success: function (data) {
-          console.log("got response:");
-          console.log(data);
-
-          dataArr = data.split('\n');
-          serverDir = dataArr.shift(); // Remove & return first element (server directory)
-          text = dataArr.join('\n');
-          if (styles.visibility === "hidden") {
-            try {
-              document.getElementById('main-tree-div').innerHTML += text;
-              document.getElementById('main-tree').parentElement.classList.add("clicked");
-            } catch {
-              document.getElementById('files-tree').innerHTML = text;
-            }
-          } else {
-            try {
-              document.getElementById('main-tree-div-upload').innerHTML += text;
-              document.getElementById('main-tree-upload').parentElement.classList.add("clicked");
-            } catch {
-              document.getElementById('files-tree').innerHTML = text;
-            }
-          }
-
-          document.getElementsByClassName('files-tree-title')[0].setAttribute('data-path', serverDir);
-          document.getElementsByClassName('files-tree-title')[0].setAttribute('data-name', 'Files');
-
-        },
-      });
-    }
-
-    function getToggleMain(event) {
-      path = event.target.parentElement.getAttribute('data-path');
-      document.getElementById("files-tree").classList.toggle("d-block");
-      document.getElementById(path + "span").classList.toggle("tree-caret-down");
-      document.getElementById(path + "span").classList.toggle("tree-caret");
-    }
-
-
-    function getDirView(event) {
-      path = event.target.parentElement.getAttribute('data-path');
-
-      if (document.getElementById(path).classList.contains('clicked')) {
-
-        var toggler = document.getElementById(path + "span");
-
-        if (toggler.classList.contains('files-tree-title')) {
-          document.getElementById(path + "ul").classList.toggle("d-block");
-          document.getElementById(path + "span").classList.toggle("tree-caret-down");
-        }
-        return;
-      } else {
-        $.ajax({
-          type: "GET",
-          url: '/ajax/get_zip_dir?id=-1&path=' + path,
-          dataType: 'text',
-          success: function (data) {
-            console.log("got response:");
-
-            dataArr = data.split('\n');
-            serverDir = dataArr.shift(); // Remove & return first element (server directory)
-            text = dataArr.join('\n');
-
-            try {
-              document.getElementById(path + "span").classList.add('tree-caret-down');
-              document.getElementById(path).innerHTML += text;
-              document.getElementById(path).classList.add("clicked");
-            } catch {
-              console.log("Bad")
-            }
-
-            var toggler = document.getElementById(path);
-
-            if (toggler.classList.contains('files-tree-title')) {
-              document.getElementById(path + "span").addEventListener("click", function caretListener() {
-                document.getElementById(path + "ul").classList.toggle("d-block");
-                document.getElementById(path + "span").classList.toggle("tree-caret-down");
-              });
-            }
-          },
-        });
-      }
-    }
-    if (webSocket) {
-      webSocket.on('send_temp_path', function (data) {
-        setTimeout(function () {
-          var x = document.querySelector('.bootbox');
-          if (x) {
-            x.remove()
-          }
-          var x = document.querySelector('.modal-backdrop');
-          if (x) {
-            x.remove()
-          }
-          document.getElementById('main-tree-input').setAttribute('value', data.path)
-          document.getElementById('main-tree-input-upload').setAttribute('value', data.path)
-          getTreeView(data.path);
-          show_file_tree();
-
-          $("#root_files_button").attr("disabled", "disabled");
-          $("#root_upload_button").attr("disabled", "disabled");
-
-        }, 5000);
       });
     }
 

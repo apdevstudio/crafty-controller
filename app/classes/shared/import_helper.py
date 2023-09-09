@@ -9,6 +9,8 @@ from app.classes.controllers.server_perms_controller import PermissionsServers
 from app.classes.controllers.servers_controller import ServersController
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.file_helpers import FileHelpers
+from app.classes.steamcmd.serverapps import SteamApps
+from app.classes.steamcmd.steamcmd import SteamCMD
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +21,8 @@ class ImportHelpers:
     def __init__(self, helper, file_helper):
         self.file_helper: FileHelpers = file_helper
         self.helper: Helpers = helper
+        self.steam_apps: SteamApps = SteamApps(helper)
+        self.steam: SteamCMD()
 
     def import_jar_server(self, server_path, new_server_dir, port, new_id):
         import_thread = threading.Thread(
@@ -215,6 +219,34 @@ class ImportHelpers:
                 os.chmod(full_jar_path, 0o2760)
         # deletes temp dir
         FileHelpers.del_dirs(temp_dir)
+
+    def download_steam_server(self, app_id, server_id, server_dir, server_exe):
+        download_thread = threading.Thread(
+            target=self.create_steam_server,
+            daemon=True,
+            args=(app_id, server_id, server_dir, server_exe),
+            name=f"{server_id}_download",
+        )
+        download_thread.start()
+
+    def create_steam_server(self, app_id, server_id, server_dir, server_exe):
+        # TODO: what is the server exe called @zedifus
+        server_exe = "steamcmd.exe"
+        # Sets the steamCMD install directory for next install.
+        self.steam = SteamCMD(server_dir)
+        self.steam.install()
+
+        full_jar_path = os.path.join(server_dir, server_exe)
+
+        if Helpers.is_os_windows():
+            server_command = f'"{full_jar_path}"'
+        else:
+            server_command = f"./{server_exe}"
+        logger.debug("command: " + server_command)
+
+        ServersController.set_import(server_id)
+        self.steam.app_update(app_id, "./gamefiles")
+        ServersController.finish_import(server_id)
 
     def download_bedrock_server(self, path, new_id):
         download_thread = threading.Thread(
