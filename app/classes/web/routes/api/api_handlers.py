@@ -119,11 +119,6 @@ def api_handlers(handler_args):
             handler_args,
         ),
         (
-            r"/api/v2/crafty/exeCache/?",
-            ApiCraftyExeCacheIndexHandler,
-            handler_args,
-        ),
-        (
             r"/api/v2/crafty/JarCache/?",
             ApiCraftyJarCacheIndexHandler,
             handler_args,
