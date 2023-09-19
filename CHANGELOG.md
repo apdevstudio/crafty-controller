@@ -13,6 +13,7 @@
 ### Tweaks
 - Polish/Enhance display for InApp Documentation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/613))
 - Add get_users command to Crafty's console ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/620))
+- Make files hover cursor pointer ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/627))
 ### Lang
 TBD
 <br><br>
