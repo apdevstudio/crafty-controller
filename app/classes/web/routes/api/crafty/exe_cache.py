@@ -1,7 +1,7 @@
 from app.classes.web.base_api_handler import BaseApiHandler
 
 
-class ApiCraftyExeCacheIndexHandler(BaseApiHandler):
+class ApiCraftyJarCacheIndexHandler(BaseApiHandler):
     def get(self):
         auth_data = self.authenticate_user()
         if not auth_data:
