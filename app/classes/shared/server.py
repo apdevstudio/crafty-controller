@@ -1814,5 +1814,5 @@ class ServerInstance:
         self.stats_helper.remove_old_stats(minimum_to_exist)
 
     def get_server_history(self):
-        history = self.stats_helper.get_history_stats(self.server_id, 3)
+        history = self.stats_helper.get_history_stats(self.server_id, 1)
         return history

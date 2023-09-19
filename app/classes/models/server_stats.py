@@ -142,9 +142,9 @@ class HelperServerStats:
         self.database.close()
         return server_data
 
-    def get_history_stats(self, server_id, num_days):
+    def get_history_stats(self, server_id, num_hours):
         self.database.connect(reuse_if_open=True)
-        max_age = datetime.datetime.now() - timedelta(days=num_days)
+        max_age = datetime.datetime.now() - timedelta(hours=num_hours)
         query_stats = (
             ServerStats.select()
             .where(ServerStats.created > max_age)
