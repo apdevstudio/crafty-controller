@@ -7,7 +7,7 @@ import json
 import logging
 import threading
 import urllib.parse
-import bleach
+import nh3
 import requests
 import tornado.web
 import tornado.escape
@@ -67,9 +67,7 @@ class PanelHandler(BaseHandler):
         ) in self.controller.crafty_perms.list_defined_crafty_permissions():
             argument = int(
                 float(
-                    bleach.clean(
-                        self.get_argument(f"permission_{permission.name}", "0")
-                    )
+                    nh3.clean(self.get_argument(f"permission_{permission.name}", "0"))
                 )
             )
             if argument:
@@ -78,9 +76,7 @@ class PanelHandler(BaseHandler):
                 )
 
             q_argument = int(
-                float(
-                    bleach.clean(self.get_argument(f"quantity_{permission.name}", "0"))
-                )
+                float(nh3.clean(self.get_argument(f"quantity_{permission.name}", "0")))
             )
             if q_argument:
                 server_quantity[permission.name] = q_argument
@@ -479,7 +475,7 @@ class PanelHandler(BaseHandler):
             template = "panel/dashboard.html"
 
         elif page == "server_detail":
-            subpage = bleach.clean(self.get_argument("subpage", ""))
+            subpage = nh3.clean(self.get_argument("subpage", ""))
 
             server_id = self.check_server_id()
             if server_id is None:
@@ -1284,7 +1280,7 @@ class PanelHandler(BaseHandler):
             template = "panel/panel_edit_user_apikeys.html"
 
         elif page == "remove_user":
-            user_id = bleach.clean(self.get_argument("id", None))
+            user_id = nh3.clean(self.get_argument("id", None))
 
             if (
                 not superuser
