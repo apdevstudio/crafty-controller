@@ -192,7 +192,7 @@
     /* TODO Update each element */
     if (server.running) {
       /* Update Players */
-      if (server.players) {
+      if (server.max != 0) {
         server_players.innerHTML = server.online + ` / ` + server.max + ` {{ translate('dashboard', 'max', data['lang']) }}<br />`
       }
 
