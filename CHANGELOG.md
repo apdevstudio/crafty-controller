@@ -10,6 +10,7 @@
 - Bump crypto to resolve #267 & #268 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/622))
 - Fix select installs failing to start, returning missing python package `packaging` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/629))
 - Fix public status page not updating #255 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/615))
+- Fix service worker vulrn and CQ raised by SonarQ ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/631))
 ### Refactor
 - Consolidate remaining frontend functions into API V2, and remove ajax internal API ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/585))
 - Replace bleach with nh3 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/628))
