@@ -11,6 +11,7 @@ from app.classes.shared.helpers import Helpers
 from app.classes.shared.tasks import TasksManager
 from app.classes.shared.migration import MigrationManager
 from app.classes.shared.main_controller import Controller
+from app.classes.shared.websocket_manager import WebSocketManager
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +119,7 @@ class MainPrompt(cmd.Cmd):
         Console.info(
             "Stopping all server daemons / threads - This may take a few seconds"
         )
-        self.helper.websocket_helper.disconnect_all()
+        WebSocketManager().disconnect_all()
         Console.info("Waiting for main thread to stop")
         while True:
             if self.tasks_manager.get_main_thread_run_status():

@@ -743,7 +743,7 @@ class PanelHandler(BaseHandler):
                         0, page_data["options"].pop(page_data["options"].index(days))
                     )
                 page_data["history_stats"] = self.controller.servers.get_history_stats(
-                    server_id, days
+                    server_id, hours=(days * 24)
                 )
 
             def get_banned_players_html():
