@@ -30,9 +30,6 @@
           </tr>
         </thead>
         <tbody>
-          {% if data['running'] != 0 %}
-          <span id="sync" style="margin-left: 5px;"><i class="fas fa-sync fa-spin"></i></span></h4>
-          {% end %}
           {% for server in data['servers'] %}
           {% if server['server_data']['show_status'] %}
           <tr>
@@ -47,10 +44,14 @@
             </td>
             <td id="server_motd_{{ server['stats']['server_id']['server_id'] }}">
               {% if server['stats']['desc'] != 'False' %}
-              <img src="/static/assets/images/pack.png" alt="icon"
-                style="-webkit-filter:grayscale(100%); filter:grayscale(100%)" />
-              <span id="input_motd_{{ server['stats']['server_id']['server_id'] }}" class="input_motd">{{
-                server['stats']['desc'] }}</span> <br />
+              <div class="row">
+                <div class="col-auto">
+                  <img src="/static/assets/images/pack.png" alt="icon" style="-webkit-filter:grayscale(100%); filter:grayscale(100%)" />
+                </div>
+                <div class="col-auto">
+                  <span id="input_motd_{{ server['stats']['server_id']['server_id'] }}" class="input_motd">{{ server['stats']['desc'] }}</span>
+                </div>
+              </div>
               {% end %}
             </td>
             <td id="server_version_{{ server['stats']['server_id']['server_id'] }}">
@@ -89,12 +90,9 @@
 </div>
 <!-- View for Small screen -->
 <div class="row justify-content-center align-items-sm-center">
-  <div class="content-wrapper login-modal d-sm-none d-block"  style="background-color: var(--dropdown-bg);">
+  <div class="content-wrapper login-modal d-sm-none d-block" style="background-color: var(--dropdown-bg);">
     <img src="/static/assets/images/logo_long.png" style='width: 100%;'>
     <hr />
-    {% if data['running'] != 0 %}
-    <span id="m_sync" style="margin-left: 5px;"><i class="fas fa-sync fa-spin"></i></span></h4>
-    {% end %}
     <div class="accordion" id="accordionServers">
       {% for server in data['servers'] %}
       {% if server['server_data']['show_status'] %}
@@ -103,17 +101,13 @@
           <h2 class="mb-0 container overflow-hidden">
             <div class="row">
               <div class="col-8 mx-0 px-0">
-                <a id="m_server_name_{{ server['stats']['server_id']['server_id'] }}"
-                  class="btn btn-link d-flex justify-content-center" type="button" data-toggle="collapse"
-                  data-target="#collapse-{{server['server_data']['server_id']}}" aria-expanded="false"
-                  aria-controls="collapse-{{server['server_data']['server_id']}}">
+                <a id="m_server_name_{{ server['stats']['server_id']['server_id'] }}" class="btn btn-link d-flex justify-content-center" type="button" data-toggle="collapse" data-target="#collapse-{{server['server_data']['server_id']}}" aria-expanded="false" aria-controls="collapse-{{server['server_data']['server_id']}}">
                   <i class="fas fa-server"></i>
                   {{ server['server_data']['server_name'] }}
                 </a>
               </div>
               <div class="col-4 mx-0 px-0">
-                <a id="m_server_online_status_{{ server['stats']['server_id']['server_id'] }}"
-                  class="btn btn-link d-flex justify-content-center" type="button">
+                <a id="m_server_online_status_{{ server['stats']['server_id']['server_id'] }}" class="btn btn-link d-flex justify-content-center" type="button">
                   {% if server['stats']['running'] %}
                   <div id="m_server_players_{{ server['stats']['server_id']['server_id'] }}">
                     <span class="text-success"><i class="fas fa-signal"></i> {{ server['stats']['online'] }} / {{
@@ -129,14 +123,12 @@
           </h2>
         </div>
 
-        <div id="collapse-{{server['server_data']['server_id']}}" class="collapse"
-          aria-labelledby="heading-{{server['server_data']['server_id']}}" data-parent="#accordionServers">
+        <div id="collapse-{{server['server_data']['server_id']}}" class="collapse" aria-labelledby="heading-{{server['server_data']['server_id']}}" data-parent="#accordionServers">
           <div class="card-body">
             {% if server['stats']['int_ping_results'] != 'False' %}
             <div id="m_server_motd_{{ server['stats']['server_id']['server_id'] }}" class="media">
               {% if server['stats']['desc'] != 'False' %}
-              <img src="/static/assets/images/pack.png" class="w-25 mr-3" alt="icon"
-                style="-webkit-filter:grayscale(100%); filter:grayscale(100%);" />
+              <img src="/static/assets/images/pack.png" class="w-25 mr-3" alt="icon" style="-webkit-filter:grayscale(100%); filter:grayscale(100%);" />
               {% end %}
               <div class="media-body">
                 {% if server['stats']['desc'] != 'False' %}
@@ -198,11 +190,9 @@
     m_server_online_status = document.getElementById('m_server_online_status_' + server.id);
 
     /* TODO Update each element */
-    if (server.int_ping_results) {
-      document.getElementById('sync').innerHTML = '';
-      document.getElementById('m_sync').innerHTML = '';
+    if (server.running) {
       /* Update Players */
-      if (server.players) {
+      if (server.max != 0) {
         server_players.innerHTML = server.online + ` / ` + server.max + ` {{ translate('dashboard', 'max', data['lang']) }}<br />`
       }
 
@@ -210,16 +200,18 @@
       var motd = "";
       if (server.desc) {
         if (server.icon) {
-          motd = `<img src="data:image/png;base64,` + server.icon + `" alt="icon" /> `;
+          img_motd = `<img src="data:image/png;base64,` + server.icon + `" alt="icon" /> `;
           m_motd = `<img src="data:image/png;base64,` + server.icon + `" alt="icon" /> `;
         }
         else {
-          motd = `<img src="/static/assets/images/pack.png" alt="icon" /> `;
+          img_motd = `<img src="/static/assets/images/pack.png" alt="icon" /> `;
           m_motd = `<img class="w-25 mr-3" src="/static/assets/images/pack.png" alt="icon" /> `;
         }
 
-        motd = motd + `<span id="input_motd_` + server.id + `" class="input_motd">` + server.desc + `</span> <br />`;
+        desc_motd = `<span id="input_motd_` + server.id + `" class="input_motd">` + server.desc + `</span> <br />`;
         m_motd = m_motd + `<div class="media-body"><span id="m_input_motd_` + server.id + `" class="input_motd">` + server.desc + `</span></div>`;
+
+        motd = `<div class="row"><div class="col-auto">` + img_motd + `</div><div class="col-auto">` + desc_motd + `</div></div>`;
         server_motd.innerHTML = motd;
         m_server_motd.innerHTML = m_motd;
       }
@@ -252,17 +244,31 @@
   }
 
   function update_servers_status(data) {
-    console.log(data);
-    update_one_server_status(data[0]);
+    console.log("update servers");
+    data.forEach(server => {
+      console.log(server);
+      update_one_server_status(server);
+    });
     display_motd();
+  }
+
+  function refreshStatus() {
+    let xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        var myData = JSON.parse(this.responseText);
+        update_servers_status(myData.data);
+      }
+    };
+    xmlHttp.open('GET', '/api/v2/servers/status', true);
+    xmlHttp.send();
+
+    setTimeout(refreshStatus, 30000);
   }
 
   $(document).ready(function () {
     console.log("ready!");
-
-    if (webSocket) {
-      webSocket.on('update_server_status', update_servers_status);
-    }
+    refreshStatus();
   }());
 </script>
 

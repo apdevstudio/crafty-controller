@@ -1,167 +1,80 @@
 <!DOCTYPE html>
 <html lang="{{ data['lang_page'] }}" class="default">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    {% block meta %}{% end %}
-    <title>{% block title %}{{ _('Default') }}{% end %}</title>
-    <!-- plugins:css -->
-    <link
-      rel="stylesheet"
-      href="/static/assets/vendors/mdi/css/materialdesignicons.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="/static/assets/vendors/flag-icon-css/css/flag-icon.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="/static/assets/vendors/ti-icons/css/themify-icons.css"
-    />
-    <link
-      rel="stylesheet"
-      href="/static/assets/vendors/typicons/typicons.css"
-    />
-    <link
-      rel="stylesheet"
-      href="/static/assets/vendors/css/vendor.bundle.base.css"
-    />
-    <link
-      rel="stylesheet"
-      href="/static/assets/vendors/fontawesome6/css/all.css"
-    />
-    <link rel="manifest" href="/static/assets/crafty.webmanifest" />
 
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <meta name="apple-mobile-web-app-title" content="Crafty" />
-    <link
-      rel="apple-touch-icon"
-      href="../static/assets/images/Crafty_4-0.png"
-    />
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <!-- End Plugin css for this page -->
-    <!-- Layout styles -->
-    <link rel="stylesheet" href="/static/assets/css/dark/style.css" />
-    <!-- End Layout styles -->
-    <link
-      rel="shortcut icon"
-      type="image/svg+xml"
-      href="/static/assets/images/logo_small.svg"
-    />
-    <link rel="alternate icon" href="/static/assets/images/favicon.png" />
-  </head>
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  {% block meta %}{% end %}
+  <title>{% block title %}{{ _('Default') }}{% end %}</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="/static/assets/vendors/mdi/css/materialdesignicons.min.css" />
+  <link rel="stylesheet" href="/static/assets/vendors/flag-icon-css/css/flag-icon.min.css" />
+  <link rel="stylesheet" href="/static/assets/vendors/ti-icons/css/themify-icons.css" />
+  <link rel="stylesheet" href="/static/assets/vendors/typicons/typicons.css" />
+  <link rel="stylesheet" href="/static/assets/vendors/css/vendor.bundle.base.css" />
+  <link rel="stylesheet" href="/static/assets/vendors/fontawesome6/css/all.css" />
+  <link rel="manifest" href="/static/assets/crafty.webmanifest" />
 
-  <body>
-    <div class="container-scroller">
-      <div class="container-fluid page-body-wrapper full-page-wrapper">
-        <div
-          class="content-wrapper d-flex align-items-sm-center auth auth-bg-1 theme-one"
-        >
-          <div class="mx-auto">
-            <div class="auto-form-wrapper">{% block content %} {% end %}</div>
-          </div>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="Crafty" />
+  <link rel="apple-touch-icon" href="../static/assets/images/Crafty_4-0.png" />
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <!-- End Plugin css for this page -->
+  <!-- Layout styles -->
+  <link rel="stylesheet" href="/static/assets/css/dark/style.css" />
+  <!-- End Layout styles -->
+  <link rel="shortcut icon" type="image/svg+xml" href="/static/assets/images/logo_small.svg" />
+  <link rel="alternate icon" href="/static/assets/images/favicon.png" />
+</head>
+
+<body>
+  <div class="container-scroller">
+    <div class="container-fluid page-body-wrapper full-page-wrapper">
+      <div class="content-wrapper d-flex align-items-sm-center auth auth-bg-1 theme-one">
+        <div class="mx-auto">
+          <div class="auto-form-wrapper">{% block content %} {% end %}</div>
         </div>
-        <!-- content-wrapper ends -->
       </div>
-      <!-- page-body-wrapper ends -->
+      <!-- content-wrapper ends -->
     </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    <script src="/static/assets/vendors/js/vendor.bundle.base.js"></script>
-    <!-- endinject -->
-    <!-- inject:js -->
-    <script src="/static/assets/js/shared/off-canvas.js"></script>
-    <script src="/static/assets/js/shared/hoverable-collapse.js"></script>
-    <script src="/static/assets/js/shared/misc.js"></script>
-    <!-- endinject -->
-    <script>
-      // {% if request.protocol == 'https' %}
-      let usingWebSockets = true;
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- page-body-wrapper ends -->
 
-      let listenEvents = [];
+  <!-- container-scroller -->
+  <!-- plugins:js -->
+  <script src="/static/assets/vendors/js/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- inject:js -->
+  <script src="/static/assets/js/shared/off-canvas.js"></script>
+  <script src="/static/assets/js/shared/hoverable-collapse.js"></script>
+  <script src="/static/assets/js/shared/misc.js"></script>
+  <!-- endinject -->
 
-      let pageQueryParams, page;
-
-      try {
-        pageQueryParams =
-          "page_query_params=" + encodeURIComponent(location.search);
-        page = "page=" + encodeURIComponent(location.pathname);
-        var wsInternal = new WebSocket(
-          "wss://" + location.host + "/ws?" + page + "&" + pageQueryParams
-        );
-        wsInternal.onopen = function () {
-          console.log("opened WebSocket connection:", wsInternal);
-        };
-        wsInternal.onmessage = function (rawMessage) {
-          var message = JSON.parse(rawMessage.data);
-
-          console.log("got message: ", message);
-
-          listenEvents
-            .filter((listenedEvent) => listenedEvent.event == message.event)
-            .forEach((listenedEvent) => listenedEvent.callback(message.data));
-        };
-        wsInternal.onerror = function (errorEvent) {
-          console.error("WebSocket Error", errorEvent);
-        };
-        wsInternal.onclose = function (closeEvent) {
-          console.log("Closed WebSocket", closeEvent);
-        };
-
-        webSocket = {
-          on: function (event, callback) {
-            console.log("registered " + event + " event");
-            listenEvents.push({ event: event, callback: callback });
-          },
-          emit: function (event, data) {
-            var message = {
-              event: event,
-              data: data,
-            };
-
-            wsInternal.send(JSON.stringify(message));
-          },
-        };
-      } catch (error) {
-        console.error("Error while making websocket helpers", error);
-        usingWebSockets = false;
+  {% block js %}
+  <!-- Custom js for this page -->
+  <script>
+    $(document).ready(function () {
+      let login_opacity_div = document.getElementById('login_opacity');
+      let opacity = login_opacity_div.getAttribute('data-value');
+      document.getElementById('login-form-background').style.background = 'rgb(34, 36, 55, ' + (opacity / 100) + ')';
+      //Register Service worker for mobile app
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/static/assets/js/shared/service-worker.js', { scope: '/' })
+          .then(function (registration) {
+            console.error('Service Worker Registered');
+          });
       }
-      // {% else %}
-      usingWebSockets = false;
-      warn(
-        "WebSockets are not supported in Crafty if not using the https protocol"
-      );
-      var webSocket;
-      // {% end%}
-    </script>
-    {% block js %}
-    <!-- Custom js for this page -->
-    <script>
-      $(document).ready(function () {
-        let login_opacity_div = document.getElementById("login_opacity");
-        let opacity = login_opacity_div.getAttribute("data-value");
-        document.getElementById("login-form-background").style.background =
-          "rgb(34, 36, 55, " + opacity / 100 + ")";
-        //Register Service worker for mobile app
-        if ("serviceWorker" in navigator) {
-          navigator.serviceWorker
-            .register("/static/assets/js/shared/service-worker.js", {
-              scope: "/",
-            })
-            .then(function (registration) {
-              console.log("Service Worker Registered");
-            });
-        }
-      });
-    </script>
-    <!-- End custom js for this page -->
-    {% end %}
-  </body>
+    });
+
+  </script>
+  <!-- End custom js for this page -->
+  {% end %}
+
+</body>
+
 </html>
