@@ -12,6 +12,7 @@ from app.classes.shared.console import Console
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.main_controller import Controller
 from app.classes.web.base_handler import BaseHandler
+from app.classes.shared.websocket_manager import WebSocketManager
 
 logger = logging.getLogger(__name__)
 
@@ -115,7 +116,7 @@ class UploadHandler(BaseHandler):
                 self.request.headers.get("X-FileName", None)
             )
             if not str(filename).endswith(".zip"):
-                self.helper.websocket_helper.broadcast("close_upload_box", "error")
+                WebSocketManager().broadcast("close_upload_box", "error")
                 self.finish("error")
             full_path = os.path.join(path, filename)
 
@@ -315,13 +316,13 @@ class UploadHandler(BaseHandler):
         if self.do_upload:
             time.sleep(5)
             if files_left == 0:
-                self.helper.websocket_helper.broadcast("close_upload_box", "success")
+                WebSocketManager().broadcast("close_upload_box", "success")
             self.finish("success")  # Nope, I'm sending "success"
             self.f.close()
         else:
             time.sleep(5)
             if files_left == 0:
-                self.helper.websocket_helper.broadcast("close_upload_box", "error")
+                WebSocketManager().broadcast("close_upload_box", "error")
             self.finish("error")
 
     def data_received(self, chunk):

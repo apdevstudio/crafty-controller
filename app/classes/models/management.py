@@ -17,6 +17,7 @@ from app.classes.models.users import HelperUsers
 from app.classes.models.servers import Servers
 from app.classes.models.server_permissions import PermissionsServers
 from app.classes.shared.main_models import DatabaseShortcuts
+from app.classes.shared.websocket_manager import WebSocketManager
 
 logger = logging.getLogger(__name__)
 
@@ -161,9 +162,7 @@ class HelpersManagement:
         server_users = PermissionsServers.get_server_user_list(server_id)
         for user in server_users:
             try:
-                self.helper.websocket_helper.broadcast_user(
-                    user, "notification", audit_msg
-                )
+                WebSocketManager().broadcast_user(user, "notification", audit_msg)
             except Exception as e:
                 logger.error(f"Error broadcasting to user {user} - {e}")
 

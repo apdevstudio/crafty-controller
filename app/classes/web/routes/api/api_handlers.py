@@ -12,6 +12,7 @@ from app.classes.web.routes.api.roles.index import ApiRolesIndexHandler
 from app.classes.web.routes.api.roles.role.index import ApiRolesRoleIndexHandler
 from app.classes.web.routes.api.roles.role.servers import ApiRolesRoleServersHandler
 from app.classes.web.routes.api.roles.role.users import ApiRolesRoleUsersHandler
+
 from app.classes.web.routes.api.servers.index import ApiServersIndexHandler
 from app.classes.web.routes.api.servers.server.action import (
     ApiServersServerActionHandler,
@@ -21,7 +22,13 @@ from app.classes.web.routes.api.servers.server.logs import ApiServersServerLogsH
 from app.classes.web.routes.api.servers.server.public import (
     ApiServersServerPublicHandler,
 )
+from app.classes.web.routes.api.servers.server.status import (
+    ApiServersServerStatusHandler,
+)
 from app.classes.web.routes.api.servers.server.stats import ApiServersServerStatsHandler
+from app.classes.web.routes.api.servers.server.history import (
+    ApiServersServerHistoryHandler,
+)
 from app.classes.web.routes.api.servers.server.stdin import ApiServersServerStdinHandler
 from app.classes.web.routes.api.servers.server.tasks.index import (
     ApiServersServerTasksIndexHandler,
@@ -68,9 +75,10 @@ from app.classes.web.routes.api.crafty.config.index import (
 from app.classes.web.routes.api.crafty.config.server_dir import (
     ApiCraftyConfigServerDirHandler,
 )
+from app.classes.web.routes.api.crafty.stats.stats import ApiCraftyHostStatsHandler
 from app.classes.web.routes.api.crafty.clogs.index import ApiCraftyLogIndexHandler
 from app.classes.web.routes.api.crafty.imports.index import ApiImportFilesIndexHandler
-from app.classes.web.routes.api.crafty.exe_cache import ApiCraftyExeCacheIndexHandler
+from app.classes.web.routes.api.crafty.exe_cache import ApiCraftyJarCacheIndexHandler
 
 
 def api_handlers(handler_args):
@@ -107,8 +115,18 @@ def api_handlers(handler_args):
             handler_args,
         ),
         (
+            r"/api/v2/crafty/stats/?",
+            ApiCraftyHostStatsHandler,
+            handler_args,
+        ),
+        (
             r"/api/v2/crafty/logs/([a-z0-9_]+)/?",
             ApiCraftyLogIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/crafty/JarCache/?",
+            ApiCraftyJarCacheIndexHandler,
             handler_args,
         ),
         (
@@ -179,8 +197,8 @@ def api_handlers(handler_args):
             handler_args,
         ),
         (
-            r"/api/v2/crafty/exeCache/?",
-            ApiCraftyExeCacheIndexHandler,
+            r"/api/v2/servers/status/?",
+            ApiServersServerStatusHandler,
             handler_args,
         ),
         (
@@ -234,6 +252,11 @@ def api_handlers(handler_args):
             handler_args,
         ),
         (
+            r"/api/v2/servers/([0-9]+)/history/?",
+            ApiServersServerHistoryHandler,
+            handler_args,
+        ),
+        (
             r"/api/v2/servers/([0-9]+)/webhook/([0-9]+)/?",
             ApiServersServerWebhooksWebhookIndexHandler,
             handler_args,
@@ -241,7 +264,6 @@ def api_handlers(handler_args):
         (
             r"/api/v2/servers/([0-9]+)/webhook/?",
             ApiServersServerWebhooksIndexHandler,
-            handler_args,
         ),
         (
             r"/api/v2/servers/([0-9]+)/action/([a-z_]+)/?",

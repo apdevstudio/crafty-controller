@@ -14,6 +14,7 @@ import tornado.httpserver
 from app.classes.models.management import HelpersManagement
 from app.classes.shared.console import Console
 from app.classes.shared.helpers import Helpers
+from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.main_controller import Controller
 from app.classes.web.public_handler import PublicHandler
 from app.classes.web.panel_handler import PanelHandler
@@ -32,7 +33,7 @@ from app.classes.web.api_handler import (
     ListServers,
     SendCommand,
 )
-from app.classes.web.websocket_handler import SocketHandler
+from app.classes.web.websocket_handler import WebSocketHandler
 from app.classes.web.static_handler import CustomStaticHandler
 from app.classes.web.upload_handler import UploadHandler
 from app.classes.web.http_handler import HTTPHandler, HTTPHandlerPage
@@ -46,7 +47,13 @@ class Webserver:
     controller: Controller
     helper: Helpers
 
-    def __init__(self, helper, controller, tasks_manager, file_helper):
+    def __init__(
+        self,
+        helper: Helpers,
+        controller: Controller,
+        tasks_manager,
+        file_helper: FileHelpers,
+    ):
         self.ioloop = None
         self.http_server = None
         self.https_server = None
@@ -151,7 +158,7 @@ class Webserver:
             (r"/", DefaultHandler, handler_args),
             (r"/panel/(.*)", PanelHandler, handler_args),
             (r"/server/(.*)", ServerHandler, handler_args),
-            (r"/ws", SocketHandler, handler_args),
+            (r"/ws", WebSocketHandler, handler_args),
             (r"/upload", UploadHandler, handler_args),
             (r"/status", StatusHandler, handler_args),
             # API Routes V1

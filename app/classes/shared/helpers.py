@@ -29,7 +29,6 @@ from app.classes.shared.null_writer import NullWriter
 from app.classes.shared.console import Console
 from app.classes.shared.installer import installer
 from app.classes.shared.translation import Translation
-from app.classes.web.websocket_helper import WebSocketHelper
 
 with redirect_stderr(NullWriter()):
     import psutil
@@ -78,7 +77,6 @@ class Helpers:
         self.passhasher = PasswordHasher()
         self.exiting = False
 
-        self.websocket_helper = WebSocketHelper(self)
         self.translation = Translation(self)
         self.update_available = False
         self.ignored_names = ["crafty_managed.txt", "db_stats"]

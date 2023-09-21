@@ -33,6 +33,7 @@ from app.classes.shared.helpers import Helpers
 from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.import_helper import ImportHelpers
 from app.classes.minecraft.serverjars import ServerJars
+from app.classes.shared.websocket_manager import WebSocketManager
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +114,7 @@ class Controller:
                     self.del_support_file(exec_user["support_logs"])
         # pausing so on screen notifications can run for user
         time.sleep(7)
-        self.helper.websocket_helper.broadcast_user(
+        WebSocketManager().broadcast_user(
             exec_user["user_id"], "notification", "Preparing your support logs"
         )
         self.helper.ensure_dir_exists(
@@ -209,17 +210,15 @@ class Controller:
         ) as f:
             f.write(sys_info_string)
         FileHelpers.make_compressed_archive(temp_zip_storage, temp_dir, sys_info_string)
-        if len(self.helper.websocket_helper.clients) > 0:
-            self.helper.websocket_helper.broadcast_user(
+        if len(WebSocketManager().clients) > 0:
+            WebSocketManager().broadcast_user(
                 exec_user["user_id"],
                 "support_status_update",
                 Helpers.calc_percent(temp_dir, temp_zip_storage + ".zip"),
             )
 
         temp_zip_storage += ".zip"
-        self.helper.websocket_helper.broadcast_user(
-            exec_user["user_id"], "send_logs_bootbox", {}
-        )
+        WebSocketManager().broadcast_user(exec_user["user_id"], "send_logs_bootbox", {})
 
         self.users.set_support_path(exec_user["user_id"], temp_zip_storage)
 
@@ -252,8 +251,8 @@ class Controller:
         results = Helpers.calc_percent(source_path, dest_path)
         self.log_stats = results
 
-        if len(self.helper.websocket_helper.clients) > 0:
-            self.helper.websocket_helper.broadcast_user(
+        if len(WebSocketManager().clients) > 0:
+            WebSocketManager().broadcast_user(
                 exec_user["user_id"], "support_status_update", results
             )
 
@@ -910,7 +909,7 @@ class Controller:
     def t_update_master_server_dir(self, new_server_path, user_id):
         new_server_path = self.helper.wtol_path(new_server_path)
         new_server_path = os.path.join(new_server_path, "servers")
-        self.helper.websocket_helper.broadcast_page(
+        WebSocketManager().broadcast_page(
             "/panel/panel_config", "move_status", "Checking dir"
         )
         current_master = self.helper.wtol_path(
@@ -920,7 +919,7 @@ class Controller:
             logger.info(
                 "Admin tried to change server dir to current server dir. Canceling..."
             )
-            self.helper.websocket_helper.broadcast_page(
+            WebSocketManager().broadcast_page(
                 "/panel/panel_config",
                 "move_status",
                 "done",
@@ -931,18 +930,18 @@ class Controller:
                 "Admin tried to change server dir to be inside a sub directory of the"
                 " current server dir. This will result in a copy loop."
             )
-            self.helper.websocket_helper.broadcast_page(
+            WebSocketManager().broadcast_page(
                 "/panel/panel_config",
                 "move_status",
                 "done",
             )
             return
 
-        self.helper.websocket_helper.broadcast_page(
+        WebSocketManager().broadcast_page(
             "/panel/panel_config", "move_status", "Checking permissions"
         )
         if not self.helper.ensure_dir_exists(new_server_path):
-            self.helper.websocket_helper.broadcast_user(
+            WebSocketManager().broadcast_user(
                 user_id,
                 "send_start_error",
                 {
@@ -966,7 +965,7 @@ class Controller:
                 new_server_path, server.get("server_uuid")
             )
             if os.path.isdir(server_path):
-                self.helper.websocket_helper.broadcast_page(
+                WebSocketManager().broadcast_page(
                     "/panel/panel_config",
                     "move_status",
                     f"Moving {server.get('server_name')}",
@@ -1007,7 +1006,7 @@ class Controller:
                 self.servers.update_unloaded_server(server_obj)
         self.servers.init_all_servers()
         self.helper.dir_migration = False
-        self.helper.websocket_helper.broadcast_page(
+        WebSocketManager().broadcast_page(
             "/panel/panel_config",
             "move_status",
             "done",

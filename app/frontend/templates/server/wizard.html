@@ -1153,7 +1153,7 @@
   async function refreshCache() {
     document.getElementById("refresh-cache").classList.add("fa-spin")
     let token = getCookie("_xsrf")
-    let res = await fetch(`/api/v2/crafty/exeCache`, {
+    let res = await fetch(`/api/v2/crafty/JarCache`, {
       method: 'GET',
       headers: {
         'X-XSRFToken': token

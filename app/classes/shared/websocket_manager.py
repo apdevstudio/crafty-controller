@@ -1,26 +1,25 @@
 import json
 import logging
 
+from app.classes.shared.singleton import Singleton
 from app.classes.shared.console import Console
+from app.classes.models.users import HelperUsers
 
 logger = logging.getLogger(__name__)
 
 
-class WebSocketHelper:
-    def __init__(self, helper):
-        self.helper = helper
+class WebSocketManager(metaclass=Singleton):
+    def __init__(self):
         self.clients = set()
 
     def add_client(self, client):
         self.clients.add(client)
 
     def remove_client(self, client):
-        self.clients.remove(client)
-
-    def send_message(self, client, event_type: str, data):
-        if client.check_auth():
-            message = str(json.dumps({"event": event_type, "data": data}))
-            client.write_message_helper(message)
+        if client in self.clients:
+            self.clients.remove(client)
+        else:
+            logger.exception("Error caught while removing unknown WebSocket client")
 
     def broadcast(self, event_type: str, data):
         logger.debug(
@@ -29,12 +28,20 @@ class WebSocketHelper:
         )
         for client in self.clients:
             try:
-                self.send_message(client, event_type, data)
+                client.send_message(event_type, data)
             except Exception as e:
                 logger.exception(
                     f"Error caught while sending WebSocket message to "
                     f"{client.get_remote_ip()} {e}"
                 )
+
+    def broadcast_to_admins(self, event_type: str, data):
+        def filter_fn(client):
+            if client.get_user_id in HelperUsers.get_super_user_list():
+                return True
+            return False
+
+        self.broadcast_with_fn(filter_fn, event_type, data)
 
     def broadcast_page(self, page: str, event_type: str, data):
         def filter_fn(client):
@@ -90,13 +97,14 @@ class WebSocketHelper:
         static_clients = self.clients
         clients = list(filter(filter_fn, static_clients))
         logger.debug(
-            f"Sending to {len(clients)} out of {len(self.clients)} "
+            f"Sending to {len(clients)}  \
+            out of {len(self.clients)} "
             f"clients: {json.dumps({'event': event_type, 'data': data})}"
         )
 
         for client in clients[:]:
             try:
-                self.send_message(client, event_type, data)
+                client.send_message(event_type, data)
             except Exception as e:
                 logger.exception(
                     f"Error catched while sending WebSocket message to "

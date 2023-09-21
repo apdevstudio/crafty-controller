@@ -1,18 +1,26 @@
 # Changelog
 ## --- [4.2.0] - 2023/TBD
 ### New features
-- Finish and Activate Arcadia notification backend ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/621))
+- Finish and Activate Arcadia notification backend ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/621) | [Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/626))
 ### Bug fixes
 - PWA: Removed the custom offline page in favour of browser default ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/607))
 - Fix hidden servers appearing visible on public mobile status page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/612))
 - Correctly handle if a server returns a string instead of json data on socket ping ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/614))
 - Bump tornado to resolve #269 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/623))
 - Bump crypto to resolve #267 & #268 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/622))
+- Fix select installs failing to start, returning missing python package `packaging` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/629))
+- Fix public status page not updating #255 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/615))
+- Fix service worker vulrn and CQ raised by SonarQ ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/631))
 ### Refactor
 - Consolidate remaining frontend functions into API V2, and remove ajax internal API ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/585))
+- Replace bleach with nh3 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/628))
+- Add API route for historical server stats ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/615))
+- Add API route for host stats ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/615))
 ### Tweaks
 - Polish/Enhance display for InApp Documentation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/613))
 - Add get_users command to Crafty's console ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/620))
+- Make files hover cursor pointer ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/627))
+- Use `Jar` class naming for jar refresh to make room for steamCMD naming in the future ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/630))
 ### Lang
 TBD
 <br><br>
