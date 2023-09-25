@@ -23015,11 +23015,6 @@ ul li {
   color: #ffffff;
 }
 
-.nav-pills.tab-simple-styled .nav-link.active {
-  background: var(--info);
-  color: #ffffff;
-}
-
 .tab-tile-style {
   display: -webkit-box;
   display: -ms-flexbox;
