@@ -22979,25 +22979,45 @@ ul li {
   padding-left: 0;
 }
 
-.tab-simple-styled {
+.nav-tabs.tab-simple-styled {
   border-bottom: none;
   margin-top: 30px;
   margin-bottom: 30px;
 }
 
-.tab-simple-styled .nav-item {
+.nav-tabs.tab-simple-styled .nav-item {
   margin-right: 30px;
 }
 
-.tab-simple-styled .nav-item .nav-link {
+.nav-tabs.tab-simple-styled .nav-item .nav-link {
   border: none;
   padding: 0;
   color: var(--base-text);
 }
 
-.tab-simple-styled .nav-item .nav-link.active {
+.nav-tabs.tab-simple-styled .nav-item .nav-link.active {
   background: var(--dropdown-bg);
   color: var(--info);
+}
+
+.nav-pills.tab-simple-styled {
+  border-bottom: none;
+  /*margin-top: 1.5rem;*/
+  margin-bottom: 1.5rem;
+}
+
+/*.nav-pills.tab-simple-styled .nav-item {
+  margin-right: 1.5rem;
+}*/
+
+.nav-pills.tab-simple-styled .nav-item .nav-link.active {
+  background: var(--info);
+  color: #ffffff;
+}
+
+.nav-pills.tab-simple-styled .nav-link.active {
+  background: var(--info);
+  color: #ffffff;
 }
 
 .tab-tile-style {
