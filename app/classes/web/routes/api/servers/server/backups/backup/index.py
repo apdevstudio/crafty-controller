@@ -156,7 +156,6 @@ class ApiServersServerBackupsBackupIndexHandler(BaseApiHandler):
                     )
                     job_data["server_id"] = new_server_id
                     del job_data["schedule_id"]
-                    print(job_data)
                     self.tasks_manager.update_job(schedule.schedule_id, job_data)
                 # preserve execution command
                 new_server_obj = self.controller.servers.get_server_obj(new_server_id)
