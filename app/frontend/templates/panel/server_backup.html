@@ -44,25 +44,25 @@
             <div class="col-md-6 col-sm-12">
               <br>
               <br>
-              <form id="backup-form" class="forms-sample">
-                {% if data['backing_up'] %}
-                <div class="progress" style="height: 15px;">
-                  <div class="progress-bar progress-bar-striped progress-bar-animated" id="backup_progress_bar"
-                    role="progressbar" style="width:{{data['backup_stats']['percent']}}%;"
-                    aria-valuenow="{{data['backup_stats']['percent']}}" aria-valuemin="0" aria-valuemax="100">{{
-                    data['backup_stats']['percent'] }}%</div>
-                </div>
-                <p>Backing up <i class="fas fa-spin fa-spinner"></i> <span
-                    id="total_files">{{data['server_stats']['world_size']}}</span></p>
-                {% end %}
+              {% if data['backing_up'] %}
+              <div class="progress" style="height: 15px;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" id="backup_progress_bar"
+                  role="progressbar" style="width:{{data['backup_stats']['percent']}}%;"
+                  aria-valuenow="{{data['backup_stats']['percent']}}" aria-valuemin="0" aria-valuemax="100">{{
+                  data['backup_stats']['percent'] }}%</div>
+              </div>
+              <p>Backing up <i class="fas fa-spin fa-spinner"></i> <span
+                  id="total_files">{{data['server_stats']['world_size']}}</span></p>
+              {% end %}
 
-                <br>
-                {% if not data['backing_up'] %}
-                <div id="backup_button" class="form-group">
-                  <button class="btn btn-primary" id="backup_now_button">{{ translate('serverBackups', 'backupNow',
-                    data['lang']) }}</button>
-                </div>
-                {% end %}
+              <br>
+              {% if not data['backing_up'] %}
+              <div id="backup_button" class="form-group">
+                <button class="btn btn-primary" id="backup_now_button">{{ translate('serverBackups', 'backupNow',
+                  data['lang']) }}</button>
+              </div>
+              {% end %}
+              <form id="backup-form" class="forms-sample">
                 <div class="form-group">
                   {% if data['super_user'] %}
                   <label for="server_name">{{ translate('serverBackups', 'storageLocation', data['lang']) }} <small
@@ -309,11 +309,6 @@
 
   async function backup_started() {
     const token = getCookie("_xsrf")
-    document.getElementById('backup_button').style.visibility = 'hidden';
-    var dialog = bootbox.dialog({
-      message: "{{ translate('serverBackups', 'backupTask', data['lang']) }}",
-      closeButton: false
-    });
     let res = await fetch(`/api/v2/servers/${server_id}/action/backup_server`, {
         method: 'POST',
         headers: {
@@ -323,8 +318,14 @@
       let responseData = await res.json();
       if (responseData.status === "ok") {
         console.log(responseData);
-        process_tree_response(responseData);
-
+        $("#backup_button").html(`<div class="progress" style="height: 15px;">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated" id="backup_progress_bar"
+                    role="progressbar" style="width:{{data['backup_stats']['percent']}}%;"
+                    aria-valuenow="{{data['backup_stats']['percent']}}" aria-valuemin="0" aria-valuemax="100">{{
+                    data['backup_stats']['percent'] }}%</div>
+                </div>
+                <p>Backing up <i class="fas fa-spin fa-spinner"></i> <span
+                    id="total_files">{{data['server_stats']['world_size']}}</span></p>`);
       } else {
 
         bootbox.alert({

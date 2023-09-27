@@ -121,11 +121,11 @@ class ApiServersServerBackupsBackupIndexHandler(BaseApiHandler):
             server_data = self.controller.servers.get_server_data_by_id(server_id)
             zip_name = data["filename"]
             # import the server again based on zipfile
-            if server_data["type"] == "minecraft-java":
-                backup_path = svr_obj.backup_path
-                if Helpers.validate_traversal(backup_path, zip_name):
-                    temp_dir = Helpers.unzip_backup_archive(backup_path, zip_name)
-                    new_server = self.controller.import_zip_server(
+            backup_path = svr_obj.backup_path
+            if Helpers.validate_traversal(backup_path, zip_name):
+                temp_dir = Helpers.unzip_backup_archive(backup_path, zip_name)
+                if server_data["type"] == "minecraft-java":
+                    new_server = self.controller.restore_java_zip_server(
                         svr_obj.server_name,
                         temp_dir,
                         server_data["executable"],
@@ -134,71 +134,78 @@ class ApiServersServerBackupsBackupIndexHandler(BaseApiHandler):
                         server_data["server_port"],
                         server_data["created_by"],
                     )
-                    new_server_id = new_server
-                    new_server = self.controller.servers.get_server_data(new_server)
-                    self.controller.rename_backup_dir(
-                        server_id, new_server_id, new_server["server_uuid"]
+                elif server_data["type"] == "minecraft-bedrock":
+                    new_server = self.controller.restore_bedrock_zip_server(
+                        svr_obj.server_name,
+                        temp_dir,
+                        server_data["executable"],
+                        server_data["server_port"],
+                        server_data["created_by"],
                     )
-                    # preserve current schedules
-                    for schedule in self.controller.management.get_schedules_by_server(
-                        server_id
-                    ):
-                        self.tasks_manager.update_job(
-                            schedule.schedule_id, {"server_id": new_server_id}
-                        )
-                    # preserve execution command
-                    new_server_obj = self.controller.servers.get_server_obj(
-                        new_server_id
+                new_server_id = new_server
+                new_server = self.controller.servers.get_server_data(new_server)
+                self.controller.rename_backup_dir(
+                    server_id, new_server_id, new_server["server_uuid"]
+                )
+                # preserve current schedules
+                for schedule in self.controller.management.get_schedules_by_server(
+                    server_id
+                ):
+                    job_data = self.controller.management.get_scheduled_task(
+                        schedule.schedule_id
                     )
-                    new_server_obj.execution_command = server_data["execution_command"]
-                    # reset executable path
-                    if svr_obj.path in svr_obj.executable:
-                        new_server_obj.executable = str(svr_obj.executable).replace(
-                            svr_obj.path, new_server_obj.path
-                        )
-                    # reset run command path
-                    if svr_obj.path in svr_obj.execution_command:
-                        new_server_obj.execution_command = str(
-                            svr_obj.execution_command
-                        ).replace(svr_obj.path, new_server_obj.path)
-                    # reset log path
-                    if svr_obj.path in svr_obj.log_path:
-                        new_server_obj.log_path = str(svr_obj.log_path).replace(
-                            svr_obj.path, new_server_obj.path
-                        )
-                    self.controller.servers.update_server(new_server_obj)
+                    job_data["server_id"] = new_server_id
+                    del job_data["schedule_id"]
+                    self.tasks_manager.update_job(schedule.schedule_id, job_data)
+                # preserve execution command
+                new_server_obj = self.controller.servers.get_server_obj(new_server_id)
+                new_server_obj.execution_command = server_data["execution_command"]
+                # reset executable path
+                if svr_obj.path in svr_obj.executable:
+                    new_server_obj.executable = str(svr_obj.executable).replace(
+                        svr_obj.path, new_server_obj.path
+                    )
+                # reset run command path
+                if svr_obj.path in svr_obj.execution_command:
+                    new_server_obj.execution_command = str(
+                        svr_obj.execution_command
+                    ).replace(svr_obj.path, new_server_obj.path)
+                # reset log path
+                if svr_obj.path in svr_obj.log_path:
+                    new_server_obj.log_path = str(svr_obj.log_path).replace(
+                        svr_obj.path, new_server_obj.path
+                    )
+                self.controller.servers.update_server(new_server_obj)
 
-                    # preserve backup config
-                    backup_config = self.controller.management.get_backup_config(
-                        server_id
-                    )
-                    excluded_dirs = []
-                    server_obj = self.controller.servers.get_server_obj(server_id)
-                    loop_backup_path = self.helper.wtol_path(server_obj.path)
-                    for item in self.controller.management.get_excluded_backup_dirs(
-                        server_id
-                    ):
-                        item_path = self.helper.wtol_path(item)
-                        bu_path = os.path.relpath(item_path, loop_backup_path)
-                        bu_path = os.path.join(new_server_obj.path, bu_path)
-                        excluded_dirs.append(bu_path)
-                    self.controller.management.set_backup_config(
-                        new_server_id,
-                        new_server_obj.backup_path,
-                        backup_config["max_backups"],
-                        excluded_dirs,
-                        backup_config["compress"],
-                        backup_config["shutdown"],
-                    )
-                    # remove old server's tasks
-                    try:
-                        self.tasks_manager.remove_all_server_tasks(server_id)
-                    except JobLookupError as e:
-                        logger.info("No active tasks found for server: {e}")
-                    self.controller.remove_server(server_id, True)
-        except Exception:
+                # preserve backup config
+                backup_config = self.controller.management.get_backup_config(server_id)
+                excluded_dirs = []
+                server_obj = self.controller.servers.get_server_obj(server_id)
+                loop_backup_path = self.helper.wtol_path(server_obj.path)
+                for item in self.controller.management.get_excluded_backup_dirs(
+                    server_id
+                ):
+                    item_path = self.helper.wtol_path(item)
+                    bu_path = os.path.relpath(item_path, loop_backup_path)
+                    bu_path = os.path.join(new_server_obj.path, bu_path)
+                    excluded_dirs.append(bu_path)
+                self.controller.management.set_backup_config(
+                    new_server_id,
+                    new_server_obj.backup_path,
+                    backup_config["max_backups"],
+                    excluded_dirs,
+                    backup_config["compress"],
+                    backup_config["shutdown"],
+                )
+                # remove old server's tasks
+                try:
+                    self.tasks_manager.remove_all_server_tasks(server_id)
+                except JobLookupError as e:
+                    logger.info("No active tasks found for server: {e}")
+                self.controller.remove_server(server_id, True)
+        except Exception as e:
             return self.finish_json(
-                400, {"status": "error", "error": "NO BACKUP FOUND"}
+                400, {"status": "error", "error": f"NO BACKUP FOUND {e}"}
             )
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],

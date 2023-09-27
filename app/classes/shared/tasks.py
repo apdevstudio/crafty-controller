@@ -102,7 +102,7 @@ class TasksManager:
                     )
                 except:
                     logger.error(
-                        "Server value requested does not exist! "
+                        f"Server value {cmd['server_id']} requested does not exist! "
                         "Purging item from waiting commands."
                     )
                     continue
