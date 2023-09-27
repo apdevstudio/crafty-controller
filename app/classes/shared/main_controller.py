@@ -594,6 +594,66 @@ class Controller:
             return False
         return True
 
+    def restore_java_zip_server(
+        self,
+        server_name: str,
+        zip_path: str,
+        server_jar: str,
+        min_mem: int,
+        max_mem: int,
+        port: int,
+        user_id: int,
+    ):
+        server_id = Helpers.create_uuid()
+        new_server_dir = os.path.join(self.helper.servers_dir, server_id)
+        backup_path = os.path.join(self.helper.backup_path, server_id)
+        if Helpers.is_os_windows():
+            new_server_dir = Helpers.wtol_path(new_server_dir)
+            backup_path = Helpers.wtol_path(backup_path)
+            new_server_dir.replace(" ", "^ ")
+            backup_path.replace(" ", "^ ")
+
+        temp_dir = Helpers.get_os_understandable_path(zip_path)
+        Helpers.ensure_dir_exists(new_server_dir)
+        Helpers.ensure_dir_exists(backup_path)
+
+        full_jar_path = os.path.join(new_server_dir, server_jar)
+
+        if Helpers.is_os_windows():
+            server_command = (
+                f"java -Xms{Helpers.float_to_string(min_mem)}M "
+                f"-Xmx{Helpers.float_to_string(max_mem)}M "
+                f'-jar "{full_jar_path}" nogui'
+            )
+        else:
+            server_command = (
+                f"java -Xms{Helpers.float_to_string(min_mem)}M "
+                f"-Xmx{Helpers.float_to_string(max_mem)}M "
+                f"-jar {full_jar_path} nogui"
+            )
+        logger.debug("command: " + server_command)
+        server_log_file = "./logs/latest.log"
+        server_stop = "stop"
+
+        new_id = self.register_server(
+            server_name,
+            server_id,
+            new_server_dir,
+            backup_path,
+            server_command,
+            server_jar,
+            server_log_file,
+            server_stop,
+            port,
+            user_id,
+            server_type="minecraft-java",
+        )
+        ServersController.set_import(new_id)
+        self.import_helper.import_java_zip_server(
+            temp_dir, new_server_dir, port, new_id
+        )
+        return new_id
+
     # **********************************************************************************
     #                                   BEDROCK IMPORTS
     # **********************************************************************************
@@ -691,7 +751,7 @@ class Controller:
         self.import_helper.download_bedrock_server(new_server_dir, new_id)
         return new_id
 
-    def import_bedrock_zip_server(
+    def restore_bedrock_zip_server(
         self,
         server_name: str,
         zip_path: str,
@@ -836,6 +896,7 @@ class Controller:
 
                 srv_obj = server["server_obj"]
                 srv_obj.server_scheduler.shutdown()
+                srv_obj.dir_scheduler.shutdown()
                 running = srv_obj.check_running()
 
                 if running:

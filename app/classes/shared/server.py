@@ -1048,13 +1048,6 @@ class ServerInstance:
         logger.info(f"Backup Thread started for server {self.settings['server_name']}.")
 
     def a_backup_server(self):
-        if len(WebSocketManager().clients) > 0:
-            WebSocketManager().broadcast_page_params(
-                "/panel/server_detail",
-                {"id": str(self.server_id)},
-                "backup_reload",
-                {"percent": 0, "total_files": 0},
-            )
         was_server_running = None
         logger.info(f"Starting server {self.name} (ID {self.server_id}) backup")
         server_users = PermissionsServers.get_server_user_list(self.server_id)
@@ -1567,7 +1560,6 @@ class ServerInstance:
 
         # process stats
         p_stats = Stats._try_get_process_stats(self.process, self.check_running())
-
         internal_ip = server["server_ip"]
         server_port = server["server_port"]
         server_name = server.get("server_name", f"ID#{server_id}")
