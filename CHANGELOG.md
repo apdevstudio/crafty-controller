@@ -21,6 +21,7 @@
 - Add get_users command to Crafty's console ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/620))
 - Make files hover cursor pointer ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/627))
 - Use `Jar` class naming for jar refresh to make room for steamCMD naming in the future ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/630))
+- Improve ui visibility of Build Wizard selection tabs ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/633))
 ### Lang
 TBD
 <br><br>
