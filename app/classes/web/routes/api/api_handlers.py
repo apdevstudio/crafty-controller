@@ -54,7 +54,7 @@ from app.classes.web.routes.api.servers.server.webhooks.index import (
     ApiServersServerWebhooksIndexHandler,
 )
 from app.classes.web.routes.api.servers.server.webhooks.webhook.index import (
-    ApiServersServerWebhooksWebhookIndexHandler,
+    ApiServersServerWebhooksManagementIndexHandler,
 )
 from app.classes.web.routes.api.servers.server.users import ApiServersServerUsersHandler
 from app.classes.web.routes.api.users.index import ApiUsersIndexHandler
@@ -258,7 +258,7 @@ def api_handlers(handler_args):
         ),
         (
             r"/api/v2/servers/([0-9]+)/webhook/([0-9]+)/?",
-            ApiServersServerWebhooksWebhookIndexHandler,
+            ApiServersServerWebhooksManagementIndexHandler,
             handler_args,
         ),
         (

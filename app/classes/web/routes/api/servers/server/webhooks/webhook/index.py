@@ -32,7 +32,7 @@ webhook_patch_schema = {
 }
 
 
-class ApiServersServerWebhooksWebhookIndexHandler(BaseApiHandler):
+class ApiServersServerWebhooksManagementIndexHandler(BaseApiHandler):
     def get(self, server_id: str, webhook_id: str):
         auth_data = self.authenticate_user()
         if not auth_data:
