@@ -1123,8 +1123,8 @@ class PanelHandler(BaseHandler):
                 page_data["webhook"]["trigger"]
             ).split(",")
 
-            page_data["providers"] = WebhookFactory.get_supported_providers
-            page_data["triggers"] = WebhookFactory.get_monitored_events
+            page_data["providers"] = WebhookFactory.get_supported_providers()
+            page_data["triggers"] = WebhookFactory.get_monitored_events()
 
             if not EnumPermissionsServer.CONFIG in page_data["user_permissions"]:
                 if not superuser:
