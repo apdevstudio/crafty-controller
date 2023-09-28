@@ -17,7 +17,13 @@ class MattermostWebhook(WebhookProvider):
         Returns:
         tuple: A tuple containing the constructed payload (dict) incl headers (dict).
         """
-        formatted_text = f"#### {title} \n *Server: {server_name}* \n\n {message}"
+        formatted_text = (
+            f"-----\n\n"
+            f"#### {title}\n"
+            f"##### Server: ```{server_name}```\n\n"
+            f"```\n{message}\n```\n\n"
+            f"-----"
+        )
 
         headers = {"Content-Type": "application/json"}
         payload = {
@@ -53,6 +59,11 @@ class MattermostWebhook(WebhookProvider):
 
         Raises:
         Exception: If there's an error in dispatching the webhook.
+
+        Note:
+        - To set webhook username & pfp Mattermost needs to be configured to allow this!
+        - Mattermost's `config.json` setting is `"EnablePostUsernameOverride": true`
+        - Mattermost's `config.json` setting is `"EnablePostIconOverride": true`
         """
         payload, headers = self._construct_mattermost_payload(
             server_name, title, message
