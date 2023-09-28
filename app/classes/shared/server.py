@@ -188,6 +188,7 @@ class ServerInstance:
                             )
                             if res is not False and swebhook.enabled:
                                 webhook_provider.send(
+                                    bot_name=webhook["bot_name"],
                                     server_name=args[0].name,
                                     title=webhook["name"],
                                     url=webhook["url"],
