@@ -13,9 +13,7 @@ class WebhookHandler:
     def get_providers():
         return [
             "Discord",
-            "Home Assistant",
             "Mattermost",
-            "Opsgenie",
             "Signal",
             "Slack",
             "SMTP",
@@ -35,7 +33,7 @@ class WebhookHandler:
         Sends a message to a Discord channel via a webhook.
 
         This method prepares a payload for the Discord webhook API using
-        the provided details, Crafty Controller version, and the current UTC datetime.
+        the message content, Crafty Controller version, and the current UTC datetime.
         It dispatches this payload to the specified webhook URL.
 
         Parameters:
@@ -46,11 +44,14 @@ class WebhookHandler:
         - color (int): Color code for the side stripe in the Discord message.
 
         Returns:
-        None. Sends the message to Discord without returning any value.
+        str: "Dispatch successful!" if the message is sent successfully, otherwise an
+        exception is raised.
+
+        Raises:
+        Exception: If there's an error in dispatching the webhook.
 
         Note:
-        Uses 'requests' to send the webhook payload. Request times out after 10 seconds
-        to avoid indefinite hanging.
+        Webhook request times out after 10 seconds to prevent indefinite hanging.
         """
         # Grab Crafty System version
         version = helper.get_version_string()
@@ -64,11 +65,13 @@ class WebhookHandler:
                             + 'Z')
 
         # Prepare webhook payload
+        headers={"Content-type": "application/json"}
         payload = {
             "username": "Crafty Webhooks",
-            "avatar_url": (
-                "https://gitlab.com/crafty-controller/crafty-4/-",
-                "/raw/master/app/frontend/static/assets/images/Crafty_4-0.png"),
+            "avatar_url": ("https://gitlab.com/crafty-controller/crafty-4/-"
+                        + "/raw/master/app/frontend/static/assets/images/"
+                        + "Crafty_4-0.png"),
+
             "embeds": [
                 {
                 "title": title,
@@ -86,9 +89,10 @@ class WebhookHandler:
         }
 
         # Dispatch webhook
-        requests.post(
-            url,
-            data=json.dumps(payload),
-            headers={"Content-type": "application/json"},
-            timeout=10, # 10 seconds, so we don't hang indefinitly
-        )
+        try:
+            response = requests.post(url, json=payload, headers=headers, timeout=10)
+            response.raise_for_status()
+            return "Dispatch successful"
+        except requests.RequestException as error:
+            logger.error(error)
+            raise RuntimeError(f"Failed to send notification: {error}") from error
