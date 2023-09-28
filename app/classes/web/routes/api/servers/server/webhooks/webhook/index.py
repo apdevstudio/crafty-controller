@@ -171,8 +171,10 @@ class ApiServersServerWebhooksManagementIndexHandler(BaseApiHandler):
         try:
             webhook_provider = WebhookFactory.create_provider(webhook["webhook_type"])
             webhook_provider.send(
-                server_name=server_id,  # TODO get actual server name
-                title="Tickle Test Webhook",
+                server_name=self.controller.servers.get_server_data_by_id(server_id)[
+                    "server_name"
+                ],
+                title="Test Webhook",
                 url=webhook["url"],
                 message=webhook["body"],
                 color=4915409,  # Prestigious purple!
