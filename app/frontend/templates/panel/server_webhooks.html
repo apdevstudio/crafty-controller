@@ -79,7 +79,13 @@
                           <p>{{webhook.webhook_type}}</p>
                         </td>
                         <td id="{{webhook.trigger}}" class="trigger" style="overflow: scroll; max-width: 30px;">
-                          <p style="overflow: scroll;" class="no-scroll">{{webhook.trigger}}</p>
+                          <ul>
+                            {% for trigger in webhook.trigger.split(",") %}
+                            {% if trigger in data["triggers"] %}
+                            <li>{{translate('webhooks', trigger , data['lang'])}}</li>
+                            {%end%}
+                            {%end%}
+                          </ul>
                         </td>
                         <td id="{{webhook.enabled}}" class="enabled">
                           <input style="width: 10px !important;" type="checkbox" class="webhook-enabled-toggle" data-webhook-id="{{webhook.id}}" data-webhook-enabled="{{ 'true' if webhook.enabled else 'false' }}">

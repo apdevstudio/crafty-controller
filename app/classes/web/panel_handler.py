@@ -763,6 +763,7 @@ class PanelHandler(BaseHandler):
                 ] = self.controller.management.get_webhooks_by_server(
                     server_id, model=True
                 )
+                page_data["triggers"] = WebhookFactory.get_monitored_events()
 
             def get_banned_players_html():
                 banned_players = self.controller.servers.get_banned_players(server_id)

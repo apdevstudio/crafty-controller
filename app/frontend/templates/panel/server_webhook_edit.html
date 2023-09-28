@@ -70,9 +70,9 @@
                   <select class="form-control selectpicker show-tick" name="trigger" id="trigger-select" data-icon-base="fas" data-tick-icon="fa-check" multiple data-style="custom-picker">
                   {% for trigger in data['triggers'] %}
                   {% if trigger in data["webhook"]["trigger"] %}
-                  <option selected>{{trigger}}</option>
+                  <option value="{{trigger}}" selected>{{translate('webhooks', trigger , data['lang'])}}</option>
                   {% else %}
-                  <option>{{trigger}}</option>
+                  <option value="{{trigger}}">{{translate('webhooks', trigger , data['lang'])}}</option>
                   {% end %}
                   {% end %}
                   </select>

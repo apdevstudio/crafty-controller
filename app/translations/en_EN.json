@@ -641,6 +641,13 @@
         "areYouSureRun": "Are you sure you want to test this websocket?",
         "edit": "Edit",
         "run": "Test Run Webhook",
-        "new": "New Webhook"
+        "new": "New Webhook",
+        "start_server": "Server Started",
+        "stop_server": "Server Stopped",
+        "crash_detected": "Server Crashed",
+        "jar_update": "Server Executable Updated",
+        "backup_server": "Server Backup Completed",
+        "send_command": "Server Command Received",
+        "kill": "Server Killed"
     }
 }
