@@ -2,7 +2,7 @@ from app.classes.web.webhooks.base_webhook import WebhookProvider
 
 
 class MattermostWebhook(WebhookProvider):
-    def _construct_mattermost_payload(self, server_name, title, message):
+    def _construct_mattermost_payload(self, server_name, title, message, bot_name):
         """
         Constructs the payload required for sending a Mattermost webhook notification.
 
@@ -28,7 +28,7 @@ class MattermostWebhook(WebhookProvider):
         headers = {"Content-Type": "application/json"}
         payload = {
             "text": formatted_text,
-            "username": self.WEBHOOK_USERNAME,
+            "username": bot_name,
             "icon_url": self.WEBHOOK_PFP_URL,
             "props": {
                 "card": (
@@ -65,7 +65,8 @@ class MattermostWebhook(WebhookProvider):
         - Mattermost's `config.json` setting is `"EnablePostUsernameOverride": true`
         - Mattermost's `config.json` setting is `"EnablePostIconOverride": true`
         """
+        bot_name = kwargs.get("bot_name", self.WEBHOOK_USERNAME)
         payload, headers = self._construct_mattermost_payload(
-            server_name, title, message
+            server_name, title, message, bot_name
         )
         return self._send_request(url, payload, headers)

@@ -3,7 +3,7 @@ from app.classes.web.webhooks.base_webhook import WebhookProvider
 
 
 class DiscordWebhook(WebhookProvider):
-    def _construct_discord_payload(self, server_name, title, message, color):
+    def _construct_discord_payload(self, server_name, title, message, color, bot_name):
         """
         Constructs the payload required for sending a Discord webhook notification.
 
@@ -30,7 +30,7 @@ class DiscordWebhook(WebhookProvider):
 
         headers = {"Content-type": "application/json"}
         payload = {
-            "username": self.WEBHOOK_USERNAME,
+            "username": bot_name,
             "avatar_url": self.WEBHOOK_PFP_URL,
             "embeds": [
                 {
@@ -69,7 +69,8 @@ class DiscordWebhook(WebhookProvider):
         Exception: If there's an error in dispatching the webhook.
         """
         color = kwargs.get("color", "#005cd1")  # Default to a color if not provided.
+        bot_name = kwargs.get("bot_name", self.WEBHOOK_USERNAME)
         payload, headers = self._construct_discord_payload(
-            server_name, title, message, color
+            server_name, title, message, color, bot_name
         )
         return self._send_request(url, payload, headers)
