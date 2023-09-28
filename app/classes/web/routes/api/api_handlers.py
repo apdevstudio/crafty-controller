@@ -264,6 +264,7 @@ def api_handlers(handler_args):
         (
             r"/api/v2/servers/([0-9]+)/webhook/?",
             ApiServersServerWebhooksIndexHandler,
+            handler_args,
         ),
         (
             r"/api/v2/servers/([0-9]+)/action/([a-z_]+)/?",
