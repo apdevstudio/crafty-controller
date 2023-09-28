@@ -3,11 +3,9 @@
 import json
 import logging
 
-from croniter import croniter
 from jsonschema import ValidationError, validate
 from app.classes.models.server_permissions import EnumPermissionsServer
-from app.classes.web.webhook_handler import WebhookHandler
-
+from app.classes.web.webhooks.webhook_factory import WebhookFactory
 from app.classes.web.base_api_handler import BaseApiHandler
 
 
@@ -16,7 +14,10 @@ logger = logging.getLogger(__name__)
 webhook_patch_schema = {
     "type": "object",
     "properties": {
-        "webhook_type": {"type": "string", "enum": WebhookHandler.get_providers()},
+        "webhook_type": {
+            "type": "string",
+            "enum": WebhookFactory.get_supported_providers(),
+        },
         "name": {"type": "string"},
         "url": {"type": "string"},
         "bot_name": {"type": "string"},
@@ -168,8 +169,13 @@ class ApiServersServerWebhooksManagementIndexHandler(BaseApiHandler):
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
         webhook = self.controller.management.get_webhook_by_id(webhook_id)
         try:
-            WebhookHandler.send_discord_webhook(
-                webhook["bot_name"], webhook["url"], webhook["body"], 880808
+            webhook_provider = WebhookFactory.create_provider(webhook["webhook_type"])
+            webhook_provider.send(
+                server_name=server_id,  # TODO get actual server name
+                title="Tickle Test Webhook",
+                url=webhook["url"],
+                message=webhook["body"],
+                color=4915409,  # Prestigious purple!
             )
         except Exception as e:
             self.finish_json(500, {"status": "error", "error": str(e)})

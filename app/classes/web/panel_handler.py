@@ -25,7 +25,7 @@ from app.classes.controllers.roles_controller import RolesController
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.main_models import DatabaseShortcuts
 from app.classes.web.base_handler import BaseHandler
-from app.classes.web.webhook_handler import WebhookHandler
+from app.classes.web.webhooks.webhook_factory import WebhookFactory
 
 logger = logging.getLogger(__name__)
 
@@ -345,7 +345,9 @@ class PanelHandler(BaseHandler):
             ) as credits_default_local:
                 try:
                     remote = requests.get(
-                        "https://craftycontrol.com/credits-v2", allow_redirects=True
+                        "https://craftycontrol.com/credits-v2",
+                        allow_redirects=True,
+                        timeout=10,
                     )
                     credits_dict: dict = remote.json()
                     if not credits_dict["staff"]:
@@ -1070,8 +1072,8 @@ class PanelHandler(BaseHandler):
             page_data["webhook"]["body"] = ""
             page_data["webhook"]["enabled"] = True
 
-            page_data["providers"] = WebhookHandler.get_providers()
-            page_data["triggers"] = WebhookHandler.get_monitored_actions()
+            page_data["providers"] = WebhookFactory.get_supported_providers()
+            page_data["triggers"] = WebhookFactory.get_monitored_events()
 
             if not EnumPermissionsServer.CONFIG in page_data["user_permissions"]:
                 if not superuser:
@@ -1121,8 +1123,8 @@ class PanelHandler(BaseHandler):
                 page_data["webhook"]["trigger"]
             ).split(",")
 
-            page_data["providers"] = WebhookHandler.get_providers()
-            page_data["triggers"] = WebhookHandler.get_monitored_actions()
+            page_data["providers"] = WebhookFactory.get_supported_providers
+            page_data["triggers"] = WebhookFactory.get_monitored_events
 
             if not EnumPermissionsServer.CONFIG in page_data["user_permissions"]:
                 if not superuser:

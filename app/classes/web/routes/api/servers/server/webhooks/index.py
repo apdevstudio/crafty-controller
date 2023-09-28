@@ -6,14 +6,17 @@ import logging
 from jsonschema import ValidationError, validate
 from app.classes.models.server_permissions import EnumPermissionsServer
 from app.classes.web.base_api_handler import BaseApiHandler
-from app.classes.web.webhook_handler import WebhookHandler
+from app.classes.web.webhooks.webhook_factory import WebhookFactory
 
 
 logger = logging.getLogger(__name__)
 new_webhook_schema = {
     "type": "object",
     "properties": {
-        "webhook_type": {"type": "string", "enum": WebhookHandler.get_providers()},
+        "webhook_type": {
+            "type": "string",
+            "enum": WebhookFactory.get_supported_providers(),
+        },
         "name": {"type": "string"},
         "url": {"type": "string"},
         "bot_name": {"type": "string"},
