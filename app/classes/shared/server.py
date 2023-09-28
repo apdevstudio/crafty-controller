@@ -186,7 +186,7 @@ class ServerInstance:
                             webhook_provider = WebhookFactory.create_provider(
                                 webhook["webhook_type"]
                             )
-                            if res is not False:
+                            if res is not False and swebhook.enabled:
                                 webhook_provider.send(
                                     server_name=args[0].name,
                                     title=webhook["name"],
