@@ -83,4 +83,5 @@ class WebhookFactory:
             "backup_server",
             "jar_update",
             "send_command",
+            "kill",
         ]
