@@ -1071,6 +1071,7 @@ class PanelHandler(BaseHandler):
             page_data["webhook"]["bot_name"] = "Crafty Controller"
             page_data["webhook"]["trigger"] = []
             page_data["webhook"]["body"] = ""
+            page_data["webhook"]["color"] = "#005cd1"
             page_data["webhook"]["enabled"] = True
 
             page_data["providers"] = WebhookFactory.get_supported_providers()

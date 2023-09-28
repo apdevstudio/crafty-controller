@@ -22,6 +22,7 @@ new_webhook_schema = {
         "bot_name": {"type": "string"},
         "trigger": {"type": "array"},
         "body": {"type": "string"},
+        "color": {"type": "string", "default": "#005cd1"},
         "enabled": {
             "type": "boolean",
             "default": True,

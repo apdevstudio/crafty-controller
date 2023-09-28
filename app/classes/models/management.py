@@ -86,6 +86,7 @@ class Webhooks(BaseModel):
     bot_name = CharField(default="Crafty Controller")
     trigger = CharField(default="server_start,server_stop")
     body = CharField(default="")
+    color = CharField(default="#005cd1")
     enabled = BooleanField(default=True)
 
     class Meta:
@@ -541,6 +542,7 @@ class HelpersWebhooks:
                 Webhooks.url: create_data["url"],
                 Webhooks.bot_name: create_data["bot_name"],
                 Webhooks.body: create_data["body"],
+                Webhooks.color: create_data["color"],
                 Webhooks.trigger: create_data["trigger"],
                 Webhooks.enabled: create_data["enabled"],
             }
@@ -568,6 +570,7 @@ class HelpersWebhooks:
                     "bot_name": webhook.bot_name,
                     "trigger": webhook.trigger,
                     "body": webhook.body,
+                    "color": webhook.color,
                     "enabled": webhook.enabled,
                 }
         else:

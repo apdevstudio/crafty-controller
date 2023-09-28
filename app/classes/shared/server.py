@@ -192,8 +192,7 @@ class ServerInstance:
                                     title=webhook["name"],
                                     url=webhook["url"],
                                     message=webhook["body"],
-                                    # color=webhook["color"],
-                                    # TODO implement frontend color picker
+                                    color=webhook["color"],
                                 )
             return res
 

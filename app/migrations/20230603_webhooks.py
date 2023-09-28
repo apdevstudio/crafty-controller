@@ -13,6 +13,7 @@ def migrate(migrator, database, **kwargs):
         bot_name=peewee.CharField(default="Crafty Controller"),
         trigger=peewee.CharField(default="server_start,server_stop"),
         body=peewee.CharField(default=""),
+        color=peewee.CharField(default=""),
         enabled=peewee.BooleanField(default=True),
     )
     """

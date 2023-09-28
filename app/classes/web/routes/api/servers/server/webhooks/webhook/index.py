@@ -23,6 +23,7 @@ webhook_patch_schema = {
         "bot_name": {"type": "string"},
         "trigger": {"type": "array"},
         "body": {"type": "string"},
+        "color": {"type": "string", "default": "#005cd1"},
         "enabled": {
             "type": "boolean",
             "default": True,
@@ -177,7 +178,7 @@ class ApiServersServerWebhooksManagementIndexHandler(BaseApiHandler):
                 title="Test Webhook",
                 url=webhook["url"],
                 message=webhook["body"],
-                color=4915409,  # Prestigious purple!
+                color="#4b00d1",  # Prestigious purple!
             )
         except Exception as e:
             self.finish_json(500, {"status": "error", "error": str(e)})

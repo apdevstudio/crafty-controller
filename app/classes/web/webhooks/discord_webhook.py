@@ -24,6 +24,10 @@ class DiscordWebhook(WebhookProvider):
             current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
         )
 
+        # Convert the hex to an integer
+        sanitized_hex = color[1:] if color.startswith("#") else color
+        color_int = int(sanitized_hex, 16)
+
         headers = {"Content-type": "application/json"}
         payload = {
             "username": self.WEBHOOK_USERNAME,
@@ -32,7 +36,7 @@ class DiscordWebhook(WebhookProvider):
                 {
                     "title": title,
                     "description": message,
-                    "color": color,
+                    "color": color_int,
                     "author": {"name": server_name},
                     "footer": {"text": f"Crafty Controller v.{self.CRAFTY_VERSION}"},
                     "timestamp": formatted_datetime,
@@ -54,7 +58,7 @@ class DiscordWebhook(WebhookProvider):
         title (str): The title for the notification message.
         url (str): The webhook URL to send the notification to.
         message (str): The main content or body of the notification message.
-        color (int, optional): The color code for the embed's side stripe.
+        color (str, optional): The color code for the embed's side stripe.
         Defaults to a pretty blue if not provided.
 
         Returns:
@@ -64,7 +68,7 @@ class DiscordWebhook(WebhookProvider):
         Raises:
         Exception: If there's an error in dispatching the webhook.
         """
-        color = kwargs.get("color", 23761)  # Default to a color if not provided.
+        color = kwargs.get("color", "#005cd1")  # Default to a color if not provided.
         payload, headers = self._construct_discord_payload(
             server_name, title, message, color
         )
