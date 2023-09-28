@@ -76,4 +76,4 @@ class WebhookFactory:
         Returns:
         List[str]: A list of supported monitored actions.
         """
-        return ["server_start", "server_stop", "server_crash", "server_backup"]
+        return ["start_server", "stop_server", "crash_detected", "backup_server"]
