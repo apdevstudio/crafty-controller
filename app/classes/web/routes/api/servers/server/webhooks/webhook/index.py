@@ -175,10 +175,11 @@ class ApiServersServerWebhooksManagementIndexHandler(BaseApiHandler):
                 server_name=self.controller.servers.get_server_data_by_id(server_id)[
                     "server_name"
                 ],
-                title="Test Webhook",
+                title=f"Test Webhook: {webhook['name']}",
                 url=webhook["url"],
                 message=webhook["body"],
-                color="#4b00d1",  # Prestigious purple!
+                color=webhook["color"],  # Prestigious purple!
+                bot_name="Crafty Webhooks Tester",
             )
         except Exception as e:
             self.finish_json(500, {"status": "error", "error": str(e)})
