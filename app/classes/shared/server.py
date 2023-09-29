@@ -168,6 +168,9 @@ class ServerInstance:
 
     @staticmethod
     def callback(called_func):
+        # Usage of @callback on method
+        # definition to run a webhook check
+        # on method completion
         def wrapper(*args, **kwargs):
             res = None
             try:
