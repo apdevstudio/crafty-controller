@@ -87,12 +87,12 @@
                   <label for="bot_name">{{ translate('webhooks', 'color' , data['lang']) }}</label>
                   <input type="color" class="form-control" name="color" id="color" value='{{data["webhook"]["color"]}}'>
                 </div>
-                <div class="form-check-flat">
-                  <label for="enabled" class="form-check-label ml-4 mb-4">
-                    <input type="checkbox" class="form-check-input" id="enabled" name="enabled" checked=""
-                      value="1">{{ translate('webhooks', 'enabled', data['lang']) }}
-                  </label>
-
+                <div class="form-group">
+                  <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="enabled" name="enabled" {% if data['webhook']['enabled'] %}checked{%end%}
+                    value="1">
+                    <label for="enabled" class="custom-control-label">{{ translate('webhooks', 'enabled', data['lang']) }}</label>
+                  </div>
                 </div>
                   <button type="submit" class="btn btn-success mr-2"><i class="fas fa-save"></i> {{
                     translate('serverConfig', 'save', data['lang']) }}</button>
@@ -112,6 +112,20 @@
 
   </div>
   <style>
+      .custom-control-input:checked~.custom-control-label::before {
+    color: black !important;
+    background-color: blueviolet !important;
+    border-color: var(--outline) !important;
+  }
+
+  .custom-control-label::before {
+    background-color: white !important;
+    top: calc(-0.2rem);
+  }
+
+  .custom-switch .custom-control-label::after {
+    top: calc(-0.125rem + 1px);
+  }
     #body-input {
       background-color: var(--card-banner-bg);
       outline-color: var(--outline);
@@ -125,7 +139,12 @@
 
   {% block js %}
   <script>
-
+  $(function () {
+    $('.form-check-input').bootstrapToggle({
+      on: '',
+      off: ''
+    });
+  })
 
     //used to get cookies from browser - this is part of tornados xsrf protection - it's for extra security
     function getCookie(name) {
@@ -242,7 +261,6 @@
     });
 
     });
-    window.onload(startup())
     
   function hexToDiscordInt(hexColor) {
     // Remove the hash at the start if it's there
