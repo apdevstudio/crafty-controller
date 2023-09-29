@@ -12,7 +12,6 @@ import html
 import urllib.request
 import glob
 import json
-from functools import wraps
 
 from zoneinfo import ZoneInfo
 
@@ -20,7 +19,7 @@ from zoneinfo import ZoneInfo
 from tzlocal import get_localzone
 from tzlocal.utils import ZoneInfoNotFoundError
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.base import JobLookupError
+from apscheduler.jobstores.base import JobLookupError, ConflictingIdError
 
 from app.classes.minecraft.stats import Stats
 from app.classes.minecraft.mc_ping import ping, ping_bedrock
@@ -169,7 +168,6 @@ class ServerInstance:
 
     @staticmethod
     def callback(called_func):
-        @wraps(called_func)
         def wrapper(*args, **kwargs):
             res = None
             try:
@@ -296,13 +294,13 @@ class ServerInstance:
                 seconds=30,
                 id="save_stats_" + str(self.server_id),
             )
-        except:
-            self.server_scheduler.remove_job("save_" + str(self.server_id))
+        except ConflictingIdError:
+            self.server_scheduler.remove_job("save_stats_" + str(self.server_id))
             self.server_scheduler.add_job(
                 self.record_server_stats,
                 "interval",
                 seconds=30,
-                id="save_" + str(self.server_id),
+                id="save_stats_" + str(self.server_id),
             )
 
     def setup_server_run_command(self):
