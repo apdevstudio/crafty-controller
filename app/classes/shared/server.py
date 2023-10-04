@@ -173,6 +173,7 @@ class ServerInstance:
         # on method completion
         def wrapper(*args, **kwargs):
             res = None
+            logger.debug("Checking for callbacks")
             try:
                 res = called_func(*args, **kwargs)
             finally:
@@ -183,6 +184,10 @@ class ServerInstance:
                     )
                     for swebhook in server_webhooks:
                         if called_func.__name__ in str(swebhook.trigger).split(","):
+                            logger.info(
+                                f"Found callback for event {called_func.__name__}"
+                                f" for server {args[0].server_id}"
+                            )
                             webhook = HelpersWebhooks.get_webhook_by_id(swebhook.id)
                             webhook_provider = WebhookFactory.create_provider(
                                 webhook["webhook_type"]
