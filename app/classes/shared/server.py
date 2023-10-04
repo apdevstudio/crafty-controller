@@ -792,6 +792,7 @@ class ServerInstance:
                     f"Assuming it was never started."
                 )
         if self.settings["stop_command"]:
+            logger.info(f"Stop command requested for {self.settings['server_name']}.")
             self.send_command(self.settings["stop_command"])
             self.write_player_cache()
         else:
@@ -1631,7 +1632,7 @@ class ServerInstance:
     def get_server_players(self):
         server = HelperServers.get_server_data_by_id(self.server_id)
 
-        logger.info(f"Getting players for server {server}")
+        logger.debug(f"Getting players for server {server['server_name']}")
 
         internal_ip = server["server_ip"]
         server_port = server["server_port"]
