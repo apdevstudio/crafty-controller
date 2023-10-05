@@ -1,6 +1,7 @@
 from app.classes.web.webhooks.discord_webhook import DiscordWebhook
 from app.classes.web.webhooks.mattermost_webhook import MattermostWebhook
 from app.classes.web.webhooks.slack_webhook import SlackWebhook
+from app.classes.web.webhooks.teams_adaptive_webhook import TeamsWebhook
 
 
 class WebhookFactory:
@@ -19,10 +20,7 @@ class WebhookFactory:
         "Discord": DiscordWebhook,
         "Mattermost": MattermostWebhook,
         "Slack": SlackWebhook,
-        # "SMTP",
-        # "Splunk",
-        # "Teams",
-        # "Telegram",
+        "Teams": TeamsWebhook,
         # "Custom",
     }
 
