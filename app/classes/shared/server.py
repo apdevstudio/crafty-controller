@@ -862,6 +862,9 @@ class ServerInstance:
         if not self.check_running():
             self.run_threaded_server(user_id)
         else:
+            logger.info(
+                f"Restart command detected. Sending stop command to {self.server_id}."
+            )
             self.stop_threaded_server()
             time.sleep(2)
             self.run_threaded_server(user_id)
