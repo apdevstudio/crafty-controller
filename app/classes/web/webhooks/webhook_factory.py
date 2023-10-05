@@ -1,5 +1,6 @@
 from app.classes.web.webhooks.discord_webhook import DiscordWebhook
 from app.classes.web.webhooks.mattermost_webhook import MattermostWebhook
+from app.classes.web.webhooks.slack_webhook import SlackWebhook
 
 
 class WebhookFactory:
@@ -17,8 +18,7 @@ class WebhookFactory:
     _registry = {
         "Discord": DiscordWebhook,
         "Mattermost": MattermostWebhook,
-        # "Signal",
-        # "Slack",
+        "Slack": SlackWebhook,
         # "SMTP",
         # "Splunk",
         # "Teams",
