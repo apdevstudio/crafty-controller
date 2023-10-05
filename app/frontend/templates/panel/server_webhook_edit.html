@@ -44,8 +44,11 @@
                 action="/panel/edit_webhook?id={{ data['server_stats']['server_id']['server_id'] }}&sch_id={{ data['webhook']['id'] }}">
               {% end %}
                 <select class="form-select form-control form-control-lg select-css" id="webhook_type" name="webhook_type">
+                <option value="{{data['webhook']['webhook_type']}}">{{data['webhook']['webhook_type']}}</option>
                 {% for type in data['providers'] %}
+                {% if type != data['webhook']['webhook_type'] %}
                 <option value="{{type}}">{{type}}</option>
+                {%end%}
                 {% end %}
                 </select>
                 <br>
