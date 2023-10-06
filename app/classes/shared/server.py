@@ -19,13 +19,13 @@ from zoneinfo import ZoneInfo
 from tzlocal import get_localzone
 from tzlocal.utils import ZoneInfoNotFoundError
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.base import JobLookupError
+from apscheduler.jobstores.base import JobLookupError, ConflictingIdError
 
 from app.classes.minecraft.stats import Stats
 from app.classes.minecraft.mc_ping import ping, ping_bedrock
 from app.classes.models.servers import HelperServers, Servers
 from app.classes.models.server_stats import HelperServerStats
-from app.classes.models.management import HelpersManagement
+from app.classes.models.management import HelpersManagement, HelpersWebhooks
 from app.classes.models.users import HelperUsers
 from app.classes.models.server_permissions import PermissionsServers
 from app.classes.shared.console import Console
@@ -33,6 +33,7 @@ from app.classes.shared.helpers import Helpers
 from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.null_writer import NullWriter
 from app.classes.shared.websocket_manager import WebSocketManager
+from app.classes.web.webhooks.webhook_factory import WebhookFactory
 
 with redirect_stderr(NullWriter()):
     import psutil
@@ -165,6 +166,45 @@ class ServerInstance:
         self.stats_helper.server_crash_reset()
         self.stats_helper.set_update(False)
 
+    @staticmethod
+    def callback(called_func):
+        # Usage of @callback on method
+        # definition to run a webhook check
+        # on method completion
+        def wrapper(*args, **kwargs):
+            res = None
+            logger.debug("Checking for callbacks")
+            try:
+                res = called_func(*args, **kwargs)
+            finally:
+                events = WebhookFactory.get_monitored_events()
+                if called_func.__name__ in events:
+                    server_webhooks = HelpersWebhooks.get_webhooks_by_server(
+                        args[0].server_id, True
+                    )
+                    for swebhook in server_webhooks:
+                        if called_func.__name__ in str(swebhook.trigger).split(","):
+                            logger.info(
+                                f"Found callback for event {called_func.__name__}"
+                                f" for server {args[0].server_id}"
+                            )
+                            webhook = HelpersWebhooks.get_webhook_by_id(swebhook.id)
+                            webhook_provider = WebhookFactory.create_provider(
+                                webhook["webhook_type"]
+                            )
+                            if res is not False and swebhook.enabled:
+                                webhook_provider.send(
+                                    bot_name=webhook["bot_name"],
+                                    server_name=args[0].name,
+                                    title=webhook["name"],
+                                    url=webhook["url"],
+                                    message=webhook["body"],
+                                    color=webhook["color"],
+                                )
+            return res
+
+        return wrapper
+
     # **********************************************************************************
     #                               Minecraft Server Management
     # **********************************************************************************
@@ -262,13 +302,13 @@ class ServerInstance:
                 seconds=30,
                 id="save_stats_" + str(self.server_id),
             )
-        except:
-            self.server_scheduler.remove_job("save_" + str(self.server_id))
+        except ConflictingIdError:
+            self.server_scheduler.remove_job("save_stats_" + str(self.server_id))
             self.server_scheduler.add_job(
                 self.record_server_stats,
                 "interval",
                 seconds=30,
-                id="save_" + str(self.server_id),
+                id="save_stats_" + str(self.server_id),
             )
 
     def setup_server_run_command(self):
@@ -332,6 +372,7 @@ class ServerInstance:
             logger.critical(f"Unable to write/access {self.server_path}")
             Console.critical(f"Unable to write/access {self.server_path}")
 
+    @callback
     def start_server(self, user_id, forge_install=False):
         if not user_id:
             user_lang = self.helper.get_setting("language")
@@ -775,6 +816,7 @@ class ServerInstance:
         if self.server_thread:
             self.server_thread.join()
 
+    @callback
     def stop_server(self):
         running = self.check_running()
         if not running:
@@ -882,6 +924,7 @@ class ServerInstance:
         self.last_rc = poll
         return False
 
+    @callback
     def send_command(self, command):
         if not self.check_running() and command.lower() != "start":
             logger.warning(f'Server not running, unable to send command "{command}"')
@@ -894,6 +937,7 @@ class ServerInstance:
         self.process.stdin.flush()
         return True
 
+    @callback
     def crash_detected(self, name):
         # clear the old scheduled watcher task
         self.server_scheduler.remove_job(f"c_{self.server_id}")
@@ -914,6 +958,7 @@ class ServerInstance:
                 f"The server {name} has crashed and will be restarted. "
                 f"Restarting server"
             )
+
             self.run_threaded_server(None)
             return True
         logger.critical(
@@ -926,6 +971,7 @@ class ServerInstance:
         )
         return False
 
+    @callback
     def kill(self):
         logger.info(f"Terminating server {self.server_id} and all child processes")
         try:
@@ -1014,6 +1060,7 @@ class ServerInstance:
             f.write("eula=true")
         self.run_threaded_server(user_id)
 
+    @callback
     def backup_server(self):
         if self.settings["backup_path"] == "":
             logger.critical("Backup path is None. Canceling Backup!")
@@ -1228,6 +1275,7 @@ class ServerInstance:
             if f["path"].endswith(".zip")
         ]
 
+    @callback
     def jar_update(self):
         self.stats_helper.set_update(True)
         update_thread = threading.Thread(
