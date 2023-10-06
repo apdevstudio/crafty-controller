@@ -19,6 +19,10 @@ class DiscordWebhook(WebhookProvider):
 
         Returns:
         tuple: A tuple containing the constructed payload (dict) incl headers (dict).
+
+        Note:
+        - Discord embed designer
+        - https://discohook.org/
         """
         current_datetime = datetime.utcnow()
         formatted_datetime = (
