@@ -2,6 +2,7 @@
 ## --- [4.2.0] - 2023/TBD
 ### New features
 - Finish and Activate Arcadia notification backend ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/621) | [Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/626) | [Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/632))
+- Add initial Webhook Notification (Discord, Mattermost, Slack, Teams) ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/594))
 ### Bug fixes
 - PWA: Removed the custom offline page in favour of browser default ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/607))
 - Fix hidden servers appearing visible on public mobile status page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/612))
