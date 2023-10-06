@@ -13,6 +13,7 @@ class MattermostWebhook(WebhookProvider):
         server_name (str): The name of the server triggering the notification.
         title (str): The title for the notification message.
         message (str): The main content of the notification message.
+        bot_name (str): Override for the Webhook's name set on creation.
 
         Returns:
         tuple: A tuple containing the constructed payload (dict) incl headers (dict).
@@ -52,6 +53,7 @@ class MattermostWebhook(WebhookProvider):
         title (str): The title for the notification message.
         url (str): The webhook URL to send the notification to.
         message (str): The main content or body of the notification message.
+        bot_name (str): Override for the Webhook's name set on creation, see note!
 
         Returns:
         str: "Dispatch successful!" if the message is sent successfully, otherwise an

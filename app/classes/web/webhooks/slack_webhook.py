@@ -14,6 +14,7 @@ class SlackWebhook(WebhookProvider):
         title (str): The title for the notification message.
         message (str): The main content of the notification message.
         color (int): The color code for the side stripe in the Slack block.
+        bot_name (str): Override for the Webhook's name set on creation, (not working).
 
         Returns:
         tuple: A tuple containing the constructed payload (dict) incl headers (dict).
@@ -80,6 +81,7 @@ class SlackWebhook(WebhookProvider):
         message (str): The main content or body of the notification message.
         color (str, optional): The color code for the blocks's colour accent.
         Defaults to a pretty blue if not provided.
+        bot_name (str): Override for the Webhook's name set on creation, (not working).
 
         Returns:
         str: "Dispatch successful!" if the message is sent successfully, otherwise an
