@@ -834,6 +834,7 @@ class ServerInstance:
                     f"Assuming it was never started."
                 )
         if self.settings["stop_command"]:
+            logger.info(f"Stop command requested for {self.settings['server_name']}.")
             self.send_command(self.settings["stop_command"])
             self.write_player_cache()
         else:
@@ -903,6 +904,9 @@ class ServerInstance:
         if not self.check_running():
             self.run_threaded_server(user_id)
         else:
+            logger.info(
+                f"Restart command detected. Sending stop command to {self.server_id}."
+            )
             self.stop_threaded_server()
             time.sleep(2)
             self.run_threaded_server(user_id)
@@ -1679,7 +1683,7 @@ class ServerInstance:
     def get_server_players(self):
         server = HelperServers.get_server_data_by_id(self.server_id)
 
-        logger.info(f"Getting players for server {server}")
+        logger.debug(f"Getting players for server {server['server_name']}")
 
         internal_ip = server["server_ip"]
         server_port = server["server_port"]

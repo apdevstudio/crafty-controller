@@ -226,7 +226,7 @@ class Stats:
     def get_server_players(self, server_id):
         server = HelperServers.get_server_data_by_id(server_id)
 
-        logger.info(f"Getting players for server {server}")
+        logger.debug(f"Getting players for server {server['server_name']}")
 
         internal_ip = server["server_ip"]
         server_port = server["server_port"]
