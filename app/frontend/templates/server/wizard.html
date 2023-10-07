@@ -826,8 +826,9 @@
         message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
         closeButton: false
       });
-      console.log("CALLING DIR")
-      getDirView();
+      setTimeout(function(){
+        getDirView();
+      }, 2000);
     } else {
       bootbox.alert("You must input a path before selecting this button");
     }
@@ -843,8 +844,9 @@
       message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we gather your files...</p>',
       closeButton: false
     });
-    console.log("CALLING DIR")
-    getDirView();
+    setTimeout(function(){
+        getDirView();
+      }, 2000);
   });
   var upload = false;
   var file;

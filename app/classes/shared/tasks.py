@@ -329,6 +329,8 @@ class TasksManager:
 
         # Check to see if it's enabled and is not a chain reaction.
         if job_data["enabled"] and job_data["interval_type"] != "reaction":
+            # Lets make sure this can not be mistaken for a reaction
+            job_data["parent"] = None
             new_job = "error"
             if job_data["cron_string"] != "":
                 try:
@@ -449,7 +451,10 @@ class TasksManager:
     def update_job(self, sch_id, job_data):
         # Checks to make sure some doofus didn't actually make the newly
         # created task a child of itself.
-        if str(job_data.get("parent")) == str(sch_id):
+        if (
+            str(job_data.get("parent")) == str(sch_id)
+            or job_data["interval_type"] != "reaction"
+        ):
             job_data["parent"] = None
         HelpersManagement.update_scheduled_task(sch_id, job_data)
 
@@ -608,7 +613,10 @@ class TasksManager:
                 ):
                     # event job ID's are strings so we need to look at
                     # this as the same data type.
-                    if str(schedule.parent) == str(event.job_id):
+                    if (
+                        str(schedule.parent) == str(event.job_id)
+                        and schedule.interval_type == "reaction"
+                    ):
                         if schedule.enabled:
                             delaytime = datetime.datetime.now() + datetime.timedelta(
                                 seconds=schedule.delay
