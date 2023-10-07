@@ -50,6 +50,12 @@ from app.classes.web.routes.api.servers.server.tasks.task.children import (
 from app.classes.web.routes.api.servers.server.tasks.task.index import (
     ApiServersServerTasksTaskIndexHandler,
 )
+from app.classes.web.routes.api.servers.server.webhooks.index import (
+    ApiServersServerWebhooksIndexHandler,
+)
+from app.classes.web.routes.api.servers.server.webhooks.webhook.index import (
+    ApiServersServerWebhooksManagementIndexHandler,
+)
 from app.classes.web.routes.api.servers.server.users import ApiServersServerUsersHandler
 from app.classes.web.routes.api.users.index import ApiUsersIndexHandler
 from app.classes.web.routes.api.users.user.index import ApiUsersUserIndexHandler
@@ -248,6 +254,16 @@ def api_handlers(handler_args):
         (
             r"/api/v2/servers/([0-9]+)/history/?",
             ApiServersServerHistoryHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/servers/([0-9]+)/webhook/([0-9]+)/?",
+            ApiServersServerWebhooksManagementIndexHandler,
+            handler_args,
+        ),
+        (
+            r"/api/v2/servers/([0-9]+)/webhook/?",
+            ApiServersServerWebhooksIndexHandler,
             handler_args,
         ),
         (
