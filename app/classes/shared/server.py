@@ -16,8 +16,8 @@ import json
 from zoneinfo import ZoneInfo
 
 # TZLocal is set as a hidden import on win pipeline
+from zoneinfo import ZoneInfoNotFoundError
 from tzlocal import get_localzone
-from tzlocal.utils import ZoneInfoNotFoundError
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.base import JobLookupError, ConflictingIdError
 

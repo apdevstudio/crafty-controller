@@ -5,9 +5,8 @@ import threading
 import asyncio
 import datetime
 import json
-
+from zoneinfo import ZoneInfoNotFoundError
 from tzlocal import get_localzone
-from tzlocal.utils import ZoneInfoNotFoundError
 from apscheduler.events import EVENT_JOB_EXECUTED
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger

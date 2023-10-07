@@ -14,8 +14,8 @@ import tornado.escape
 from tornado import iostream
 
 # TZLocal is set as a hidden import on win pipeline
+from zoneinfo import ZoneInfoNotFoundError
 from tzlocal import get_localzone
-from tzlocal.utils import ZoneInfoNotFoundError
 
 from app.classes.models.servers import Servers
 from app.classes.models.server_permissions import EnumPermissionsServer
