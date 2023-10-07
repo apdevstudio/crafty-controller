@@ -106,7 +106,7 @@
                               {% end %}
                             </ul>
                           </td>
-                          <td><a href="/panel/edit_user?id={{user.user_id}}"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;<a href="/panel/edit_user?id={{user.user_id}}"><i class="fa-solid fa-lock"></i></a>&nbsp;&nbsp;<a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a></td>
+                          <td><a class="edit_user" data-name="{{user.username}}" data-id="{{user.user_id}}"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;<a class="edit_password" data-id="{{user.user_id}}"><i class="fa-solid fa-lock"></i></a>&nbsp;&nbsp;<a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a></td>
                         </tr>
                         {% end %}
                         {% for user in data['managed_users'] %}
@@ -312,6 +312,37 @@
 
 {% block js %}
 <script>
+  $(".edit_password").on("click", function(){
+    bootbox.confirm(`<form class="form" id='infos' action=''>\
+      <div class="form-group">
+      <label for="current_password">Current Password</label>
+      <input class="form-control" type='password' name='current_password' /><br/>\
+      </div>
+      <div class="form-group">
+      <label for="new_password">New Password</label>
+      <input class="form-control" type='password' name='new_password' /></br>\
+      </div>
+      <div class="form-group">
+      <label for="confirm_password">Confirm Password</label>
+      <input class="form-control" type='password' name='confirm_password' />\
+      </div>
+      </form>`, function(result) {
+          if(result)
+              $('#infos').submit();
+    });
+  });
+  $(".edit_user").on("click", function(){
+    let username = $(this).data('name');
+    bootbox.confirm(`<form class="form" id='infos' action=''>\
+      <div class="form-group">
+      <label for="username">Username</label>
+      <input class="form-control" type='text' name='username' value=${username} /><br/>\
+      </div>
+      </form>`, function(result) {
+          if(result)
+              $('#infos').submit();
+    });
+  });
   if (webSocket) {
     webSocket.on('move_status', function (message) {
       if (message === "done") {
