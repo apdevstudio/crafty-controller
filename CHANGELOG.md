@@ -24,6 +24,7 @@
 - Make files hover cursor pointer ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/627))
 - Use `Jar` class naming for jar refresh to make room for steamCMD naming in the future ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/630))
 - Improve ui visibility of Build Wizard selection tabs ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/633))
+- Add additional logging for server bootstrap & moves unnecessary logging to `debug` for improved log clarity ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/635))
 ### Lang
 TBD
 <br><br>
