@@ -18,4 +18,4 @@ termcolor==1.1
 tornado==6.3.3
 tzlocal==5.1
 jsonschema==4.19.1
-orjson==3.8.12
+orjson==3.9.7
