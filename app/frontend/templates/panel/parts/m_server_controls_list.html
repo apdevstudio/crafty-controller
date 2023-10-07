@@ -31,6 +31,9 @@
             <a class="dropdown-item {% if data['active_link'] == 'admin_controls' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=admin_controls" role="tab" aria-selected="true"><i class="fas fa-users"></i> {{ translate('serverDetails', 'playerControls', data['lang']) }}</a>
             {% end %}
             <a class="dropdown-item {% if data['active_link'] == 'metrics' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=metrics" role="tab" aria-selected="true"><i class="fa-solid fa-chart-line"></i> {{ translate('serverDetails', 'metrics', data['lang']) }}</a>
+            {% if data['permissions']['Config'] in data['user_permissions'] %}
+            <a class="dropdown-item {% if data['active_link'] == 'webhooks' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=webhooks" role="tab" aria-selected="true"><i class="fa-regular fa-bell"></i>{{ translate('webhooks', 'webhooks', data['lang']) }}</a>
+            {% end %}
         </div>
     </div>
 </div>

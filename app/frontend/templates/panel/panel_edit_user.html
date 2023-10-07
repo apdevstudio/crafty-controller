@@ -58,13 +58,11 @@ data['lang']) }}{% end %}
           <div class="row">
             <div class="col-md-6 col-sm-12">
               {% if data['new_user'] %}
-              <form id="user_form" class="forms-sample" method="post" action="/panel/add_user">
+              <form id="user_form" class="forms-sample">
                 {% else %}
-                <form id="user_form" class="forms-sample" method="post" action="/panel/edit_user">
+                <form id="user_form" class="forms-sample">
                   {% end %}
-                  {% raw xsrf_form_html() %}
-                  <input type="hidden" name="id" value="{{ data['user']['user_id'] }}">
-                  <input type="hidden" name="subpage" value="config">
+
 
 
                   <div class="card">
@@ -85,7 +83,7 @@ data['lang']) }}{% end %}
                           }}<small class="text-muted ml-1"> - {{ translate('userConfig', 'leaveBlank', data['lang']) }}
                           </small> </label>
                         <input type="password" class="form-control" name="password0" id="password0" value=""
-                          autocomplete="new-password" data-lpignore="true" placeholder="Password">
+                          autocomplete="new-password" data-lpignore="true" placeholder="Password" form="dummy">
                         <span class="passwords-match" ,
                           data-content="{{ translate('panelConfig', 'match', data['lang']) }}" ,
                           data-placement="right"></span>
@@ -95,7 +93,7 @@ data['lang']) }}{% end %}
                           <small class="text-muted ml-1"> - {{ translate('userConfig', 'leaveBlank', data['lang'])
                             }}</small> </label>
                         <input type="password" class="form-control" name="password1" id="password1" value=""
-                          autocomplete="new-password" data-lpignore="true" placeholder="Repeat Password">
+                          autocomplete="new-password" data-lpignore="true" placeholder="Repeat Password" form="dummy">
                         <span class="passwords-match" ,
                           data-content="{{ translate('panelConfig', 'match', data['lang']) }}" ,
                           data-placement="right"></span>
@@ -111,7 +109,7 @@ data['lang']) }}{% end %}
                         <label class="form-label" for="language">{{ translate('userConfig', 'userLang', data['lang'])
                           }}</label>
                         <select class="form-select form-control form-control-lg select-css" id="language"
-                          name="language" form="user_form">
+                          name="lang" form="user_form">
                           {% for lang in data['languages'] %}
                           {% if not 'incomplete' in lang %}
                           <option value="{{lang}}">{{lang}}</option>
@@ -182,18 +180,18 @@ data['lang']) }}{% end %}
                                 <td>
                                   {% if role.role_id in data['user']['roles'] %}
                                   {% if role.manager == data['exec_user'] or data['superuser'] %}
-                                  <input type="checkbox" class="form-check-input"
+                                  <input type="checkbox" class="form-check-input role_check"
                                     id="role_{{ role.role_id }}_membership" name="role_{{ role.role_id }}_membership"
-                                    checked="" value="1">
+                                    checked="" value="{{role.role_id}}" form="dummy">
                                   {% else %}
-                                  <input type="checkbox" class="form-check-input"
+                                  <input type="checkbox" class="form-check-input role_check"
                                     id="role_{{ role.role_id }}_membership" name="role_{{ role.role_id }}_membership"
-                                    checked="" value="1" disabled>
+                                    checked="" value="{{role.role_id}}" disabled form="dummy">
                                   {% end %}
                                   {% elif data['superuser'] or role.manager == data['exec_user'] %}
-                                  <input type="checkbox" class="form-check-input"
+                                  <input type="checkbox" class="form-check-input role_check"
                                     id="role_{{ role.role_id }}_membership" name="role_{{ role.role_id }}_membership"
-                                    value="1">
+                                    value="{{role.role_id}}" form="dummy">
                                   {% end %}
 
                                 </td>
@@ -219,7 +217,7 @@ data['lang']) }}{% end %}
                     <div class="card-body">
                       <div class="form-group">
                         <div class="table-responsive">
-                          <table class="table table-hover">
+                          <table id="permissions" aria-describedby="User Crafty Permissions" class="table table-hover">
                             <thead>
                               <tr class="rounded">
                                 <th>{{ translate('userConfig', 'permName', data['lang']) }}</th>
@@ -233,16 +231,16 @@ data['lang']) }}{% end %}
                                 <td>{{ permission.name }}</td>
                                 <td>
                                   {% if permission in data['permissions_list'] %}
-                                  <input type="checkbox" class="form-check-input" id="permission_{{ permission.name }}"
-                                    name="permission_{{ permission.name }}" checked="" value="1">
+                                  <input type="checkbox" class="form-check-input perm-name" id="permission_{{ permission.name }}"
+                                    name="permission_{{ permission.name }}" checked="" value="1" data-perm="{{permission.name}}" form="dummy">
                                   {% else %}
-                                  <input type="checkbox" class="form-check-input" id="permission_{{ permission.name }}"
-                                    name="permission_{{ permission.name }}" value="1">
+                                  <input type="checkbox" class="form-check-input perm-name" id="permission_{{ permission.name }}"
+                                    name="permission_{{ permission.name }}" value="1" data-perm="{{permission.name}}" form="dummy">
                                   {% end %}
                                 </td>
                                 <td><input type="text" class="form-control" name="quantity_{{ permission.name }}"
                                     id="quantity_{{ permission.name }}"
-                                    value="{{ data['quantity_server'][permission.name] }}"></td>
+                                    value="{{ data['quantity_server'][permission.name] }}" data-perm="{{permission.name}}" form="dummy"></td>
                               </tr>
                               {% end %}
                             </tbody>
@@ -287,7 +285,7 @@ data['lang']) }}{% end %}
 
                   </div>
 
-                  <button class="btn btn-success mr-2" onclick="submit_user(event);"><i class="fas fa-save"></i> {{
+                  <button type="submit" class="btn btn-success mr-2"><i class="fas fa-save"></i> {{
                     translate('panelConfig', 'save', data['lang']) }}</button>
                   <button type="reset" onclick="location.href='/panel/panel_config'" class="btn btn-light"><i
                       class="fas fa-undo-alt"></i> {{ translate('panelConfig', 'cancel', data['lang']) }}</button>
@@ -363,9 +361,12 @@ data['lang']) }}{% end %}
     }
   }
   function validateForm() {
-    let password0 = document.getElementById("password0").value
-    let password1 = document.getElementById("password1").value
-    if (password0 != password1) {
+    let password0 = document.getElementById("password0").value;
+    let password1 = document.getElementById("password1").value;
+    if (password0 === "" && password1 === "" && userId){
+      return true
+    }
+    else if (password0 != password1) {
       $('.passwords-match').popover('show');
       $('.popover-body').click(function () {
         $('.passwords-match').popover("hide");
@@ -376,11 +377,103 @@ data['lang']) }}{% end %}
       $("#password1").css("outline", "1px solid red");
       return false;
     } else {
-      return true;
+      return password1;
     }
   }
+  function replacer(key, value) {
+      if (typeof value == "boolean" || key === "email" || key === "permissions" || key === "roles") {
+        return value
+      } else {
+        console.log(key, value)
+        return (isNaN(value) ? value : +value);
+      }
+  }
   const userId = new URLSearchParams(document.location.search).get('id')
+  $("#user_form").on("submit", async function (e) {
+      e.preventDefault();
+      let password = validateForm();
+      if (!password){
+        return;
+      }
+      const token = getCookie("_xsrf")
+      let userForm = document.getElementById("user_form");
 
+      let disabled_flag = false;
+      let roles = $('.role_check').map(function() {
+        if ($(this).attr("disabled")){
+          disabled_flag = true;
+        }
+        if ($(this).is(':checked')){
+          return $(this).val();
+        }
+      }).get();
+
+      let avail_permissions = $('.perm-name').map(function() {
+          return $(this).data("perm");
+      }).get();
+
+      permissions = []
+      for(i=0; i < avail_permissions.length; i++){
+        permissions.push({"name": avail_permissions[i], "quantity": $(`#quantity_${avail_permissions[i]}`).val(), "enabled": $(`#permission_${avail_permissions[i]}`).is(':checked')})
+      }
+      console.log(permissions);
+
+      let formData = new FormData(userForm);
+      //Create an object from the form data entries
+      let formDataObject = Object.fromEntries(formData.entries());
+      if (!disabled_flag){
+        formDataObject.roles = roles;
+      }
+      if ($("#permissions").length){
+        formDataObject.permissions = permissions;
+      }
+      if(typeof password === "string"){
+        formDataObject.password = password;
+      }
+      formDataObject.enabled = $("#enabled").is(":checked");
+      if ($("#superuser").is(":enabled")){
+        formDataObject.superuser = $("#superuser").is(":checked");
+      }
+      formDataObject.hints = $("#hints").is(":checked");
+      console.log(formDataObject);
+
+      //We need to make sure these are sent regardless of whether or not they're checked
+
+      // Format the plain form data as JSON
+      let formDataJsonString = JSON.stringify(formDataObject, replacer);
+
+      console.log(formDataJsonString);
+      if (userId){
+        url = `/api/v2/users/${userId}`
+        method = 'PATCH'
+      }else{
+        url = `/api/v2/users/`
+        method = 'POST'
+      }
+      let res = await fetch(url, {
+        method: method,
+        headers: {
+          'X-XSRFToken': token
+        },
+        body: formDataJsonString,
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        window.location.href = "/panel/panel_config";
+      } else {
+        if (responseData.hasOwnProperty("error_data")){
+          bootbox.alert({
+          title: responseData.error,
+          message: responseData.error_data
+        });
+        }else{
+          bootbox.alert(responseData.error
+        );
+        }
+      }
+    });
+
+  
   $(".delete-user").click(function () {
     var file_to_del = $(this).data("file");
 
@@ -398,10 +491,26 @@ data['lang']) }}{% end %}
           label: '<i class="fas fa-check"></i> {{ translate("serverBackups", "confirm", data['lang']) }}'
             }
       },
-      callback: function (result) {
+      callback: async function (result) {
         console.log(result);
         if (result === true) {
-          location.href = "/panel/remove_user?id=" + userId;
+            const token = getCookie("_xsrf")
+            let res = await fetch(`/api/v2/users/${userId}`, {
+              method: "DELETE",
+              headers: {
+                'X-XSRFToken': token
+              },
+            });
+            let responseData = await res.json();
+            if (responseData.status === "ok") {
+              window.location.href = "/panel/panel_config";
+            } else {
+
+              bootbox.alert({
+                title: responseData.error,
+                message: responseData.error
+              });
+            }
         }
       }
     });

@@ -31,7 +31,7 @@ class UsersController:
                     for permission in PermissionsCrafty.get_permissions_list()
                 ],
             },
-            "quantity": {"type": "number", "minimum": 0},
+            "quantity": {"type": "number", "minimum": -1},
             "enabled": {"type": "boolean"},
         }
         self.user_jsonschema_props: t.Final = {
@@ -46,7 +46,7 @@ class UsersController:
             "password": {
                 "type": "string",
                 "maxLength": 20,
-                "minLength": 4,
+                "minLength": 6,
                 "examples": ["crafty"],
                 "title": "Password",
             },
@@ -73,6 +73,8 @@ class UsersController:
                 "examples": [False],
                 "title": "Superuser",
             },
+            "manager": {"type": ["integer", "null"]},
+            "theme": {"type": "string"},
             "permissions": {
                 "type": "array",
                 "items": {
@@ -84,7 +86,7 @@ class UsersController:
             "roles": {
                 "type": "array",
                 "items": {
-                    "type": "string",
+                    "type": "integer",
                     "minLength": 1,
                 },
             },

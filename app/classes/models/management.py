@@ -17,6 +17,7 @@ from app.classes.models.users import HelperUsers
 from app.classes.models.servers import Servers
 from app.classes.models.server_permissions import PermissionsServers
 from app.classes.shared.main_models import DatabaseShortcuts
+from app.classes.shared.websocket_manager import WebSocketManager
 
 logger = logging.getLogger(__name__)
 
@@ -78,11 +79,15 @@ class HostStats(BaseModel):
 # **********************************************************************************
 class Webhooks(BaseModel):
     id = AutoField()
-    name = CharField(max_length=64, unique=True, index=True)
-    method = CharField(default="POST")
-    url = CharField(unique=True)
-    event = CharField(default="")
-    send_data = BooleanField(default=True)
+    server_id = IntegerField(null=True)
+    name = CharField(default="Custom Webhook", max_length=64)
+    url = CharField(default="")
+    webhook_type = CharField(default="Custom")
+    bot_name = CharField(default="Crafty Controller")
+    trigger = CharField(default="server_start,server_stop")
+    body = CharField(default="")
+    color = CharField(default="#005cd1")
+    enabled = BooleanField(default=True)
 
     class Meta:
         table_name = "webhooks"
@@ -145,7 +150,7 @@ class HelpersManagement:
     #                                   Audit_Log Methods
     # **********************************************************************************
     @staticmethod
-    def get_actity_log():
+    def get_activity_log():
         query = AuditLog.select()
         return DatabaseShortcuts.return_db_rows(query)
 
@@ -158,9 +163,7 @@ class HelpersManagement:
         server_users = PermissionsServers.get_server_user_list(server_id)
         for user in server_users:
             try:
-                self.helper.websocket_helper.broadcast_user(
-                    user, "notification", audit_msg
-                )
+                WebSocketManager().broadcast_user(user, "notification", audit_msg)
             except Exception as e:
                 logger.error(f"Error broadcasting to user {user} - {e}")
 
@@ -502,3 +505,82 @@ class HelpersManagement:
                 f"Not removing {dir_to_del} from excluded directories - "
                 f"not in the excluded directory list for server ID {server_id}"
             )
+
+
+# **********************************************************************************
+#                                   Webhooks Class
+# **********************************************************************************
+class HelpersWebhooks:
+    def __init__(self, database):
+        self.database = database
+
+    @staticmethod
+    def create_webhook(create_data) -> int:
+        """Create a webhook in the database
+
+        Args:
+            server_id: ID of a server this webhook will be married to
+            name: The name of the webhook
+            url: URL to the webhook
+            webhook_type: The provider this webhook will be sent to
+            bot name: The name that will appear when the webhook is sent
+            triggers: Server actions that will trigger this webhook
+            body: The message body of the webhook
+            enabled: Should Crafty trigger the webhook
+
+        Returns:
+            int: The new webhooks's id
+
+        Raises:
+            PeeweeException: If the webhook already exists
+        """
+        return Webhooks.insert(
+            {
+                Webhooks.server_id: create_data["server_id"],
+                Webhooks.name: create_data["name"],
+                Webhooks.webhook_type: create_data["webhook_type"],
+                Webhooks.url: create_data["url"],
+                Webhooks.bot_name: create_data["bot_name"],
+                Webhooks.body: create_data["body"],
+                Webhooks.color: create_data["color"],
+                Webhooks.trigger: create_data["trigger"],
+                Webhooks.enabled: create_data["enabled"],
+            }
+        ).execute()
+
+    @staticmethod
+    def modify_webhook(webhook_id, updata):
+        Webhooks.update(updata).where(Webhooks.id == webhook_id).execute()
+
+    @staticmethod
+    def get_webhook_by_id(webhook_id):
+        return model_to_dict(Webhooks.get(Webhooks.id == webhook_id))
+
+    @staticmethod
+    def get_webhooks_by_server(server_id, model):
+        if not model:
+            data = {}
+            for webhook in (
+                Webhooks.select().where(Webhooks.server_id == server_id).execute()
+            ):
+                data[str(webhook.id)] = {
+                    "webhook_type": webhook.webhook_type,
+                    "name": webhook.name,
+                    "url": webhook.url,
+                    "bot_name": webhook.bot_name,
+                    "trigger": webhook.trigger,
+                    "body": webhook.body,
+                    "color": webhook.color,
+                    "enabled": webhook.enabled,
+                }
+        else:
+            data = Webhooks.select().where(Webhooks.server_id == server_id).execute()
+        return data
+
+    @staticmethod
+    def delete_webhook(webhook_id):
+        Webhooks.delete().where(Webhooks.id == webhook_id).execute()
+
+    @staticmethod
+    def delete_webhooks_by_server(server_id):
+        Webhooks.delete().where(Webhooks.server_id == server_id).execute()

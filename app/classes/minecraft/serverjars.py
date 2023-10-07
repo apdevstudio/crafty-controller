@@ -8,6 +8,7 @@ import requests
 
 from app.classes.controllers.servers_controller import ServersController
 from app.classes.models.server_permissions import PermissionsServers
+from app.classes.shared.websocket_manager import WebSocketManager
 
 logger = logging.getLogger(__name__)
 
@@ -179,9 +180,7 @@ class ServerJars:
             try:
                 ServersController.set_import(server_id)
                 for user in server_users:
-                    self.helper.websocket_helper.broadcast_user(
-                        user, "send_start_reload", {}
-                    )
+                    WebSocketManager().broadcast_user(user, "send_start_reload", {})
 
                 break
             except Exception as ex:
@@ -206,11 +205,9 @@ class ServerJars:
                 server_users = PermissionsServers.get_server_user_list(server_id)
 
             for user in server_users:
-                self.helper.websocket_helper.broadcast_user(
+                WebSocketManager().broadcast_user(
                     user, "notification", "Executable download finished"
                 )
                 time.sleep(3)
-                self.helper.websocket_helper.broadcast_user(
-                    user, "send_start_reload", {}
-                )
+                WebSocketManager().broadcast_user(user, "send_start_reload", {})
             return success

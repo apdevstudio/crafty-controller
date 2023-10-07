@@ -20,6 +20,7 @@ from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.main_controller import Controller
 from app.classes.web.tornado_handler import Webserver
+from app.classes.shared.websocket_manager import WebSocketManager
 
 logger = logging.getLogger("apscheduler")
 scheduler_intervals = {
@@ -41,11 +42,10 @@ scheduler_intervals = {
 class TasksManager:
     controller: Controller
 
-    def __init__(self, helper, controller):
+    def __init__(self, helper, controller, file_helper):
         self.helper: Helpers = helper
         self.controller: Controller = controller
-        self.tornado: Webserver = Webserver(helper, controller, self)
-
+        self.tornado: Webserver = Webserver(helper, controller, self, file_helper)
         try:
             self.tz = get_localzone()
         except ZoneInfoNotFoundError as e:
@@ -102,7 +102,7 @@ class TasksManager:
                     )
                 except:
                     logger.error(
-                        "Server value requested does not exist! "
+                        f"Server value {cmd['server_id']} requested does not exist! "
                         "Purging item from waiting commands."
                     )
                     continue
@@ -695,10 +695,10 @@ class TasksManager:
                     host_stats.get("mem_percent")
                 )
 
-                if len(self.helper.websocket_helper.clients) > 0:
+                if len(WebSocketManager().clients) > 0:
                     # There are clients
                     try:
-                        self.helper.websocket_helper.broadcast_page(
+                        WebSocketManager().broadcast_page(
                             "/panel/dashboard",
                             "update_host_stats",
                             {
@@ -715,7 +715,7 @@ class TasksManager:
                             },
                         )
                     except:
-                        self.helper.websocket_helper.broadcast_page(
+                        WebSocketManager().broadcast_page(
                             "/panel/dashboard",
                             "update_host_stats",
                             {
@@ -733,12 +733,21 @@ class TasksManager:
     def check_for_updates(self):
         logger.info("Checking for Crafty updates...")
         self.helper.update_available = self.helper.check_remote_version()
+        remote = self.helper.update_available
         if self.helper.update_available:
             logger.info(f"Found new version {self.helper.update_available}")
         else:
             logger.info(
                 "No updates found! You are on the most up to date Crafty version."
             )
+        if self.helper.update_available:
+            self.helper.update_available = {
+                "id": str(remote),
+                "title": f"{remote} Update Available",
+                "date": "",
+                "desc": "Release notes are available by clicking this notification.",
+                "link": "https://gitlab.com/crafty-controller/crafty-4/-/releases",
+            }
         logger.info("Refreshing Gravatar PFPs...")
         for user in HelperUsers.get_all_users():
             if user.email:

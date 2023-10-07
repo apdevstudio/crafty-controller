@@ -16,6 +16,7 @@ from app.classes.shared.helpers import Helpers
 from app.classes.models.users import HelperUsers
 from app.classes.models.management import HelpersManagement
 from app.classes.shared.import_helper import ImportHelpers
+from app.classes.shared.websocket_manager import WebSocketManager
 
 console = Console()
 helper = Helpers()
@@ -164,6 +165,8 @@ if __name__ == "__main__":
         Console.info("No flag found. Secrets are staying")
     file_helper = FileHelpers(helper)
     import_helper = ImportHelpers(helper, file_helper)
+    # Init WebSocket Manager Here
+    WebSocketManager()
     # now the tables are created, we can load the tasks_manager and server controller
     controller = Controller(database, helper, file_helper, import_helper)
     Console.info("Checking for remote changes to config.json")
@@ -171,7 +174,7 @@ if __name__ == "__main__":
     Console.info("Remote change complete.")
 
     import3 = Import3(helper, controller)
-    tasks_manager = TasksManager(helper, controller)
+    tasks_manager = TasksManager(helper, controller, file_helper)
     tasks_manager.start_webserver()
 
     def signal_handler(signum, _frame):

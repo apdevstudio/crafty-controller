@@ -1,17 +1,19 @@
 <ul class="navbar-nav ml-auto">
-  <li class="nav-item dropdown">
-    <a class="nav-link count-indicator">
+  <li class="nav-item dropdown notif-li">
+    <a class="nav-link count-indicator dropdown-toggle" id="notifDropdown" href="#" aria-expanded="false">
       <i class="fas fa-broadcast-tower
         {% if data.get('update_available') %}
             text-danger
         {% end %}
-        "></i>
-      <!--        <span class="count bg-success">3</span>-->
-    </a>
+        "></i><span id="notif-count" class="badge badge-notify"></span> </a>
+    <div class="dropdown-menu dropdown-menu-right navbar-dropdown notif-div" style="width: 40vw; max-height: 80vh;" aria-labelledby="notifDropdown">
+      <ul style="padding-top: 10px;" id="announcements">
+      </ul>
+    </div>
   </li>
 
   <li class="nav-item dropdown">
-    <a class="nav-link count-indicator" href="/panel/panel_config">
+    <a class="nav-link" href="/panel/panel_config">
       <i class="fas fa-cogs"></i>
     </a>
   </li>
@@ -33,27 +35,155 @@
         <p class="font-weight-light text-muted mb-0">Email: {{ data['user_data']['email'] }}</p>
       </div>
       {% if data['user_data']['preparing'] %}
-      <span class="dropdown-item" id="support_progress"><i class="dropdown-item-icon mdi mdi-download-outline text-primary"></i>{{ translate('notify', 'supportLogs', data['lang']) }}<br><br></span>
+      <span class="dropdown-item" id="support_progress"><i class="dropdown-item-icon mdi mdi-download-outline text-primary"></i>{{ translate('notify', 'supportLogs',
+        data['lang']) }}<br><br></span>
       <span class="dropdown-item" id="support_progress">
         <div class="support_progress" style="height: 15px; width: 100%;">
           <div class="progress-bar progress-bar-striped progress-bar-animated" id="logs_progress_bar" role="progressbar" style="width:0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
         </div>
       </span>
       {% else %}
-      <a class="dropdown-item" id="support_logs"><i class="dropdown-item-icon mdi mdi-download-outline text-primary"></i>{{ translate('notify', 'supportLogs', data['lang']) }}</i></a>
+      <a class="dropdown-item" id="support_logs"><i class="dropdown-item-icon mdi mdi-download-outline text-primary"></i>{{ translate('notify', 'supportLogs',
+        data['lang']) }}</i></a>
       {% end %}
       {% if data['superuser'] %}
-      <a class="dropdown-item" href="/panel/activity_logs"><i class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary"></i>{{ translate('notify', 'activityLog', data['lang']) }}</a>
+      <a class="dropdown-item" href="/panel/activity_logs"><i class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary"></i>{{ translate('notify',
+        'activityLog', data['lang']) }}</a>
       {% end %}
-      <a class="dropdown-item" href="/logout"><i class="dropdown-item-icon mdi mdi-power text-primary"></i>{{ translate('notify', 'logout', data['lang']) }}</a>
+      <a class="dropdown-item" href="/logout"><i class="dropdown-item-icon mdi mdi-power text-primary"></i>{{
+        translate('notify', 'logout', data['lang']) }}</a>
     </div>
   </li>
 </ul>
+<style>
+  .badge-notify {
+    background: var(--purple);
+    color: var(--dark);
+    position: absolute;
+    -moz-transform: translate(-70%, -70%);
+    /* For Firefox */
+    -ms-transform: translate(-70%, -70%);
+    /* for IE */
+    -webkit-transform: translate(-70%, -70%);
+    /* For Safari, Chrome, iOS */
+    -o-transform: translate(-70%, -70%);
+  }
 
+  .clear-button:hover {
+    cursor: pointer;
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .notif-div::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .notif-div {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+</style>
 <script>
   function pfpError(image) {
     image.onerror = "";
     image.src = "/static/assets/images/faces-clipart/pic-3.png";
     return true;
   }
+  function updateAnnouncements(data) {
+    console.log(data)
+    let text = "";
+    for (let value of data) {
+      text += `<li class="card-header header-sm justify-content-between align-items-center" id="${value.id}"><p style="float: right;"><i data-id="${value.id}"class="clear-button fa-regular fa-x"></i></p><a style="color: var(--purple);" href=${value.link} target="_blank"><h6>${value.title}</h6><small><p>${value.date}</p></small><p>${value.desc}</p></li></a>`
+    }
+    if (data.length > 0) {
+      localStorage.setItem("notif-count", data.length);
+      $("#notif-count").show()
+      $("#notif-count").html(data.length);
+      $("#announcements").html(text);
+    } else {
+      $("#announcements").html(`<p style='margin-top: 15px;' class='text-center'><i class="fa fa-bell-slash" aria-hidden="true"></i>
+</p>`);
+      $("#notif-count").hide()
+    }
+    $(".clear-button").on("click", function (event) {
+      console.log("CLEAR BUTTON")
+      event.stopPropagation();
+      let uuid = event.target.getAttribute("data-id");
+      $(`#${uuid}`).remove();
+      send_clear(uuid);
+      let notif_count = localStorage.getItem("notif-count") - 1;
+      if (notif_count > 0) {
+        localStorage.setItem("notif-count", notif_count);
+        $("#notif-count").html(notif_count);
+      } else {
+        $("#announcements").html(`<p style='margin-top: 15px;' class='text-center'><i class="fa fa-bell-slash" aria-hidden="true"></i>
+</p>`)
+        $("#notif-count").html("");
+      }
+
+    });
+  }
+  async function getAnnouncements() {
+    var token = getCookie("_xsrf");
+    let res = await fetch(`/api/v2/crafty/announcements/`, {
+      method: 'GET',
+      headers: {
+        'X-XSRFToken': token
+      },
+    });
+    let responseData = await res.json();
+    console.log(responseData);
+    if (responseData.status === "ok") {
+      updateAnnouncements(responseData.data)
+    } else {
+      updateAnnouncements("<li><p>Trouble Getting Annoucements</p></li>")
+    }
+  }
+  async function send_clear(uuid) {
+    var token = getCookie("_xsrf");
+    let body = JSON.stringify({ "id": uuid });
+    console.log(body)
+    let res = await fetch(`/api/v2/crafty/announcements/`, {
+      method: 'POST',
+      headers: {
+        'X-XSRFToken': token,
+      },
+      body: body,
+    });
+    let responseData = await res.json();
+    console.log(responseData);
+    if (responseData.status === "ok") {
+      return
+    } else {
+      bootbox.alert(responseData.error)
+    }
+  }
+
+  /* Open / Close with Button */
+  $('li.dropdown.notif-li a').on('click', function (event) {
+    $(this).parent().toggleClass("show");
+    $('div.notif-div').toggleClass("show");
+    if ($('li.dropdown.notif-li a').attr('aria-expanded') === 'false') {
+      $('li.dropdown.notif-li a').attr('aria-expanded', "true");
+    }
+    else {
+      $('li.dropdown.notif-li a').attr('aria-expanded', "false");
+    }
+  });
+
+  /* Close when clicking ouside */
+  $('body').on('click', function (e) {
+    if (!$('li.dropdown.notif-li').is(e.target) && $('li.dropdown.notif-li').has(e.target).length === 0 && $('show').has(e.target).length === 0) {
+      $('li.notif-li').removeClass("show");
+      $('li.dropdown.notif-li a').attr('aria-expanded', "false");
+      $('div.notif-div').removeClass("show");
+    }
+  });
+
+  $(document).ready(function () {
+    getAnnouncements();
+  })
 </script>

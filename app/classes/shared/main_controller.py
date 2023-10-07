@@ -5,6 +5,7 @@ from datetime import datetime
 import platform
 import shutil
 import time
+import json
 import logging
 import threading
 from peewee import DoesNotExist
@@ -32,6 +33,7 @@ from app.classes.shared.helpers import Helpers
 from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.import_helper import ImportHelpers
 from app.classes.minecraft.serverjars import ServerJars
+from app.classes.shared.websocket_manager import WebSocketManager
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +86,17 @@ class Controller:
     def set_project_root(self, root_dir):
         self.project_root = root_dir
 
+    def set_config_json(self, data):
+        current_config = self.helper.get_all_settings()
+        for key in current_config:
+            if key in data:
+                current_config[key] = data[key]
+        keys = list(current_config.keys())
+        keys.sort()
+        sorted_data = {i: current_config[i] for i in keys}
+        with open(self.helper.settings_file, "w", encoding="utf-8") as f:
+            json.dump(sorted_data, f, indent=4)
+
     def package_support_logs(self, exec_user):
         if exec_user["preparing"]:
             return
@@ -101,7 +114,7 @@ class Controller:
                     self.del_support_file(exec_user["support_logs"])
         # pausing so on screen notifications can run for user
         time.sleep(7)
-        self.helper.websocket_helper.broadcast_user(
+        WebSocketManager().broadcast_user(
             exec_user["user_id"], "notification", "Preparing your support logs"
         )
         self.helper.ensure_dir_exists(
@@ -197,17 +210,15 @@ class Controller:
         ) as f:
             f.write(sys_info_string)
         FileHelpers.make_compressed_archive(temp_zip_storage, temp_dir, sys_info_string)
-        if len(self.helper.websocket_helper.clients) > 0:
-            self.helper.websocket_helper.broadcast_user(
+        if len(WebSocketManager().clients) > 0:
+            WebSocketManager().broadcast_user(
                 exec_user["user_id"],
                 "support_status_update",
                 Helpers.calc_percent(temp_dir, temp_zip_storage + ".zip"),
             )
 
         temp_zip_storage += ".zip"
-        self.helper.websocket_helper.broadcast_user(
-            exec_user["user_id"], "send_logs_bootbox", {}
-        )
+        WebSocketManager().broadcast_user(exec_user["user_id"], "send_logs_bootbox", {})
 
         self.users.set_support_path(exec_user["user_id"], temp_zip_storage)
 
@@ -240,8 +251,8 @@ class Controller:
         results = Helpers.calc_percent(source_path, dest_path)
         self.log_stats = results
 
-        if len(self.helper.websocket_helper.clients) > 0:
-            self.helper.websocket_helper.broadcast_user(
+        if len(WebSocketManager().clients) > 0:
+            WebSocketManager().broadcast_user(
                 exec_user["user_id"], "support_status_update", results
             )
 
@@ -300,15 +311,6 @@ class Controller:
         Helpers.ensure_dir_exists(new_server_path)
         Helpers.ensure_dir_exists(backup_path)
 
-        def _copy_import_dir_files(existing_server_path):
-            existing_server_path = Helpers.get_os_understandable_path(
-                existing_server_path
-            )
-            try:
-                FileHelpers.copy_dir(existing_server_path, new_server_path, True)
-            except shutil.Error as ex:
-                logger.error(f"Server import failed with error: {ex}")
-
         def _create_server_properties_if_needed(port, empty=False):
             properties_file = os.path.join(new_server_path, "server.properties")
             has_properties = os.path.exists(properties_file)
@@ -336,22 +338,25 @@ class Controller:
                 server_file = f"{create_data['type']}-{create_data['version']}.jar"
 
                 # Create an EULA file
-                with open(
-                    os.path.join(new_server_path, "eula.txt"), "w", encoding="utf-8"
-                ) as file:
-                    file.write(
-                        "eula=" + ("true" if create_data["agree_to_eula"] else "false")
-                    )
+                if "agree_to_eula" in create_data:
+                    with open(
+                        os.path.join(new_server_path, "eula.txt"), "w", encoding="utf-8"
+                    ) as file:
+                        file.write(
+                            "eula="
+                            + ("true" if create_data["agree_to_eula"] else "false")
+                        )
             elif root_create_data["create_type"] == "import_server":
-                _copy_import_dir_files(create_data["existing_server_path"])
                 server_file = create_data["jarfile"]
             elif root_create_data["create_type"] == "import_zip":
                 # TODO: Copy files from the zip file to the new server directory
                 server_file = create_data["jarfile"]
                 raise NotImplementedError("Not yet implemented")
-            _create_server_properties_if_needed(
-                create_data["server_properties_port"],
-            )
+                # self.import_helper.import_java_zip_server()
+            if data["create_type"] == "minecraft_java":
+                _create_server_properties_if_needed(
+                    create_data["server_properties_port"],
+                )
 
             min_mem = create_data["mem_min"]
             max_mem = create_data["mem_max"]
@@ -364,30 +369,72 @@ class Controller:
             def _wrap_jar_if_windows():
                 return f'"{server_file}"' if Helpers.is_os_windows() else server_file
 
-            server_command = (
-                f"java -Xms{_gibs_to_mibs(min_mem)}M "
-                f"-Xmx{_gibs_to_mibs(max_mem)}M "
-                f"-jar {_wrap_jar_if_windows()} nogui"
-            )
+            if root_create_data["create_type"] == "download_jar":
+                if Helpers.is_os_windows():
+                    # Let's check for and setup for install server commands
+                    if create_data["type"] == "forge":
+                        server_command = (
+                            f"java -Xms{Helpers.float_to_string(min_mem)}M "
+                            f"-Xmx{Helpers.float_to_string(max_mem)}M "
+                            f'-jar "{server_file}" --installServer'
+                        )
+                    else:
+                        server_command = (
+                            f"java -Xms{Helpers.float_to_string(min_mem)}M "
+                            f"-Xmx{Helpers.float_to_string(max_mem)}M "
+                            f'-jar "{server_file}" nogui'
+                        )
+                else:
+                    if create_data["type"] == "forge":
+                        server_command = (
+                            f"java -Xms{Helpers.float_to_string(min_mem)}M "
+                            f"-Xmx{Helpers.float_to_string(max_mem)}M "
+                            f"-jar {server_file} --installServer"
+                        )
+                    else:
+                        server_command = (
+                            f"java -Xms{Helpers.float_to_string(min_mem)}M "
+                            f"-Xmx{Helpers.float_to_string(max_mem)}M "
+                            f"-jar {server_file} nogui"
+                        )
+            else:
+                server_command = (
+                    f"java -Xms{_gibs_to_mibs(min_mem)}M "
+                    f"-Xmx{_gibs_to_mibs(max_mem)}M "
+                    f"-jar {_wrap_jar_if_windows()} nogui"
+                )
+
         elif data["create_type"] == "minecraft_bedrock":
             if root_create_data["create_type"] == "import_server":
                 existing_server_path = Helpers.get_os_understandable_path(
                     create_data["existing_server_path"]
                 )
-                try:
-                    FileHelpers.copy_dir(existing_server_path, new_server_path, True)
-                except shutil.Error as ex:
-                    logger.error(f"Server import failed with error: {ex}")
+                if Helpers.is_os_windows():
+                    server_command = (
+                        f'"{os.path.join(new_server_path, create_data["executable"])}"'
+                    )
+                else:
+                    server_command = f"./{create_data['executable']}"
+                logger.debug("command: " + server_command)
+                server_file = create_data["executable"]
             elif root_create_data["create_type"] == "import_zip":
                 # TODO: Copy files from the zip file to the new server directory
                 raise NotImplementedError("Not yet implemented")
+            else:
+                server_file = "bedrock_server"
+                if Helpers.is_os_windows():
+                    # if this is windows we will override the linux bedrock server name.
+                    server_file = "bedrock_server.exe"
 
+                full_jar_path = os.path.join(new_server_path, server_file)
+
+                if self.helper.is_os_windows():
+                    server_command = f'"{full_jar_path}"'
+                else:
+                    server_command = f"./{server_file}"
             _create_server_properties_if_needed(0, True)
 
-            server_command = create_data["command"]
-            server_file = (
-                "./bedrock_server"  # HACK: This is a hack to make the server start
-            )
+            server_command = create_data.get("command", server_command)
         elif data["create_type"] == "custom":
             # TODO: working_directory, executable_update
             if root_create_data["create_type"] == "raw_exec":
@@ -451,130 +498,84 @@ class Controller:
             server_host=monitoring_host,
             server_type=monitoring_type,
         )
-
-        if (
-            data["create_type"] == "minecraft_java"
-            and root_create_data["create_type"] == "download_jar"
-        ):
-            # modded update urls from server jars will only update the installer
-            if create_data["category"] != "modded":
-                server_obj = self.servers.get_server_obj(new_server_id)
-                url = (
-                    f"https://serverjars.com/api/fetchJar/{create_data['category']}"
-                    f"/{create_data['type']}/{create_data['version']}"
+        if data["create_type"] == "minecraft_java":
+            if root_create_data["create_type"] == "download_jar":
+                # modded update urls from server jars will only update the installer
+                if create_data["category"] != "modded":
+                    server_obj = self.servers.get_server_obj(new_server_id)
+                    url = (
+                        f"https://serverjars.com/api/fetchJar/{create_data['category']}"
+                        f"/{create_data['type']}/{create_data['version']}"
+                    )
+                    server_obj.executable_update_url = url
+                    self.servers.update_server(server_obj)
+                self.server_jars.download_jar(
+                    create_data["category"],
+                    create_data["type"],
+                    create_data["version"],
+                    full_jar_path,
+                    new_server_id,
                 )
-                server_obj.executable_update_url = url
-                self.servers.update_server(server_obj)
-            self.server_jars.download_jar(
-                create_data["category"],
-                create_data["type"],
-                create_data["version"],
-                full_jar_path,
-                new_server_id,
-            )
+            elif root_create_data["create_type"] == "import_server":
+                ServersController.set_import(new_server_id)
+                self.import_helper.import_jar_server(
+                    create_data["existing_server_path"],
+                    new_server_path,
+                    monitoring_port,
+                    new_server_id,
+                )
+            elif root_create_data["create_type"] == "import_zip":
+                ServersController.set_import(new_server_id)
+
+        elif data["create_type"] == "minecraft_bedrock":
+            if root_create_data["create_type"] == "download_exe":
+                ServersController.set_import(new_server_id)
+                self.import_helper.download_bedrock_server(
+                    new_server_path, new_server_id
+                )
+            elif root_create_data["create_type"] == "import_server":
+                ServersController.set_import(new_server_id)
+                full_exe_path = os.path.join(new_server_path, create_data["executable"])
+                self.import_helper.import_bedrock_server(
+                    create_data["existing_server_path"],
+                    new_server_path,
+                    monitoring_port,
+                    full_exe_path,
+                    new_server_id,
+                )
+            elif root_create_data["create_type"] == "import_zip":
+                ServersController.set_import(new_server_id)
+                full_exe_path = os.path.join(new_server_path, create_data["executable"])
+                self.import_helper.import_bedrock_zip_server(
+                    create_data["zip_path"],
+                    new_server_path,
+                    os.path.join(create_data["zip_root"], create_data["executable"]),
+                    monitoring_port,
+                    new_server_id,
+                )
+
+        exec_user = self.users.get_user_by_id(int(user_id))
+        captured_roles = data.get("roles", [])
+        # These lines create a new Role for the Server with full permissions
+        # and add the user to it if he's not a superuser
+        if len(captured_roles) == 0:
+            if not exec_user["superuser"]:
+                new_server_uuid = self.servers.get_server_data_by_id(new_server_id).get(
+                    "server_uuid"
+                )
+                role_id = self.roles.add_role(
+                    f"Creator of Server with uuid={new_server_uuid}",
+                    exec_user["user_id"],
+                )
+                self.server_perms.add_role_server(new_server_id, role_id, "11111111")
+                self.users.add_role_to_user(exec_user["user_id"], role_id)
+
+        else:
+            for role in captured_roles:
+                role_id = role
+                self.server_perms.add_role_server(new_server_id, role_id, "11111111")
 
         return new_server_id, server_fs_uuid
-
-    def create_jar_server(
-        self,
-        jar: str,
-        server: str,
-        version: str,
-        name: str,
-        min_mem: int,
-        max_mem: int,
-        port: int,
-        user_id: int,
-    ):
-        server_id = Helpers.create_uuid()
-        server_dir = os.path.join(self.helper.servers_dir, server_id)
-        backup_path = os.path.join(self.helper.backup_path, server_id)
-        if Helpers.is_os_windows():
-            server_dir = Helpers.wtol_path(server_dir)
-            backup_path = Helpers.wtol_path(backup_path)
-            server_dir.replace(" ", "^ ")
-            backup_path.replace(" ", "^ ")
-
-        server_file = f"{server}-{version}.jar"
-
-        # make the dir - perhaps a UUID?
-        Helpers.ensure_dir_exists(server_dir)
-        Helpers.ensure_dir_exists(backup_path)
-
-        try:
-            # do a eula.txt
-            with open(
-                os.path.join(server_dir, "eula.txt"), "w", encoding="utf-8"
-            ) as file:
-                file.write("eula=false")
-                file.close()
-
-            # setup server.properties with the port
-            with open(
-                os.path.join(server_dir, "server.properties"), "w", encoding="utf-8"
-            ) as file:
-                file.write(f"server-port={port}")
-                file.close()
-
-        except Exception as e:
-            logger.error(f"Unable to create required server files due to :{e}")
-            return False
-
-        if Helpers.is_os_windows():
-            # Let's check for and setup for install server commands
-            if server == "forge":
-                server_command = (
-                    f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                    f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                    f'-jar "{server_file}" --installServer'
-                )
-            else:
-                server_command = (
-                    f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                    f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                    f'-jar "{server_file}" nogui'
-                )
-        else:
-            if server == "forge":
-                server_command = (
-                    f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                    f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                    f"-jar {server_file} --installServer"
-                )
-            else:
-                server_command = (
-                    f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                    f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                    f"-jar {server_file} nogui"
-                )
-        server_log_file = "./logs/latest.log"
-        server_stop = "stop"
-
-        new_id = self.register_server(
-            name,
-            server_id,
-            server_dir,
-            backup_path,
-            server_command,
-            server_file,
-            server_log_file,
-            server_stop,
-            port,
-            user_id,
-            server_type="minecraft-java",
-        )
-        # modded update urls from server jars will only update the installer
-        if jar != "modded":
-            server_obj = self.servers.get_server_obj(new_id)
-            url = f"https://serverjars.com/api/fetchJar/{jar}/{server}/{version}"
-            server_obj.executable_update_url = url
-            self.servers.update_server(server_obj)
-        # download the jar
-        self.server_jars.download_jar(
-            jar, server, version, os.path.join(server_dir, server_file), new_id
-        )
-
-        return new_id
 
     @staticmethod
     def verify_jar_server(server_path: str, server_jar: str):
@@ -593,64 +594,7 @@ class Controller:
             return False
         return True
 
-    def import_jar_server(
-        self,
-        server_name: str,
-        server_path: str,
-        server_jar: str,
-        min_mem: int,
-        max_mem: int,
-        port: int,
-        user_id: int,
-    ):
-        server_id = Helpers.create_uuid()
-        new_server_dir = os.path.join(self.helper.servers_dir, server_id)
-        backup_path = os.path.join(self.helper.backup_path, server_id)
-        if Helpers.is_os_windows():
-            new_server_dir = Helpers.wtol_path(new_server_dir)
-            backup_path = Helpers.wtol_path(backup_path)
-            new_server_dir.replace(" ", "^ ")
-            backup_path.replace(" ", "^ ")
-
-        Helpers.ensure_dir_exists(new_server_dir)
-        Helpers.ensure_dir_exists(backup_path)
-        server_path = Helpers.get_os_understandable_path(server_path)
-
-        full_jar_path = os.path.join(new_server_dir, server_jar)
-
-        if Helpers.is_os_windows():
-            server_command = (
-                f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                f'-jar "{full_jar_path}" nogui'
-            )
-        else:
-            server_command = (
-                f"java -Xms{Helpers.float_to_string(min_mem)}M "
-                f"-Xmx{Helpers.float_to_string(max_mem)}M "
-                f"-jar {full_jar_path} nogui"
-            )
-        server_log_file = "./logs/latest.log"
-        server_stop = "stop"
-
-        new_id = self.register_server(
-            server_name,
-            server_id,
-            new_server_dir,
-            backup_path,
-            server_command,
-            server_jar,
-            server_log_file,
-            server_stop,
-            port,
-            user_id,
-            server_type="minecraft-java",
-        )
-        ServersController.set_import(new_id)
-        self.import_helper.import_jar_server(server_path, new_server_dir, port, new_id)
-        return new_id
-
-    def import_zip_server(
+    def restore_java_zip_server(
         self,
         server_name: str,
         zip_path: str,
@@ -807,7 +751,7 @@ class Controller:
         self.import_helper.download_bedrock_server(new_server_dir, new_id)
         return new_id
 
-    def import_bedrock_zip_server(
+    def restore_bedrock_zip_server(
         self,
         server_name: str,
         zip_path: str,
@@ -952,6 +896,7 @@ class Controller:
 
                 srv_obj = server["server_obj"]
                 srv_obj.server_scheduler.shutdown()
+                srv_obj.dir_scheduler.shutdown()
                 running = srv_obj.check_running()
 
                 if running:
@@ -1025,7 +970,7 @@ class Controller:
     def t_update_master_server_dir(self, new_server_path, user_id):
         new_server_path = self.helper.wtol_path(new_server_path)
         new_server_path = os.path.join(new_server_path, "servers")
-        self.helper.websocket_helper.broadcast_page(
+        WebSocketManager().broadcast_page(
             "/panel/panel_config", "move_status", "Checking dir"
         )
         current_master = self.helper.wtol_path(
@@ -1035,7 +980,7 @@ class Controller:
             logger.info(
                 "Admin tried to change server dir to current server dir. Canceling..."
             )
-            self.helper.websocket_helper.broadcast_page(
+            WebSocketManager().broadcast_page(
                 "/panel/panel_config",
                 "move_status",
                 "done",
@@ -1046,18 +991,18 @@ class Controller:
                 "Admin tried to change server dir to be inside a sub directory of the"
                 " current server dir. This will result in a copy loop."
             )
-            self.helper.websocket_helper.broadcast_page(
+            WebSocketManager().broadcast_page(
                 "/panel/panel_config",
                 "move_status",
                 "done",
             )
             return
 
-        self.helper.websocket_helper.broadcast_page(
+        WebSocketManager().broadcast_page(
             "/panel/panel_config", "move_status", "Checking permissions"
         )
         if not self.helper.ensure_dir_exists(new_server_path):
-            self.helper.websocket_helper.broadcast_user(
+            WebSocketManager().broadcast_user(
                 user_id,
                 "send_start_error",
                 {
@@ -1066,6 +1011,8 @@ class Controller:
                     "the new directory."
                 },
             )
+            self.helper.dir_migration = False
+
             return
         # set the cached serve dir
         self.helper.servers_dir = new_server_path
@@ -1079,7 +1026,7 @@ class Controller:
                 new_server_path, server.get("server_uuid")
             )
             if os.path.isdir(server_path):
-                self.helper.websocket_helper.broadcast_page(
+                WebSocketManager().broadcast_page(
                     "/panel/panel_config",
                     "move_status",
                     f"Moving {server.get('server_name')}",
@@ -1120,7 +1067,7 @@ class Controller:
                 self.servers.update_unloaded_server(server_obj)
         self.servers.init_all_servers()
         self.helper.dir_migration = False
-        self.helper.websocket_helper.broadcast_page(
+        WebSocketManager().broadcast_page(
             "/panel/panel_config",
             "move_status",
             "done",
