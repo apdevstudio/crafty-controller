@@ -41,7 +41,43 @@ with redirect_stderr(NullWriter()):
 
 logger = logging.getLogger(__name__)
 
+def callback(called_func):
+    # Usage of @callback on method
+    # definition to run a webhook check
+    # on method completion
+    def wrapper(*args, **kwargs):
+        res = None
+        logger.debug("Checking for callbacks")
+        try:
+            res = called_func(*args, **kwargs)
+        finally:
+            events = WebhookFactory.get_monitored_events()
+            if called_func.__name__ in events:
+                server_webhooks = HelpersWebhooks.get_webhooks_by_server(
+                    args[0].server_id, True
+                )
+                for swebhook in server_webhooks:
+                    if called_func.__name__ in str(swebhook.trigger).split(","):
+                        logger.info(
+                            f"Found callback for event {called_func.__name__}"
+                            f" for server {args[0].server_id}"
+                        )
+                        webhook = HelpersWebhooks.get_webhook_by_id(swebhook.id)
+                        webhook_provider = WebhookFactory.create_provider(
+                            webhook["webhook_type"]
+                        )
+                        if res is not False and swebhook.enabled:
+                            webhook_provider.send(
+                                bot_name=webhook["bot_name"],
+                                server_name=args[0].name,
+                                title=webhook["name"],
+                                url=webhook["url"],
+                                message=webhook["body"],
+                                color=webhook["color"],
+                            )
+        return res
 
+    return wrapper
 class ServerOutBuf:
     lines = {}
 
@@ -165,45 +201,6 @@ class ServerInstance:
         # Reset crash and update at initialization
         self.stats_helper.server_crash_reset()
         self.stats_helper.set_update(False)
-
-    @staticmethod
-    def callback(called_func):
-        # Usage of @callback on method
-        # definition to run a webhook check
-        # on method completion
-        def wrapper(*args, **kwargs):
-            res = None
-            logger.debug("Checking for callbacks")
-            try:
-                res = called_func(*args, **kwargs)
-            finally:
-                events = WebhookFactory.get_monitored_events()
-                if called_func.__name__ in events:
-                    server_webhooks = HelpersWebhooks.get_webhooks_by_server(
-                        args[0].server_id, True
-                    )
-                    for swebhook in server_webhooks:
-                        if called_func.__name__ in str(swebhook.trigger).split(","):
-                            logger.info(
-                                f"Found callback for event {called_func.__name__}"
-                                f" for server {args[0].server_id}"
-                            )
-                            webhook = HelpersWebhooks.get_webhook_by_id(swebhook.id)
-                            webhook_provider = WebhookFactory.create_provider(
-                                webhook["webhook_type"]
-                            )
-                            if res is not False and swebhook.enabled:
-                                webhook_provider.send(
-                                    bot_name=webhook["bot_name"],
-                                    server_name=args[0].name,
-                                    title=webhook["name"],
-                                    url=webhook["url"],
-                                    message=webhook["body"],
-                                    color=webhook["color"],
-                                )
-            return res
-
-        return wrapper
 
     # **********************************************************************************
     #                               Minecraft Server Management
