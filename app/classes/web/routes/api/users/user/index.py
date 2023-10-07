@@ -280,7 +280,7 @@ class ApiUsersUserIndexHandler(BaseApiHandler):
                 if key == "password":
                     value = self.helper.encode_pass(value)
                 setattr(user_obj, key, value)
-            user_obj.save()
+            self.controller.users.update_user(auth_data[4]["user_id"], data)
 
         self.controller.management.add_to_audit_log(
             user["user_id"],
