@@ -7,6 +7,7 @@ import json
 import logging
 import threading
 import urllib.parse
+from zoneinfo import ZoneInfoNotFoundError
 import nh3
 import requests
 import tornado.web
@@ -15,7 +16,6 @@ from tornado import iostream
 
 # TZLocal is set as a hidden import on win pipeline
 from tzlocal import get_localzone
-from tzlocal.utils import ZoneInfoNotFoundError
 
 from app.classes.models.servers import Servers
 from app.classes.models.server_permissions import EnumPermissionsServer
