@@ -3,8 +3,6 @@ import logging
 import datetime
 from datetime import timedelta
 
-from prometheus_client import Gauge
-
 from app.classes.models.servers import Servers, HelperServers
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.main_models import DatabaseShortcuts
@@ -31,13 +29,6 @@ except ModuleNotFoundError as e:
 logger = logging.getLogger(__name__)
 peewee_logger = logging.getLogger("peewee")
 peewee_logger.setLevel(logging.INFO)
-
-# REGISTRY Entries for Server Stats functions
-ONLINE_PLAYERS = Gauge(
-    name="online_players",
-    documentation="The number of players online for a server",
-    labelnames=["server_id"],
-)
 
 
 # **********************************************************************************
@@ -166,8 +157,6 @@ class HelperServerStats:
     def insert_server_stats(self, server_stats):
         self.database.connect(reuse_if_open=True)
         server_id = server_stats.get("id", 0)
-
-        ONLINE_PLAYERS.labels(f"{self.server_id}").set(server_stats.get("online"))
 
         if server_id == 0:
             logger.warning("Stats saving failed with error: Server unknown (id = 0)")

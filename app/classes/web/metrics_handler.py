@@ -1,7 +1,13 @@
 import logging
 import typing as t
 
-from prometheus_client import REGISTRY, CollectorRegistry
+from prometheus_client import (
+    REGISTRY,
+    CollectorRegistry,
+    GC_COLLECTOR,
+    PLATFORM_COLLECTOR,
+    PROCESS_COLLECTOR,
+)
 from prometheus_client.exposition import _bake_output
 from prometheus_client.exposition import parse_qs, urlparse
 
@@ -14,6 +20,9 @@ class BaseMetricsHandler(BaseApiHandler):
     """HTTP handler that gives metrics from ``REGISTRY``."""
 
     registry: CollectorRegistry = REGISTRY
+    # registry.unregister(GC_COLLECTOR)
+    # registry.unregister(PLATFORM_COLLECTOR)
+    # registry.unregister(PROCESS_COLLECTOR)
 
     def get_registry(self) -> None:
         # Prepare parameters

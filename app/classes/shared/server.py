@@ -21,6 +21,9 @@ from tzlocal.utils import ZoneInfoNotFoundError
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.base import JobLookupError
 
+# OpenMetrics/Prometheus Imports
+from prometheus_client import CollectorRegistry, Gauge, Info
+
 from app.classes.minecraft.stats import Stats
 from app.classes.minecraft.mc_ping import ping, ping_bedrock
 from app.classes.models.servers import HelperServers, Servers
@@ -133,6 +136,8 @@ class ServerInstance:
         self.server_object = HelperServers.get_server_obj(self.server_id)
         self.stats_helper = HelperServerStats(self.server_id)
         self.last_backup_failed = False
+        self.server_registry = CollectorRegistry()
+
         try:
             with open(
                 os.path.join(self.server_object.path, "db_stats", "players_cache.json"),
@@ -152,6 +157,7 @@ class ServerInstance:
             self.tz = ZoneInfo("Europe/London")
         self.server_scheduler = BackgroundScheduler(timezone=str(self.tz))
         self.dir_scheduler = BackgroundScheduler(timezone=str(self.tz))
+        self.init_registries()
         self.server_scheduler.start()
         self.dir_scheduler.start()
         self.start_dir_calc_task()
@@ -1799,9 +1805,46 @@ class ServerInstance:
         server_stats = self.get_servers_stats()
         self.stats_helper.insert_server_stats(server_stats)
 
+        self.cpu_usage.labels(f"{self.server_id}").set(server_stats.get("cpu"))
+        self.mem_usage_percent.labels(f"{self.server_id}").set(
+            server_stats.get("mem_percent")
+        )
+        self.minecraft_version.labels(f"{self.server_id}").info(
+            {"version": f"{server_stats.get('version')}"}
+        )
+        self.online_players.labels(f"{self.server_id}").set(server_stats.get("online"))
+
         # delete old data
         max_age = self.helper.get_setting("history_max_age")
         now = datetime.datetime.now()
         minimum_to_exist = now - datetime.timedelta(days=max_age)
 
         self.stats_helper.remove_old_stats(minimum_to_exist)
+
+    def init_registries(self):
+        # REGISTRY Entries for Server Stats functions
+        self.cpu_usage = Gauge(
+            name="CPU_Usage",
+            documentation="The CPU usage of the server",
+            labelnames=["server_id"],
+            registry=self.server_registry,
+        )
+        self.mem_usage_percent = Gauge(
+            name="Mem_Usage",
+            documentation="The Memory usage of the server",
+            labelnames=["server_id"],
+            registry=self.server_registry,
+        )
+        self.minecraft_version = Info(
+            name="Minecraft_Version",
+            documentation="The version of the minecraft of this server",
+            labelnames=["server_id"],
+            registry=self.server_registry,
+        )
+
+        self.online_players = Gauge(
+            name="online_players",
+            documentation="The number of players online for a server",
+            labelnames=["server_id"],
+            registry=self.server_registry,
+        )
