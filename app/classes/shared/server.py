@@ -41,6 +41,7 @@ with redirect_stderr(NullWriter()):
 
 logger = logging.getLogger(__name__)
 
+
 def callback(called_func):
     # Usage of @callback on method
     # definition to run a webhook check
@@ -78,6 +79,8 @@ def callback(called_func):
         return res
 
     return wrapper
+
+
 class ServerOutBuf:
     lines = {}
 
