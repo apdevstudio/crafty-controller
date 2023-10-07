@@ -1,9 +1,7 @@
-from prometheus_client import Gauge
 from prometheus_client.exposition import _bake_output
 from prometheus_client.exposition import parse_qs, urlparse
 
 from app.classes.web.metrics_handler import BaseMetricsHandler
-from app.classes.controllers.servers_controller import ServersController
 
 
 # Decorate function with metric.
