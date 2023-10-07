@@ -627,5 +627,28 @@
         "uses": "Number of uses allowed (-1==No Limit)",
         "manager": "Manager",
         "selectManager": "Select Manager for User"
+    },
+    "webhooks": {
+        "webhooks": "Webhooks",
+        "name": "Name",
+        "type": "Webhook Type",
+        "trigger": "Trigger",
+        "enabled": "Enabled",
+        "url": "Webhook URL",
+        "bot_name": "Bot Name",
+        "webhook_body": "Webhook Body",
+        "color": "Select Color Accent",
+        "areYouSureDel": "Are you sure you want to delete this webhook?",
+        "areYouSureRun": "Are you sure you want to test this webhook?",
+        "edit": "Edit",
+        "run": "Test Run Webhook",
+        "new": "New Webhook",
+        "start_server": "Server Started",
+        "stop_server": "Server Stopped",
+        "crash_detected": "Server Crashed",
+        "jar_update": "Server Executable Updated",
+        "backup_server": "Server Backup Completed",
+        "send_command": "Server Command Received",
+        "kill": "Server Killed"
     }
 }
