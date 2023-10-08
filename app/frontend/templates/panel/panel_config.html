@@ -138,7 +138,7 @@
                               {% end %}
                             </ul>
                           </td>
-                          <td><a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a></td>
+                          <td><a class="edit_user" data-name="{{user.username}}" data-id="{{user.user_id}}"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;<a class="edit_password" data-id="{{user.user_id}}"><i class="fa-solid fa-lock"></i></a>&nbsp;&nbsp;<a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a></td>
                         </tr>
                         {% end %}
                       </tbody>

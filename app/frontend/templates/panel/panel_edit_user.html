@@ -409,10 +409,31 @@ data['lang']) }}{% end %}
           return;
         }
       const token = getCookie("_xsrf")
+
+      let userRes = await fetch(`/api/v2/users/@me`, {
+        method: "GET",
+        headers: {
+          'X-XSRFToken': token
+        },
+      });
+      let userData = await userRes.json();
+      let superuser = null;
+      if (userData.status === "ok") {
+        superuser = userData.data["superuser"];
+        edit_id = userData.data["user_id"];
+      } else {
+        bootbox.alert({
+          title: userData.error,
+          message: userData.error
+        });
+      }
+
       let userForm = document.getElementById("user_form");
 
       let disabled_flag = false;
-      let roles = $('.role_check').map(function() {
+      let roles = null;
+      if (superuser || userId != edit_id){
+        roles = $('.role_check').map(function() {
         if ($(this).attr("disabled")){
           disabled_flag = true;
         }
@@ -420,7 +441,6 @@ data['lang']) }}{% end %}
           return $(this).val();
         }
       }).get();
-
       let avail_permissions = $('.perm-name').map(function() {
           return $(this).data("perm");
       }).get();
@@ -429,22 +449,24 @@ data['lang']) }}{% end %}
       for(i=0; i < avail_permissions.length; i++){
         permissions.push({"name": avail_permissions[i], "quantity": $(`#quantity_${avail_permissions[i]}`).val(), "enabled": $(`#permission_${avail_permissions[i]}`).is(':checked')})
       }
-      console.log(permissions);
+      }
 
       let formData = new FormData(userForm);
       //Create an object from the form data entries
       let formDataObject = Object.fromEntries(formData.entries());
+      if (superuser || userId != edit_id){
       if (!disabled_flag){
         formDataObject.roles = roles;
       }
       if ($("#permissions").length){
         formDataObject.permissions = permissions;
       }
-      if (userId === null){
+      if(userId){
         if(typeof password === "string"){
         formDataObject.password = password;
       }
       }
+    }
       formDataObject.enabled = $("#enabled").is(":checked");
       if ($("#superuser").is(":enabled")){
         formDataObject.superuser = $("#superuser").is(":checked");
