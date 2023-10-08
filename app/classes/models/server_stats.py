@@ -8,6 +8,7 @@ from app.classes.shared.helpers import Helpers
 from app.classes.shared.main_models import DatabaseShortcuts
 from app.classes.shared.migration import MigrationManager
 
+
 try:
     from peewee import (
         SqliteDatabase,

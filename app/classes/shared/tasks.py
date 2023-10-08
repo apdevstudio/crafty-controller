@@ -696,6 +696,12 @@ class TasksManager:
                 # Stats are different
 
                 host_stats = HelpersManagement.get_latest_hosts_stats()
+
+                self.controller.management.cpu_usage.set(host_stats.get("cpu_usage"))
+                self.controller.management.mem_usage_percent.set(
+                    host_stats.get("mem_percent")
+                )
+
                 if len(WebSocketManager().clients) > 0:
                     # There are clients
                     try:

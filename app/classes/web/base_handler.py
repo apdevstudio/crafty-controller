@@ -11,7 +11,7 @@ from app.classes.shared.helpers import Helpers
 from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.main_controller import Controller
 from app.classes.shared.translation import Translation
-from app.classes.models.management import DatabaseShortcuts
+from app.classes.shared.main_models import DatabaseShortcuts
 
 logger = logging.getLogger(__name__)
 

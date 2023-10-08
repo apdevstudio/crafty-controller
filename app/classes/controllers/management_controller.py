@@ -1,6 +1,8 @@
 import logging
 import queue
 
+from prometheus_client import CollectorRegistry, Gauge
+
 from app.classes.models.management import HelpersManagement, HelpersWebhooks
 from app.classes.models.servers import HelperServers
 
@@ -11,6 +13,8 @@ class ManagementController:
     def __init__(self, management_helper):
         self.management_helper = management_helper
         self.command_queue = queue.Queue()
+        self.host_registry = CollectorRegistry()
+        self.init_host_registries()
 
     # **********************************************************************************
     #                                   Config Methods
@@ -53,6 +57,19 @@ class ManagementController:
     @staticmethod
     def add_crafty_row():
         HelpersManagement.create_crafty_row()
+
+    def init_host_registries(self):
+        # REGISTRY Entries for Server Stats functions
+        self.cpu_usage = Gauge(
+            name="CPU_Usage",
+            documentation="The CPU usage of the server",
+            registry=self.host_registry,
+        )
+        self.mem_usage_percent = Gauge(
+            name="Mem_Usage",
+            documentation="The Memory usage of the server",
+            registry=self.host_registry,
+        )
 
     # **********************************************************************************
     #                                   Commands Methods
