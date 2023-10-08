@@ -371,6 +371,7 @@ data['lang']) }}{% end %}
     }
   }
   function validateForm() {
+    console.log("in validate")
     let password0 = document.getElementById("password0").value;
     let password1 = document.getElementById("password1").value;
     if (password0 === "" && password1 === "" && userId){
@@ -398,16 +399,20 @@ data['lang']) }}{% end %}
         return (isNaN(value) ? value : +value);
       }
   }
-  const userId = new URLSearchParams(document.location.search).get('id')
   $("#user_form").on("submit", async function (e) {
+    const userId = new URLSearchParams(document.location.search).get('id');
+    console.log(userId)
+    console.log("SUBMITTED")
       e.preventDefault();
       let password = null;
+      console.log("before validate")
       if(!userId){
         password = validateForm();
-      }
-      if (!password){
+        if (!password){
+        console.log("returning")
           return;
         }
+      }
       const token = getCookie("_xsrf")
 
       let userRes = await fetch(`/api/v2/users/@me`, {
