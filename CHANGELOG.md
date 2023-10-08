@@ -15,6 +15,7 @@
 - Fix Backup Restore/Schedules, Backup button function on `remote-comms2` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/634))
 - Add a wait to the call for the directory so we can make sure the wait dialogue has time to show up first ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/637))
 - Fix bug where a reaction loop could be created, but would be cut short by an error when the loop occurred ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/636))
+- Use controller on update user call ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/640))
 ### Refactor
 - Consolidate remaining frontend functions into API V2, and remove ajax internal API ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/585))
 - Replace bleach with nh3 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/628))
