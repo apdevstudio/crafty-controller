@@ -12,9 +12,9 @@ if [ ! "$(ls -A --ignore=.gitkeep ./app/config)" ]; then
         # This will do the full /crafty dir, so will take a miniute.
         echo -e "\033[36mWrapper | \033[35m📋 Looking for problem bind mount permissions globally..."
 
-        find . ! -group root -exec chgrp root {} \;
-        find . ! -perm g+rw -exec chmod g+rw {} \;
-        find . -type d ! -perm g+s -exec chmod g+s {} \;
+        find . ! -group root -print0 | xargs -0 chgrp root
+        find . ! -perm g+rw -print0 | xargs -0 chmod g+rw
+        find . -type d ! -perm g+s -print0 | xargs -0 chmod g+s
     fi
 else
     # Keep version file up to date with image
@@ -31,9 +31,9 @@ if [ $(id -u) -eq 0 ]; then
         echo -e "\033[36mWrapper | \033[35m📋 Files present in import directory, checking/fixing permissions..."
         echo -e "\033[36mWrapper | \033[33m⏳ Please be patient for larger servers..."
 
-        find . ! -group root -exec chgrp root {} \;
-        find . ! -perm g+rw -exec chmod g+rw {} \;
-        find . -type d ! -perm g+s -exec chmod g+s {} \;
+        find . ! -group root -print0 | xargs -0 chgrp root
+        find . ! -perm g+rw -print0 | xargs -0 chmod g+rw
+        find . -type d ! -perm g+s -print0 | xargs -0 chmod g+s
 
         echo -e "\033[36mWrapper | \033[32m✅ Permissions Fixed! (This will happen every boot until /import is empty!)"
     fi
