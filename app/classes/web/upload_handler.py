@@ -102,7 +102,8 @@ class UploadHandler(BaseHandler):
                 )
                 self.do_upload = False
 
-            path = os.path.join(self.controller.project_root, "imports")
+            path = os.path.join(self.controller.project_root, "import", "upload")
+            self.helper.ensure_dir_exists(path)
             # Delete existing files
             if len(os.listdir(path)) > 0:
                 for item in os.listdir():
