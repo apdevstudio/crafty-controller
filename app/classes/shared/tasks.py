@@ -5,9 +5,8 @@ import threading
 import asyncio
 import datetime
 import json
-
+from zoneinfo import ZoneInfoNotFoundError
 from tzlocal import get_localzone
-from tzlocal.utils import ZoneInfoNotFoundError
 from apscheduler.events import EVENT_JOB_EXECUTED
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -758,11 +757,13 @@ class TasksManager:
                 )
         # Search for old files in imports
         self.helper.ensure_dir_exists(
-            os.path.join(self.controller.project_root, "imports")
+            os.path.join(self.controller.project_root, "import", "upload")
         )
-        for file in os.listdir(os.path.join(self.controller.project_root, "imports")):
+        for file in os.listdir(
+            os.path.join(self.controller.project_root, "import", "upload")
+        ):
             if self.helper.is_file_older_than_x_days(
-                os.path.join(self.controller.project_root, "imports", file)
+                os.path.join(self.controller.project_root, "import", "upload", file)
             ):
                 try:
                     os.remove(os.path.join(file))

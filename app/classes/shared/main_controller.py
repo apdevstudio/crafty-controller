@@ -8,11 +8,11 @@ import time
 import json
 import logging
 import threading
+from zoneinfo import ZoneInfoNotFoundError
 from peewee import DoesNotExist
 
 # TZLocal is set as a hidden import on win pipeline
 from tzlocal import get_localzone
-from tzlocal.utils import ZoneInfoNotFoundError
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from app.classes.models.server_permissions import EnumPermissionsServer
