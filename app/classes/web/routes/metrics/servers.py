@@ -1,4 +1,3 @@
-from prometheus_client import Gauge
 from prometheus_client.exposition import _bake_output
 from prometheus_client.exposition import parse_qs, urlparse
 
@@ -19,7 +18,10 @@ class ApiOpenMetricsServersHandler(BaseMetricsHandler):
 
         self.get_registry(server_id)
 
-    def get_registry(self, server_id) -> None:
+    def get_registry(self, server_id=None) -> None:
+        if server_id is None:
+            return self.finish_json(500, {"status": "error", "error": "UNKNOWN_SERVER"})
+
         # Prepare parameters
         registry = (
             ServersController().get_server_instance_by_id(server_id).server_registry

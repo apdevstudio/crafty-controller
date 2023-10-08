@@ -11,7 +11,9 @@ class ApiOpenMetricsIndexHandler(BaseMetricsHandler):
         if not auth_data:
             return
 
-        version = f"{self.helper.get_version().get('major')}.{self.helper.get_version().get('minor')}.{self.helper.get_version().get('sub')}"
+        version = f"{self.helper.get_version().get('major')} \
+                    .{self.helper.get_version().get('minor')} \
+                    .{self.helper.get_version().get('sub')}"
         CRAFTY_INFO.info(
             {"version": version, "docker": f"{self.helper.is_env_docker()}"}
         )
