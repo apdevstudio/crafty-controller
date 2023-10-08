@@ -763,7 +763,7 @@ class TasksManager:
             os.path.join(self.controller.project_root, "import", "upload")
         ):
             if self.helper.is_file_older_than_x_days(
-                os.path.join(self.controller.project_root, "import", file)
+                os.path.join(self.controller.project_root, "import", "upload", file)
             ):
                 try:
                     os.remove(os.path.join(file))
