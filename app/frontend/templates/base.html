@@ -126,6 +126,9 @@
       position: relative;
       margin-right: 1rem;
       background: var(--card-banner-bg);
+      -webkit-transition: right 0.75s, opacity 0.75s, top 0.75s;
+      -moz-transition: right 0.75s, opacity 0.75s, top 0.75s;
+      -o-transition: right 0.75s, opacity 0.75s, top 0.75s;
       transition: right 0.75s, opacity 0.75s, top 0.75s;
       right: -20rem;
       opacity: 0.1;
@@ -157,29 +160,19 @@
     .notification.remove {
       right: 0rem;
       opacity: 0.1;
-      top: -10rem;
+      top: -2rem;
     }
 
     .notification span {
       line-height: 20px;
-      font-size: 20px;
+      font-size: 15px;
       user-select: none;
+      cursor: pointer;
     }
   </style>
 
 
-  <div class="notifications">
-    <!--<div id="toast_98" class="notification toast fade active show" role="alert" aria-lived="assertive" aria-atomic="true" data-delay="7500" data-animation="true" data-autohide="false">
-      <div class="toast-header">
-        <img src="/static/assets/images/logo_small.svg" class="mr-auto" alt="logo" />
-        <strong class="mr-auto"> Crafty Controller</strong>
-        <button type="button" class="close" data-dismiss="toast_98" aria-label="Close" onclick="closeNotification(this)">
-          <span class="fa-solid fa-xmark"></span>
-        </button>
-      </div>
-      <div class="toast-body">Admin issued command stop_server for server ServerTest1 with ID: 1</div>
-    </div>-->
-  </div>
+  <div class="notifications"></div>
 
   <script src="/static/assets/vendors/js/vendor.bundle.base.js"></script>
   <script src="/static/assets/js/shared/off-canvas.js"></script>
@@ -504,7 +497,7 @@
     }
 
     function closeNotification(element) {
-      element.parentElement.parentElement.classList.add('remove');
+      element.parentElement.classList.add('remove');
       setTimeout(function () {
         element.parentElement.remove();
       }, 500);
@@ -537,18 +530,11 @@
       toastHeaderTitle.innerHTML = " Crafty Controller ";
       toastHeaderDiv.appendChild(toastHeaderTitle);
 
-      var toastHeaderBtn = document.createElement('button');
-      toastHeaderBtn.setAttribute("type", "button");
-      toastHeaderBtn.setAttribute("class", "ml-2 mb-1 close");
-      toastHeaderBtn.setAttribute("data-dismiss", "toast_" + intId);
-      toastHeaderBtn.setAttribute("aria-label", "Close");
-      toastHeaderDiv.appendChild(toastHeaderBtn);
-
       var toastHeaderCloseSpan = document.createElement('span');
       toastHeaderCloseSpan.setAttribute("class", "fa-solid fa-xmark");
       toastHeaderCloseSpan.setAttribute("aria-hidden", "true");
       toastHeaderCloseSpan.addEventListener('click', function () { closeNotification(this.parentElement) });
-      toastHeaderBtn.appendChild(toastHeaderCloseSpan);
+      toastHeaderDiv.appendChild(toastHeaderCloseSpan);
 
       var toastBodyDiv = document.createElement('div');
       toastBodyDiv.setAttribute("class", "toast-body");
