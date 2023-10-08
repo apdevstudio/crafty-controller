@@ -71,6 +71,7 @@ data['lang']) }}{% end %}
                         data['lang']) }}</h4>
                     </div>
                     <div class="card-body">
+                      {% if data['new_user'] %}
                       <div class="form-group">
                         <label class="form-label" for="username">{{ translate('userConfig', 'userName', data['lang'])
                           }}<small class="text-muted ml-1"> - {{ translate('userConfig', 'userNameDesc', data['lang'])
@@ -98,6 +99,15 @@ data['lang']) }}{% end %}
                           data-content="{{ translate('panelConfig', 'match', data['lang']) }}" ,
                           data-placement="right"></span>
                       </div>
+                      {% else %}
+                      <div class="form-group">
+                        <label class="form-label" for="username">{{ translate('userConfig', 'userName', data['lang'])
+                          }}<small class="text-muted ml-1"> - {{ translate('userConfig', 'userNameDesc', data['lang'])
+                            }}</small> </label>
+                        <input type="text" class="form-control" name="username" id="username" autocomplete="off"
+                          data-lpignore="true" value="{{ data['user']['username']  }}" placeholder="User Name" disabled>
+                      </div>
+                      {% end %}
                       <div class="form-group">
                         <label class="form-label" for="email">{{ translate('userConfig', 'gravEmail', data['lang'])
                           }}<small class="text-muted ml-1"> - {{ translate('userConfig', 'gravDesc', data['lang'])
@@ -391,10 +401,13 @@ data['lang']) }}{% end %}
   const userId = new URLSearchParams(document.location.search).get('id')
   $("#user_form").on("submit", async function (e) {
       e.preventDefault();
-      let password = validateForm();
-      if (!password){
-        return;
+      let password = null;
+      if(!userId){
+        password = validateForm();
       }
+      if (!password){
+          return;
+        }
       const token = getCookie("_xsrf")
       let userForm = document.getElementById("user_form");
 
@@ -427,8 +440,10 @@ data['lang']) }}{% end %}
       if ($("#permissions").length){
         formDataObject.permissions = permissions;
       }
-      if(typeof password === "string"){
+      if (userId === null){
+        if(typeof password === "string"){
         formDataObject.password = password;
+      }
       }
       formDataObject.enabled = $("#enabled").is(":checked");
       if ($("#superuser").is(":enabled")){
