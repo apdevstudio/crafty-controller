@@ -757,11 +757,13 @@ class TasksManager:
                 )
         # Search for old files in imports
         self.helper.ensure_dir_exists(
-            os.path.join(self.controller.project_root, "imports")
+            os.path.join(self.controller.project_root, "import", "upload")
         )
-        for file in os.listdir(os.path.join(self.controller.project_root, "imports")):
+        for file in os.listdir(
+            os.path.join(self.controller.project_root, "import", "upload")
+        ):
             if self.helper.is_file_older_than_x_days(
-                os.path.join(self.controller.project_root, "imports", file)
+                os.path.join(self.controller.project_root, "import", file)
             ):
                 try:
                     os.remove(os.path.join(file))
