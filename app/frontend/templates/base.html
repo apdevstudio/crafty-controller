@@ -552,7 +552,7 @@
       }, 200);
 
       setTimeout(function (element) {
-        closeNotification(element);
+        closeNotification(element.parentElement);
       }, 7500, toastHeaderCloseSpan);
 
       `
