@@ -79,7 +79,7 @@
                       <tbody>
                         {% for user in data['users'] %}
                         <tr>
-                          <td><i class="fas fa-user"></i> {{ user.username }}</td>
+                          <td><i class="fas fa-user"></i><span id="user_{{user.user_id}}">{{ user.username }}</span></td>
                           <td>
                             {% if user.enabled %}
                             <span class="text-success">
@@ -106,7 +106,7 @@
                               {% end %}
                             </ul>
                           </td>
-                          <td><a class="edit_user" data-name="{{user.username}}" data-id="{{user.user_id}}"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;<a class="edit_password" data-id="{{user.user_id}}"><i class="fa-solid fa-lock"></i></a>&nbsp;&nbsp;<a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a></td>
+                          <td><span id="username_{{user.user_id}}" class="edit_user clickable" data-name="{{user.username}}" data-id="{{user.user_id}}"><i class="fa-solid fa-user"></i></span>&nbsp;&nbsp;<span class="edit_password clickable" data-id="{{user.user_id}}"><i class="fa-solid fa-lock"></i></span>&nbsp;&nbsp;<a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a></td>
                         </tr>
                         {% end %}
                         {% for user in data['managed_users'] %}
@@ -138,7 +138,7 @@
                               {% end %}
                             </ul>
                           </td>
-                          <td><a class="edit_user" data-name="{{user.username}}" data-id="{{user.user_id}}"><i class="fa-solid fa-user"></i></a>&nbsp;&nbsp;<a class="edit_password" data-id="{{user.user_id}}"><i class="fa-solid fa-lock"></i></a>&nbsp;&nbsp;<a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a></td>
+                          <td><span id="username_{{user.user_id}}" class="edit_user clickable" data-name="{{user.username}}" data-id="{{user.user_id}}"><i class="fa-solid fa-user"></i></span>&nbsp;&nbsp;<span class="edit_password clickable" data-id="{{user.user_id}}"><i class="fa-solid fa-lock"></i></span>&nbsp;&nbsp;<a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a></td>
                         </tr>
                         {% end %}
                       </tbody>
@@ -274,6 +274,12 @@
 </div>
 
 <style>
+  .clickable {
+    color: #007bff;
+  }
+  .clickable:hover {
+    cursor: pointer;
+  }
   .custom-picker {
     border: 1px solid var(--outline);
   }
@@ -367,6 +373,11 @@
         }
     });
   });
+  $(document).on("submit", ".bootbox form", function(e) {
+    e.preventDefault();
+    $(".bootbox .btn-primary").click();
+});
+
   $(".edit_user").on("click", function(){
     const token = getCookie("_xsrf");
     let username = $(this).data('name');
@@ -374,11 +385,30 @@
     bootbox.confirm(`<form class="form" id='infos' action=''>\
       <div class="form-group">
       <label for="username">Username</label>
-      <input class="form-control" type='text' name='username' value=${username} /><br/>\
+      <input class="form-control" type='text' name='username' id="username_field" value=${username} /><br/>\
       </div>
-      </form>`, function(result) {
-          if(result)
-              $('#infos').submit();
+      </form>`, async function(result) {
+        if(result){
+          let new_username = $("#username_field").val();
+          let res = await fetch(`/api/v2/users/${user_id}`, {
+            method: 'PATCH',
+            headers: {
+            'X-XSRFToken': token
+            },
+            body: JSON.stringify({"username": new_username}),
+          });
+          let responseData = await res.json();
+          if (responseData.status === "ok") {
+            $(`#user_${user_id}`).html(` ${new_username}`)
+            $(`#username_${user_id}`).data('name', new_username);
+          } else {
+
+            bootbox.alert({
+              title: responseData.status,
+              message: responseData.error
+            });
+          }
+        }
     });
   });
   if (webSocket) {

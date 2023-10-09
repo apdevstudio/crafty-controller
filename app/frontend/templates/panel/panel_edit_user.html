@@ -451,10 +451,12 @@ data['lang']) }}{% end %}
         permissions.push({"name": avail_permissions[i], "quantity": $(`#quantity_${avail_permissions[i]}`).val(), "enabled": $(`#permission_${avail_permissions[i]}`).is(':checked')})
       }
       }
-
       let formData = new FormData(userForm);
       //Create an object from the form data entries
       let formDataObject = Object.fromEntries(formData.entries());
+      if(userId){
+        delete formDataObject.username
+      }
       if (superuser || userId != edit_id){
       if (!disabled_flag){
         formDataObject.roles = roles;
@@ -462,7 +464,7 @@ data['lang']) }}{% end %}
       if ($("#permissions").length){
         formDataObject.permissions = permissions;
       }
-      if(userId){
+      if(!userId){
         if(typeof password === "string"){
         formDataObject.password = password;
       }

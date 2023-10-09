@@ -247,31 +247,25 @@ class ApiUsersUserIndexHandler(BaseApiHandler):
             or data["manager"] == 0
         ):
             data["manager"] = None
-
+        crafty_perms = None
         if "permissions" in data:
             permissions: t.List[UsersController.ApiPermissionDict] = data.pop(
                 "permissions"
             )
             permissions_mask = "0" * len(EnumPermissionsCrafty)
-            limit_server_creation = 0
-            limit_user_creation = 0
-            limit_role_creation = 0
-
-            for permission in permissions:
-                permissions_mask = self.controller.crafty_perms.set_permission(
-                    permissions_mask,
-                    EnumPermissionsCrafty.__members__[permission["name"]],
-                    "1" if permission["enabled"] else "0",
-                )
-
-            PermissionsCrafty.add_or_update_user(
-                user_id,
-                permissions_mask,
-                limit_server_creation,
-                limit_user_creation,
-                limit_role_creation,
-            )
-
+            if permissions is not None:
+                server_quantity = {}
+                permissions_mask = list(permissions_mask)
+                for permission in permissions:
+                    server_quantity[permission["name"]] = permission["quantity"]
+                    permissions_mask[
+                        EnumPermissionsCrafty[permission["name"]].value
+                    ] = ("1" if permission["enabled"] else "0")
+                permissions_mask = "".join(permissions_mask)
+                crafty_perms = {
+                    "permissions_mask": permissions_mask,
+                    "server_quantity": server_quantity,
+                }
         # TODO: make this more efficient
         if len(data) != 0:
             for key in data:
@@ -280,7 +274,11 @@ class ApiUsersUserIndexHandler(BaseApiHandler):
                 if key == "password":
                     value = self.helper.encode_pass(value)
                 setattr(user_obj, key, value)
-            self.controller.users.update_user(auth_data[4]["user_id"], data)
+        self.controller.users.update_user(
+            user_id,
+            data,
+            crafty_perms,
+        )
 
         self.controller.management.add_to_audit_log(
             user["user_id"],
