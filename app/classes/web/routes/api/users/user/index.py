@@ -4,10 +4,7 @@ import typing as t
 
 from jsonschema import ValidationError, validate
 from app.classes.controllers.users_controller import UsersController
-from app.classes.models.crafty_permissions import (
-    EnumPermissionsCrafty,
-    PermissionsCrafty,
-)
+from app.classes.models.crafty_permissions import EnumPermissionsCrafty
 from app.classes.models.roles import HelperRoles
 from app.classes.models.users import HelperUsers
 from app.classes.web.base_api_handler import BaseApiHandler
