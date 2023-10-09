@@ -106,7 +106,10 @@
                               {% end %}
                             </ul>
                           </td>
-                          <td><span id="username_{{user.user_id}}" class="edit_user clickable" data-name="{{user.username}}" data-id="{{user.user_id}}"><i class="fa-solid fa-user"></i></span>&nbsp;&nbsp;<span class="edit_password clickable" data-id="{{user.user_id}}"><i class="fa-solid fa-lock"></i></span>&nbsp;&nbsp;<a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a></td>
+                          <td><span data-translate="{{translate('userConfig', 'userName', data['lang'])}}" data-toggle="tooltip" title="{{ translate('userConfig', 'userName', data['lang'])}}" id="username_{{user.user_id}}" class="edit_user clickable" data-name="{{user.username}}" data-id="{{user.user_id}}"><i class="fa-solid fa-user"></i></span>
+                            &nbsp;&nbsp;<span data-translate1="{{translate('userConfig', 'password', data['lang'])}}" data-translate2="{{translate('userConfig', 'repeat', data['lang'])}}" data-toggle="tooltip" title="{{ translate('userConfig', 'password', data['lang'])}}" class="edit_password clickable" data-id="{{user.user_id}}"><i class="fa-solid fa-lock"></i></span>
+                            &nbsp;&nbsp;<a data-toggle="tooltip" title="{{ translate('userConfig', 'pageTitle', data['lang'])}}" href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a>
+                          </td>
                         </tr>
                         {% end %}
                         {% for user in data['managed_users'] %}
@@ -138,7 +141,10 @@
                               {% end %}
                             </ul>
                           </td>
-                          <td><span id="username_{{user.user_id}}" class="edit_user clickable" data-name="{{user.username}}" data-id="{{user.user_id}}"><i class="fa-solid fa-user"></i></span>&nbsp;&nbsp;<span class="edit_password clickable" data-id="{{user.user_id}}"><i class="fa-solid fa-lock"></i></span>&nbsp;&nbsp;<a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a></td>
+                          <td><span data-translate="{{translate('userConfig', 'userName', data['lang'])}}" data-toggle="tooltip" title="{{ translate('userConfig', 'userName', data['lang'])}}" id="username_{{user.user_id}}" class="edit_user clickable" data-name="{{user.username}}" data-id="{{user.user_id}}"><i class="fa-solid fa-user"></i></span>
+                            &nbsp;&nbsp;<span data-translate1="{{translate('userConfig', 'password', data['lang'])}}" data-translate2="{{translate('userConfig', 'repeat', data['lang'])}}" data-toggle="tooltip" title="{{ translate('userConfig', 'password', data['lang'])}}" class="edit_password clickable" data-id="{{user.user_id}}"><i class="fa-solid fa-lock"></i></span>
+                            &nbsp;&nbsp;<a data-toggle="tooltip" title="{{ translate('userConfig', 'pageTitle', data['lang'])}}" href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a>
+                          </td>
                         </tr>
                         {% end %}
                       </tbody>
@@ -340,11 +346,11 @@
     let user_id = $(this).data('id');
     bootbox.confirm(`<form class="form" id='infos' action=''>\
       <div class="form-group">
-      <label for="new_password">New Password</label>
+      <label for="new_password">${$(this).data("translate1")}</label>
       <input class="form-control" type='password' id="password0" name='new_password' /></br>\
       </div>
       <div class="form-group">
-      <label for="confirm_password">Confirm Password</label>
+      <label for="confirm_password">${$(this).data("translate2")}</label>
       <input class="form-control" type='password' id="password1" name='confirm_password' />\
       </div>
       </form>`, async function(result) {
@@ -384,7 +390,7 @@
     let user_id = $(this).data('id');
     bootbox.confirm(`<form class="form" id='infos' action=''>\
       <div class="form-group">
-      <label for="username">Username</label>
+      <label for="username">${$(this).data("translate")}</label>
       <input class="form-control" type='text' name='username' id="username_field" value=${username} /><br/>\
       </div>
       </form>`, async function(result) {
