@@ -214,14 +214,14 @@ class UsersController:
             limit_server_creation = 0
             limit_user_creation = 0
             limit_role_creation = 0
-
-        PermissionsCrafty.add_or_update_user(
-            user_id,
-            permissions_mask,
-            limit_server_creation,
-            limit_user_creation,
-            limit_role_creation,
-        )
+        if user_crafty_data:
+            PermissionsCrafty.add_or_update_user(
+                user_id,
+                permissions_mask,
+                limit_server_creation,
+                limit_user_creation,
+                limit_role_creation,
+            )
 
         self.users_helper.delete_user_roles(user_id, removed_roles)
 
