@@ -992,23 +992,28 @@
   });
 
   $(document).ready(function () {
-    function sendOrder(id_string) {
+    async function sendOrder(id_string) {
       const token = getCookie("_xsrf")
-
-      $.ajax({
-        type: "PATCH",
-        headers: { 'X-XSRFToken': token },
-        url: `/api/v2/users/@me`,
-        data: JSON.stringify({
+      let res = await fetch(`/api/v2/users/@me`, {
+      method: 'PATCH',
+      headers: {
+        'X-XSRFToken': token
+      },
+      body: JSON.stringify({
           server_order: id_string,
         }),
-        success: function (data) {
-          console.log("got response:");
-          console.log(data);
-        },
+    });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      return
+    } else {
+
+      bootbox.alert({
+        title: responseData.status,
+        message: responseData.error
       });
     }
-
+    }
     // Inits the sortable
     $("table#servers_table tbody")
       .sortable({
