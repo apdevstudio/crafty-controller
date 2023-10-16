@@ -79,7 +79,7 @@
                       <tbody>
                         {% for user in data['users'] %}
                         <tr>
-                          <td><i class="fas fa-user"></i> {{ user.username }}</td>
+                          <td><i class="fas fa-user"></i><span id="user_{{user.user_id}}">{{ user.username }}</span></td>
                           <td>
                             {% if user.enabled %}
                             <span class="text-success">
@@ -106,7 +106,10 @@
                               {% end %}
                             </ul>
                           </td>
-                          <td><a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a></td>
+                          <td><span data-translate="{{translate('userConfig', 'userName', data['lang'])}}" data-toggle="tooltip" title="{{ translate('userConfig', 'userName', data['lang'])}}" id="username_{{user.user_id}}" class="edit_user clickable" data-name="{{user.username}}" data-id="{{user.user_id}}"><i class="fa-solid fa-user"></i></span>
+                            &nbsp;&nbsp;<span data-translate1="{{translate('userConfig', 'password', data['lang'])}}" data-translate2="{{translate('userConfig', 'repeat', data['lang'])}}" data-toggle="tooltip" title="{{ translate('userConfig', 'password', data['lang'])}}" class="edit_password clickable" data-id="{{user.user_id}}"><i class="fa-solid fa-lock"></i></span>
+                            &nbsp;&nbsp;<a data-toggle="tooltip" title="{{ translate('userConfig', 'pageTitle', data['lang'])}}" href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a>
+                          </td>
                         </tr>
                         {% end %}
                         {% for user in data['managed_users'] %}
@@ -138,7 +141,10 @@
                               {% end %}
                             </ul>
                           </td>
-                          <td><a href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a></td>
+                          <td><span data-translate="{{translate('userConfig', 'userName', data['lang'])}}" data-toggle="tooltip" title="{{ translate('userConfig', 'userName', data['lang'])}}" id="username_{{user.user_id}}" class="edit_user clickable" data-name="{{user.username}}" data-id="{{user.user_id}}"><i class="fa-solid fa-user"></i></span>
+                            &nbsp;&nbsp;<span data-translate1="{{translate('userConfig', 'password', data['lang'])}}" data-translate2="{{translate('userConfig', 'repeat', data['lang'])}}" data-toggle="tooltip" title="{{ translate('userConfig', 'password', data['lang'])}}" class="edit_password clickable" data-id="{{user.user_id}}"><i class="fa-solid fa-lock"></i></span>
+                            &nbsp;&nbsp;<a data-toggle="tooltip" title="{{ translate('userConfig', 'pageTitle', data['lang'])}}" href="/panel/edit_user?id={{user.user_id}}"><i class="fas fa-pencil-alt"></i></a>
+                          </td>
                         </tr>
                         {% end %}
                       </tbody>
@@ -274,6 +280,12 @@
 </div>
 
 <style>
+  .clickable {
+    color: #007bff;
+  }
+  .clickable:hover {
+    cursor: pointer;
+  }
   .custom-picker {
     border: 1px solid var(--outline);
   }
@@ -312,6 +324,99 @@
 
 {% block js %}
 <script>
+  function validateForm() {
+    let password0 = document.getElementById("password0").value;
+    let password1 = document.getElementById("password1").value;
+     if (password0 != password1) {
+      $('.passwords-match').popover('show');
+      $('.popover-body').click(function () {
+        $('.passwords-match').popover("hide");
+      });
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+      $("#password0").css("outline", "1px solid red");
+      $("#password1").css("outline", "1px solid red");
+      return false;
+    } else {
+      return password1;
+    }
+  }
+  $(".edit_password").on("click", async function(){
+    const token = getCookie("_xsrf");
+    let user_id = $(this).data('id');
+    bootbox.confirm(`<form class="form" id='infos' action=''>\
+      <div class="form-group">
+      <label for="new_password">${$(this).data("translate1")}</label>
+      <input class="form-control" type='password' id="password0" name='new_password' /></br>\
+      </div>
+      <div class="form-group">
+      <label for="confirm_password">${$(this).data("translate2")}</label>
+      <input class="form-control" type='password' id="password1" name='confirm_password' />\
+      </div>
+      </form>`, async function(result) {
+          if(result){
+          password = validateForm();
+          if (!password){
+            return;
+          }
+          let res = await fetch(`/api/v2/users/${user_id}`, {
+            method: 'PATCH',
+            headers: {
+            'X-XSRFToken': token
+            },
+            body: JSON.stringify({"password": password}),
+          });
+          let responseData = await res.json();
+          if (responseData.status === "ok") {
+            console.log(responseData.data)
+          } else {
+
+            bootbox.alert({
+              title: responseData.status,
+              message: responseData.error
+            });
+          }
+        }
+    });
+  });
+  $(document).on("submit", ".bootbox form", function(e) {
+    e.preventDefault();
+    $(".bootbox .btn-primary").click();
+});
+
+  $(".edit_user").on("click", function(){
+    const token = getCookie("_xsrf");
+    let username = $(this).data('name');
+    let user_id = $(this).data('id');
+    bootbox.confirm(`<form class="form" id='infos' action=''>\
+      <div class="form-group">
+      <label for="username">${$(this).data("translate")}</label>
+      <input class="form-control" type='text' name='username' id="username_field" value=${username} /><br/>\
+      </div>
+      </form>`, async function(result) {
+        if(result){
+          let new_username = $("#username_field").val();
+          let res = await fetch(`/api/v2/users/${user_id}`, {
+            method: 'PATCH',
+            headers: {
+            'X-XSRFToken': token
+            },
+            body: JSON.stringify({"username": new_username}),
+          });
+          let responseData = await res.json();
+          if (responseData.status === "ok") {
+            $(`#user_${user_id}`).html(` ${new_username}`)
+            $(`#username_${user_id}`).data('name', new_username);
+          } else {
+
+            bootbox.alert({
+              title: responseData.status,
+              message: responseData.error
+            });
+          }
+        }
+    });
+  });
   if (webSocket) {
     webSocket.on('move_status', function (message) {
       if (message === "done") {
