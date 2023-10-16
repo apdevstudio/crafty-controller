@@ -37,7 +37,7 @@
 - Improve pop-up notifications with Toasts ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/641))
 - Move username and password settings to buttons on panel config ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/643))
 ### Lang
-TBD
+- fr_FR Translation Updated to latest en_EN ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/646))
 <br><br>
 
 ## --- [4.1.3] - 2023/07/18
