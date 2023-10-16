@@ -16,8 +16,8 @@
         "buttons": "Boutons",
         "config": "Configuration",
         "crafty": "Crafty: ",
-        "created": "Crée",
         "createNew": "Créer un nouveau Jeton d'API",
+        "created": "Crée",
         "deleteKeyConfirmation": "Es-tu sûr de vouloir supprimer cette clé API? Tu ne pourras plus revenir en arrière.",
         "deleteKeyConfirmationTitle": "Supprimer la clé API ${keyId}?",
         "getToken": "Obtenir un Jeton",
@@ -75,6 +75,7 @@
         "dashboard": "Tableau de Bord",
         "delay-explained": "Le service/agent a récemment démarré et retarde le démarrage de l'instance du serveur minecraft",
         "host": "Hôte",
+        "installing": "Installation ...",
         "kill": "Tuer le processus",
         "killing": "Processus de mise à mort...",
         "lastBackup": "Dernier:",
@@ -97,8 +98,7 @@
         "status": "Statut",
         "stop": "Arrêter",
         "version": "Version",
-        "welcome": "Bienvenue sur Crafty Controller",
-        "installing": "Installation ..."
+        "welcome": "Bienvenue sur Crafty Controller"
     },
     "datatables": {
         "i18n": {
@@ -120,8 +120,8 @@
                 "csv": "CSV",
                 "excel": "Excel",
                 "pageLength": {
-                    "1": "Afficher 1 ligne",
                     "-1": "Afficher toutes les lignes",
+                    "1": "Afficher 1 ligne",
                     "_": "Afficher %d lignes"
                 },
                 "pdf": "PDF",
@@ -215,8 +215,8 @@
         "newUser": "Ajouter un Nouvel Utilisateur",
         "pageTitle": "Panneau de Configuration",
         "role": "Rôle",
-        "roles": "Roles",
         "roleUsers": "Rôles Utilisteurs",
+        "roles": "Roles",
         "save": "Enregister",
         "superConfirm": "Utiliser seulement si tu veux que cet utilisateur ait accès à ABSOLUMENT TOUT (tous les comptes, tous les serveurs, panneau de configuration, etc). Ils peuvent même supprimer tes droits superuser.",
         "superConfirmTitle": "Activer le superuser ? Es-tu sûr ?",
@@ -384,6 +384,11 @@
         "waitUpload": "Merci de patienter pendant que nous téléversons tes fichiers... Cela peut prendre un certain temps.",
         "yesDelete": "Oui, je comprends les conséquences"
     },
+    "serverMetrics": {
+        "resetZoom": "Reset Zoom",
+        "zoomHint1": "Pour zoomer le graphique, maintenir la touche SHIFT et utiliser la molette de la souris.",
+        "zoomHint2": "Il est aussi possible de maintenir la touche SHIFT puis de clicker et déplacer la zone sur laquelle zoomer."
+    },
     "serverPlayerManagement": {
         "bannedPlayers": "Joueurs Bannins",
         "loadingBannedPlayers": "Chargement des Joueurs Bannis",
@@ -445,19 +450,14 @@
         "commandInput": "Entre ta commande",
         "delay-explained": "Le service/agent a récemment démarré et retarde le démarrage de l'instance du serveur minecraft",
         "downloading": "Téléchargement ...",
+        "installing": "Installation ...",
         "restart": "Redémarrer",
         "sendCommand": "Envoiyer commande",
         "start": "Démarrer",
         "starting": "Démarrage retardé",
         "stop": "Arrêter",
         "stopScroll": "Stopper l'Auto Défilement",
-        "updating": "Mise à Jour ...",
-        "installing": "Installation ..."
-    },
-    "serverMetrics": {
-        "resetZoom": "Reset Zoom",
-        "zoomHint1": "Pour zoomer le graphique, maintenir la touche SHIFT et utiliser la molette de la souris.",
-        "zoomHint2": "Il est aussi possible de maintenir la touche SHIFT puis de clicker et déplacer la zone sur laquelle zoomer."
+        "updating": "Mise à Jour ..."
     },
     "serverWizard": {
         "absoluteServerPath": "Chemin absolu de Votre Serveur",
@@ -471,10 +471,10 @@
         "defaultPort": "25565 par défaut",
         "downloading": "Téléchargement du Serveur ...",
         "explainRoot": "Merci de clicker sur le bouton ci-dessous pour sélectionner le dossier du server contenu dans l'Archive",
-        "importing": "Importation du Serveur ...",
         "importServer": "Importer un Serveur Existant",
         "importServerButton": "Importer Serveur !",
         "importZip": "Importer depuis un Fichier Zip",
+        "importing": "Importation du Serveur ...",
         "maxMem": "Mémoire Maximum",
         "minMem": "Mémoire Minimum",
         "myNewServer": "Mon Nouveau Serveur",
@@ -516,9 +516,9 @@
         "craftyPermDesc": "Les permisisons de l'Utilisateur pour Crafty ",
         "craftyPerms": "Permissions de Crafty : ",
         "created": "Crée le : ",
+        "delSuper": "Tu ne peux pas supprimer un Super Utilisateur",
         "deleteUser": "Supprimer Utilisateur : ",
         "deleteUserB": "Supprimer l'Utilisateur",
-        "delSuper": "Tu ne peux pas supprimer un Super Utilisateur",
         "enabled": "Activé",
         "gravDesc": "Cet email est strictement réservé pour être utiliser avec Gravatar™. En aucune circonstances Crafty n'utilisera cet email pour autre chose que trouver ton Gravatar™",
         "gravEmail": "Email Gravatar™",

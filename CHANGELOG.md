@@ -3,6 +3,7 @@
 ### New features
 - Finish and Activate Arcadia notification backend ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/621) | [Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/626) | [Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/632))
 - Add initial Webhook Notification (Discord, Mattermost, Slack, Teams) ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/594))
+- Implementation of OpenMetrics endpoints, for use with services such as Prometheus ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/624))
 ### Bug fixes
 - PWA: Removed the custom offline page in favour of browser default ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/607))
 - Fix hidden servers appearing visible on public mobile status page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/612))
@@ -15,6 +16,8 @@
 - Fix Backup Restore/Schedules, Backup button function on `remote-comms2` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/634))
 - Add a wait to the call for the directory so we can make sure the wait dialogue has time to show up first ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/637))
 - Fix bug where a reaction loop could be created, but would be cut short by an error when the loop occurred ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/636))
+- Use controller on update user call ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/640))
+- Move `imports` to `import/upload` in bind mount to better serve users on unraid with limited vdisk storage ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/642))
 ### Refactor
 - Consolidate remaining frontend functions into API V2, and remove ajax internal API ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/585))
 - Replace bleach with nh3 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/628))
@@ -29,6 +32,7 @@
 - Add additional logging for server bootstrap & moves unnecessary logging to `debug` for improved log clarity ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/635))
 - Bump orjson to 3.9.7 for python 3.12 support ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/638))
 - Bump all Crafty required python dependancies, maintaining minimum 3.9 support ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/639))
+- Better optimize and refactor docker launcher sh ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/642))
 ### Lang
 TBD
 <br><br>

@@ -696,6 +696,12 @@ class TasksManager:
                 # Stats are different
 
                 host_stats = HelpersManagement.get_latest_hosts_stats()
+
+                self.controller.management.cpu_usage.set(host_stats.get("cpu_usage"))
+                self.controller.management.mem_usage_percent.set(
+                    host_stats.get("mem_percent")
+                )
+
                 if len(WebSocketManager().clients) > 0:
                     # There are clients
                     try:
@@ -757,11 +763,13 @@ class TasksManager:
                 )
         # Search for old files in imports
         self.helper.ensure_dir_exists(
-            os.path.join(self.controller.project_root, "imports")
+            os.path.join(self.controller.project_root, "import", "upload")
         )
-        for file in os.listdir(os.path.join(self.controller.project_root, "imports")):
+        for file in os.listdir(
+            os.path.join(self.controller.project_root, "import", "upload")
+        ):
             if self.helper.is_file_older_than_x_days(
-                os.path.join(self.controller.project_root, "imports", file)
+                os.path.join(self.controller.project_root, "import", "upload", file)
             ):
                 try:
                     os.remove(os.path.join(file))

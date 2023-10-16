@@ -64,7 +64,9 @@ class ApiImportFilesIndexHandler(BaseApiHandler):
             # JSON we need to remove this and just send
             # the path.
             if data["upload"]:
-                folder = os.path.join(self.controller.project_root, "imports", folder)
+                folder = os.path.join(
+                    self.controller.project_root, "import", "upload", folder
+                )
             if Helpers.check_file_exists(folder):
                 folder = self.file_helper.unzip_server(folder, user_id)
                 root_path = True

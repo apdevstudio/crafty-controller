@@ -11,6 +11,7 @@ docker-compose.yml.example
 .gitlab/
 .gitignore
 .gitlab-ci.yml
+lang_sort_log.txt
 
 # root
 .editorconfig
