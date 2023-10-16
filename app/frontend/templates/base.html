@@ -124,19 +124,32 @@
 
     .notification {
       position: relative;
-      box-sizing: border-box;
-      padding: 0.5rem;
-      padding-left: 0.7rem;
-      width: 180px;
-      margin-left: 10px;
-      margin-right: 10px;
+      margin-right: 1rem;
       background: var(--card-banner-bg);
+      -webkit-transition: right 0.75s, opacity 0.75s, top 0.75s;
+      -moz-transition: right 0.75s, opacity 0.75s, top 0.75s;
+      -o-transition: right 0.75s, opacity 0.75s, top 0.75s;
       transition: right 0.75s, opacity 0.75s, top 0.75s;
-      right: -6rem;
+      right: -20rem;
       opacity: 0.1;
-      margin-bottom: 1rem;
-      z-index: 999;
-      top: 0px;
+    }
+
+    .toast-header {
+      background-color: var(--card-banner-bg);
+      color: var(--base-text);
+    }
+
+    .toast-body {
+      background-color: var(--dropdown-bg);
+      color: var(--base-text);
+    }
+
+    .notification img {
+      max-height: 20px;
+    }
+
+    .notification strong {
+      line-height: 20px;
     }
 
     .notification.active {
@@ -150,26 +163,16 @@
       top: -2rem;
     }
 
-    .notification p {
-      margin: 0px;
-      width: calc(160.8px - 16px);
-      z-index: inherit;
-    }
-
     .notification span {
-      position: absolute;
-      right: 0.5rem;
-      top: 0.46rem;
-      cursor: pointer;
-      font-weight: bold;
       line-height: 20px;
-      font-size: 22px;
+      font-size: 15px;
       user-select: none;
-      z-index: inherit;
+      cursor: pointer;
     }
   </style>
-  <div class="notifications"></div>
 
+
+  <div class="notifications"></div>
 
   <script src="/static/assets/vendors/js/vendor.bundle.base.js"></script>
   <script src="/static/assets/js/shared/off-canvas.js"></script>
@@ -502,30 +505,55 @@
 
     function notify(message) {
       console.log(`notify(${message})`);
-      var paragraphEl = document.createElement('p');
-      var closeEl = document.createElement('span');
+      var intId = getRandomInt(0, 100);
+      var toastDiv = document.createElement('div');
+      toastDiv.setAttribute("id", "toast_" + intId);
+      toastDiv.setAttribute("class", "notification toast");
+      toastDiv.setAttribute("role", "alert");
+      toastDiv.setAttribute("aria-lived", "assertive");
+      toastDiv.setAttribute("aria-atomic", "true");
+      toastDiv.setAttribute("data-delay", "3000");
+      toastDiv.setAttribute("data-animation", "true");
+      toastDiv.setAttribute("data-autohide", "false");
 
-      paragraphEl.textContent = message;
+      var toastHeaderDiv = document.createElement('div');
+      toastHeaderDiv.setAttribute("class", "toast-header");
 
-      closeEl.innerHTML = '&times;';
-      closeEl.addEventListener('click', function () { closeNotification(this) });
+      var toastHeaderImg = document.createElement('img');
+      toastHeaderImg.setAttribute("src", "/static/assets/images/logo_small.svg");
+      toastHeaderImg.setAttribute("class", "mr-auto");
+      toastHeaderImg.setAttribute("alt", "logo");
+      toastHeaderDiv.appendChild(toastHeaderImg);
 
-      var parentEl = document.createElement('div');
-      parentEl.appendChild(paragraphEl);
-      parentEl.appendChild(closeEl);
+      var toastHeaderTitle = document.createElement('strong');
+      toastHeaderTitle.setAttribute("class", "mr-auto");
+      toastHeaderTitle.innerHTML = " Crafty Controller ";
+      toastHeaderDiv.appendChild(toastHeaderTitle);
 
-      parentEl.classList.add('notification');
+      var toastHeaderCloseSpan = document.createElement('span');
+      toastHeaderCloseSpan.setAttribute("class", "fa-solid fa-xmark");
+      toastHeaderCloseSpan.setAttribute("aria-hidden", "true");
+      toastHeaderCloseSpan.addEventListener('click', function () { closeNotification(this.parentElement) });
+      toastHeaderDiv.appendChild(toastHeaderCloseSpan);
 
-      document.querySelector('.notifications').appendChild(parentEl);
+      var toastBodyDiv = document.createElement('div');
+      toastBodyDiv.setAttribute("class", "toast-body");
+      toastBodyDiv.textContent = message;
 
+      toastDiv.appendChild(toastHeaderDiv);
+      toastDiv.appendChild(toastBodyDiv);
+
+      document.querySelector('.notifications').appendChild(toastDiv);
+
+      $('#toast_' + intId).toast('show');
 
       setTimeout(function () {
-        parentEl.classList.add('active');
+        toastDiv.classList.add('active');
       }, 200);
 
       setTimeout(function (element) {
-        closeNotification(element);
-      }, 7500, closeEl);
+        closeNotification(element.parentElement);
+      }, 7500, toastHeaderCloseSpan);
 
       `
       <div class="notification">

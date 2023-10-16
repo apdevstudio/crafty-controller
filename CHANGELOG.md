@@ -33,6 +33,7 @@
 - Bump orjson to 3.9.7 for python 3.12 support ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/638))
 - Bump all Crafty required python dependancies, maintaining minimum 3.9 support ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/639))
 - Better optimize and refactor docker launcher sh ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/642))
+- Improve pop-up notifications with Toasts ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/641))
 ### Lang
 TBD
 <br><br>
