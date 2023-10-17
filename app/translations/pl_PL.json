@@ -217,7 +217,8 @@
         "forgotPassword": "Zapomniałem hasła",
         "login": "Zaloguj się",
         "password": "Hasło",
-        "username": "Nazwa użytkownika"
+        "username": "Nazwa użytkownika",
+        "viewStatus": "Sprawdź status serwerów"
     },
     "notify": {
         "activityLog": "Logi Aktywności",
@@ -626,5 +627,28 @@
         "userSettings": "Ustawienia użytkownika",
         "userTheme": "Wygląd UI",
         "uses": "Ilość użyć (-1==Bez limitu)"
+    },
+    "webhooks": {
+        "areYouSureDel": "Usunąć ten webhook?",
+        "areYouSureRun": "Przetestować webhook?",
+        "backup_server": "Kopia zapasowa serwera została wykonana",
+        "bot_name": "Nazwa bota",
+        "color": "Kolor akcentu",
+        "crash_detected": "Serwer uległ awarii!",
+        "edit": "Edytuj",
+        "enabled": "Włączony",
+        "jar_update": "Plik startowy zaktualizowany",
+        "kill": "Serwer zatrzymany",
+        "name": "Nazwa",
+        "new": "Nowy Webhook",
+        "run": "Włącz Webhook",
+        "send_command": "Komenda serwera otrzymana!",
+        "start_server": "Serwer włączony",
+        "stop_server": "Serwer wyłączony",
+        "trigger": "Aktywuje się na:",
+        "type": "Typ Webhooka",
+        "url": "Link Webhooka",
+        "webhook_body": "Treść Webhooka",
+        "webhooks": "Webhooki"
     }
 }
