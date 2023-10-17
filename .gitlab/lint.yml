@@ -94,12 +94,12 @@ lang-check:
     - if: "$CI_COMMIT_TAG || $CI_COMMIT_BRANCH"
   allow_failure: true
   before_script:
-    - apk add --no-cache jq
+    - apk add --no-cache jq bash
   script:
     - chmod +x .gitlab/scripts/lang_sort.sh
     - bash .gitlab/scripts/lang_sort.sh ./app/translations/
   after_script:
-    - cat .gitlab/scripts/lang_sort_log.txt
+    - if [ -f .gitlab/scripts/lang_sort_log.txt ]; then cat .gitlab/scripts/lang_sort_log.txt; fi
   artifacts:
     paths:
       - .gitlab/scripts/lang_sort_log.txt
