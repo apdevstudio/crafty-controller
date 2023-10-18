@@ -37,6 +37,7 @@
 - Better optimize and refactor docker launcher sh ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/642))
 - Improve pop-up notifications with Toasts ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/641))
 - Move username and password settings to buttons on panel config ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/643))
+- Remove external references from front end deps ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/648))
 ### Lang
 - `fr_FR` Translation Updated to latest en_EN ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/646))
 - `de_DE`, `fr_FR`, `lol_EN`, `lv_LV`, `nl_BE`, `pl_PL` Translations Updated to latest `en_EN` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/645))
