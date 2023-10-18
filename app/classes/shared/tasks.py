@@ -325,7 +325,10 @@ class TasksManager:
 
         # Checks to make sure some doofus didn't actually make the newly
         # created task a child of itself.
-        if str(job_data["parent"]) == str(sch_id):
+        if (
+            str(job_data["parent"]) == str(sch_id)
+            or job_data["interval_type"] != "reaction"
+        ):
             HelpersManagement.update_scheduled_task(sch_id, {"parent": None})
 
         # Check to see if it's enabled and is not a chain reaction.
