@@ -452,10 +452,8 @@ class TasksManager:
     def update_job(self, sch_id, job_data):
         # Checks to make sure some doofus didn't actually make the newly
         # created task a child of itself.
-        if (
-            str(job_data.get("parent")) == str(sch_id)
-            or job_data.get("interval_type") != "reaction"
-        ):
+        interval_type = job_data.get("interval_type")
+        if str(job_data.get("parent")) == str(sch_id) or interval_type != "reaction":
             job_data["parent"] = None
         HelpersManagement.update_scheduled_task(sch_id, job_data)
 
@@ -472,19 +470,15 @@ class TasksManager:
                 job_data = HelpersManagement.get_scheduled_task(sch_id)
                 job_data["server_id"] = job_data["server_id"]["server_id"]
             else:
-                try:
+                job = HelpersManagement.get_scheduled_task(sch_id)
+                if job["interval_type"] != "reaction":
                     self.scheduler.remove_job(str(sch_id))
-                except JobLookupError:
-                    logger.info(
-                        "No job found in update job. "
-                        "Assuming it was previously disabled. Starting new job."
-                    )
                 return
 
         try:
             if job_data["interval"] != "reaction":
                 self.scheduler.remove_job(str(sch_id))
-        except JobLookupError:
+        except:
             logger.info(
                 "No job found in update job. "
                 "Assuming it was previously disabled. Starting new job."
