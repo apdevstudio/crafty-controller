@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 new_server_schema = {
     "definitions": {},
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": "https://json-schema.org/draft-07/schema#",
     "title": "Root",
     "type": "object",
     "required": [
