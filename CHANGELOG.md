@@ -19,6 +19,7 @@
 - Use controller on update user call ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/640))
 - Move `imports` to `import/upload` in bind mount to better serve users on unraid with limited vdisk storage ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/642))
 - Fix bug where everytime a page was loaded user settings would be reset #286 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/643))
+- Fix tooltip info icon on server config page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/647))
 ### Refactor
 - Consolidate remaining frontend functions into API V2, and remove ajax internal API ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/585))
 - Replace bleach with nh3 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/628))
