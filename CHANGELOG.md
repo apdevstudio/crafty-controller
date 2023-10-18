@@ -26,18 +26,19 @@
 - Add API route for host stats ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/615))
 ### Tweaks
 - Polish/Enhance display for InApp Documentation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/613))
-- Add get_users command to Crafty's console ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/620))
+- Add `get_users` command to Crafty's console ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/620))
 - Make files hover cursor pointer ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/627))
 - Use `Jar` class naming for jar refresh to make room for steamCMD naming in the future ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/630))
 - Improve ui visibility of Build Wizard selection tabs ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/633))
 - Add additional logging for server bootstrap & moves unnecessary logging to `debug` for improved log clarity ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/635))
-- Bump orjson to 3.9.7 for python 3.12 support ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/638))
-- Bump all Crafty required python dependancies, maintaining minimum 3.9 support ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/639))
+- Bump orjson to `3.9.7` for python `3.12` support ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/638))
+- Bump all Crafty required python dependancies, maintaining minimum `3.9` support ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/639))
 - Better optimize and refactor docker launcher sh ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/642))
 - Improve pop-up notifications with Toasts ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/641))
 - Move username and password settings to buttons on panel config ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/643))
 ### Lang
-- fr_FR Translation Updated to latest en_EN ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/646))
+- `fr_FR` Translation Updated to latest en_EN ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/646))
+- `de_DE`, `fr_FR`, `lol_EN`, `lv_LV`, `nl_BE`, `pl_PL` Translations Updated to latest `en_EN` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/645))
 <br><br>
 
 ## --- [4.1.3] - 2023/07/18
