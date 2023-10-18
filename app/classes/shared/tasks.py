@@ -8,6 +8,7 @@ import json
 from zoneinfo import ZoneInfoNotFoundError
 from tzlocal import get_localzone
 from apscheduler.events import EVENT_JOB_EXECUTED
+from apscheduler.jobstores.base import JobLookupError
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 
@@ -453,7 +454,7 @@ class TasksManager:
         # created task a child of itself.
         if (
             str(job_data.get("parent")) == str(sch_id)
-            or job_data["interval_type"] != "reaction"
+            or job_data.get("interval_type") != "reaction"
         ):
             job_data["parent"] = None
         HelpersManagement.update_scheduled_task(sch_id, job_data)
@@ -471,13 +472,19 @@ class TasksManager:
                 job_data = HelpersManagement.get_scheduled_task(sch_id)
                 job_data["server_id"] = job_data["server_id"]["server_id"]
             else:
-                self.scheduler.remove_job(str(sch_id))
+                try:
+                    self.scheduler.remove_job(str(sch_id))
+                except JobLookupError:
+                    logger.info(
+                        "No job found in update job. "
+                        "Assuming it was previously disabled. Starting new job."
+                    )
                 return
 
         try:
             if job_data["interval"] != "reaction":
                 self.scheduler.remove_job(str(sch_id))
-        except:
+        except JobLookupError:
             logger.info(
                 "No job found in update job. "
                 "Assuming it was previously disabled. Starting new job."
