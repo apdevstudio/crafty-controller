@@ -478,7 +478,7 @@ class TasksManager:
         try:
             if job_data["interval"] != "reaction":
                 self.scheduler.remove_job(str(sch_id))
-        except:
+        except JobLookupError:
             logger.info(
                 "No job found in update job. "
                 "Assuming it was previously disabled. Starting new job."
