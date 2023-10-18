@@ -56,7 +56,7 @@
                         class="fas fa-pencil-alt"></i></button></div>
                 </div>
                 <div class="card-body">
-                  <table class="table table-hover d-none d-lg-block responsive-table" id="webhook_table" width="100%" style="table-layout:fixed;">
+                  <table class="table table-hover d-none d-lg-block responsive-table" aria-label="webhooks list" id="webhook_table" width="100%" style="table-layout:fixed;">
                     <thead>
                       <tr class="rounded">
                         <th style="width: 10%; min-width: 10px;">{{ translate('webhooks', 'name', data['lang']) }}
@@ -107,7 +107,7 @@
                       {% end %}
                     </tbody>
                   </table>
-                  <table class="table table-hover d-block d-lg-none responsive-table" id="webhook_table_mini" width="100%" style="table-layout:fixed;">
+                  <table aria-label="webhooks list" class="table table-hover d-block d-lg-none responsive-table" id="webhook_table_mini" width="100%" style="table-layout:fixed;">
                     <thead>
                       <tr class="rounded">
                         <th style="width: 33.33%; min-width: 10px;">Name
