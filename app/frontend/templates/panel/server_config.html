@@ -136,7 +136,7 @@
                     <label for="server_port">{{ translate('serverConfig', 'serverPort', data['lang']) }} <small class="text-muted ml-1"> - {{ translate('serverConfig', 'serverPortDesc', data['lang']) }}
                       </small> </label>
                     <input type="number" class="form-control" name="server_port" id="server_port" value="{{ data['server_stats']['server_id']['server_port']  }}" step="1" max="65566" min="1" required>
-                    <span data-html="true" class="port-hint text-center" title="<i class='fal fa-exclamation-triangle'></i> " , data-content="{{
+                    <span data-html="true" class="port-hint text-center" title="<i class='fa-solid fa-triangle-exclamation'></i> " , data-content="{{
                         translate('serverConfig', 'statsHint1' , data['lang'])}} <br> <br> <strong>{{ translate('serverConfig', 'statsHint2', data['lang'])}}</strong>" , data-placement="right"></span>
                   </div>
                   {% end %}
@@ -304,7 +304,7 @@
   });
 
   function deleteServerE(callback) {
-    var token = getCookie("_xsrf")
+    const token = getCookie("_xsrf")
     $.ajax({
       type: "DELETE",
       headers: { 'X-XSRFToken': token },
@@ -318,7 +318,7 @@
     });
   }
   function deleteServerFilesE(path, callback) {
-    var token = getCookie("_xsrf")
+    const token = getCookie("_xsrf")
     $.ajax({
       type: "DELETE",
       headers: { 'X-XSRFToken': token },
@@ -334,7 +334,7 @@
 
   function send_command(serverId, command) {
     //<!--  this getCookie function is in base.html-->
-    var token = getCookie("_xsrf");
+    const token = getCookie("_xsrf");
     if (command == "update_executable") {
       document.getElementById("update-spinner").style.visibility = "visible";
     }
@@ -460,7 +460,7 @@
           return;
         }
         else {
-          var token = getCookie("_xsrf")
+          const token = getCookie("_xsrf")
           setTimeout(function () { window.location = '/panel/dashboard'; }, 5000);
           bootbox.dialog({
             backdrop: true,
@@ -549,7 +549,7 @@
     });
     $("#config_form").on("submit", async function (e) {
       e.preventDefault();
-      var token = getCookie("_xsrf")
+      const token = getCookie("_xsrf")
       let configForm = document.getElementById("config_form");
 
       let formData = new FormData(configForm);
@@ -576,7 +576,7 @@
       });
       let responseData = await res.json();
       if (responseData.status === "ok") {
-        window.location.reload();
+        location.reload(true);
       } else {
 
         bootbox.alert({

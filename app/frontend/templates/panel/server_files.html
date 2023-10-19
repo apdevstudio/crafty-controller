@@ -67,7 +67,7 @@
                     translate('serverFiles', 'download', data['lang']) }}</a>
                   <a onclick="deleteFileE(event)" href="javascript:void(0)" id="deleteFile" href="#"
                     style="color: red">{{ translate('serverFiles', 'delete', data['lang']) }}</a>
-                  <a onclick="deleteDirE(event)" href="javascript:void(0)" id="deleteDir" href="#" style="color: red">{{
+                  <a onclick="deleteFileE(event)" href="javascript:void(0)" id="deleteDir" href="#" style="color: red">{{
                     translate('serverFiles', 'delete', data['lang']) }}</a>
                   <a href="javascript:void(0)" class="closebtn" style="color: var(--info);"
                     onclick="document.getElementById('files-tree-nav').style.display = 'none';">{{
@@ -155,6 +155,9 @@
                     top: 15px;
                     right: 35px;
                   }
+                }
+                .tree-file:hover{
+                  cursor: pointer;
                 }
               </style>
               <ul class="tree-view">
@@ -398,32 +401,36 @@
     },
   ];
 
-  let filePath = '', serverFileContent = '';
+  let path = '', serverFileContent = '';
 
-  function clickOnFile(event) {
-    filePath = event.target.getAttribute('data-path');
-    $.ajax({
-      type: 'GET',
-      url: "/files/get_file?id=" + serverId + "&file_path=" + encodeURIComponent(filePath),
-      dataType: 'text',
-      success: function (data) {
-        console.log('Got File Contents From Server');
-        json = JSON.parse(data)
-        if (json.error) {
-          $('#editorParent').toggle(false) // hide
-          $('#fileError').toggle(true)     // show
-          $('#fileError').text("{{ translate('serverFiles', 'fileReadError', data['lang']) }}: " + json.error) // show error
-          editor.blur()
-        } else {
-          $('#editorParent').toggle(true) // show
-          $('#fileError').toggle(false)   // hide
-          setFileName(event.target.innerText);
-          editor.session.setValue(json.content);
-          serverFileContent = json.content;
-          setSaveStatus(true);
-        }
+  async function clickOnFile(event) {
+    const token = getCookie("_xsrf");
+    path = event.target.getAttribute('data-path');
+    let res = await fetch(`/api/v2/servers/${serverId}/files`, {
+      method: 'POST',
+      headers: {
+        'X-XSRFToken': token
       },
+      body: JSON.stringify({ "page": "files", "path": path }),
     });
+    let responseData = await res.json();
+    console.log(responseData)
+    if (responseData.status === "ok") {
+      console.log('Got File Contents From Server');
+      $('#editorParent').toggle(true) // show
+      $('#fileError').toggle(false)   // hide
+      setFileName(event.target.innerText);
+      editor.session.setValue(responseData.data);
+      serverFileContent = responseData.data;
+      setSaveStatus(true);
+    }
+    else {
+
+      bootbox.alert({
+        title: responseData.status,
+        message: responseData.error
+      });
+    }
   }
 
   function setFileName(name) {
@@ -577,124 +584,141 @@
   }
 
 
-
-  function save() {
+  async function save() {
     let text = editor.session.getValue();
 
-    var token = getCookie("_xsrf")
-    $.ajax({
-      type: "PUT",
-      headers: { 'X-XSRFToken': token },
-      url: "/files/save_file?id=" + serverId,
-      data: {
-        file_contents: text,
-        file_path: filePath
+    const token = getCookie("_xsrf")
+    let res = await fetch(`/api/v2/servers/${serverId}/files`, {
+      method: 'PATCH',
+      headers: {
+        'X-XSRFToken': token
       },
-      success: (data) => {
-        serverFileContent = text;
-        setSaveStatus(true)
-      }
+      body: JSON.stringify({ "path": path, "contents": text }),
     });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      serverFileContent = text;
+      setSaveStatus(true)
+
+    } else {
+
+      bootbox.alert({
+        title: responseData.status,
+        message: responseData.error
+      });
+    }
   }
 
-  function createFile(parent, name, callback) {
-    var token = getCookie("_xsrf")
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      url: "/files/create_file?id=" + serverId,
-      data: {
-        file_parent: parent,
-        file_name: name
+  async function createFile(parent, name, callback) {
+    const token = getCookie("_xsrf")
+    let res = await fetch(`/api/v2/servers/${serverId}/files/create/`, {
+      method: 'PUT',
+      headers: {
+        'X-XSRFToken': token
       },
-      success: function (data) {
-        console.log("got response:");
-        callback();
-      },
+      body: JSON.stringify({ "parent": parent, "name": name, "directory": false }),
     });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      getTreeView($('#root_dir').data('path'));
+      setTreeViewContext();
+    } else {
+
+      bootbox.alert({
+        title: responseData.status,
+        message: responseData.error
+      });
+    }
   }
 
-  function createDir(parent, name, callback) {
-    var token = getCookie("_xsrf")
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      url: "/files/create_dir?id=" + serverId,
-      data: {
-        dir_parent: parent,
-        dir_name: name
+
+  async function createDir(parent, name, callback) {
+    const token = getCookie("_xsrf")
+    let res = await fetch(`/api/v2/servers/${serverId}/files/create/`, {
+      method: 'PUT',
+      headers: {
+        'X-XSRFToken': token
       },
-      success: function (data) {
-        console.log("got response:");
-        callback();
-      },
+      body: JSON.stringify({ "parent": parent, "name": name, "directory": true }),
     });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      getTreeView($('#root_dir').data('path'));
+      setTreeViewContext();
+    } else {
+
+      bootbox.alert({
+        title: responseData.status,
+        message: responseData.error
+      });
+    }
   }
 
-  function renameItem(path, name, callback) {
-    var token = getCookie("_xsrf")
-    $.ajax({
-      type: "PATCH",
-      headers: { 'X-XSRFToken': token },
-      url: "/files/rename_file?id=" + serverId,
-      data: {
-        item_path: path,
-        new_item_name: name
+  async function renameItem(path, name, callback) {
+    const token = getCookie("_xsrf")
+    let res = await fetch(`/api/v2/servers/${serverId}/files/create/`, {
+      method: 'PATCH',
+      headers: {
+        'X-XSRFToken': token
       },
-      success: function (data) {
-        console.log("got response:");
-        callback();
-      },
+      body: JSON.stringify({ "path": path, "new_name": name }),
     });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      getTreeView($('#root_dir').data('path'));
+      setTreeViewContext();
+    } else {
+
+      bootbox.alert({
+        title: responseData.status,
+        message: responseData.error
+      });
+    }
   }
 
-  function deleteFile(path, callback) {
-    console.log('Deleting: ' + path)
-    var token = getCookie("_xsrf")
-    $.ajax({
-      type: "DELETE",
-      headers: { 'X-XSRFToken': token },
-      url: "/files/del_file?id=" + serverId,
-      data: {
-        file_path: path
+  async function deleteItem(path, el, callback) {
+    const token = getCookie("_xsrf");
+    let res = await fetch(`/api/v2/servers/${serverId}/files`, {
+      method: 'DELETE',
+      headers: {
+        'X-XSRFToken': token
       },
-      success: function (data) {
-        console.log("got response:");
-        callback();
-      },
+      body: JSON.stringify({ "filename": path }),
     });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      el = document.getElementById(path + "li");
+      $(el).remove();
+      document.getElementById('files-tree-nav').style.display = 'none';
+    } else {
+
+      bootbox.alert({
+        title: responseData.status,
+        message: responseData.error
+      });
+    }
   }
 
-  function deleteDir(path, callback) {
-    var token = getCookie("_xsrf")
-    $.ajax({
-      type: "DELETE",
-      headers: { 'X-XSRFToken': token },
-      url: "/files/del_dir?id=" + serverId,
-      data: {
-        dir_path: path
+  async function unZip(path, callback) {
+    const token = getCookie("_xsrf")
+    let res = await fetch(`/api/v2/servers/${serverId}/files/zip/`, {
+      method: 'POST',
+      headers: {
+        'X-XSRFToken': token
       },
-      success: function (data) {
-        console.log("got response:");
-        callback();
-      },
+      body: JSON.stringify({ "folder": path }),
     });
-  }
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      getTreeView($('#root_dir').data('path'));
+      setTreeViewContext();
+    } else {
 
-  function unZip(path, callback) {
-    console.log('path: ', path)
-    var token = getCookie("_xsrf")
-    $.ajax({
-      type: "POST",
-      headers: { 'X-XSRFToken': token },
-      url: "/files/unzip_file?id=" + serverId,
-      data: {
-        path: path
-      },
-      success: function (data) {
-        window.location.href = "/panel/server_detail?id=" + serverId + "&subpage=files";
-      },
-    });
+      bootbox.alert({
+        title: responseData.status,
+        message: responseData.error
+      });
+    }
   }
 
   async function sendFile(file, path, serverId, left, i, onProgress) {
@@ -882,88 +906,109 @@
     });
   }
 
-  function getTreeView(event) {
-    const path = $('#root_dir').data('path');;
+  function getDirView(event) {
+    let path = event.target.parentElement.getAttribute("data-path");
+    if (document.getElementById(path).classList.contains('clicked')) {
+      return;
+    } else {
+      getTreeView(path);
+    }
 
-    $.ajax({
-      type: "GET",
-      url: "/files/get_tree?id=" + serverId + "&path=" + path,
-      dataType: 'text',
-      success: function (data) {
-        console.log("got response:");
-
-        dataArr = data.split('\n');
-        serverDir = dataArr.shift(); // Remove & return first element (server directory)
-        text = dataArr.join('\n');
-
-        try {
-          document.getElementById(path).innerHTML += text;
-          event.target.parentElement.classList.add("clicked");
-        } catch {
-          document.getElementById('files-tree').innerHTML = text;
-        }
-
-
-        document.getElementsByClassName('files-tree-title')[0].setAttribute('data-path', serverDir);
-        document.getElementsByClassName('files-tree-title')[0].setAttribute('data-name', 'Files');
-
-        setTimeout(function () { setTreeViewContext() }, 1000);
+  }
+  async function getTreeView(path) {
+    const token = getCookie("_xsrf");
+    let res = await fetch(`/api/v2/servers/${serverId}/files`, {
+      method: 'POST',
+      headers: {
+        'X-XSRFToken': token
       },
+      body: JSON.stringify({ "page": "files", "path": path }),
     });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      console.log(responseData);
+      process_tree_response(responseData);
+
+    } else {
+
+      bootbox.alert({
+        title: responseData.status,
+        message: responseData.error
+      });
+    }
   }
 
+  function process_tree_response(response) {
+    let path = response.data.root_path.path;
+    let text = ``;
+    if (!response.data.root_path.top) {
+      text = `<ul class="tree-nested d-block" id="${path}ul">`;
+    }
+    Object.entries(response.data).forEach(([key, value]) => {
+      if (key === "root_path" || key === "db_stats") {
+        //continue is not valid in for each. Return acts as a continue.
+        return;
+      }
+      let checked = ""
+      let dpath = value.path;
+      let filename = key;
+      if (value.dir) {
+        if (value.excluded) {
+          checked = "checked"
+        }
+        text += `<li class="tree-item" id="${dpath}li" data-path="${dpath}">
+                            \n<div id="${dpath}" data-path="${dpath}" data-name="${filename}" class="tree-caret tree-ctx-item tree-folder">
+                            <input type="checkbox" class="checkBoxClass d-none file-check" name="root_path" value="${dpath}" ${checked}>
+                            <span id="${dpath}span" class="files-tree-title" data-path="${dpath}" data-name="${filename}" onclick="getDirView(event)">
+                            <i style="color: var(--info);" class="far fa-folder"></i>
+                            <i style="color: var(--info);" class="far fa-folder-open"></i>
+                            ${filename}
+                            </span>
+                            </input></div></li>`
+      } else {
+        text += `<li
+                        class="d-block tree-ctx-item tree-file"
+                        data-path="${dpath}"
+                        data-name="${filename}"
+                        onclick="clickOnFile(event)" id="${dpath}li"><input type='checkbox' class="checkBoxClass d-none file-check" name='root_path' value="${dpath}" ${checked}><span style="margin-right: 6px;">
+                        <i class="far fa-file"></i></span></input>${filename}</li>`
+      }
+    });
+    if (!response.data.root_path.top) {
+      text += `</ul>`;
+    }
+    if (response.data.root_path.top) {
+      try {
+        document.getElementById('main-tree-div').innerHTML += text;
+        document.getElementById('main-tree').parentElement.classList.add("clicked");
+      } catch {
+        document.getElementById('files-tree').innerHTML = text;
+      }
+    } else {
+      try {
+        document.getElementById(path + "span").classList.add('tree-caret-down');
+        document.getElementById(path).innerHTML += text;
+        document.getElementById(path).classList.add("clicked");
+      } catch {
+        console.log("Bad")
+      }
+
+      var toggler = document.getElementById(path + "span");
+
+      if (toggler.classList.contains('files-tree-title')) {
+        document.getElementById(path + "span").addEventListener("click", function caretListener() {
+          document.getElementById(path + "ul").classList.toggle("d-block");
+          document.getElementById(path + "span").classList.toggle("tree-caret-down");
+        });
+      }
+    }
+    setTimeout(function () { setTreeViewContext() }, 1000);
+  }
   function getToggleMain(event) {
     path = event.target.parentElement.getAttribute('data-path');
     document.getElementById("files-tree").classList.toggle("d-block");
     document.getElementById(path + "span").classList.toggle("tree-caret-down");
     document.getElementById(path + "span").classList.toggle("tree-caret");
-  }
-
-  function getDirView(event) {
-    let path = event.target.parentElement.getAttribute('data-path');
-
-    if (document.getElementById(path).classList.contains('clicked')) {
-
-      var toggler = document.getElementById(path + "span");
-
-      if (toggler.classList.contains('files-tree-title')) {
-        document.getElementById(path + "ul").classList.toggle("d-block");
-        document.getElementById(path + "span").classList.toggle("tree-caret-down");
-      }
-      return;
-    } else {
-      $.ajax({
-        type: "GET",
-        url: "/files/get_dir?id=" + serverId + "&path=" + path,
-        dataType: 'text',
-        success: function (data) {
-          console.log("got response:");
-
-          dataArr = data.split('\n');
-          serverDir = dataArr.shift(); // Remove & return first element (server directory)
-          text = dataArr.join('\n');
-
-          try {
-            document.getElementById(path + "span").classList.add('tree-caret-down');
-            document.getElementById(path).innerHTML += text;
-            document.getElementById(path).classList.add("clicked");
-          } catch {
-            console.log("Bad")
-          }
-
-          setTimeout(function () { setTreeViewContext() }, 1000);
-
-          var toggler = document.getElementById(path);
-
-          if (toggler.classList.contains('files-tree-title')) {
-            document.getElementById(path + "span").addEventListener("click", function caretListener() {
-              document.getElementById(path + "ul").classList.toggle("d-block");
-              document.getElementById(path + "span").classList.toggle("tree-caret-down");
-            });
-          }
-        },
-      });
-    }
   }
 
   function setTreeViewContext() {
@@ -1134,45 +1179,12 @@
       },
       callback: function (result) {
         if (!result) return;
-        deleteFile(path, function () {
-          el = document.getElementById(path + "li");
-          $(el).remove();
-          document.getElementById('files-tree-nav').style.display = 'none';
-        });
+        deleteItem(path);
       }
     });
   }
 
-  function deleteDirE(event) {
-    path = event.target.parentElement.getAttribute('data-path');
-    name = event.target.parentElement.getAttribute('data-name');
-    bootbox.confirm({
-      size: "",
-      title: "{% raw translate('serverFiles', 'deleteItemQuestion', data['lang']) %}",
-      closeButton: false,
-      message: "{% raw translate('serverFiles', 'deleteItemQuestionMessage', data['lang']) %}",
-      buttons: {
-        confirm: {
-          label: "{{ translate('serverFiles', 'yesDelete', data['lang']) }}",
-          className: 'btn-danger'
-        },
-        cancel: {
-          label: "{{ translate('serverFiles', 'noDelete', data['lang']) }}",
-          className: 'btn-link'
-        }
-      },
-      callback: function (result) {
-        if (!result) return;
-        deleteDir(path, function () {
-          el = document.getElementById(path + "li");
-          $(el).remove();
-          document.getElementById('files-tree-nav').style.display = 'none';
-        });
-      }
-    });
-  }
-
-  getTreeView();
+  getTreeView($('#root_dir').data('path'));
   setTreeViewContext();
 
   function setKeyboard(target) {

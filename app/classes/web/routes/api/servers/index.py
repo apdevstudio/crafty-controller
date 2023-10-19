@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 new_server_schema = {
     "definitions": {},
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": "https://json-schema.org/draft-07/schema#",
     "title": "Root",
     "type": "object",
     "required": [
@@ -24,6 +24,7 @@ new_server_schema = {
             "examples": ["My Server"],
             "minLength": 2,
         },
+        "roles": {"title": "Roles to add", "type": "array", "examples": [1, 2, 3]},
         "stop_command": {
             "title": "Stop command",
             "description": '"" means the default for the server creation type.',
@@ -133,8 +134,13 @@ new_server_schema = {
                         "mem_min",
                         "mem_max",
                         "server_properties_port",
-                        "agree_to_eula",
+                        "category",
                     ],
+                    "category": {
+                        "title": "Jar Category",
+                        "type": "string",
+                        "examples": ["modded", "vanilla"],
+                    },
                     "properties": {
                         "type": {
                             "title": "Server JAR Type",
@@ -185,7 +191,6 @@ new_server_schema = {
                         "mem_min",
                         "mem_max",
                         "server_properties_port",
-                        "agree_to_eula",
                     ],
                     "properties": {
                         "existing_server_path": {
@@ -240,7 +245,6 @@ new_server_schema = {
                         "mem_min",
                         "mem_max",
                         "server_properties_port",
-                        "agree_to_eula",
                     ],
                     "properties": {
                         "zip_path": {
@@ -336,12 +340,24 @@ new_server_schema = {
                     "title": "Creation type",
                     "type": "string",
                     "default": "import_server",
-                    "enum": ["import_server", "import_zip"],
+                    "enum": ["download_exe", "import_server", "import_zip"],
+                },
+                "download_exe_create_data": {
+                    "title": "Import server data",
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "agree_to_eula": {
+                            "title": "Agree to the EULA",
+                            "type": "boolean",
+                            "enum": [True],
+                        },
+                    },
                 },
                 "import_server_create_data": {
                     "title": "Import server data",
                     "type": "object",
-                    "required": ["existing_server_path", "command"],
+                    "required": ["existing_server_path", "executable"],
                     "properties": {
                         "existing_server_path": {
                             "title": "Server path",
@@ -349,6 +365,14 @@ new_server_schema = {
                             "type": "string",
                             "examples": ["/var/opt/server"],
                             "minLength": 1,
+                        },
+                        "executable": {
+                            "title": "Executable File",
+                            "description": "File Crafty should execute"
+                            "on server launch",
+                            "type": "string",
+                            "examples": ["bedrock_server.exe"],
+                            "minlength": 1,
                         },
                         "command": {
                             "title": "Command",
@@ -370,6 +394,14 @@ new_server_schema = {
                             "type": "string",
                             "examples": ["/var/opt/server.zip"],
                             "minLength": 1,
+                        },
+                        "executable": {
+                            "title": "Executable File",
+                            "description": "File Crafty should execute"
+                            "on server launch",
+                            "type": "string",
+                            "examples": ["bedrock_server.exe"],
+                            "minlength": 1,
                         },
                         "zip_root": {
                             "title": "Server root directory",
@@ -394,7 +426,9 @@ new_server_schema = {
                     "allOf": [
                         {
                             "if": {
-                                "properties": {"create_type": {"const": "import_exec"}}
+                                "properties": {
+                                    "create_type": {"const": "import_server"}
+                                }
                             },
                             "then": {"required": ["import_server_create_data"]},
                         },
@@ -404,6 +438,16 @@ new_server_schema = {
                             },
                             "then": {"required": ["import_zip_create_data"]},
                         },
+                        {
+                            "if": {
+                                "properties": {"create_type": {"const": "download_exe"}}
+                            },
+                            "then": {
+                                "required": [
+                                    "download_exe_create_data",
+                                ]
+                            },
+                        },
                     ],
                 },
                 {
@@ -411,6 +455,7 @@ new_server_schema = {
                     "oneOf": [
                         {"required": ["import_server_create_data"]},
                         {"required": ["import_zip_create_data"]},
+                        {"required": ["download_exe_create_data"]},
                     ],
                 },
             ],
@@ -651,7 +696,6 @@ class ApiServersIndexHandler(BaseApiHandler):
             return self.finish_json(
                 400, {"status": "error", "error": "INVALID_JSON", "error_data": str(e)}
             )
-
         try:
             validate(data, new_server_schema)
         except ValidationError as e:

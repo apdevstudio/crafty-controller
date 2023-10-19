@@ -8,6 +8,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.console import Console
+from app.classes.shared.websocket_manager import WebSocketManager
 
 logger = logging.getLogger(__name__)
 
@@ -149,7 +150,7 @@ class FileHelpers:
             "percent": 0,
             "total_files": self.helper.human_readable_file_size(dir_bytes),
         }
-        self.helper.websocket_helper.broadcast_page_params(
+        WebSocketManager().broadcast_page_params(
             "/panel/server_detail",
             {"id": str(server_id)},
             "backup_status",
@@ -194,7 +195,7 @@ class FileHelpers:
                         "percent": percent,
                         "total_files": self.helper.human_readable_file_size(dir_bytes),
                     }
-                    self.helper.websocket_helper.broadcast_page_params(
+                    WebSocketManager().broadcast_page_params(
                         "/panel/server_detail",
                         {"id": str(server_id)},
                         "backup_status",
@@ -215,7 +216,7 @@ class FileHelpers:
             "percent": 0,
             "total_files": self.helper.human_readable_file_size(dir_bytes),
         }
-        self.helper.websocket_helper.broadcast_page_params(
+        WebSocketManager().broadcast_page_params(
             "/panel/server_detail",
             {"id": str(server_id)},
             "backup_status",
@@ -274,7 +275,7 @@ class FileHelpers:
                         "total_files": self.helper.human_readable_file_size(dir_bytes),
                     }
                     # send status results to page.
-                    self.helper.websocket_helper.broadcast_page_params(
+                    WebSocketManager().broadcast_page_params(
                         "/panel/server_detail",
                         {"id": str(server_id)},
                         "backup_status",
@@ -325,3 +326,12 @@ class FileHelpers:
         else:
             return "false"
         return
+
+    def unzip_server(self, zip_path, user_id):
+        if Helpers.check_file_perms(zip_path):
+            temp_dir = tempfile.mkdtemp()
+            with zipfile.ZipFile(zip_path, "r") as zip_ref:
+                # extracts archive to temp directory
+                zip_ref.extractall(temp_dir)
+            if user_id:
+                return temp_dir

@@ -1,4 +1,49 @@
 # Changelog
+## --- [4.2.0] - 2023/10/18
+### New features
+- Finish and Activate Arcadia notification backend ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/621) | [Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/626) | [Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/632))
+- Add initial Webhook Notification (Discord, Mattermost, Slack, Teams) ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/594))
+- Implementation of OpenMetrics endpoints, for use with services such as Prometheus ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/624))
+### Bug fixes
+- PWA: Removed the custom offline page in favour of browser default ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/607))
+- Fix hidden servers appearing visible on public mobile status page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/612))
+- Correctly handle if a server returns a string instead of json data on socket ping ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/614))
+- Bump tornado to resolve #269 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/623))
+- Bump crypto to resolve #267 & #268 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/622))
+- Fix select installs failing to start, returning missing python package `packaging` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/629))
+- Fix public status page not updating #255 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/615))
+- Fix service worker vulrn and CQ raised by SonarQ ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/631))
+- Fix Backup Restore/Schedules, Backup button function on `remote-comms2` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/634))
+- Add a wait to the call for the directory so we can make sure the wait dialogue has time to show up first ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/637))
+- Fix bug where a reaction loop could be created, but would be cut short by an error when the loop occurred ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/636))
+- Use controller on update user call ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/640))
+- Move `imports` to `import/upload` in bind mount to better serve users on unraid with limited vdisk storage ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/642))
+- Fix bug where everytime a page was loaded user settings would be reset #286 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/643))
+- Fix tooltip info icon on server config page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/647))
+- Fix quick disable toggle on schedules list ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/649))
+### Refactor
+- Consolidate remaining frontend functions into API V2, and remove ajax internal API ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/585))
+- Replace bleach with nh3 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/628))
+- Add API route for historical server stats ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/615))
+- Add API route for host stats ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/615))
+### Tweaks
+- Polish/Enhance display for InApp Documentation ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/613))
+- Add `get_users` command to Crafty's console ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/620))
+- Make files hover cursor pointer ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/627))
+- Use `Jar` class naming for jar refresh to make room for steamCMD naming in the future ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/630))
+- Improve ui visibility of Build Wizard selection tabs ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/633))
+- Add additional logging for server bootstrap & moves unnecessary logging to `debug` for improved log clarity ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/635))
+- Bump orjson to `3.9.7` for python `3.12` support ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/638))
+- Bump all Crafty required python dependancies, maintaining minimum `3.9` support ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/639)) Revert peewee bump ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/651))
+- Better optimize and refactor docker launcher sh ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/642))
+- Improve pop-up notifications with Toasts ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/641))
+- Move username and password settings to buttons on panel config ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/643))
+- Remove external references from front end deps ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/648))
+### Lang
+- `fr_FR` Translation Updated to latest en_EN ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/646))
+- `de_DE`, `fr_FR`, `lol_EN`, `lv_LV`, `nl_BE`, `pl_PL` Translations Updated to latest `en_EN` ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/645))
+<br><br>
+
 ## --- [4.1.3] - 2023/07/18
 ### Bug fixes
 - Include tzdata in Docker image ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/604))

@@ -8,6 +8,7 @@ from app.classes.shared.helpers import Helpers
 from app.classes.shared.main_models import DatabaseShortcuts
 from app.classes.shared.migration import MigrationManager
 
+
 try:
     from peewee import (
         SqliteDatabase,
@@ -50,6 +51,7 @@ class ServerStats(Model):
     max = IntegerField(default=0)
     players = CharField(default="")
     desc = CharField(default="Unable to Connect")
+    icon = CharField(default="")
     version = CharField(default="")
     updating = BooleanField(default=False)
     waiting_start = BooleanField(default=False)
@@ -141,16 +143,20 @@ class HelperServerStats:
         self.database.close()
         return server_data
 
-    def get_history_stats(self, server_id, num_days):
+    def get_history_stats(self, server_id, num_hours):
         self.database.connect(reuse_if_open=True)
-        max_age = datetime.datetime.now() - timedelta(days=num_days)
-        server_stats = (
+        max_age = datetime.datetime.now() - timedelta(hours=num_hours)
+        query_stats = (
             ServerStats.select()
             .where(ServerStats.created > max_age)
             .where(ServerStats.server_id == server_id)
+            # .order_by(ServerStats.created.desc())
             .execute(self.database)
         )
-        self.database.connect(reuse_if_open=True)
+        server_stats = []
+        for stat in query_stats:
+            server_stats.append(DatabaseShortcuts.get_data_obj(stat))
+        self.database.close()
         return server_stats
 
     def insert_server_stats(self, server_stats):
@@ -179,6 +185,7 @@ class HelperServerStats:
                 ServerStats.max: server_stats.get("max", False),
                 ServerStats.players: server_stats.get("players", False),
                 ServerStats.desc: server_stats.get("desc", False),
+                ServerStats.icon: server_stats.get("icon", None),
                 ServerStats.version: server_stats.get("version", False),
             }
         ).execute(self.database)

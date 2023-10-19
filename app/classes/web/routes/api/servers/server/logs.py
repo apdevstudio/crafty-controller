@@ -74,6 +74,6 @@ class ApiServersServerLogsHandler(BaseApiHandler):
 
         if use_html:
             for line in lines:
-                self.write(f"{line}<br />")
-        else:
-            self.finish_json(200, {"status": "ok", "data": lines})
+                line = f"{line}<br />"
+
+        self.finish_json(200, {"status": "ok", "data": lines})

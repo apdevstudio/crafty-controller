@@ -18,6 +18,7 @@ env.bak/
 venv.bak/
 
 .idea/
+/import/
 /imports/
 /servers/
 /app/frontend/static/assets/images/auth/custom/
@@ -35,3 +36,4 @@ default.json
 app/config/
 docker/*
 !docker/docker-compose.yml
+lang_sort_log.txt

@@ -89,11 +89,11 @@
   const cpu = []
   {% for item in data['history_stats'] %}
   {% if 'minecraft-java' in data['server_stats']['server_type'] %}
-  players.push("{{ item.online }}");
+  players.push("{{ item.get('online') }}");
   {% end %}
-  dates.push("{{ item.created.strftime('%Y/%m/%d, %H:%M:%S') }}");
-  ram.push("{{ item.mem_percent }}")
-  cpu.push("{{ item.cpu }}")
+  dates.push("{{ item.get('created').strftime('%Y/%m/%d, %H:%M:%S') }}");
+  ram.push("{{ item.get('mem_percent') }}")
+  cpu.push("{{ item.get('cpu') }}")
   {% end %}
   var hist_chart = new Chart(ctxL, {
     type: 'line',

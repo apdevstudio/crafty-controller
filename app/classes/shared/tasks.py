@@ -5,10 +5,10 @@ import threading
 import asyncio
 import datetime
 import json
-
+from zoneinfo import ZoneInfoNotFoundError
 from tzlocal import get_localzone
-from tzlocal.utils import ZoneInfoNotFoundError
 from apscheduler.events import EVENT_JOB_EXECUTED
+from apscheduler.jobstores.base import JobLookupError
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 
@@ -20,6 +20,7 @@ from app.classes.shared.file_helpers import FileHelpers
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.main_controller import Controller
 from app.classes.web.tornado_handler import Webserver
+from app.classes.shared.websocket_manager import WebSocketManager
 
 logger = logging.getLogger("apscheduler")
 scheduler_intervals = {
@@ -41,10 +42,10 @@ scheduler_intervals = {
 class TasksManager:
     controller: Controller
 
-    def __init__(self, helper, controller):
+    def __init__(self, helper, controller, file_helper):
         self.helper: Helpers = helper
         self.controller: Controller = controller
-        self.tornado: Webserver = Webserver(helper, controller, self)
+        self.tornado: Webserver = Webserver(helper, controller, self, file_helper)
         try:
             self.tz = get_localzone()
         except ZoneInfoNotFoundError as e:
@@ -101,7 +102,7 @@ class TasksManager:
                     )
                 except:
                     logger.error(
-                        "Server value requested does not exist! "
+                        f"Server value {cmd['server_id']} requested does not exist! "
                         "Purging item from waiting commands."
                     )
                     continue
@@ -324,11 +325,16 @@ class TasksManager:
 
         # Checks to make sure some doofus didn't actually make the newly
         # created task a child of itself.
-        if str(job_data["parent"]) == str(sch_id):
+        if (
+            str(job_data["parent"]) == str(sch_id)
+            or job_data["interval_type"] != "reaction"
+        ):
             HelpersManagement.update_scheduled_task(sch_id, {"parent": None})
 
         # Check to see if it's enabled and is not a chain reaction.
         if job_data["enabled"] and job_data["interval_type"] != "reaction":
+            # Lets make sure this can not be mistaken for a reaction
+            job_data["parent"] = None
             new_job = "error"
             if job_data["cron_string"] != "":
                 try:
@@ -449,7 +455,8 @@ class TasksManager:
     def update_job(self, sch_id, job_data):
         # Checks to make sure some doofus didn't actually make the newly
         # created task a child of itself.
-        if str(job_data.get("parent")) == str(sch_id):
+        interval_type = job_data.get("interval_type")
+        if str(job_data.get("parent")) == str(sch_id) or interval_type != "reaction":
             job_data["parent"] = None
         HelpersManagement.update_scheduled_task(sch_id, job_data)
 
@@ -466,13 +473,15 @@ class TasksManager:
                 job_data = HelpersManagement.get_scheduled_task(sch_id)
                 job_data["server_id"] = job_data["server_id"]["server_id"]
             else:
-                self.scheduler.remove_job(str(sch_id))
+                job = HelpersManagement.get_scheduled_task(sch_id)
+                if job["interval_type"] != "reaction":
+                    self.scheduler.remove_job(str(sch_id))
                 return
 
         try:
             if job_data["interval"] != "reaction":
                 self.scheduler.remove_job(str(sch_id))
-        except:
+        except JobLookupError:
             logger.info(
                 "No job found in update job. "
                 "Assuming it was previously disabled. Starting new job."
@@ -608,7 +617,10 @@ class TasksManager:
                 ):
                     # event job ID's are strings so we need to look at
                     # this as the same data type.
-                    if str(schedule.parent) == str(event.job_id):
+                    if (
+                        str(schedule.parent) == str(event.job_id)
+                        and schedule.interval_type == "reaction"
+                    ):
                         if schedule.enabled:
                             delaytime = datetime.datetime.now() + datetime.timedelta(
                                 seconds=schedule.delay
@@ -688,10 +700,16 @@ class TasksManager:
                 # Stats are different
 
                 host_stats = HelpersManagement.get_latest_hosts_stats()
-                if len(self.helper.websocket_helper.clients) > 0:
+
+                self.controller.management.cpu_usage.set(host_stats.get("cpu_usage"))
+                self.controller.management.mem_usage_percent.set(
+                    host_stats.get("mem_percent")
+                )
+
+                if len(WebSocketManager().clients) > 0:
                     # There are clients
                     try:
-                        self.helper.websocket_helper.broadcast_page(
+                        WebSocketManager().broadcast_page(
                             "/panel/dashboard",
                             "update_host_stats",
                             {
@@ -708,7 +726,7 @@ class TasksManager:
                             },
                         )
                     except:
-                        self.helper.websocket_helper.broadcast_page(
+                        WebSocketManager().broadcast_page(
                             "/panel/dashboard",
                             "update_host_stats",
                             {
@@ -726,12 +744,21 @@ class TasksManager:
     def check_for_updates(self):
         logger.info("Checking for Crafty updates...")
         self.helper.update_available = self.helper.check_remote_version()
+        remote = self.helper.update_available
         if self.helper.update_available:
             logger.info(f"Found new version {self.helper.update_available}")
         else:
             logger.info(
                 "No updates found! You are on the most up to date Crafty version."
             )
+        if self.helper.update_available:
+            self.helper.update_available = {
+                "id": str(remote),
+                "title": f"{remote} Update Available",
+                "date": "",
+                "desc": "Release notes are available by clicking this notification.",
+                "link": "https://gitlab.com/crafty-controller/crafty-4/-/releases",
+            }
         logger.info("Refreshing Gravatar PFPs...")
         for user in HelperUsers.get_all_users():
             if user.email:
@@ -740,11 +767,13 @@ class TasksManager:
                 )
         # Search for old files in imports
         self.helper.ensure_dir_exists(
-            os.path.join(self.controller.project_root, "imports")
+            os.path.join(self.controller.project_root, "import", "upload")
         )
-        for file in os.listdir(os.path.join(self.controller.project_root, "imports")):
+        for file in os.listdir(
+            os.path.join(self.controller.project_root, "import", "upload")
+        ):
             if self.helper.is_file_older_than_x_days(
-                os.path.join(self.controller.project_root, "imports", file)
+                os.path.join(self.controller.project_root, "import", "upload", file)
             ):
                 try:
                     os.remove(os.path.join(file))
