@@ -8,7 +8,7 @@ cryptography==41.0.4
 libgravatar==1.0.4
 nh3==0.2.14
 packaging==23.2
-peewee==3.16.3
+peewee==3.13
 psutil==5.9.5
 pyOpenSSL==23.2.0
 pyjwt==2.8.0
