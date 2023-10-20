@@ -136,6 +136,10 @@
     });
     let responseData = await res.json();
     console.log(responseData);
+    setTimeout(function() {
+      getAnnouncements();
+    }, 1800);
+    console.log("Registered annoucement fetch event in 1 hour.")
     if (responseData.status === "ok") {
       updateAnnouncements(responseData.data)
     } else {
