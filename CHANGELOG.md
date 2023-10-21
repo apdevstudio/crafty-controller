@@ -3,7 +3,7 @@
 ### New features
 TBD
 ### Bug fixes
-TBD
+- Fix logic issue with `get_files` API permissions check ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/654))
 ### Tweaks
 TBD
 ### Lang
