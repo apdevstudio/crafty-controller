@@ -5,7 +5,7 @@ TBD
 ### Bug fixes
 TBD
 ### Tweaks
-TBD
+- Auto refresh Crafty Announcements on 30m interval ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/653))
 ### Lang
 TBD
 <br><br>
