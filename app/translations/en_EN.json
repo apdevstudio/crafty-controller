@@ -500,6 +500,8 @@
         "interval": "Interval",
         "name": "Name",
         "nextRun": "Next Run",
+        "newShedule": "New Schedule",
+        "no-shedule": "There are currently no shedules for this server. To get started, click",
         "no": "No",
         "scheduledTasks": "Scheduled Tasks",
         "yes": "Yes"
@@ -641,6 +643,8 @@
         "kill": "Server Killed",
         "name": "Name",
         "new": "New Webhook",
+        "newWebhook": "New Webhook",
+        "no-webhook": "There are currently no webhooks for this server. To get started, click",
         "run": "Test Run Webhook",
         "send_command": "Server Command Received",
         "start_server": "Server Started",

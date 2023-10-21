@@ -47,198 +47,184 @@
                   <h4 class="card-title"><i class="fas fa-calendar"></i> {{ translate('serverSchedules',
                     'scheduledTasks', data['lang']) }} </h4>
                   {% if data['user_data']['hints'] %}
-                  <span class="too_small" title="{{ translate('serverSchedules', 'cannotSee', data['lang']) }}" ,
-                    data-content="{{ translate('serverSchedules', 'cannotSeeOnMobile', data['lang']) }}" ,
-                    data-placement="bottom"></span>
+                  <span class="too_small" title="{{ translate('serverSchedules', 'cannotSee', data['lang']) }}" , data-content="{{ translate('serverSchedules', 'cannotSeeOnMobile', data['lang']) }}" , data-placement="bottom"></span>
                   {% end %}
-                  <div>
-                    <button
-                      onclick="location.href=`/panel/add_schedule?id={{ data['server_stats']['server_id']['server_id'] }}`"
-                      class="btn btn-info">{{ translate('serverSchedules', 'create', data['lang']) }}<i
-                        class="fas fa-pencil-alt"></i></button>
-                  </div>
+                  <div><a class="btn btn-info" href="/panel/add_schedule?id={{ data['server_stats']['server_id']['server_id'] }}"><i class="fas fa-plus-circle"></i> {{ translate('serverSchedules', 'create', data['lang']) }}</a></div>
                 </div>
                 <div class="card-body">
-                  <table class="table table-hover d-none d-lg-block responsive-table" id="schedule_table"
-                    style="table-layout:fixed;" aria-describedby="Schedule List">
-                    <thead>
-                      <tr class="rounded">
-                        <th style="width: 2%; min-width: 10px;">{{ translate('serverSchedules', 'name', data['lang']) }}
-                        </th>
-                        <th style="width: 23%; min-width: 50px;">{{ translate('serverSchedules', 'action', data['lang'])
-                          }}</th>
-                        <th style="width: 40%; min-width: 50px;">{{ translate('serverSchedules', 'command',
-                          data['lang']) }}</th>
-                        <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'interval',
-                          data['lang']) }}</th>
-                        <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'nextRun',
-                          data['lang']) }}</th>
-                        <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'enabled',
-                          data['lang']) }}</th>
-                        <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'edit', data['lang'])
-                          }}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for schedule in data['schedules'] %}
-                      <tr>
-                        <td id="{{schedule.schedule_id}}" class="id">
-                          <p>{{schedule.name}}</p>
-                        </td>
-                        <td id="{{schedule.action}}" class="action">
-                          <p>{{schedule.action}}</p>
-                        </td>
-                        <td id="{{schedule.command}}" class="action" style="overflow: scroll; max-width: 30px;">
-                          <p style="overflow: scroll;" class="no-scroll">{{schedule.command}}</p>
-                        </td>
-                        <td id="{{schedule.interval}}" class="action">
-                          {% if schedule.interval_type != '' and schedule.interval_type != 'reaction' %}
-                          <p>{{ translate('serverSchedules', 'every', data['lang']) }}</p>
-                          <p>{{schedule.interval}} {{schedule.interval_type}}</p>
-                          {% elif schedule.interval_type == 'reaction' %}
-                          <p>{{schedule.interval_type}}<br><br>{{ translate('serverSchedules', 'child', data['lang'])}}:
-                            {{ schedule.parent }}</p>
-                          {% else %}
-                          <p>Cron String:</p>
-                          <p>{{schedule.cron_string}}</p>
-                          {% end %}
-                        </td>
-                        <td id="{{schedule.start_time}}" class="action">
-                          <p>{{schedule.next_run}}</p>
-                        </td>
-                        <td id="{{schedule.enabled}}" class="action">
-                          <input style="width: 10px !important;" type="checkbox" class="schedule-enabled-toggle"
-                            data-schedule-id="{{schedule.schedule_id}}"
-                            data-schedule-enabled="{{ 'true' if schedule.enabled else 'false' }}">
-                        </td>
-                        <td id="{{schedule.action}}" class="action">
-                          <button
-                            onclick="window.location.href='/panel/edit_schedule?id={{ data['server_stats']['server_id']['server_id'] }}&sch_id={{schedule.schedule_id}}'"
-                            class="btn btn-info">
-                            <i class="fas fa-pencil-alt"></i>
-                          </button>
-                          <br>
-                          <br>
-                          <button data-sch={{ schedule.schedule_id }} class="btn btn-danger del_button">
-                            <i class="fas fa-trash" aria-hidden="true"></i>
-                          </button>
-                        </td>
-                      </tr>
-                      {% end %}
-                    </tbody>
-                  </table>
-                  <hr />
-                  <table class="table table-hover d-block d-lg-none" id="mini_schedule_table"
-                    style="table-layout:fixed;" aria-describedby="Schedule List Mobile">
-                    <thead>
-                      <tr class="rounded">
-                        <th style="width: 25%; min-width: 50px;">{{ translate('serverSchedules', 'action', data['lang'])
-                          }}</th>
-                        <th style="max-width: 40%; min-width: 50px;">{{ translate('serverSchedules', 'command',
-                          data['lang']) }}</th>
-                        <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'enabled',
-                          data['lang']) }}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for schedule in data['schedules'] %}
-                      <tr data-toggle="modal" data-target="#task_details_{{schedule.schedule_id}}">
-                        <td id="{{schedule.action}}" class="action">
-                          <p>{{schedule.action}}</p>
-                        </td>
-                        <td id="{{schedule.command}}" class="action" style="overflow: scroll; max-width: 30px;">
-                          <p style="overflow: scroll;">{{schedule.command}}</p>
-                        </td>
-                        <td id="{{schedule.enabled}}" class="action">
-                          {% if schedule.enabled %}
-                          <span class="text-success">
-                            <i class="fas fa-check-square"></i> {{ translate('serverSchedules', 'yes', data['lang']) }}
-                          </span>
-                          {% else %}
-                          <span class="text-danger">
-                            <i class="far fa-times-square"></i> {{ translate('serverSchedules', 'no', data['lang']) }}
-                          </span>
-                          {% end %}
-                        </td>
-                      </tr>
-                      <!-- Modal -->
-                      <div class="modal fade" id="task_details_{{schedule.schedule_id}}" tabindex="-1" role="dialog"
-                        aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="exampleModalLabel">{{ translate('serverSchedules', 'details',
-                                data['lang']) }}</h5>
-                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                              </button>
-                            </div>
-                            <div class="modal-body">
-                              <ul style="list-style: none;">
-                                <li id="{{schedule.schedule_id}}" class="id" style="border-top: .1em solid gray;">
-                                  <h4>{{ translate('serverSchedules', 'name', data['lang']) }}</h4>
-                                  <p>{{schedule.schedule_id}}</p>
-                                </li>
-                                <li id="{{schedule.action}}" class="action" style="border-top: .1em solid gray;">
-                                  <h4>{{ translate('serverSchedules', 'action', data['lang']) }}</h4>
-                                  <p>{{schedule.action}}</p>
-                                </li>
-                                <li id="{{schedule.command}}" class="action" style="border-top: .1em solid gray;">
-                                  <h4>{{ translate('serverSchedules', 'command', data['lang']) }}</h4>
-                                  <p>{{schedule.command}}</p>
-                                </li>
-                                <li id="{{schedule.interval}}" class="action" style="border-top: .1em solid gray;">
-                                  {% if schedule.interval != '' %}
-                                  <h4>{{ translate('serverSchedules', 'interval', data['lang']) }}</h4>
-                                  <p>{{ translate('serverSchedules', 'every', data['lang']) }} {{schedule.interval}}
-                                    {{schedule.interval_type}}</p>
-                                  {% elif schedule.interval_type == 'reaction' %}
-                                  <h4>{{ translate('serverSchedules', 'interval', data['lang']) }}</h4>
-                                  <p>{{schedule.interval_type}}<br><br>{{ translate('serverSchedules', 'child',
-                                    data['lang']) }}: {{ schedule.parent }}</p>
-                                  {% else %}
-                                  <h4>{{ translate('serverSchedules', 'interval', data['lang']) }}</h4>
-                                  <p>{{ translate('serverSchedules', 'cron', data['lang']) }}: {{schedule.cron_string}}
-                                  </p>
-                                  {% end %}
-                                </li>
-                                <li id="{{schedule.start_time}}" class="action" style="border-top: .1em solid gray;">
-                                  <h4>{{ translate('serverSchedules', 'nextRun', data['lang']) }}</h4>
-                                  {% if schedule.next_run %}
-                                  <p>{{schedule.next_run}}</p>
-                                  {% else %}
-                                  <p>zzzzzzz</p>
-                                  {% end %}
-                                </li>
-                                <li id="{{schedule.enabled}}" class="action"
-                                  style="border-top: .1em solid gray; border-bottom: .1em solid gray">
-                                  <h4>{{ translate('serverSchedules', 'enabled', data['lang']) }}</h4>
-                                  <input type="checkbox" class="schedule-enabled-toggle"
-                                    data-schedule-id="{{schedule.schedule_id}}"
-                                    data-schedule-enabled="{{ 'true' if schedule.enabled else 'false' }}">
-                                </li>
-                              </ul>
-                            </div>
-                            <div class="modal-footer">
-                              <button
-                                onclick="window.location.href='/panel/edit_schedule?id={{ data['server_stats']['server_id']['server_id'] }}&sch_id={{schedule.schedule_id}}'"
-                                class="btn btn-info">
-                                <i class="fas fa-pencil-alt"></i> {{ translate('serverSchedules', 'edit', data['lang'])
-                                }}
-                              </button>
-                              <button data-sch={{ schedule.schedule_id }} class="btn btn-danger del_button">
-                                <i class="fas fa-trash" aria-hidden="true"></i> {{ translate('serverSchedules',
-                                'delete', data['lang']) }}
-                              </button>
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">{{
-                                translate('serverSchedules', 'close', data['lang']) }}</button>
+                  {% if len(data['schedules']) == 0 %}
+                  <div style="text-align: center; color: grey;">
+                    <h7>{{ translate('serverSchedules', 'no-shedule', data['lang']) }} <strong>{{ translate('serverSchedules', 'newSchedule',data['lang']) }}</strong>.</h7>
+                  </div>
+                  {% end %}
+                  {% if len(data['schedules']) > 0 %}
+                  <div class="d-none d-lg-block">
+                    <table class="table table-hover table-responsive" id="schedule_table" style="table-layout:fixed;" aria-describedby="Schedule List">
+                      <thead>
+                        <tr class="rounded">
+                          <th style="width: 5%; min-width: 64px;">{{ translate('serverSchedules', 'enabled',
+                            data['lang']) }}</th>
+                          <th style="width: 7%; min-width: 10px;">{{ translate('serverSchedules', 'name', data['lang']) }}
+                          </th>
+                          <th style="width: 23%; min-width: 50px;">{{ translate('serverSchedules', 'action', data['lang'])
+                            }}</th>
+                          <th style="width: 40%; min-width: 50px;">{{ translate('serverSchedules', 'command',
+                            data['lang']) }}</th>
+                          <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'interval',
+                            data['lang']) }}</th>
+                          <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'nextRun',
+                            data['lang']) }}</th>
+                          <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'edit', data['lang'])
+                            }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for schedule in data['schedules'] %}
+                        <tr>
+                          <td id="{{schedule.enabled}}" class="enabled">
+                            <button type="button" class="btn btn-sm btn-info btn-toggle schedule-custom-toggle" id="schedule{{schedule.id}}" name="schedule{{schedule.id}}" data-schedule-id="{{schedule.schedule_id}}" data-schedule-enabled="{{ 'true' if schedule.enabled else 'false' }}" data-toggle="button" aria-pressed="true" autocomplete="off">
+                              <div class="handle"></div>
+                            </button>
+                          </td>
+                          <td id="{{schedule.schedule_id}}" class="id">
+                            <p>{{schedule.name}}</p>
+                          </td>
+                          <td id="{{schedule.action}}">
+                            <p>{{schedule.action}}</p>
+                          </td>
+                          <td id="{{schedule.command}}" style="overflow: scroll; max-width: 30px;">
+                            <p style="overflow: scroll;" class="no-scroll">{{schedule.command}}</p>
+                          </td>
+                          <td id="{{schedule.interval}}">
+                            {% if schedule.interval_type != '' and schedule.interval_type != 'reaction' %}
+                            <p>{{ translate('serverSchedules', 'every', data['lang']) }}</p>
+                            <p>{{schedule.interval}} {{schedule.interval_type}}</p>
+                            {% elif schedule.interval_type == 'reaction' %}
+                            <p>{{schedule.interval_type}}<br><br>{{ translate('serverSchedules', 'child', data['lang'])}}:
+                              {{ schedule.parent }}</p>
+                            {% else %}
+                            <p>Cron String:</p>
+                            <p>{{schedule.cron_string}}</p>
+                            {% end %}
+                          </td>
+                          <td id="{{schedule.start_time}}">
+                            <p>{{schedule.next_run}}</p>
+                          </td>
+                          <td id="{{schedule.action}}" class="action">
+                            <button onclick="window.location.href='/panel/edit_schedule?id={{ data['server_stats']['server_id']['server_id'] }}&sch_id={{schedule.schedule_id}}'" class="btn btn-info">
+                              <i class="fas fa-pencil-alt"></i>
+                            </button>
+                            <button data-sch={{ schedule.schedule_id }} class="btn btn-danger del_button">
+                              <i class="fas fa-trash" aria-hidden="true"></i>
+                            </button>
+                          </td>
+                        </tr>
+                        {% end %}
+                      </tbody>
+                    </table>
+                    <hr />
+                  </div>
+                  <div class=" d-block d-lg-none">
+                    <table class="table table-hover" id="mini_schedule_table" style="table-layout:fixed;" aria-describedby="Schedule List Mobile">
+                      <thead>
+                        <tr class="rounded">
+                          <th style="width: 25%; min-width: 50px;">{{ translate('serverSchedules', 'action', data['lang'])
+                            }}</th>
+                          <th style="max-width: 40%; min-width: 50px;">{{ translate('serverSchedules', 'command',
+                            data['lang']) }}</th>
+                          <th style="width: 10%; min-width: 50px;">{{ translate('serverSchedules', 'enabled',
+                            data['lang']) }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for schedule in data['schedules'] %}
+                        <tr data-toggle="modal" data-target="#task_details_{{schedule.schedule_id}}">
+                          <td id="{{schedule.action}}" class="action">
+                            <p>{{schedule.action}}</p>
+                          </td>
+                          <td id="{{schedule.command}}" class="action" style="overflow: scroll; max-width: 30px;">
+                            <p style="overflow: scroll;">{{schedule.command}}</p>
+                          </td>
+                          <td id="{{schedule.enabled}}" class="enabled">
+                            <button type="button" class="btn btn-sm btn-info btn-toggle schedule-custom-toggle" id="schedule{{schedule.id}}" name="schedule{{schedule.id}}" data-schedule-id="{{schedule.schedule_id}}" data-schedule-enabled="{{ 'true' if schedule.enabled else 'false' }}" data-toggle="button" aria-pressed="true" autocomplete="off">
+                              <div class="handle"></div>
+                            </button>
+                          </td>
+                        </tr>
+                        <!-- Modal -->
+                        <div class="modal fade" id="task_details_{{schedule.schedule_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">{{ translate('serverSchedules', 'details',
+                                  data['lang']) }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <ul style="list-style: none;">
+                                  <li id="{{schedule.schedule_id}}" class="id" style="border-top: .1em solid gray;">
+                                    <h4>{{ translate('serverSchedules', 'name', data['lang']) }}</h4>
+                                    <p>{{schedule.schedule_id}}</p>
+                                  </li>
+                                  <li id="{{schedule.action}}" class="action" style="border-top: .1em solid gray;">
+                                    <h4>{{ translate('serverSchedules', 'action', data['lang']) }}</h4>
+                                    <p>{{schedule.action}}</p>
+                                  </li>
+                                  <li id="{{schedule.command}}" class="action" style="border-top: .1em solid gray;">
+                                    <h4>{{ translate('serverSchedules', 'command', data['lang']) }}</h4>
+                                    <p>{{schedule.command}}</p>
+                                  </li>
+                                  <li id="{{schedule.interval}}" class="action" style="border-top: .1em solid gray;">
+                                    {% if schedule.interval != '' %}
+                                    <h4>{{ translate('serverSchedules', 'interval', data['lang']) }}</h4>
+                                    <p>{{ translate('serverSchedules', 'every', data['lang']) }} {{schedule.interval}}
+                                      {{schedule.interval_type}}</p>
+                                    {% elif schedule.interval_type == 'reaction' %}
+                                    <h4>{{ translate('serverSchedules', 'interval', data['lang']) }}</h4>
+                                    <p>{{schedule.interval_type}}<br><br>{{ translate('serverSchedules', 'child',
+                                      data['lang']) }}: {{ schedule.parent }}</p>
+                                    {% else %}
+                                    <h4>{{ translate('serverSchedules', 'interval', data['lang']) }}</h4>
+                                    <p>{{ translate('serverSchedules', 'cron', data['lang']) }}: {{schedule.cron_string}}
+                                    </p>
+                                    {% end %}
+                                  </li>
+                                  <li id="{{schedule.start_time}}" class="action" style="border-top: .1em solid gray;">
+                                    <h4>{{ translate('serverSchedules', 'nextRun', data['lang']) }}</h4>
+                                    {% if schedule.next_run %}
+                                    <p>{{schedule.next_run}}</p>
+                                    {% else %}
+                                    <p>zzzzzzz</p>
+                                    {% end %}
+                                  </li>
+                                  <li id="{{schedule.enabled}}" class="action" style="border-top: .1em solid gray; border-bottom: .1em solid gray">
+                                    <h4>{{ translate('serverSchedules', 'enabled', data['lang']) }}</h4>
+                                    <input type="checkbox" class="schedule-enabled-toggle" data-schedule-id="{{schedule.schedule_id}}" data-schedule-enabled="{{ 'true' if schedule.enabled else 'false' }}">
+                                  </li>
+                                </ul>
+                              </div>
+                              <div class="modal-footer">
+                                <button onclick="window.location.href='/panel/edit_schedule?id={{ data['server_stats']['server_id']['server_id'] }}&sch_id={{schedule.schedule_id}}'" class="btn btn-info">
+                                  <i class="fas fa-pencil-alt"></i> {{ translate('serverSchedules', 'edit', data['lang'])
+                                  }}
+                                </button>
+                                <button data-sch={{ schedule.schedule_id }} class="btn btn-danger del_button">
+                                  <i class="fas fa-trash" aria-hidden="true"></i> {{ translate('serverSchedules',
+                                  'delete', data['lang']) }}
+                                </button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{
+                                  translate('serverSchedules', 'close', data['lang']) }}</button>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      {% end %}
-                    </tbody>
-                  </table>
+                        {% end %}
+                      </tbody>
+                    </table>
+                  </div>
+                  {% end %}
                 </div>
               </div>
             </div>
@@ -264,6 +250,16 @@
 
     .toggle {
       height: 0px !important;
+    }
+
+    td.enabled {
+      vertical-align: middle;
+      border-collapse: collapse !important;
+    }
+
+    .enabled .toggle-group .btn {
+      vertical-align: middle;
+      cursor: pointer;
     }
   </style>
 
@@ -299,20 +295,21 @@
     };
   }
 
-  $(() => {
-    $('.schedule-enabled-toggle').bootstrapToggle({
-      on: 'Yes',
-      off: 'No',
-      onstyle: 'success',
-      offstyle: 'danger',
-    })
-    $('.schedule-enabled-toggle').each(function () {
+  $(document).ready(function () {
+    $('.schedule-custom-toggle').each(function () {
       const enabled = JSON.parse(this.getAttribute('data-schedule-enabled'));
-      $(this).bootstrapToggle(enabled ? 'on' : 'off')
+      if (enabled) {
+        this.classList.add("active");
+      }
+      else {
+        this.classList.remove("active");
+      }
     })
-    $('.schedule-enabled-toggle').change(function () {
+  });
+  $(() => {
+    $('.schedule-custom-toggle').click(function () {
       const id = this.getAttribute('data-schedule-id');
-      const enabled = this.checked;
+      const enabled = !JSON.parse(this.getAttribute('data-schedule-enabled'));
 
       fetch(`/api/v2/servers/{{data['server_id']}}/tasks/${id}`, {
         method: 'PATCH',

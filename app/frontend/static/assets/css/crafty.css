@@ -182,11 +182,55 @@ div>.input-group>.form-control {
 }
 
 .no-scroll {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
 }
 
 .no-scroll::-webkit-scrollbar {
     display: none;
-  }
+}
+
+.custom-control-label::before,
+.custom-control-label::after {
+    cursor: pointer;
+}
+
+.custom-control-input:checked~.custom-control-label::before {
+    color: black !important;
+    background-color: blueviolet !important;
+    border-color: var(--outline) !important;
+}
+
+.custom-control-label::before {
+    background-color: white !important;
+    top: calc(-0.2rem);
+}
+
+.custom-switch .custom-control-label::after {
+    top: calc(-0.125rem + 1px);
+}
+
+/**************************************************************/
+
+/**************************************************************/
+/* CSS for Tables Displays */
+/**************************************************************/
+td>ul {
+    margin: auto;
+}
+
+td p {
+    margin: auto;
+}
+
+td.action {
+    white-space: normal;
+}
+
+td.action .btn {
+    margin-bottom: 0.2rem;
+}
+
 /**************************************************************/
