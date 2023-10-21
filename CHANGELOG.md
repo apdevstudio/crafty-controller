@@ -7,7 +7,7 @@ TBD
 ### Tweaks
 TBD
 ### Lang
-TBD
+- Update zh_CN lang file ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/652))
 <br><br>
 
 ## --- [4.2.0] - 2023/10/18
