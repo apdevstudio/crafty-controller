@@ -37,7 +37,7 @@ peewee_logger.setLevel(logging.INFO)
 class ServerStats(Model):
     stats_id = AutoField()
     created = DateTimeField(default=datetime.datetime.now)
-    server_id = ForeignKeyField(Servers, backref="server", index=True)
+    server_uuid = ForeignKeyField(Servers, backref="server", index=True)
     started = CharField(default="")
     running = BooleanField(default=False)
     cpu = FloatField(default=0)
@@ -67,16 +67,16 @@ class ServerStats(Model):
 #                                    Servers_Stats Methods
 # **********************************************************************************
 class HelperServerStats:
-    server_id: int
+    server_uuid: int
     database = None
 
-    def __init__(self, server_id):
-        self.server_id = int(server_id)
-        self.init_database(self.server_id)
+    def __init__(self, server_uuid):
+        self.server_uuid = int(server_uuid)
+        self.init_database(self.server_uuid)
 
-    def init_database(self, server_id):
+    def init_database(self, server_uuid):
         try:
-            server = HelperServers.get_server_data_by_id(server_id)
+            server = HelperServers.get_server_data_by_id(server_uuid)
             db_folder = os.path.join(f"{server['path']}", "db_stats")
             db_file = os.path.join(
                 db_folder,
@@ -107,7 +107,7 @@ class HelperServerStats:
 
     def select_database(self):
         try:
-            server = HelperServers.get_server_data_by_id(self.server_id)
+            server = HelperServers.get_server_data_by_id(self.server_uuid)
             db_file = os.path.join(
                 f"{server['path']}",
                 "db_stats",
@@ -143,13 +143,13 @@ class HelperServerStats:
         self.database.close()
         return server_data
 
-    def get_history_stats(self, server_id, num_hours):
+    def get_history_stats(self, server_uuid, num_hours):
         self.database.connect(reuse_if_open=True)
         max_age = datetime.datetime.now() - timedelta(hours=num_hours)
         query_stats = (
             ServerStats.select()
             .where(ServerStats.created > max_age)
-            .where(ServerStats.server_id == server_id)
+            .where(ServerStats.server_uuid == server_uuid)
             # .order_by(ServerStats.created.desc())
             .execute(self.database)
         )
@@ -161,15 +161,15 @@ class HelperServerStats:
 
     def insert_server_stats(self, server_stats):
         self.database.connect(reuse_if_open=True)
-        server_id = server_stats.get("id", 0)
+        server_uuid = server_stats.get("id", 0)
 
-        if server_id == 0:
+        if server_uuid == 0:
             logger.warning("Stats saving failed with error: Server unknown (id = 0)")
             return
 
         ServerStats.insert(
             {
-                ServerStats.server_id: server_stats.get("id", 0),
+                ServerStats.server_uuid: server_stats.get("id", 0),
                 ServerStats.started: server_stats.get("started", ""),
                 ServerStats.running: server_stats.get("running", False),
                 ServerStats.cpu: server_stats.get("cpu", 0),
@@ -194,7 +194,7 @@ class HelperServerStats:
 
     def remove_old_stats(self, last_week):
         self.database.connect(reuse_if_open=True)
-        # self.select_database(self.server_id)
+        # self.select_database(self.server_uuid)
         ServerStats.delete().where(ServerStats.created < last_week).execute(
             self.database
         )
@@ -204,7 +204,7 @@ class HelperServerStats:
         self.database.connect(reuse_if_open=True)
         latest = (
             ServerStats.select()
-            .where(ServerStats.server_id == self.server_id)
+            .where(ServerStats.server_uuid == self.server_uuid)
             .order_by(ServerStats.created.desc())
             .limit(1)
             .get(self.database)
@@ -220,7 +220,7 @@ class HelperServerStats:
         self.database.connect(reuse_if_open=True)
         stats = (
             ServerStats.select()
-            .where(ServerStats.server_id == self.server_id)
+            .where(ServerStats.server_uuid == self.server_uuid)
             .order_by(ServerStats.created.desc())
             .limit(1)
             .first(self.database)
@@ -228,29 +228,29 @@ class HelperServerStats:
         self.database.close()
         return DatabaseShortcuts.get_data_obj(stats)
 
-    def server_id_exists(self):
-        if not HelperServers.get_server_data_by_id(self.server_id):
+    def server_uuid_exists(self):
+        if not HelperServers.get_server_data_by_id(self.server_uuid):
             return False
         return True
 
     def sever_crashed(self):
         self.database.connect(reuse_if_open=True)
         ServerStats.update(crashed=True).where(
-            ServerStats.server_id == self.server_id
+            ServerStats.server_uuid == self.server_uuid
         ).execute(self.database)
         self.database.close()
 
     def set_import(self):
         self.database.connect(reuse_if_open=True)
         ServerStats.update(importing=True).where(
-            ServerStats.server_id == self.server_id
+            ServerStats.server_uuid == self.server_uuid
         ).execute(self.database)
         self.database.close()
 
     def finish_import(self):
         self.database.connect(reuse_if_open=True)
         ServerStats.update(importing=False).where(
-            ServerStats.server_id == self.server_id
+            ServerStats.server_uuid == self.server_uuid
         ).execute(self.database)
         self.database.close()
 
@@ -258,19 +258,19 @@ class HelperServerStats:
         self.database.connect(reuse_if_open=True)
         import_status = (
             ServerStats.select()
-            .where(ServerStats.server_id == self.server_id)
+            .where(ServerStats.server_uuid == self.server_uuid)
             .get(self.database)
         )
         self.database.close()
         return import_status.importing
 
     def server_crash_reset(self):
-        if self.server_id is None:
+        if self.server_uuid is None:
             return
 
         self.database.connect(reuse_if_open=True)
         ServerStats.update(crashed=False).where(
-            ServerStats.server_id == self.server_id
+            ServerStats.server_uuid == self.server_uuid
         ).execute(self.database)
         self.database.close()
 
@@ -278,29 +278,29 @@ class HelperServerStats:
         self.database.connect(reuse_if_open=True)
         svr: ServerStats = (
             ServerStats.select()
-            .where(ServerStats.server_id == self.server_id)
+            .where(ServerStats.server_uuid == self.server_uuid)
             .get(self.database)
         )
         self.database.close()
         return svr.crashed
 
     def set_update(self, value):
-        if self.server_id is None:
+        if self.server_uuid is None:
             return
 
         self.database.connect(reuse_if_open=True)
         try:
             # Checks if server even exists
-            ServerStats.select().where(ServerStats.server_id == self.server_id).execute(
-                self.database
-            )
+            ServerStats.select().where(
+                ServerStats.server_uuid == self.server_uuid
+            ).execute(self.database)
         except DoesNotExist as ex:
             logger.error(f"Database entry not found! {ex}")
             self.database.close()
             return
 
         ServerStats.update(updating=value).where(
-            ServerStats.server_id == self.server_id
+            ServerStats.server_uuid == self.server_uuid
         ).execute(self.database)
         self.database.close()
 
@@ -308,7 +308,7 @@ class HelperServerStats:
         self.database.connect(reuse_if_open=True)
         update_status = (
             ServerStats.select()
-            .where(ServerStats.server_id == self.server_id)
+            .where(ServerStats.server_uuid == self.server_uuid)
             .get(self.database)
         )
         self.database.close()
@@ -319,15 +319,15 @@ class HelperServerStats:
         # Sets first run to false
         try:
             # Checks if server even exists
-            ServerStats.select().where(ServerStats.server_id == self.server_id).execute(
-                self.database
-            )
+            ServerStats.select().where(
+                ServerStats.server_uuid == self.server_uuid
+            ).execute(self.database)
         except Exception as ex:
             logger.error(f"Database entry not found! {ex}")
             self.database.close()
             return
         ServerStats.update(first_run=False).where(
-            ServerStats.server_id == self.server_id
+            ServerStats.server_uuid == self.server_uuid
         ).execute(self.database)
         self.database.close()
 
@@ -335,7 +335,7 @@ class HelperServerStats:
         self.database.connect(reuse_if_open=True)
         first_run = (
             ServerStats.select()
-            .where(ServerStats.server_id == self.server_id)
+            .where(ServerStats.server_uuid == self.server_uuid)
             .get(self.database)
         )
         self.database.close()
@@ -345,13 +345,13 @@ class HelperServerStats:
         self.database.connect(reuse_if_open=True)
         last_stat = (
             ServerStats.select()
-            .where(ServerStats.server_id == self.server_id)
+            .where(ServerStats.server_uuid == self.server_uuid)
             .order_by(ServerStats.created.desc())
             .first(self.database)
         )
         last_stat_with_player = (
             ServerStats.select()
-            .where(ServerStats.server_id == self.server_id)
+            .where(ServerStats.server_uuid == self.server_uuid)
             .where(ServerStats.online > 0)
             .order_by(ServerStats.created.desc())
             .first(self.database)
@@ -367,15 +367,15 @@ class HelperServerStats:
         self.database.connect(reuse_if_open=True)
         try:
             # Checks if server even exists
-            ServerStats.select().where(ServerStats.server_id == self.server_id).execute(
-                self.database
-            )
+            ServerStats.select().where(
+                ServerStats.server_uuid == self.server_uuid
+            ).execute(self.database)
         except DoesNotExist as ex:
             logger.error(f"Database entry not found! {ex}")
             self.database.close()
             return
         ServerStats.update(waiting_start=value).where(
-            ServerStats.server_id == self.server_id
+            ServerStats.server_uuid == self.server_uuid
         ).execute(self.database)
         self.database.close()
 
@@ -383,7 +383,7 @@ class HelperServerStats:
         self.database.connect(reuse_if_open=True)
         waiting_start = (
             ServerStats.select()
-            .where(ServerStats.server_id == self.server_id)
+            .where(ServerStats.server_uuid == self.server_uuid)
             .get(self.database)
         )
         self.database.close()

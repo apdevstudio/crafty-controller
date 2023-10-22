@@ -2,16 +2,20 @@ import logging
 import datetime
 import typing as t
 from peewee import (
+    UUIDField,
     CharField,
-    AutoField,
+    # AutoField,
     DateTimeField,
     BooleanField,
     IntegerField,
+    ForeignKeyField,
 )
 from playhouse.shortcuts import model_to_dict
 
 from app.classes.shared.main_models import DatabaseShortcuts
 from app.classes.models.base_model import BaseModel
+from app.classes.models.users import Users
+from app.classes.shared.helpers import Helpers
 
 logger = logging.getLogger(__name__)
 
@@ -20,9 +24,10 @@ logger = logging.getLogger(__name__)
 #                                   Servers Model
 # **********************************************************************************
 class Servers(BaseModel):
-    server_id = AutoField()
+    server_uuid = UUIDField(
+        primary_key=True, unique=True, default=Helpers.create_uuid()
+    )
     created = DateTimeField(default=datetime.datetime.now)
-    server_uuid = CharField(default="", index=True)
     server_name = CharField(default="Server", index=True)
     path = CharField(default="")
     backup_path = CharField(default="")
@@ -39,7 +44,7 @@ class Servers(BaseModel):
     logs_delete_after = IntegerField(default=0)
     type = CharField(default="minecraft-java")
     show_status = BooleanField(default=1)
-    created_by = IntegerField(default=-100)
+    created_by = ForeignKeyField(Users, backref="creator_server", null=True)
     shutdown_timeout = IntegerField(default=60)
     ignored_exits = CharField(default="0")
 
@@ -60,7 +65,6 @@ class HelperServers:
     @staticmethod
     def create_server(
         name: str,
-        server_uuid: str,
         server_dir: str,
         backup_path: str,
         server_command: str,
@@ -76,7 +80,6 @@ class HelperServers:
 
         Args:
             name: The name of the server
-            server_uuid: This is the UUID of the server
             server_dir: The directory where the server is located
             backup_path: The path to the backup folder
             server_command: The command to start the server
@@ -94,10 +97,28 @@ class HelperServers:
         Raises:
             PeeweeException: If the server already exists
         """
+        # return Servers.create(
+        #    server_uuid=Helpers.create_uuid(),
+        #    server_name=name,
+        #    path=server_dir,
+        #    executable=server_file,
+        #    execution_command=server_command,
+        #    auto_start=False,
+        #    auto_start_delay=10,
+        #    crash_detection=False,
+        #    log_path=server_log_file,
+        #    server_port=server_port,
+        #    server_ip=server_host,
+        #    stop_command=server_stop,
+        #    backup_path=backup_path,
+        #    type=server_type,
+        #    created_by=created_by,
+        # )
+
         return Servers.insert(
             {
+                Servers.server_uuid: Helpers.create_uuid(),
                 Servers.server_name: name,
-                Servers.server_uuid: server_uuid,
                 Servers.path: server_dir,
                 Servers.executable: server_file,
                 Servers.execution_command: server_command,
@@ -115,28 +136,28 @@ class HelperServers:
         ).execute()
 
     @staticmethod
-    def get_server_obj(server_id):
-        return Servers.get_by_id(server_id)
+    def get_server_obj(server_uuid):
+        return Servers.get_by_id(server_uuid)
 
     @staticmethod
     def get_total_owned_servers(user_id):
         return Servers.select().where(Servers.created_by == user_id).count()
 
     @staticmethod
-    def get_server_type_by_id(server_id):
-        server_type = Servers.select().where(Servers.server_id == server_id).get()
+    def get_server_type_by_id(server_uuid):
+        server_type = Servers.select().where(Servers.server_uuid == server_uuid).get()
         return server_type.type
 
     @staticmethod
     def update_server(server_obj):
         return server_obj.save()
 
-    def remove_server(self, server_id):
-        Servers.delete().where(Servers.server_id == server_id).execute()
+    def remove_server(self, server_uuid):
+        Servers.delete().where(Servers.server_uuid == server_uuid).execute()
 
     @staticmethod
-    def get_server_data_by_id(server_id):
-        query = Servers.select().where(Servers.server_id == server_id).limit(1)
+    def get_server_data_by_id(server_uuid):
+        query = Servers.select().where(Servers.server_uuid == server_uuid).limit(1)
         try:
             return DatabaseShortcuts.return_rows(query)[0]
         except IndexError:
@@ -144,19 +165,19 @@ class HelperServers:
 
     @staticmethod
     def get_server_columns(
-        server_id: t.Union[str, int], column_names: t.List[str]
+        server_uuid: t.Union[str, int], column_names: t.List[str]
     ) -> t.List[t.Any]:
         columns = [getattr(Servers, column) for column in column_names]
         return model_to_dict(
-            Servers.select(*columns).where(Servers.server_id == server_id).get(),
+            Servers.select(*columns).where(Servers.server_uuid == server_uuid).get(),
             only=columns,
         )
 
     @staticmethod
-    def get_server_column(server_id: t.Union[str, int], column_name: str) -> t.Any:
+    def get_server_column(server_uuid: t.Union[str, int], column_name: str) -> t.Any:
         column = getattr(Servers, column_name)
         return getattr(
-            Servers.select(column).where(Servers.server_id == server_id).get(),
+            Servers.select(column).where(Servers.server_uuid == server_uuid).get(),
             column_name,
         )
 
@@ -169,14 +190,14 @@ class HelperServers:
         return DatabaseShortcuts.return_rows(query)
 
     @staticmethod
-    def get_all_server_ids() -> t.List[int]:
-        return [server.server_id for server in Servers.select(Servers.server_id)]
+    def get_all_server_uuids() -> t.List[int]:
+        return [server.server_uuid for server in Servers.select(Servers.server_uuid)]
 
     @staticmethod
-    def get_server_friendly_name(server_id):
-        server_data = HelperServers.get_server_data_by_id(server_id)
+    def get_server_friendly_name(server_uuid):
+        server_data = HelperServers.get_server_data_by_id(server_uuid)
         friendly_name = (
             f"{server_data.get('server_name', None)} "
-            f"with ID: {server_data.get('server_id', 0)}"
+            f"with ID: {server_data.get('server_uuid', 0)}"
         )
         return friendly_name

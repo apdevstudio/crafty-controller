@@ -31,9 +31,9 @@ class AuditLog(BaseModel):
     user_name = CharField(default="")
     user_id = IntegerField(default=0, index=True)
     source_ip = CharField(default="127.0.0.1")
-    server_id = IntegerField(
-        default=None, index=True
-    )  # When auditing global events, use server ID 0
+    server_uuid = ForeignKeyField(
+        Servers, backref="audit_server", null=True
+    )  # When auditing global events, use server ID null
     log_msg = TextField(default="")
 
     class Meta:
@@ -79,7 +79,7 @@ class HostStats(BaseModel):
 # **********************************************************************************
 class Webhooks(BaseModel):
     id = AutoField()
-    server_id = IntegerField(null=True)
+    server_uuid = ForeignKeyField(Servers, backref="webhook_server", null=True)
     name = CharField(default="Custom Webhook", max_length=64)
     url = CharField(default="")
     webhook_type = CharField(default="Custom")
@@ -98,7 +98,7 @@ class Webhooks(BaseModel):
 # **********************************************************************************
 class Schedules(BaseModel):
     schedule_id = IntegerField(unique=True, primary_key=True)
-    server_id = ForeignKeyField(Servers, backref="schedule_server")
+    server_uuid = ForeignKeyField(Servers, backref="schedule_server")
     enabled = BooleanField()
     action = CharField()
     interval = IntegerField()
@@ -122,7 +122,7 @@ class Schedules(BaseModel):
 class Backups(BaseModel):
     excluded_dirs = CharField(null=True)
     max_backups = IntegerField()
-    server_id = ForeignKeyField(Servers, backref="backups_server")
+    server_uuid = ForeignKeyField(Servers, backref="backups_server")
     compress = BooleanField(default=False)
     shutdown = BooleanField(default=False)
     before = CharField(default="")
@@ -154,13 +154,13 @@ class HelpersManagement:
         query = AuditLog.select()
         return DatabaseShortcuts.return_db_rows(query)
 
-    def add_to_audit_log(self, user_id, log_msg, server_id=None, source_ip=None):
+    def add_to_audit_log(self, user_id, log_msg, server_uuid=None, source_ip=None):
         logger.debug(f"Adding to audit log User:{user_id} - Message: {log_msg} ")
         user_data = HelperUsers.get_user(user_id)
 
         audit_msg = f"{str(user_data['username']).capitalize()} {log_msg}"
 
-        server_users = PermissionsServers.get_server_user_list(server_id)
+        server_users = PermissionsServers.get_server_user_list(server_uuid)
         for user in server_users:
             try:
                 WebSocketManager().broadcast_user(user, "notification", audit_msg)
@@ -171,7 +171,7 @@ class HelpersManagement:
             {
                 AuditLog.user_name: user_data["username"],
                 AuditLog.user_id: user_id,
-                AuditLog.server_id: server_id,
+                AuditLog.server_uuid: server_uuid,
                 AuditLog.log_msg: audit_msg,
                 AuditLog.source_ip: source_ip,
             }
@@ -188,12 +188,12 @@ class HelpersManagement:
             else:
                 return
 
-    def add_to_audit_log_raw(self, user_name, user_id, server_id, log_msg, source_ip):
+    def add_to_audit_log_raw(self, user_name, user_id, server_uuid, log_msg, source_ip):
         AuditLog.insert(
             {
                 AuditLog.user_name: user_name,
                 AuditLog.user_id: user_id,
-                AuditLog.server_id: server_id,
+                AuditLog.server_uuid: server_uuid,
                 AuditLog.log_msg: log_msg,
                 AuditLog.source_ip: source_ip,
             }
@@ -295,7 +295,7 @@ class HelpersManagement:
     # **********************************************************************************
     @staticmethod
     def create_scheduled_task(
-        server_id,
+        server_uuid,
         action,
         interval,
         interval_type,
@@ -310,7 +310,7 @@ class HelpersManagement:
     ):
         sch_id = Schedules.insert(
             {
-                Schedules.server_id: server_id,
+                Schedules.server_uuid: server_uuid,
                 Schedules.action: action,
                 Schedules.enabled: enabled,
                 Schedules.interval: interval,
@@ -336,8 +336,8 @@ class HelpersManagement:
         Schedules.update(updates).where(Schedules.schedule_id == schedule_id).execute()
 
     @staticmethod
-    def delete_scheduled_task_by_server(server_id):
-        Schedules.delete().where(Schedules.server_id == int(server_id)).execute()
+    def delete_scheduled_task_by_server(server_uuid):
+        Schedules.delete().where(Schedules.server_uuid == int(server_uuid)).execute()
 
     @staticmethod
     def get_scheduled_task(schedule_id):
@@ -348,14 +348,16 @@ class HelpersManagement:
         return Schedules.select().where(Schedules.schedule_id == schedule_id).get()
 
     @staticmethod
-    def get_schedules_by_server(server_id):
-        return Schedules.select().where(Schedules.server_id == server_id).execute()
+    def get_schedules_by_server(server_uuid):
+        return Schedules.select().where(Schedules.server_uuid == server_uuid).execute()
 
     @staticmethod
-    def get_child_schedules_by_server(schedule_id, server_id):
+    def get_child_schedules_by_server(schedule_id, server_uuid):
         return (
             Schedules.select()
-            .where(Schedules.server_id == server_id, Schedules.parent == schedule_id)
+            .where(
+                Schedules.server_uuid == server_uuid, Schedules.parent == schedule_id
+            )
             .execute()
         )
 
@@ -379,16 +381,18 @@ class HelpersManagement:
     #                                   Backups Methods
     # **********************************************************************************
     @staticmethod
-    def get_backup_config(server_id):
+    def get_backup_config(server_uuid):
         try:
             row = (
-                Backups.select().where(Backups.server_id == server_id).join(Servers)[0]
+                Backups.select()
+                .where(Backups.server_uuid == server_uuid)
+                .join(Servers)[0]
             )
             conf = {
-                "backup_path": row.server_id.backup_path,
+                "backup_path": row.server_uuid.backup_path,
                 "excluded_dirs": row.excluded_dirs,
                 "max_backups": row.max_backups,
-                "server_id": row.server_id_id,
+                "server_uuid": row.server_uuid,
                 "compress": row.compress,
                 "shutdown": row.shutdown,
                 "before": row.before,
@@ -399,7 +403,7 @@ class HelpersManagement:
                 "backup_path": None,
                 "excluded_dirs": None,
                 "max_backups": 0,
-                "server_id": server_id,
+                "server_uuid": server_uuid,
                 "compress": False,
                 "shutdown": False,
                 "before": "",
@@ -408,12 +412,12 @@ class HelpersManagement:
         return conf
 
     @staticmethod
-    def remove_backup_config(server_id):
-        Backups.delete().where(Backups.server_id == server_id).execute()
+    def remove_backup_config(server_uuid):
+        Backups.delete().where(Backups.server_uuid == server_uuid).execute()
 
     def set_backup_config(
         self,
-        server_id: int,
+        server_uuid: int,
         backup_path: str = None,
         max_backups: int = None,
         excluded_dirs: list = None,
@@ -422,15 +426,15 @@ class HelpersManagement:
         before: str = "",
         after: str = "",
     ):
-        logger.debug(f"Updating server {server_id} backup config with {locals()}")
-        if Backups.select().where(Backups.server_id == server_id).exists():
+        logger.debug(f"Updating server {server_uuid} backup config with {locals()}")
+        if Backups.select().where(Backups.server_uuid == server_uuid).exists():
             new_row = False
             conf = {}
         else:
             conf = {
                 "excluded_dirs": None,
                 "max_backups": 0,
-                "server_id": server_id,
+                "server_uuid": server_uuid,
                 "compress": False,
                 "shutdown": False,
                 "before": "",
@@ -451,13 +455,15 @@ class HelpersManagement:
                 if backup_path is not None:
                     server_rows = (
                         Servers.update(backup_path=backup_path)
-                        .where(Servers.server_id == server_id)
+                        .where(Servers.server_uuid == server_uuid)
                         .execute()
                     )
                 else:
                     server_rows = 0
                 backup_rows = (
-                    Backups.update(conf).where(Backups.server_id == server_id).execute()
+                    Backups.update(conf)
+                    .where(Backups.server_uuid == server_uuid)
+                    .execute()
                 )
             logger.debug(
                 f"Updating existing backup record. "
@@ -465,45 +471,47 @@ class HelpersManagement:
             )
         else:
             with self.database.atomic():
-                conf["server_id"] = server_id
+                conf["server_uuid"] = server_uuid
                 if backup_path is not None:
                     Servers.update(backup_path=backup_path).where(
-                        Servers.server_id == server_id
+                        Servers.server_uuid == server_uuid
                     )
                 Backups.create(**conf)
             logger.debug("Creating new backup record.")
 
     @staticmethod
-    def get_excluded_backup_dirs(server_id: int):
-        excluded_dirs = HelpersManagement.get_backup_config(server_id)["excluded_dirs"]
+    def get_excluded_backup_dirs(server_uuid: int):
+        excluded_dirs = HelpersManagement.get_backup_config(server_uuid)[
+            "excluded_dirs"
+        ]
         if excluded_dirs is not None and excluded_dirs != "":
             dir_list = excluded_dirs.split(",")
         else:
             dir_list = []
         return dir_list
 
-    def add_excluded_backup_dir(self, server_id: int, dir_to_add: str):
-        dir_list = self.get_excluded_backup_dirs(server_id)
+    def add_excluded_backup_dir(self, server_uuid: int, dir_to_add: str):
+        dir_list = self.get_excluded_backup_dirs(server_uuid)
         if dir_to_add not in dir_list:
             dir_list.append(dir_to_add)
             excluded_dirs = ",".join(dir_list)
-            self.set_backup_config(server_id=server_id, excluded_dirs=excluded_dirs)
+            self.set_backup_config(server_uuid=server_uuid, excluded_dirs=excluded_dirs)
         else:
             logger.debug(
                 f"Not adding {dir_to_add} to excluded directories - "
-                f"already in the excluded directory list for server ID {server_id}"
+                f"already in the excluded directory list for server ID {server_uuid}"
             )
 
-    def del_excluded_backup_dir(self, server_id: int, dir_to_del: str):
-        dir_list = self.get_excluded_backup_dirs(server_id)
+    def del_excluded_backup_dir(self, server_uuid: int, dir_to_del: str):
+        dir_list = self.get_excluded_backup_dirs(server_uuid)
         if dir_to_del in dir_list:
             dir_list.remove(dir_to_del)
             excluded_dirs = ",".join(dir_list)
-            self.set_backup_config(server_id=server_id, excluded_dirs=excluded_dirs)
+            self.set_backup_config(server_uuid=server_uuid, excluded_dirs=excluded_dirs)
         else:
             logger.debug(
                 f"Not removing {dir_to_del} from excluded directories - "
-                f"not in the excluded directory list for server ID {server_id}"
+                f"not in the excluded directory list for server ID {server_uuid}"
             )
 
 
@@ -519,7 +527,7 @@ class HelpersWebhooks:
         """Create a webhook in the database
 
         Args:
-            server_id: ID of a server this webhook will be married to
+            server_uuid: ID of a server this webhook will be married to
             name: The name of the webhook
             url: URL to the webhook
             webhook_type: The provider this webhook will be sent to
@@ -536,7 +544,7 @@ class HelpersWebhooks:
         """
         return Webhooks.insert(
             {
-                Webhooks.server_id: create_data["server_id"],
+                Webhooks.server_uuid: create_data["server_uuid"],
                 Webhooks.name: create_data["name"],
                 Webhooks.webhook_type: create_data["webhook_type"],
                 Webhooks.url: create_data["url"],
@@ -557,11 +565,11 @@ class HelpersWebhooks:
         return model_to_dict(Webhooks.get(Webhooks.id == webhook_id))
 
     @staticmethod
-    def get_webhooks_by_server(server_id, model):
+    def get_webhooks_by_server(server_uuid, model):
         if not model:
             data = {}
             for webhook in (
-                Webhooks.select().where(Webhooks.server_id == server_id).execute()
+                Webhooks.select().where(Webhooks.server_uuid == server_uuid).execute()
             ):
                 data[str(webhook.id)] = {
                     "webhook_type": webhook.webhook_type,
@@ -574,7 +582,9 @@ class HelpersWebhooks:
                     "enabled": webhook.enabled,
                 }
         else:
-            data = Webhooks.select().where(Webhooks.server_id == server_id).execute()
+            data = (
+                Webhooks.select().where(Webhooks.server_uuid == server_uuid).execute()
+            )
         return data
 
     @staticmethod
@@ -582,5 +592,5 @@ class HelpersWebhooks:
         Webhooks.delete().where(Webhooks.id == webhook_id).execute()
 
     @staticmethod
-    def delete_webhooks_by_server(server_id):
-        Webhooks.delete().where(Webhooks.server_id == server_id).execute()
+    def delete_webhooks_by_server(server_uuid):
+        Webhooks.delete().where(Webhooks.server_uuid == server_uuid).execute()
