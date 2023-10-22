@@ -499,10 +499,10 @@
         "every": "Toutes",
         "interval": "Intervalle",
         "name": "Nom",
-        "nextRun": "Exécution suivante",
         "newShedule": "Nouvelle Tâche",
-        "no-shedule": "Il n'y a actuellement aucune tâche pour ce serveur. Pour commencer, clicke sur ",
+        "nextRun": "Exécution suivante",
         "no": "Non",
+        "no-shedule": "Il n'y a actuellement aucune tâche pour ce serveur. Pour commencer, clicke sur ",
         "scheduledTasks": "Tâches Planifiées",
         "yes": "Oui"
     },
