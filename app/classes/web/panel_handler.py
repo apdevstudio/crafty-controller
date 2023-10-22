@@ -41,14 +41,14 @@ class PanelHandler(BaseHandler):
     def get_role_servers(self) -> t.List[RolesController.RoleServerJsonType]:
         servers = []
         for server in self.controller.servers.get_all_defined_servers():
-            argument = self.get_argument(f"server_{server['server_id']}_access", "0")
+            argument = self.get_argument(f"server_{server['server_uuid']}_access", "0")
             if argument == "0":
                 continue
 
             permission_mask = "0" * len(EnumPermissionsServer)
             for permission in self.controller.server_perms.list_defined_permissions():
                 argument = self.get_argument(
-                    f"permission_{server['server_id']}_{permission.name}", "0"
+                    f"permission_{server['server_uuid']}_{permission.name}", "0"
                 )
                 if argument == "1":
                     permission_mask = self.controller.server_perms.set_permission(
@@ -56,7 +56,7 @@ class PanelHandler(BaseHandler):
                     )
 
             servers.append(
-                {"server_id": server["server_id"], "permissions": permission_mask}
+                {"server_uuid": server["server_uuid"], "permissions": permission_mask}
             )
         return servers
 
@@ -138,8 +138,8 @@ class PanelHandler(BaseHandler):
                     # increasing and will eat up the RAM
                     del chunk
 
-    def check_server_id(self):
-        server_id = self.get_argument("id", None)
+    def check_server_uuid(self):
+        server_uuid = self.get_argument("id", None)
 
         api_key, _, exec_user = self.current_user
         superuser = exec_user["superuser"]
@@ -149,24 +149,24 @@ class PanelHandler(BaseHandler):
         # if api_key is not None:
         #     superuser = superuser and api_key.superuser
 
-        if server_id is None:
+        if server_uuid is None:
             self.redirect("/panel/error?error=Invalid Server ID")
             return None
         for server in self.controller.servers.failed_servers:
-            if int(server_id) == server["server_id"]:
+            if int(server_uuid) == server["server_uuid"]:
                 self.failed_server = True
-                return server_id
+                return server_uuid
         # Does this server exist?
-        if not self.controller.servers.server_id_exists(server_id):
+        if not self.controller.servers.server_uuid_exists(server_uuid):
             self.redirect("/panel/error?error=Invalid Server ID")
             return None
 
         # Does the user have permission?
         if superuser:  # TODO: Figure out a better solution
-            return server_id
+            return server_uuid
         if api_key is not None:
-            if not self.controller.servers.server_id_authorized_api_key(
-                server_id, api_key
+            if not self.controller.servers.server_uuid_authorized_api_key(
+                server_uuid, api_key
             ):
                 logger.debug(
                     f"API key {api_key.name} (id: {api_key.token_id}) "
@@ -175,13 +175,13 @@ class PanelHandler(BaseHandler):
                 self.redirect("/panel/error?error=Invalid Server ID")
                 return None
         else:
-            if not self.controller.servers.server_id_authorized(
-                server_id, exec_user["user_id"]
+            if not self.controller.servers.server_uuid_authorized(
+                server_uuid, exec_user["user_id"]
             ):
                 logger.debug(f'User {exec_user["user_id"]} does not have permission')
                 self.redirect("/panel/error?error=Invalid Server ID")
                 return None
-        return server_id
+        return server_uuid
 
     # Server fetching, spawned asynchronously
     # TODO: Make the related front-end elements update with AJAX
@@ -190,7 +190,7 @@ class PanelHandler(BaseHandler):
         for server in page_data["servers"]:
             total_players += len(
                 self.controller.servers.get_server_instance_by_id(
-                    server["server_data"]["server_id"]
+                    server["server_data"]["server_uuid"]
                 ).get_server_players()
             )
         page_data["num_players"] = total_players
@@ -250,26 +250,26 @@ class PanelHandler(BaseHandler):
         user_order = self.controller.users.get_user_by_id(exec_user["user_id"])
         user_order = user_order["server_order"].split(",")
         page_servers = []
-        server_ids = []
+        server_uuids = []
         for server in defined_servers:
-            server_ids.append(str(server.server_id))
-            if str(server.server_id) not in user_order:
+            server_uuids.append(str(server.server_uuid))
+            if str(server.server_uuid) not in user_order:
                 # a little unorthodox, but this will cut out a loop.
                 # adding servers to the user order that don't already exist there.
-                user_order.append(str(server.server_id))
-        for server_id in user_order[:]:
+                user_order.append(str(server.server_uuid))
+        for server_uuid in user_order[:]:
             for server in defined_servers[:]:
-                if str(server.server_id) == str(server_id):
+                if str(server.server_uuid) == str(server_uuid):
                     page_servers.append(
                         DatabaseShortcuts.get_data_obj(server.server_object)
                     )
-                    user_order.remove(server_id)
+                    user_order.remove(server_uuid)
                     defined_servers.remove(server)
                     break
-        for server_id in user_order[:]:
+        for server_uuid in user_order[:]:
             # remove IDs in list that user no longer has access to
-            if str(server_id) not in server_ids:
-                user_order.remove(server_id)
+            if str(server_uuid) not in server_uuids:
+                user_order.remove(server_uuid)
         defined_servers = page_servers
 
         try:
@@ -419,51 +419,51 @@ class PanelHandler(BaseHandler):
             user_order = self.controller.users.get_user_by_id(exec_user["user_id"])
             user_order = user_order["server_order"].split(",")
             page_servers = []
-            server_ids = []
+            server_uuids = []
             un_used_servers = page_data["servers"]
             flag = 0
-            for server_id in user_order[:]:
+            for server_uuid in user_order[:]:
                 for server in un_used_servers[:]:
                     if flag == 0:
                         server["stats"][
                             "importing"
                         ] = self.controller.servers.get_import_status(
-                            str(server["stats"]["server_id"]["server_id"])
+                            str(server["stats"]["server_uuid"]["server_uuid"])
                         )
                         server["stats"]["crashed"] = self.controller.servers.is_crashed(
-                            str(server["stats"]["server_id"]["server_id"])
+                            str(server["stats"]["server_uuid"]["server_uuid"])
                         )
                         try:
                             server["stats"][
                                 "waiting_start"
                             ] = self.controller.servers.get_waiting_start(
-                                str(server["stats"]["server_id"]["server_id"])
+                                str(server["stats"]["server_uuid"]["server_uuid"])
                             )
                         except Exception as e:
                             logger.error(f"Failed to get server waiting to start: {e}")
                             server["stats"]["waiting_start"] = False
 
-                    if str(server["server_data"]["server_id"]) == str(server_id):
+                    if str(server["server_data"]["server_uuid"]) == str(server_uuid):
                         page_servers.append(server)
                         un_used_servers.remove(server)
-                        user_order.remove(server_id)
+                        user_order.remove(server_uuid)
                         break
                 # we only want to set these server stats values once.
                 # We need to update the flag so it only hits that if once.
                 flag += 1
 
             for server in un_used_servers:
-                server_ids.append(str(server["server_data"]["server_id"]))
+                server_uuids.append(str(server["server_data"]["server_uuid"]))
                 if server not in page_servers:
                     page_servers.append(server)
-            for server_id in user_order:
+            for server_uuid in user_order:
                 # remove IDs in list that user no longer has access to
-                if str(server_id) not in server_ids[:]:
-                    user_order.remove(server_id)
+                if str(server_uuid) not in server_uuids[:]:
+                    user_order.remove(server_uuid)
             page_data["servers"] = page_servers
             for server in page_data["servers"]:
                 server_obj = self.controller.servers.get_server_instance_by_id(
-                    server["server_data"]["server_id"]
+                    server["server_data"]["server_uuid"]
                 )
                 alert = False
                 if server_obj.last_backup_status():
@@ -480,12 +480,12 @@ class PanelHandler(BaseHandler):
         elif page == "server_detail":
             subpage = nh3.clean(self.get_argument("subpage", ""))
 
-            server_id = self.check_server_id()
-            if server_id is None:
+            server_uuid = self.check_server_uuid()
+            if server_uuid is None:
                 return
             if not self.failed_server:
                 server_obj = self.controller.servers.get_server_instance_by_id(
-                    server_id
+                    server_uuid
                 )
                 page_data["backup_failed"] = server_obj.last_backup_status()
             server_obj = None
@@ -501,22 +501,22 @@ class PanelHandler(BaseHandler):
                 "metrics",
             ]
             if not self.failed_server:
-                server = self.controller.servers.get_server_instance_by_id(server_id)
+                server = self.controller.servers.get_server_instance_by_id(server_uuid)
             # server_data isn't needed since the server_stats also pulls server data
             page_data["server_data"] = self.controller.servers.get_server_data_by_id(
-                server_id
+                server_uuid
             )
             if not self.failed_server:
                 page_data[
                     "server_stats"
-                ] = self.controller.servers.get_server_stats_by_id(server_id)
+                ] = self.controller.servers.get_server_stats_by_id(server_uuid)
             else:
                 server_temp_obj = self.controller.servers.get_server_data_by_id(
-                    server_id
+                    server_uuid
                 )
                 page_data["server_stats"] = {
-                    "server_id": {
-                        "server_id": server_id,
+                    "server_uuid": {
+                        "server_uuid": server_uuid,
                         "server_name": server_temp_obj["server_name"],
                         "server_uuid": server_temp_obj["server_uuid"],
                         "path": server_temp_obj["path"],
@@ -549,14 +549,14 @@ class PanelHandler(BaseHandler):
                 }
             if not self.failed_server:
                 page_data["importing"] = self.controller.servers.get_import_status(
-                    server_id
+                    server_uuid
                 )
             else:
                 page_data["importing"] = False
-            page_data["server_id"] = server_id
+            page_data["server_uuid"] = server_uuid
             try:
                 page_data["waiting_start"] = self.controller.servers.get_waiting_start(
-                    server_id
+                    server_uuid
                 )
             except Exception as e:
                 logger.error(f"Failed to get server waiting to start: {e}")
@@ -579,16 +579,16 @@ class PanelHandler(BaseHandler):
             page_data[
                 "user_permissions"
             ] = self.controller.server_perms.get_user_id_permissions_list(
-                exec_user["user_id"], server_id
+                exec_user["user_id"], server_uuid
             )
             if not self.failed_server:
                 page_data["server_stats"][
                     "crashed"
-                ] = self.controller.servers.is_crashed(server_id)
+                ] = self.controller.servers.is_crashed(server_uuid)
             if not self.failed_server:
                 page_data["server_stats"][
                     "server_type"
-                ] = self.controller.servers.get_server_type_by_id(server_id)
+                ] = self.controller.servers.get_server_type_by_id(server_uuid)
             if subpage not in valid_subpages:
                 logger.debug("not a valid subpage")
             if not subpage:
@@ -653,7 +653,7 @@ class PanelHandler(BaseHandler):
                         )
                         return
                 page_data["schedules"] = HelpersManagement.get_schedules_by_server(
-                    server_id
+                    server_uuid
                 )
 
             if subpage == "config":
@@ -667,7 +667,9 @@ class PanelHandler(BaseHandler):
                         )
                         return
                 page_data["java_versions"] = Helpers.find_java_installs()
-                server_obj: Servers = self.controller.servers.get_server_obj(server_id)
+                server_obj: Servers = self.controller.servers.get_server_obj(
+                    server_uuid
+                )
                 page_data["failed"] = self.failed_server
                 page_java = []
                 page_data["java_versions"].append("java")
@@ -699,23 +701,23 @@ class PanelHandler(BaseHandler):
                             "/panel/error?error=Unauthorized access to Backups"
                         )
                         return
-                server_info = self.controller.servers.get_server_data_by_id(server_id)
+                server_info = self.controller.servers.get_server_data_by_id(server_uuid)
                 page_data[
                     "backup_config"
-                ] = self.controller.management.get_backup_config(server_id)
+                ] = self.controller.management.get_backup_config(server_uuid)
                 exclusions = []
                 page_data[
                     "exclusions"
-                ] = self.controller.management.get_excluded_backup_dirs(server_id)
+                ] = self.controller.management.get_excluded_backup_dirs(server_uuid)
                 page_data[
                     "backing_up"
                 ] = self.controller.servers.get_server_instance_by_id(
-                    server_id
+                    server_uuid
                 ).is_backingup
                 page_data[
                     "backup_stats"
                 ] = self.controller.servers.get_server_instance_by_id(
-                    server_id
+                    server_uuid
                 ).send_backup_status()
                 # makes it so relative path is the only thing shown
                 for file in page_data["exclusions"]:
@@ -724,7 +726,7 @@ class PanelHandler(BaseHandler):
                     else:
                         exclusions.append(file.replace(server_info["path"] + "/", ""))
                 page_data["exclusions"] = exclusions
-                self.controller.servers.refresh_server_settings(server_id)
+                self.controller.servers.refresh_server_settings(server_uuid)
                 try:
                     page_data["backup_list"] = server.list_backups()
                 except:
@@ -746,7 +748,7 @@ class PanelHandler(BaseHandler):
                         0, page_data["options"].pop(page_data["options"].index(days))
                     )
                 page_data["history_stats"] = self.controller.servers.get_history_stats(
-                    server_id, hours=(days * 24)
+                    server_uuid, hours=(days * 24)
                 )
             if subpage == "webhooks":
                 if (
@@ -761,12 +763,12 @@ class PanelHandler(BaseHandler):
                 page_data[
                     "webhooks"
                 ] = self.controller.management.get_webhooks_by_server(
-                    server_id, model=True
+                    server_uuid, model=True
                 )
                 page_data["triggers"] = WebhookFactory.get_monitored_events()
 
             def get_banned_players_html():
-                banned_players = self.controller.servers.get_banned_players(server_id)
+                banned_players = self.controller.servers.get_banned_players(server_uuid)
                 if banned_players is None:
                     return """
                     <li class="playerItem banned">
@@ -795,9 +797,9 @@ class PanelHandler(BaseHandler):
                 page_data["banned_players_html"] = get_banned_players_html()
                 page_data[
                     "banned_players"
-                ] = self.controller.servers.get_banned_players(server_id)
+                ] = self.controller.servers.get_banned_players(server_uuid)
                 server_instance = self.controller.servers.get_server_instance_by_id(
-                    server_id
+                    server_uuid
                 )
                 page_data["cached_players"] = server_instance.player_cache
 
@@ -813,11 +815,11 @@ class PanelHandler(BaseHandler):
         elif page == "download_backup":
             file = self.get_argument("file", "")
 
-            server_id = self.check_server_id()
-            if server_id is None:
+            server_uuid = self.check_server_uuid()
+            if server_uuid is None:
                 return
 
-            server_info = self.controller.servers.get_server_data_by_id(server_id)
+            server_info = self.controller.servers.get_server_data_by_id(server_uuid)
             backup_file = os.path.abspath(
                 os.path.join(
                     Helpers.get_os_understandable_path(server_info["backup_path"]), file
@@ -832,7 +834,7 @@ class PanelHandler(BaseHandler):
 
             self.download_file(file, backup_file)
 
-            self.redirect(f"/panel/server_detail?id={server_id}&subpage=backup")
+            self.redirect(f"/panel/server_detail?id={server_uuid}&subpage=backup")
 
         elif page == "panel_config":
             auth_servers = {}
@@ -1032,20 +1034,20 @@ class PanelHandler(BaseHandler):
             template = "panel/panel_edit_user.html"
 
         elif page == "add_webhook":
-            server_id = self.get_argument("id", None)
-            if server_id is None:
+            server_uuid = self.get_argument("id", None)
+            if server_uuid is None:
                 return self.redirect("/panel/error?error=Invalid Server ID")
-            server_obj = self.controller.servers.get_server_instance_by_id(server_id)
+            server_obj = self.controller.servers.get_server_instance_by_id(server_uuid)
             page_data["backup_failed"] = server_obj.last_backup_status()
             server_obj = None
             page_data["active_link"] = "webhooks"
             page_data["server_data"] = self.controller.servers.get_server_data_by_id(
-                server_id
+                server_uuid
             )
             page_data[
                 "user_permissions"
             ] = self.controller.server_perms.get_user_id_permissions_list(
-                exec_user["user_id"], server_id
+                exec_user["user_id"], server_uuid
             )
             page_data["permissions"] = {
                 "Commands": EnumPermissionsServer.COMMANDS,
@@ -1058,11 +1060,11 @@ class PanelHandler(BaseHandler):
                 "Players": EnumPermissionsServer.PLAYERS,
             }
             page_data["server_stats"] = self.controller.servers.get_server_stats_by_id(
-                server_id
+                server_uuid
             )
             page_data["server_stats"][
                 "server_type"
-            ] = self.controller.servers.get_server_type_by_id(server_id)
+            ] = self.controller.servers.get_server_type_by_id(server_uuid)
             page_data["new_webhook"] = True
             page_data["webhook"] = {}
             page_data["webhook"]["webhook_type"] = "Custom"
@@ -1085,21 +1087,21 @@ class PanelHandler(BaseHandler):
             template = "panel/server_webhook_edit.html"
 
         elif page == "webhook_edit":
-            server_id = self.get_argument("id", None)
+            server_uuid = self.get_argument("id", None)
             webhook_id = self.get_argument("webhook_id", None)
-            if server_id is None:
+            if server_uuid is None:
                 return self.redirect("/panel/error?error=Invalid Server ID")
-            server_obj = self.controller.servers.get_server_instance_by_id(server_id)
+            server_obj = self.controller.servers.get_server_instance_by_id(server_uuid)
             page_data["backup_failed"] = server_obj.last_backup_status()
             server_obj = None
             page_data["active_link"] = "webhooks"
             page_data["server_data"] = self.controller.servers.get_server_data_by_id(
-                server_id
+                server_uuid
             )
             page_data[
                 "user_permissions"
             ] = self.controller.server_perms.get_user_id_permissions_list(
-                exec_user["user_id"], server_id
+                exec_user["user_id"], server_uuid
             )
             page_data["permissions"] = {
                 "Commands": EnumPermissionsServer.COMMANDS,
@@ -1112,11 +1114,11 @@ class PanelHandler(BaseHandler):
                 "Players": EnumPermissionsServer.PLAYERS,
             }
             page_data["server_stats"] = self.controller.servers.get_server_stats_by_id(
-                server_id
+                server_uuid
             )
             page_data["server_stats"][
                 "server_type"
-            ] = self.controller.servers.get_server_type_by_id(server_id)
+            ] = self.controller.servers.get_server_type_by_id(server_uuid)
             page_data["new_webhook"] = False
             page_data["webhook"] = self.controller.management.get_webhook_by_id(
                 webhook_id
@@ -1136,14 +1138,14 @@ class PanelHandler(BaseHandler):
             template = "panel/server_webhook_edit.html"
 
         elif page == "add_schedule":
-            server_id = self.get_argument("id", None)
-            if server_id is None:
+            server_uuid = self.get_argument("id", None)
+            if server_uuid is None:
                 return self.redirect("/panel/error?error=Invalid Schedule ID")
-            server_obj = self.controller.servers.get_server_instance_by_id(server_id)
+            server_obj = self.controller.servers.get_server_instance_by_id(server_uuid)
             page_data["backup_failed"] = server_obj.last_backup_status()
             server_obj = None
             page_data["schedules"] = HelpersManagement.get_schedules_by_server(
-                server_id
+                server_uuid
             )
             page_data["active_link"] = "schedules"
             page_data["permissions"] = {
@@ -1159,22 +1161,22 @@ class PanelHandler(BaseHandler):
             page_data[
                 "user_permissions"
             ] = self.controller.server_perms.get_user_id_permissions_list(
-                exec_user["user_id"], server_id
+                exec_user["user_id"], server_uuid
             )
             page_data["server_data"] = self.controller.servers.get_server_data_by_id(
-                server_id
+                server_uuid
             )
             page_data["server_stats"] = self.controller.servers.get_server_stats_by_id(
-                server_id
+                server_uuid
             )
             page_data["server_stats"][
                 "server_type"
-            ] = self.controller.servers.get_server_type_by_id(server_id)
+            ] = self.controller.servers.get_server_type_by_id(server_uuid)
             page_data["new_schedule"] = True
             page_data["schedule"] = {}
             page_data["schedule"]["children"] = []
             page_data["schedule"]["name"] = ""
-            page_data["schedule"]["server_id"] = server_id
+            page_data["schedule"]["server_uuid"] = server_uuid
             page_data["schedule"]["schedule_id"] = ""
             page_data["schedule"]["action"] = ""
             page_data["schedule"]["enabled"] = True
@@ -1198,15 +1200,15 @@ class PanelHandler(BaseHandler):
             template = "panel/server_schedule_edit.html"
 
         elif page == "edit_schedule":
-            server_id = self.check_server_id()
-            if not server_id:
+            server_uuid = self.check_server_uuid()
+            if not server_uuid:
                 return self.redirect("/panel/error?error=Invalid Schedule ID")
-            server_obj = self.controller.servers.get_server_instance_by_id(server_id)
+            server_obj = self.controller.servers.get_server_instance_by_id(server_uuid)
             page_data["backup_failed"] = server_obj.last_backup_status()
             server_obj = None
 
             page_data["schedules"] = HelpersManagement.get_schedules_by_server(
-                server_id
+                server_uuid
             )
             sch_id = self.get_argument("sch_id", None)
             if sch_id is None:
@@ -1227,20 +1229,20 @@ class PanelHandler(BaseHandler):
             page_data[
                 "user_permissions"
             ] = self.controller.server_perms.get_user_id_permissions_list(
-                exec_user["user_id"], server_id
+                exec_user["user_id"], server_uuid
             )
             page_data["server_data"] = self.controller.servers.get_server_data_by_id(
-                server_id
+                server_uuid
             )
             page_data["server_stats"] = self.controller.servers.get_server_stats_by_id(
-                server_id
+                server_uuid
             )
             page_data["server_stats"][
                 "server_type"
-            ] = self.controller.servers.get_server_type_by_id(server_id)
+            ] = self.controller.servers.get_server_type_by_id(server_uuid)
             page_data["new_schedule"] = False
             page_data["schedule"] = {}
-            page_data["schedule"]["server_id"] = server_id
+            page_data["schedule"]["server_uuid"] = server_uuid
             page_data["schedule"]["schedule_id"] = schedule.schedule_id
             page_data["schedule"]["action"] = schedule.action
             if schedule.name:
@@ -1294,7 +1296,7 @@ class PanelHandler(BaseHandler):
             role_servers = self.controller.servers.get_authorized_servers(user_id)
             page_role_servers = []
             for server in role_servers:
-                page_role_servers.append(server.server_id)
+                page_role_servers.append(server.server_uuid)
             page_data["new_user"] = False
             page_data["user"] = self.controller.users.get_user_by_id(user_id)
             page_data["servers"] = set()
@@ -1435,7 +1437,7 @@ class PanelHandler(BaseHandler):
             self.controller.management.add_to_audit_log(
                 exec_user["user_id"],
                 f"Removed user {target_user['username']} (UID:{user_id})",
-                server_id=0,
+                server_uuid=0,
                 source_ip=self.get_remote_ip(),
             )
             self.redirect("/panel/panel_config")
@@ -1544,11 +1546,11 @@ class PanelHandler(BaseHandler):
                 urllib.parse.unquote(self.get_argument("path", ""))
             )
             name = urllib.parse.unquote(self.get_argument("name", ""))
-            server_id = self.check_server_id()
-            if server_id is None:
+            server_uuid = self.check_server_uuid()
+            if server_uuid is None:
                 return
 
-            server_info = self.controller.servers.get_server_data_by_id(server_id)
+            server_info = self.controller.servers.get_server_data_by_id(server_uuid)
 
             if not self.helper.is_subdir(
                 file,
@@ -1558,7 +1560,7 @@ class PanelHandler(BaseHandler):
                 return
 
             self.download_file(name, file)
-            self.redirect(f"/panel/server_detail?id={server_id}&subpage=files")
+            self.redirect(f"/panel/server_detail?id={server_uuid}&subpage=files")
 
         elif page == "wiki":
             template = "panel/wiki.html"

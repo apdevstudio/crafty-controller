@@ -15,9 +15,9 @@
       <div class="page-header">
         <h4 class="page-title">
           {{ translate('serverDetails', 'serverDetails', data['lang']) }} - {{
-          data['server_stats']['server_id']['server_name'] }}
+          data['server_stats']['server_uuid']['server_name'] }}
           <br />
-          <small>UUID: {{ data['server_stats']['server_id']['server_uuid'] }}</small>
+          <small>UUID: {{ data['server_stats']['server_uuid']['server_uuid'] }}</small>
         </h4>
       </div>
     </div>
@@ -45,16 +45,13 @@
               translate('serverDetails', 'reset', data['lang']) }}</button>
 
             <div class="input-group">
-              <div id="virt_console" class=""
-                style="width: 100%; font-size: .8em; padding: 5px 10px; border: 1px solid var(--outline); background-color:var(--card-banner-bg);height:500px; overflow: scroll;">
+              <div id="virt_console" class="" style="width: 100%; font-size: .8em; padding: 5px 10px; border: 1px solid var(--outline); background-color:var(--card-banner-bg);height:500px; overflow: scroll;">
               </div>
             </div>
             <br />
 
             <div style="gap: 0.5rem;" class="input-group flex-wrap">
-              <input style="min-width: 10rem;" type="text" class="form-control" id="server_command"
-                name="server_command" placeholder="{{ translate('serverTerm', 'commandInput', data['lang']) }}"
-                autofocus="">
+              <input style="min-width: 10rem;" type="text" class="form-control" id="server_command" name="server_command" placeholder="{{ translate('serverTerm', 'commandInput', data['lang']) }}" autofocus="">
               <span class="input-group-btn ml-5">
                 <button id="submit" class="btn btn-sm btn-info" type="button">{{ translate('serverTerm', 'sendCommand',
                   data['lang']) }}</button>
@@ -62,75 +59,48 @@
             </div>
             {% if data['permissions']['Commands'] in data['user_permissions'] %}
             {% if data['importing'] and data['server_stats']['running']%}
-            <div id="update_control_buttons"
-              class="mt-4 flex-wrap d-flex justify-content-between justify-content-md-center align-items-center px-5 px-md-0"
-              style="visibility: visible">
-              <button onclick="" id="start-btn" style="max-width: 7rem;"
-                class="btn btn-warning m-1 flex-grow-1 disabled"><i
-                  class="fa fa-spinner fa-spin"></i>&nbsp;{{translate('serverTerm', 'installing', data['lang'])
+            <div id="update_control_buttons" class="mt-4 flex-wrap d-flex justify-content-between justify-content-md-center align-items-center px-5 px-md-0" style="visibility: visible">
+              <button onclick="" id="start-btn" style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1 disabled"><i class="fa fa-spinner fa-spin"></i>&nbsp;{{translate('serverTerm', 'installing', data['lang'])
                 }}</button>
-              <button onclick="" id="restart-btn" style="max-width: 7rem;"
-                class="btn btn-outline-primary m-1 flex-grow-1 disabled">{% raw translate('serverTerm', 'restart',
+              <button onclick="" id="restart-btn" style="max-width: 7rem;" class="btn btn-outline-primary m-1 flex-grow-1 disabled">{% raw translate('serverTerm', 'restart',
                 data['lang']) %}</button>
-              <button onclick="" id="stop-btn" style="max-width: 7rem;"
-                class="btn btn-danger m-1 flex-grow-1 disabled">{{ translate('serverTerm', 'stop', data['lang'])
+              <button onclick="" id="stop-btn" style="max-width: 7rem;" class="btn btn-danger m-1 flex-grow-1 disabled">{{ translate('serverTerm', 'stop', data['lang'])
                 }}</button>
             </div>
             {% elif data['server_stats']['updating']%}
-            <div id="update_control_buttons"
-              class="mt-4 flex-wrap d-flex justify-content-between justify-content-md-center align-items-center px-5 px-md-0"
-              style="visibility: visible">
-              <button onclick="" id="start-btn" style="max-width: 7rem;"
-                class="btn btn-warning m-1 flex-grow-1 disabled"><i class="fa fa-spinner fa-spin"></i>&nbsp;{{
+            <div id="update_control_buttons" class="mt-4 flex-wrap d-flex justify-content-between justify-content-md-center align-items-center px-5 px-md-0" style="visibility: visible">
+              <button onclick="" id="start-btn" style="max-width: 7rem;" class="btn btn-warning m-1 flex-grow-1 disabled"><i class="fa fa-spinner fa-spin"></i>&nbsp;{{
                 translate('serverTerm', 'updating', data['lang']) }}</button>
-              <button onclick="" id="restart-btn" style="max-width: 7rem;"
-                class="btn btn-outline-primary m-1 flex-grow-1 disabled">{% raw translate('serverTerm', 'restart',
+              <button onclick="" id="restart-btn" style="max-width: 7rem;" class="btn btn-outline-primary m-1 flex-grow-1 disabled">{% raw translate('serverTerm', 'restart',
                 data['lang']) %}</button>
-              <button onclick="" id="stop-btn" style="max-width: 7rem;"
-                class="btn btn-danger m-1 flex-grow-1 disabled">{{ translate('serverTerm', 'stop', data['lang'])
+              <button onclick="" id="stop-btn" style="max-width: 7rem;" class="btn btn-danger m-1 flex-grow-1 disabled">{{ translate('serverTerm', 'stop', data['lang'])
                 }}</button>
             </div>
             {% elif data['waiting_start'] %}
-            <div id="control_buttons"
-              class="mt-4 flex-wrap d-flex justify-content-between justify-content-md-center align-items-center px-5 px-md-0"
-              style="visibility: visible">
-              <button onclick="" id="start-btn" style="max-width: 7rem; white-space: nowrap;"
-                class="btn btn-secondary m-1 flex-grow-1 disabled" data-toggle="tooltip"
-                title="{{ translate('serverTerm', 'delay-explained', data['lang'])}}">{{ translate('serverTerm',
+            <div id="control_buttons" class="mt-4 flex-wrap d-flex justify-content-between justify-content-md-center align-items-center px-5 px-md-0" style="visibility: visible">
+              <button onclick="" id="start-btn" style="max-width: 7rem; white-space: nowrap;" class="btn btn-secondary m-1 flex-grow-1 disabled" data-toggle="tooltip" title="{{ translate('serverTerm', 'delay-explained', data['lang'])}}">{{ translate('serverTerm',
                 'starting', data['lang']) }}</button>
-              <button onclick="" id="restart-btn" style="max-width: 7rem;"
-                class="btn btn-outline-primary m-1 flex-grow-1 disabled">{% raw translate('serverTerm', 'restart',
+              <button onclick="" id="restart-btn" style="max-width: 7rem;" class="btn btn-outline-primary m-1 flex-grow-1 disabled">{% raw translate('serverTerm', 'restart',
                 data['lang']) %}</button>
-              <button onclick="" id="stop-btn" style="max-width: 7rem;"
-                class="btn btn-danger m-1 flex-grow-1 disabled">{{ translate('serverTerm', 'stop', data['lang'])
+              <button onclick="" id="stop-btn" style="max-width: 7rem;" class="btn btn-danger m-1 flex-grow-1 disabled">{{ translate('serverTerm', 'stop', data['lang'])
                 }}</button>
             </div>
             {% elif data['importing'] %}
-            <div id="control_buttons"
-              class="mt-4 flex-wrap d-flex justify-content-between justify-content-md-center align-items-center px-5 px-md-0"
-              style="visibility: visible">
-              <button onclick="" id="start-btn" style="max-width: 12rem; white-space: nowrap;"
-                class="btn btn-secondary m-1 flex-grow-1 disabled"><i class="fa fa-spinner fa-spin"></i> {{
+            <div id="control_buttons" class="mt-4 flex-wrap d-flex justify-content-between justify-content-md-center align-items-center px-5 px-md-0" style="visibility: visible">
+              <button onclick="" id="start-btn" style="max-width: 12rem; white-space: nowrap;" class="btn btn-secondary m-1 flex-grow-1 disabled"><i class="fa fa-spinner fa-spin"></i> {{
                 translate('serverTerm', 'importing',
                 data['lang']) }}</button>
-              <button onclick="" id="restart-btn" style="max-width: 7rem;"
-                class="btn btn-outline-primary m-1 flex-grow-1 disabled">{% raw translate('serverTerm', 'restart',
+              <button onclick="" id="restart-btn" style="max-width: 7rem;" class="btn btn-outline-primary m-1 flex-grow-1 disabled">{% raw translate('serverTerm', 'restart',
                 data['lang']) %}</button>
-              <button onclick="" id="stop-btn" style="max-width: 7rem;"
-                class="btn btn-danger m-1 flex-grow-1 disabled">{{ translate('serverTerm', 'stop', data['lang'])
+              <button onclick="" id="stop-btn" style="max-width: 7rem;" class="btn btn-danger m-1 flex-grow-1 disabled">{{ translate('serverTerm', 'stop', data['lang'])
                 }}</button>
             </div>
             {% else %}
-            <div id="control_buttons"
-              class="mt-4 flex-wrap d-flex justify-content-between justify-content-md-center align-items-center px-5 px-md-0"
-              style="visibility: visible">
-              <button onclick="send_command(serverId, 'start_server');" id="start-btn" style="max-width: 7rem;"
-                class="btn btn-primary m-1 flex-grow-1">{{ translate('serverTerm', 'start', data['lang']) }}</button>
-              <button onclick="send_command(serverId, 'restart_server');" id="restart-btn" style="max-width: 7rem;"
-                class="btn btn-outline-primary m-1 flex-grow-1">{% raw translate('serverTerm', 'restart', data['lang'])
+            <div id="control_buttons" class="mt-4 flex-wrap d-flex justify-content-between justify-content-md-center align-items-center px-5 px-md-0" style="visibility: visible">
+              <button onclick="send_command(serverId, 'start_server');" id="start-btn" style="max-width: 7rem;" class="btn btn-primary m-1 flex-grow-1">{{ translate('serverTerm', 'start', data['lang']) }}</button>
+              <button onclick="send_command(serverId, 'restart_server');" id="restart-btn" style="max-width: 7rem;" class="btn btn-outline-primary m-1 flex-grow-1">{% raw translate('serverTerm', 'restart', data['lang'])
                 %}</button>
-              <button onclick="send_command(serverId, 'stop_server');" id="stop-btn" style="max-width: 7rem;"
-                class="btn btn-danger m-1 flex-grow-1">{{ translate('serverTerm', 'stop', data['lang']) }}</button>
+              <button onclick="send_command(serverId, 'stop_server');" id="stop-btn" style="max-width: 7rem;" class="btn btn-danger m-1 flex-grow-1">{{ translate('serverTerm', 'stop', data['lang']) }}</button>
             </div>
             {% end %}
             {% end %}
@@ -191,15 +161,15 @@
   if (webSocket) {
     webSocket.on('update_button_status', function (updateButton) {
       if (updateButton.isUpdating) {
-        if (updateButton.server_id == serverId) {
+        if (updateButton.server_uuid == serverId) {
           console.log(updateButton.isUpdating)
           document.getElementById('control_buttons').innerHTML = '<button onclick="" id="start-btn" style="max-width: 7rem;" class="btn btn-primary m-1 flex-grow-1">{{ translate("serverTerm", "updating", data["lang"]) }}</button><button onclick="" id="restart-btn" style="max-width: 7rem;" class="btn btn-outline-primary m-1 flex-grow-1">{% raw translate("serverTerm", "restart", data["lang"]) %}</button><button onclick="" id="stop-btn" style="max-width: 7rem;" class="btn btn-danger m-1 flex-grow-1 disabled">{{ translate("serverTerm", "stop", data["lang"]) }}</button>';
         }
       }
-      else if (updateButton.server_id == serverId) {
-          window.location.reload()
-          document.getElementById('update_control_buttons').innerHTML = '<button onclick="send_command(serverId, "start_server");" id="start-btn" style="max-width: 7rem;" class="btn btn-primary m-1 flex-grow-1">{{ translate("serverTerm", "start", data["lang"]) }}</button><button onclick="send_command(serverId, "restart_server");" id="restart-btn" style="max-width: 7rem;" class="btn btn-outline-primary m-1 flex-grow-1">{% raw translate("serverTerm", "restart", data["lang"]) %}</button><button onclick="" id="stop-btn" style="max-width: 7rem;" class="btn btn-danger m-1 flex-grow-1 disabled">{{ translate("serverTerm", "stop", data["lang"]) }}</button>';
-        }
+      else if (updateButton.server_uuid == serverId) {
+        window.location.reload()
+        document.getElementById('update_control_buttons').innerHTML = '<button onclick="send_command(serverId, "start_server");" id="start-btn" style="max-width: 7rem;" class="btn btn-primary m-1 flex-grow-1">{{ translate("serverTerm", "start", data["lang"]) }}</button><button onclick="send_command(serverId, "restart_server");" id="restart-btn" style="max-width: 7rem;" class="btn btn-outline-primary m-1 flex-grow-1">{% raw translate("serverTerm", "restart", data["lang"]) %}</button><button onclick="" id="stop-btn" style="max-width: 7rem;" class="btn btn-danger m-1 flex-grow-1 disabled">{{ translate("serverTerm", "stop", data["lang"]) }}</button>';
+      }
     });
   }
   // Convert running to lower case (example: 'True' converts to 'true') and

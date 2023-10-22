@@ -53,23 +53,23 @@ basic_server_patch_schema = {
 
 
 class ApiServersServerIndexHandler(BaseApiHandler):
-    def get(self, server_id: str):
+    def get(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
-        server_obj = self.controller.servers.get_server_obj(server_id)
+        server_obj = self.controller.servers.get_server_obj(server_uuid)
         server = model_to_dict(server_obj)
 
         # TODO: limit some columns for specific permissions?
 
         self.finish_json(200, {"status": "ok", "data": server})
 
-    def patch(self, server_id: str):
+    def patch(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
@@ -97,20 +97,20 @@ class ApiServersServerIndexHandler(BaseApiHandler):
                 },
             )
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.CONFIG
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Config permission, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
-        server_obj = self.controller.servers.get_server_obj(server_id)
+        server_obj = self.controller.servers.get_server_obj(server_uuid)
         java_flag = False
         for key in data:
             # If we don't validate the input there could be security issues
@@ -134,14 +134,14 @@ class ApiServersServerIndexHandler(BaseApiHandler):
 
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],
-            f"modified the server with ID {server_id}",
-            server_id,
+            f"modified the server with ID {server_uuid}",
+            server_uuid,
             self.get_remote_ip(),
         )
 
         return self.finish_json(200, {"status": "ok"})
 
-    def delete(self, server_id: str):
+    def delete(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
@@ -149,14 +149,14 @@ class ApiServersServerIndexHandler(BaseApiHandler):
         # DELETE /api/v2/servers/server?files=true
         remove_files = self.get_query_argument("files", None) == "true"
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.CONFIG
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Config permission, return an error
@@ -168,25 +168,25 @@ class ApiServersServerIndexHandler(BaseApiHandler):
                 if remove_files
                 else "Removing server from panel for server: "
             )
-            + self.controller.servers.get_server_friendly_name(server_id)
+            + self.controller.servers.get_server_friendly_name(server_uuid)
         )
 
-        self.tasks_manager.remove_all_server_tasks(server_id)
+        self.tasks_manager.remove_all_server_tasks(server_uuid)
         failed = False
         for item in self.controller.servers.failed_servers[:]:
-            if item["server_id"] == int(server_id):
+            if item["server_uuid"] == int(server_uuid):
                 self.controller.servers.failed_servers.remove(item)
                 failed = True
 
         if failed:
-            self.controller.remove_unloaded_server(server_id)
+            self.controller.remove_unloaded_server(server_uuid)
         else:
-            self.controller.remove_server(server_id, remove_files)
+            self.controller.remove_server(server_uuid, remove_files)
 
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],
-            f"deleted the server {server_id}",
-            server_id,
+            f"deleted the server {server_uuid}",
+            server_uuid,
             self.get_remote_ip(),
         )
 

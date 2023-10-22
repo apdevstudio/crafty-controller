@@ -9,5 +9,5 @@ logger = logging.getLogger(__name__)
 
 
 class ApiServersServerTasksTaskChildrenHandler(BaseApiHandler):
-    def get(self, server_id: str, task_id: str):
+    def get(self, server_uuid: str, task_id: str):
         pass

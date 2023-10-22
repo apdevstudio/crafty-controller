@@ -58,13 +58,13 @@ def callback(called_func):
             events = WebhookFactory.get_monitored_events()
             if called_func.__name__ in events:
                 server_webhooks = HelpersWebhooks.get_webhooks_by_server(
-                    args[0].server_id, True
+                    args[0].server_uuid, True
                 )
                 for swebhook in server_webhooks:
                     if called_func.__name__ in str(swebhook.trigger).split(","):
                         logger.info(
                             f"Found callback for event {called_func.__name__}"
-                            f" for server {args[0].server_id}"
+                            f" for server {args[0].server_uuid}"
                         )
                         webhook = HelpersWebhooks.get_webhook_by_id(swebhook.id)
                         webhook_provider = WebhookFactory.create_provider(
@@ -87,14 +87,14 @@ def callback(called_func):
 class ServerOutBuf:
     lines = {}
 
-    def __init__(self, helper, proc, server_id):
+    def __init__(self, helper, proc, server_uuid):
         self.helper = helper
         self.proc = proc
-        self.server_id = str(server_id)
+        self.server_uuid = str(server_uuid)
         # Buffers text for virtual_terminal_lines config number of lines
         self.max_lines = self.helper.get_setting("virtual_terminal_lines")
         self.line_buffer = ""
-        ServerOutBuf.lines[self.server_id] = []
+        ServerOutBuf.lines[self.server_uuid] = []
         self.lsi = 0
 
     def process_byte(self, char):
@@ -106,13 +106,13 @@ class ServerOutBuf:
 
         if self.lsi >= len(os.linesep):
             self.lsi = 0
-            ServerOutBuf.lines[self.server_id].append(self.line_buffer)
+            ServerOutBuf.lines[self.server_uuid].append(self.line_buffer)
 
             self.new_line_handler(self.line_buffer)
             self.line_buffer = ""
             # Limit list length to self.max_lines:
-            if len(ServerOutBuf.lines[self.server_id]) > self.max_lines:
-                ServerOutBuf.lines[self.server_id].pop(0)
+            if len(ServerOutBuf.lines[self.server_uuid]) > self.max_lines:
+                ServerOutBuf.lines[self.server_uuid].pop(0)
 
     def check(self):
         while True:
@@ -139,7 +139,7 @@ class ServerOutBuf:
         if len(WebSocketManager().clients) > 0:
             WebSocketManager().broadcast_page_params(
                 "/panel/server_detail",
-                {"id": self.server_id},
+                {"id": self.server_uuid},
                 "vterm_new_line",
                 {"line": highlighted + "<br />"},
             )
@@ -156,7 +156,7 @@ class ServerInstance:
     stats: Stats
     stats_helper: HelperServerStats
 
-    def __init__(self, server_id, helper, management_helper, stats, file_helper):
+    def __init__(self, server_uuid, helper, management_helper, stats, file_helper):
         self.helper = helper
         self.file_helper = file_helper
         self.management_helper = management_helper
@@ -169,14 +169,14 @@ class ServerInstance:
         self.server_thread = None
         self.settings = None
         self.updating = False
-        self.server_id = server_id
+        self.server_uuid = server_uuid
         self.jar_update_url = None
         self.name = None
         self.is_crashed = False
         self.restart_count = 0
         self.stats = stats
-        self.server_object = HelperServers.get_server_obj(self.server_id)
-        self.stats_helper = HelperServerStats(self.server_id)
+        self.server_object = HelperServers.get_server_obj(self.server_uuid)
+        self.stats_helper = HelperServerStats(self.server_uuid)
         self.last_backup_failed = False
         self.server_registry = CollectorRegistry()
 
@@ -215,7 +215,7 @@ class ServerInstance:
     #                               Minecraft Server Management
     # **********************************************************************************
     def update_server_instance(self):
-        server_data: Servers = HelperServers.get_server_obj(self.server_id)
+        server_data: Servers = HelperServers.get_server_obj(self.server_uuid)
         self.server_path = server_data.path
         self.jar_update_url = server_data.executable_update_url
         self.name = server_data.server_name
@@ -224,20 +224,20 @@ class ServerInstance:
         self.reload_server_settings()
 
     def reload_server_settings(self):
-        server_data = HelperServers.get_server_data_by_id(self.server_id)
+        server_data = HelperServers.get_server_data_by_id(self.server_uuid)
         self.settings = server_data
 
     def do_server_setup(self, server_data_obj):
-        server_id = server_data_obj["server_id"]
+        server_uuid = server_data_obj["server_uuid"]
         server_name = server_data_obj["server_name"]
         auto_start = server_data_obj["auto_start"]
 
         logger.info(
-            f"Creating Server object: {server_id} | "
+            f"Creating Server object: {server_uuid} | "
             f"Server Name: {server_name} | "
             f"Auto Start: {auto_start}"
         )
-        self.server_id = server_id
+        self.server_uuid = server_uuid
         self.name = server_name
         self.settings = server_data_obj
 
@@ -255,18 +255,18 @@ class ServerInstance:
                 self.run_scheduled_server,
                 "interval",
                 seconds=delay,
-                id=str(self.server_id),
+                id=str(self.server_uuid),
             )
 
     def run_scheduled_server(self):
-        Console.info(f"Starting server ID: {self.server_id} - {self.name}")
-        logger.info(f"Starting server ID: {self.server_id} - {self.name}")
+        Console.info(f"Starting server ID: {self.server_uuid} - {self.name}")
+        logger.info(f"Starting server ID: {self.server_uuid} - {self.name}")
         # Sets waiting start to false since we're attempting to start the server.
         self.stats_helper.set_waiting_start(False)
         self.run_threaded_server(None)
 
         # remove the scheduled job since it's ran
-        return self.server_scheduler.remove_job(str(self.server_id))
+        return self.server_scheduler.remove_job(str(self.server_uuid))
 
     def run_threaded_server(self, user_id, forge_install=False):
         # start the server
@@ -277,7 +277,7 @@ class ServerInstance:
                 user_id,
                 forge_install,
             ),
-            name=f"{self.server_id}_server_thread",
+            name=f"{self.server_uuid}_server_thread",
         )
         self.server_thread.start()
 
@@ -289,15 +289,15 @@ class ServerInstance:
                 self.realtime_stats,
                 "interval",
                 seconds=5,
-                id="stats_" + str(self.server_id),
+                id="stats_" + str(self.server_uuid),
             )
         except:
-            self.server_scheduler.remove_job("stats_" + str(self.server_id))
+            self.server_scheduler.remove_job("stats_" + str(self.server_uuid))
             self.server_scheduler.add_job(
                 self.realtime_stats,
                 "interval",
                 seconds=5,
-                id="stats_" + str(self.server_id),
+                id="stats_" + str(self.server_uuid),
             )
         logger.info(f"Saving server statistics {self.name} every {30} seconds")
         Console.info(f"Saving server statistics {self.name} every {30} seconds")
@@ -306,15 +306,15 @@ class ServerInstance:
                 self.record_server_stats,
                 "interval",
                 seconds=30,
-                id="save_stats_" + str(self.server_id),
+                id="save_stats_" + str(self.server_uuid),
             )
         except ConflictingIdError:
-            self.server_scheduler.remove_job("save_stats_" + str(self.server_id))
+            self.server_scheduler.remove_job("save_stats_" + str(self.server_uuid))
             self.server_scheduler.add_job(
                 self.record_server_stats,
                 "interval",
                 seconds=30,
-                id="save_stats_" + str(self.server_id),
+                id="save_stats_" + str(self.server_uuid),
             )
 
     def setup_server_run_command(self):
@@ -450,7 +450,7 @@ class ServerInstance:
         if not e_flag and self.settings["type"] == "minecraft-java":
             if user_id:
                 WebSocketManager().broadcast_user(
-                    user_id, "send_eula_bootbox", {"id": self.server_id}
+                    user_id, "send_eula_bootbox", {"id": self.server_uuid}
                 )
             else:
                 logger.error(
@@ -472,7 +472,7 @@ class ServerInstance:
             with open(
                 os.path.join(
                     self.server_path,
-                    HelperServers.get_server_data_by_id(self.server_id)["executable"],
+                    HelperServers.get_server_data_by_id(self.server_uuid)["executable"],
                 ),
                 "r",
                 encoding="utf-8",
@@ -495,7 +495,7 @@ class ServerInstance:
 
         if (
             not Helpers.is_os_windows()
-            and HelperServers.get_server_type_by_id(self.server_id)
+            and HelperServers.get_server_type_by_id(self.server_uuid)
             == "minecraft-bedrock"
         ):
             logger.info(
@@ -573,11 +573,13 @@ class ServerInstance:
                     self.stats_helper.finish_import()
                 return False
 
-        out_buf = ServerOutBuf(self.helper, self.process, self.server_id)
+        out_buf = ServerOutBuf(self.helper, self.process, self.server_uuid)
 
         logger.debug(f"Starting virtual terminal listener for server {self.name}")
         threading.Thread(
-            target=out_buf.check, daemon=True, name=f"{self.server_id}_virtual_terminal"
+            target=out_buf.check,
+            daemon=True,
+            name=f"{self.server_uuid}_virtual_terminal",
         ).start()
 
         self.is_crashed = False
@@ -615,12 +617,12 @@ class ServerInstance:
                         ).format(self.name, loc_server_port)
                     },
                 )
-                server_users = PermissionsServers.get_server_user_list(self.server_id)
+                server_users = PermissionsServers.get_server_user_list(self.server_uuid)
                 for user in server_users:
                     if user != user_id:
                         WebSocketManager().broadcast_user(user, "send_start_reload", {})
             else:
-                server_users = PermissionsServers.get_server_user_list(self.server_id)
+                server_users = PermissionsServers.get_server_user_list(self.server_uuid)
                 for user in server_users:
                     WebSocketManager().broadcast_user(user, "send_start_reload", {})
         else:
@@ -644,7 +646,7 @@ class ServerInstance:
             )
 
             self.server_scheduler.add_job(
-                self.detect_crash, "interval", seconds=30, id=f"c_{self.server_id}"
+                self.detect_crash, "interval", seconds=30, id=f"c_{self.server_uuid}"
             )
 
         # If this is a forge install we'll call the watcher to do the things
@@ -676,7 +678,7 @@ class ServerInstance:
                 # Process has exited. Lets do some work to setup the new
                 # run command.
                 # Let's grab the server object we're going to update.
-                server_obj: Servers = HelperServers.get_server_obj(self.server_id)
+                server_obj: Servers = HelperServers.get_server_obj(self.server_uuid)
 
                 # The forge install is done so we can delete that install file.
                 os.remove(os.path.join(server_obj.path, server_obj.executable))
@@ -778,7 +780,7 @@ class ServerInstance:
                 # We'll update the server with the new information now.
                 HelperServers.update_server(server_obj)
                 self.stats_helper.finish_import()
-                server_users = PermissionsServers.get_server_user_list(self.server_id)
+                server_users = PermissionsServers.get_server_user_list(self.server_uuid)
 
                 for user in server_users:
                     WebSocketManager().broadcast_user(user, "send_start_reload", {})
@@ -790,7 +792,7 @@ class ServerInstance:
         if self.check_running():
             logger.info(f"Detected crash detection shut off for server {self.name}")
             try:
-                self.server_scheduler.remove_job("c_" + str(self.server_id))
+                self.server_scheduler.remove_job("c_" + str(self.server_uuid))
             except:
                 logger.error(
                     f"Removing crash watcher for server {self.name} failed. "
@@ -811,10 +813,13 @@ class ServerInstance:
             )
             try:
                 self.server_scheduler.add_job(
-                    self.detect_crash, "interval", seconds=30, id=f"c_{self.server_id}"
+                    self.detect_crash,
+                    "interval",
+                    seconds=30,
+                    id=f"c_{self.server_uuid}",
                 )
             except:
-                logger.info(f"Job with id c_{self.server_id} already running...")
+                logger.info(f"Job with id c_{self.server_uuid} already running...")
 
     def stop_threaded_server(self):
         self.stop_server()
@@ -833,7 +838,7 @@ class ServerInstance:
             # remove crash detection watcher
             logger.info(f"Removing crash watcher for server {self.name}")
             try:
-                self.server_scheduler.remove_job("c_" + str(self.server_id))
+                self.server_scheduler.remove_job("c_" + str(self.server_uuid))
             except:
                 logger.error(
                     f"Removing crash watcher for server {self.name} failed. "
@@ -883,14 +888,14 @@ class ServerInstance:
 
         # massive resetting of variables
         self.cleanup_server_object()
-        server_users = PermissionsServers.get_server_user_list(self.server_id)
+        server_users = PermissionsServers.get_server_user_list(self.server_uuid)
 
         try:
             # remove the stats polling job since server is stopped
-            self.server_scheduler.remove_job("stats_" + str(self.server_id))
+            self.server_scheduler.remove_job("stats_" + str(self.server_uuid))
         except JobLookupError as e:
             logger.error(
-                f"Could not remove job with id stats_{self.server_id} due"
+                f"Could not remove job with id stats_{self.server_uuid} due"
                 + f" to error: {e}"
             )
         self.record_server_stats()
@@ -899,7 +904,7 @@ class ServerInstance:
             WebSocketManager().broadcast_user(user, "send_start_reload", {})
 
     def restart_threaded_server(self, user_id):
-        bu_conf = HelpersManagement.get_backup_config(self.server_id)
+        bu_conf = HelpersManagement.get_backup_config(self.server_uuid)
         if self.is_backingup and bu_conf["shutdown"]:
             logger.info(
                 "Restart command detected. Supressing - server has"
@@ -911,7 +916,7 @@ class ServerInstance:
             self.run_threaded_server(user_id)
         else:
             logger.info(
-                f"Restart command detected. Sending stop command to {self.server_id}."
+                f"Restart command detected. Sending stop command to {self.server_uuid}."
             )
             self.stop_threaded_server()
             time.sleep(2)
@@ -950,9 +955,9 @@ class ServerInstance:
     @callback
     def crash_detected(self, name):
         # clear the old scheduled watcher task
-        self.server_scheduler.remove_job(f"c_{self.server_id}")
+        self.server_scheduler.remove_job(f"c_{self.server_uuid}")
         # remove the stats polling job since server is stopped
-        self.server_scheduler.remove_job("stats_" + str(self.server_id))
+        self.server_scheduler.remove_job("stats_" + str(self.server_uuid))
 
         # the server crashed, or isn't found - so let's reset things.
         logger.warning(
@@ -983,7 +988,7 @@ class ServerInstance:
 
     @callback
     def kill(self):
-        logger.info(f"Terminating server {self.server_id} and all child processes")
+        logger.info(f"Terminating server {self.server_uuid} and all child processes")
         try:
             process = psutil.Process(self.process.pid)
         except NoSuchProcess:
@@ -997,10 +1002,10 @@ class ServerInstance:
         # kill the main process we are after
         logger.info("Sending SIGKILL to parent")
         try:
-            self.server_scheduler.remove_job("stats_" + str(self.server_id))
+            self.server_scheduler.remove_job("stats_" + str(self.server_uuid))
         except JobLookupError as e:
             logger.error(
-                f"Could not remove job with id stats_{self.server_id} due"
+                f"Could not remove job with id stats_{self.server_uuid} due"
                 + f" to error: {e}"
             )
         self.process.kill()
@@ -1027,8 +1032,8 @@ class ServerInstance:
                 f" supressing crash handling."
             )
             # cancel the watcher task
-            self.server_scheduler.remove_job("c_" + str(self.server_id))
-            self.server_scheduler.remove_job("stats_" + str(self.server_id))
+            self.server_scheduler.remove_job("c_" + str(self.server_uuid))
+            self.server_scheduler.remove_job("stats_" + str(self.server_uuid))
             return
 
         self.stats_helper.sever_crashed()
@@ -1057,12 +1062,12 @@ class ServerInstance:
             self.stats_helper.sever_crashed()
 
             # cancel the watcher task
-            self.server_scheduler.remove_job("c_" + str(self.server_id))
+            self.server_scheduler.remove_job("c_" + str(self.server_uuid))
 
     def remove_watcher_thread(self):
         logger.info("Removing old crash detection watcher thread")
         Console.info("Removing old crash detection watcher thread")
-        self.server_scheduler.remove_job("c_" + str(self.server_id))
+        self.server_scheduler.remove_job("c_" + str(self.server_uuid))
 
     def agree_eula(self, user_id):
         eula_file = os.path.join(self.server_path, "eula.txt")
@@ -1105,8 +1110,8 @@ class ServerInstance:
 
     def a_backup_server(self):
         was_server_running = None
-        logger.info(f"Starting server {self.name} (ID {self.server_id}) backup")
-        server_users = PermissionsServers.get_server_user_list(self.server_id)
+        logger.info(f"Starting server {self.name} (ID {self.server_uuid}) backup")
+        server_users = PermissionsServers.get_server_user_list(self.server_uuid)
         for user in server_users:
             WebSocketManager().broadcast_user(
                 user,
@@ -1116,7 +1121,7 @@ class ServerInstance:
                 ).format(self.name),
             )
         time.sleep(3)
-        conf = HelpersManagement.get_backup_config(self.server_id)
+        conf = HelpersManagement.get_backup_config(self.server_uuid)
         if conf["before"]:
             if self.check_running():
                 logger.debug(
@@ -1144,10 +1149,10 @@ class ServerInstance:
             )
             logger.info(
                 f"Creating backup of server '{self.settings['server_name']}'"
-                f" (ID#{self.server_id}, path={self.server_path}) "
+                f" (ID#{self.server_uuid}, path={self.server_path}) "
                 f"at '{backup_filename}'"
             )
-            excluded_dirs = HelpersManagement.get_excluded_backup_dirs(self.server_id)
+            excluded_dirs = HelpersManagement.get_excluded_backup_dirs(self.server_uuid)
             server_dir = Helpers.get_os_understandable_path(self.settings["path"])
             if conf["compress"]:
                 logger.debug(
@@ -1157,7 +1162,7 @@ class ServerInstance:
                     Helpers.get_os_understandable_path(backup_filename),
                     server_dir,
                     excluded_dirs,
-                    self.server_id,
+                    self.server_uuid,
                 )
             else:
                 logger.debug(
@@ -1167,7 +1172,7 @@ class ServerInstance:
                     Helpers.get_os_understandable_path(backup_filename),
                     server_dir,
                     excluded_dirs,
-                    self.server_id,
+                    self.server_uuid,
                 )
 
             while (
@@ -1186,11 +1191,11 @@ class ServerInstance:
             if len(WebSocketManager().clients) > 0:
                 WebSocketManager().broadcast_page_params(
                     "/panel/server_detail",
-                    {"id": str(self.server_id)},
+                    {"id": str(self.server_uuid)},
                     "backup_status",
                     results,
                 )
-            server_users = PermissionsServers.get_server_user_list(self.server_id)
+            server_users = PermissionsServers.get_server_user_list(self.server_uuid)
             for user in server_users:
                 WebSocketManager().broadcast_user(
                     user,
@@ -1218,13 +1223,13 @@ class ServerInstance:
             time.sleep(5)
         except:
             logger.exception(
-                f"Failed to create backup of server {self.name} (ID {self.server_id})"
+                f"Failed to create backup of server {self.name} (ID {self.server_uuid})"
             )
             results = {"percent": 100, "total_files": 0, "current_file": 0}
             if len(WebSocketManager().clients) > 0:
                 WebSocketManager().broadcast_page_params(
                     "/panel/server_detail",
-                    {"id": str(self.server_id)},
+                    {"id": str(self.server_uuid)},
                     "backup_status",
                     results,
                 )
@@ -1242,7 +1247,7 @@ class ServerInstance:
         if len(WebSocketManager().clients) > 0:
             WebSocketManager().broadcast_page_params(
                 "/panel/server_detail",
-                {"id": str(self.server_id)},
+                {"id": str(self.server_uuid)},
                 "backup_status",
                 results,
             )
@@ -1259,7 +1264,7 @@ class ServerInstance:
     def list_backups(self):
         if not self.settings["backup_path"]:
             logger.info(
-                f"Error putting backup file list for server with ID: {self.server_id}"
+                f"Error putting backup file list for server with ID: {self.server_uuid}"
             )
             return []
         if not Helpers.check_path_exists(
@@ -1331,7 +1336,7 @@ class ServerInstance:
         return self.stats_helper.get_server_stats()["updating"]
 
     def a_jar_update(self):
-        server_users = PermissionsServers.get_server_user_list(self.server_id)
+        server_users = PermissionsServers.get_server_user_list(self.server_uuid)
         was_started = "-1"
         self.backup_server()
         # checks if server is running. Calls shutdown if it is running.
@@ -1348,7 +1353,9 @@ class ServerInstance:
             # There are clients
             self.check_update()
             message = (
-                '<a data-id="' + str(self.server_id) + '" class=""> UPDATING...</i></a>'
+                '<a data-id="'
+                + str(self.server_uuid)
+                + '" class=""> UPDATING...</i></a>'
             )
         for user in server_users:
             WebSocketManager().broadcast_user_page(
@@ -1357,7 +1364,7 @@ class ServerInstance:
                 "update_button_status",
                 {
                     "isUpdating": self.check_update(),
-                    "server_id": self.server_id,
+                    "server_uuid": self.server_uuid,
                     "wasRunning": was_started,
                     "string": message,
                 },
@@ -1412,7 +1419,7 @@ class ServerInstance:
             return False
 
         # lets download the files
-        if HelperServers.get_server_type_by_id(self.server_id) != "minecraft-bedrock":
+        if HelperServers.get_server_type_by_id(self.server_uuid) != "minecraft-bedrock":
             # boolean returns true for false for success
             downloaded = Helpers.download_file(
                 self.settings["executable_update_url"], current_executable
@@ -1468,7 +1475,7 @@ class ServerInstance:
                     "update_button_status",
                     {
                         "isUpdating": self.check_update(),
-                        "server_id": self.server_id,
+                        "server_uuid": self.server_uuid,
                         "wasRunning": was_started,
                     },
                 )
@@ -1484,7 +1491,7 @@ class ServerInstance:
             self.management_helper.add_to_audit_log_raw(
                 "Alert",
                 "-1",
-                self.server_id,
+                self.server_uuid,
                 "Executable update finished for " + self.name,
                 self.settings["server_ip"],
             )
@@ -1505,23 +1512,23 @@ class ServerInstance:
             WebSocketManager().broadcast_user(user, "remove_spinner", {})
 
     def start_dir_calc_task(self):
-        server_dt = HelperServers.get_server_data_by_id(self.server_id)
+        server_dt = HelperServers.get_server_data_by_id(self.server_uuid)
         self.server_size = self.stats.get_server_dir_size(server_dt["path"])
         self.dir_scheduler.add_job(
             self.calc_dir_size,
             "interval",
             minutes=self.helper.get_setting("dir_size_poll_freq_minutes"),
-            id=str(self.server_id) + "_dir_poll",
+            id=str(self.server_uuid) + "_dir_poll",
         )
         self.dir_scheduler.add_job(
             self.cache_players,
             "interval",
             seconds=5,
-            id=str(self.server_id) + "_players_poll",
+            id=str(self.server_uuid) + "_players_poll",
         )
 
     def calc_dir_size(self):
-        server_dt = HelperServers.get_server_data_by_id(self.server_id)
+        server_dt = HelperServers.get_server_data_by_id(self.server_uuid)
         self.server_size = self.stats.get_server_dir_size(server_dt["path"])
 
     # **********************************************************************************
@@ -1536,7 +1543,7 @@ class ServerInstance:
             max_players = 0
             servers_ping = []
             raw_ping_result = []
-            raw_ping_result = self.get_raw_server_stats(self.server_id)
+            raw_ping_result = self.get_raw_server_stats(self.server_uuid)
 
             if f"{raw_ping_result.get('icon')}" == "b''":
                 raw_ping_result["icon"] = False
@@ -1565,7 +1572,7 @@ class ServerInstance:
 
             WebSocketManager().broadcast_page_params(
                 "/panel/server_detail",
-                {"id": str(self.server_id)},
+                {"id": str(self.server_uuid)},
                 "update_server_details",
                 {
                     "id": raw_ping_result.get("id"),
@@ -1607,10 +1614,10 @@ class ServerInstance:
 
         logger.info("Getting Stats for Server " + self.name + " ...")
 
-        server_id = self.server_id
-        server = HelperServers.get_server_data_by_id(server_id)
+        server_uuid = self.server_uuid
+        server = HelperServers.get_server_data_by_id(server_uuid)
 
-        logger.debug(f"Getting stats for server: {server_id}")
+        logger.debug(f"Getting stats for server: {server_uuid}")
 
         # get our server object, settings and data dictionaries
         self.reload_server_settings()
@@ -1619,10 +1626,10 @@ class ServerInstance:
         p_stats = Stats._try_get_process_stats(self.process, self.check_running())
         internal_ip = server["server_ip"]
         server_port = server["server_port"]
-        server_name = server.get("server_name", f"ID#{server_id}")
+        server_name = server.get("server_name", f"ID#{server_uuid}")
 
         logger.debug(f"Pinging server '{server}' on {internal_ip}:{server_port}")
-        if HelperServers.get_server_type_by_id(server_id) == "minecraft-bedrock":
+        if HelperServers.get_server_type_by_id(server_uuid) == "minecraft-bedrock":
             int_mc_ping = ping_bedrock(internal_ip, int(server_port))
         else:
             try:
@@ -1637,7 +1644,7 @@ class ServerInstance:
         if int_mc_ping:
             int_data = True
             if (
-                HelperServers.get_server_type_by_id(server["server_id"])
+                HelperServers.get_server_type_by_id(server["server_uuid"])
                 == "minecraft-bedrock"
             ):
                 ping_data = Stats.parse_server_raknet_ping(int_mc_ping)
@@ -1647,7 +1654,7 @@ class ServerInstance:
         # otherwise people have gotten confused.
         if self.check_running():
             server_stats = {
-                "id": server_id,
+                "id": server_uuid,
                 "started": self.get_start_time(),
                 "running": self.check_running(),
                 "cpu": p_stats.get("cpu_usage", 0),
@@ -1666,7 +1673,7 @@ class ServerInstance:
             }
         else:
             server_stats = {
-                "id": server_id,
+                "id": server_uuid,
                 "started": self.get_start_time(),
                 "running": self.check_running(),
                 "cpu": p_stats.get("cpu_usage", 0),
@@ -1687,7 +1694,7 @@ class ServerInstance:
         return server_stats
 
     def get_server_players(self):
-        server = HelperServers.get_server_data_by_id(self.server_id)
+        server = HelperServers.get_server_data_by_id(self.server_uuid)
 
         logger.debug(f"Getting players for server {server['server_name']}")
 
@@ -1695,7 +1702,7 @@ class ServerInstance:
         server_port = server["server_port"]
 
         logger.debug(f"Pinging {internal_ip} on port {server_port}")
-        if HelperServers.get_server_type_by_id(self.server_id) != "minecraft-bedrock":
+        if HelperServers.get_server_type_by_id(self.server_uuid) != "minecraft-bedrock":
             int_mc_ping = ping(internal_ip, int(server_port))
 
             ping_data = {}
@@ -1706,12 +1713,12 @@ class ServerInstance:
                 return ping_data["players"]
         return []
 
-    def get_raw_server_stats(self, server_id):
+    def get_raw_server_stats(self, server_uuid):
         try:
-            server = HelperServers.get_server_obj(server_id)
+            server = HelperServers.get_server_obj(server_uuid)
         except:
             return {
-                "id": server_id,
+                "id": server_uuid,
                 "started": False,
                 "running": False,
                 "cpu": 0,
@@ -1732,9 +1739,9 @@ class ServerInstance:
         server_stats = {}
         if not server:
             return {}
-        server_dt = HelperServers.get_server_data_by_id(server_id)
+        server_dt = HelperServers.get_server_data_by_id(server_uuid)
 
-        logger.debug(f"Getting stats for server: {server_id}")
+        logger.debug(f"Getting stats for server: {server_uuid}")
 
         # get our server object, settings and data dictionaries
         self.reload_server_settings()
@@ -1749,7 +1756,7 @@ class ServerInstance:
         server_port = server_dt["server_port"]
 
         logger.debug(f"Pinging server '{self.name}' on {internal_ip}:{server_port}")
-        if HelperServers.get_server_type_by_id(server_id) == "minecraft-bedrock":
+        if HelperServers.get_server_type_by_id(server_uuid) == "minecraft-bedrock":
             int_mc_ping = ping_bedrock(internal_ip, int(server_port))
         else:
             int_mc_ping = ping(internal_ip, int(server_port))
@@ -1760,13 +1767,13 @@ class ServerInstance:
         # otherwise people have gotten confused.
         if self.check_running():
             # if we got a good ping return, let's parse it
-            if HelperServers.get_server_type_by_id(server_id) != "minecraft-bedrock":
+            if HelperServers.get_server_type_by_id(server_uuid) != "minecraft-bedrock":
                 if int_mc_ping:
                     int_data = True
                     ping_data = Stats.parse_server_ping(int_mc_ping)
 
                 server_stats = {
-                    "id": server_id,
+                    "id": server_uuid,
                     "started": self.get_start_time(),
                     "running": self.check_running(),
                     "cpu": p_stats.get("cpu_usage", 0),
@@ -1795,7 +1802,7 @@ class ServerInstance:
                         logger.info(f"Unable to read the server icon : {ex}")
 
                     server_stats = {
-                        "id": server_id,
+                        "id": server_uuid,
                         "started": self.get_start_time(),
                         "running": self.check_running(),
                         "cpu": p_stats.get("cpu_usage", 0),
@@ -1814,7 +1821,7 @@ class ServerInstance:
                     }
                 else:
                     server_stats = {
-                        "id": server_id,
+                        "id": server_uuid,
                         "started": self.get_start_time(),
                         "running": self.check_running(),
                         "cpu": p_stats.get("cpu_usage", 0),
@@ -1833,7 +1840,7 @@ class ServerInstance:
                     }
         else:
             server_stats = {
-                "id": server_id,
+                "id": server_uuid,
                 "started": self.get_start_time(),
                 "running": self.check_running(),
                 "cpu": p_stats.get("cpu_usage", 0),
@@ -1856,14 +1863,16 @@ class ServerInstance:
         server_stats = self.get_servers_stats()
         self.stats_helper.insert_server_stats(server_stats)
 
-        self.cpu_usage.labels(f"{self.server_id}").set(server_stats.get("cpu"))
-        self.mem_usage_percent.labels(f"{self.server_id}").set(
+        self.cpu_usage.labels(f"{self.server_uuid}").set(server_stats.get("cpu"))
+        self.mem_usage_percent.labels(f"{self.server_uuid}").set(
             server_stats.get("mem_percent")
         )
-        self.minecraft_version.labels(f"{self.server_id}").info(
+        self.minecraft_version.labels(f"{self.server_uuid}").info(
             {"version": f"{server_stats.get('version')}"}
         )
-        self.online_players.labels(f"{self.server_id}").set(server_stats.get("online"))
+        self.online_players.labels(f"{self.server_uuid}").set(
+            server_stats.get("online")
+        )
 
         # delete old data
         max_age = self.helper.get_setting("history_max_age")
@@ -1877,29 +1886,29 @@ class ServerInstance:
         self.cpu_usage = Gauge(
             name="CPU_Usage",
             documentation="The CPU usage of the server",
-            labelnames=["server_id"],
+            labelnames=["server_uuid"],
             registry=self.server_registry,
         )
         self.mem_usage_percent = Gauge(
             name="Mem_Usage",
             documentation="The Memory usage of the server",
-            labelnames=["server_id"],
+            labelnames=["server_uuid"],
             registry=self.server_registry,
         )
         self.minecraft_version = Info(
             name="Minecraft_Version",
             documentation="The version of the minecraft of this server",
-            labelnames=["server_id"],
+            labelnames=["server_uuid"],
             registry=self.server_registry,
         )
 
         self.online_players = Gauge(
             name="online_players",
             documentation="The number of players online for a server",
-            labelnames=["server_id"],
+            labelnames=["server_uuid"],
             registry=self.server_registry,
         )
 
     def get_server_history(self):
-        history = self.stats_helper.get_history_stats(self.server_id, 1)
+        history = self.stats_helper.get_history_stats(self.server_uuid, 1)
         return history

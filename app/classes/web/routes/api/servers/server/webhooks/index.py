@@ -34,14 +34,14 @@ new_webhook_schema = {
 
 
 class ApiServersServerWebhooksIndexHandler(BaseApiHandler):
-    def get(self, server_id: str):
+    def get(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
         if (
             EnumPermissionsServer.CONFIG
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Schedule permission, return an error
@@ -50,11 +50,11 @@ class ApiServersServerWebhooksIndexHandler(BaseApiHandler):
             200,
             {
                 "status": "ok",
-                "data": self.controller.management.get_webhooks_by_server(server_id),
+                "data": self.controller.management.get_webhooks_by_server(server_uuid),
             },
         )
 
-    def post(self, server_id: str):
+    def post(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
@@ -78,24 +78,24 @@ class ApiServersServerWebhooksIndexHandler(BaseApiHandler):
                 },
             )
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.CONFIG
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Schedule permission, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
-        data["server_id"] = server_id
+        data["server_uuid"] = server_uuid
 
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],
-            f"Edited server {server_id}: added webhook",
-            server_id,
+            f"Edited server {server_uuid}: added webhook",
+            server_uuid,
             self.get_remote_ip(),
         )
         triggers = ""

@@ -98,11 +98,11 @@ class TasksManager:
                 cmd = self.controller.management.command_queue.get()
                 try:
                     svr = self.controller.servers.get_server_instance_by_id(
-                        cmd["server_id"]
+                        cmd["server_uuid"]
                     )
                 except:
                     logger.error(
-                        f"Server value {cmd['server_id']} requested does not exist! "
+                        f"Server value {cmd['server_uuid']} requested does not exist! "
                         "Purging item from waiting commands."
                     )
                     continue
@@ -219,7 +219,7 @@ class TasksManager:
                             id=str(schedule.schedule_id),
                             args=[
                                 {
-                                    "server_id": schedule.server_id.server_id,
+                                    "server_uuid": schedule.server_uuid.server_uuid,
                                     "user_id": self.users_controller.get_id_by_name(
                                         "system"
                                     ),
@@ -247,7 +247,7 @@ class TasksManager:
                             id=str(schedule.schedule_id),
                             args=[
                                 {
-                                    "server_id": schedule.server_id.server_id,
+                                    "server_uuid": schedule.server_uuid.server_uuid,
                                     "user_id": self.users_controller.get_id_by_name(
                                         "system"
                                     ),
@@ -263,7 +263,7 @@ class TasksManager:
                             id=str(schedule.schedule_id),
                             args=[
                                 {
-                                    "server_id": schedule.server_id.server_id,
+                                    "server_uuid": schedule.server_uuid.server_uuid,
                                     "user_id": self.users_controller.get_id_by_name(
                                         "system"
                                     ),
@@ -282,7 +282,7 @@ class TasksManager:
                             id=str(schedule.schedule_id),
                             args=[
                                 {
-                                    "server_id": schedule.server_id.server_id,
+                                    "server_uuid": schedule.server_uuid.server_uuid,
                                     "user_id": self.users_controller.get_id_by_name(
                                         "system"
                                     ),
@@ -309,7 +309,7 @@ class TasksManager:
 
     def schedule_job(self, job_data):
         sch_id = HelpersManagement.create_scheduled_task(
-            job_data["server_id"],
+            job_data["server_uuid"],
             job_data["action"],
             job_data["interval"],
             job_data["interval_type"],
@@ -346,7 +346,7 @@ class TasksManager:
                         id=str(sch_id),
                         args=[
                             {
-                                "server_id": job_data["server_id"],
+                                "server_uuid": job_data["server_uuid"],
                                 "user_id": self.users_controller.get_id_by_name(
                                     "system"
                                 ),
@@ -372,7 +372,7 @@ class TasksManager:
                         id=str(sch_id),
                         args=[
                             {
-                                "server_id": job_data["server_id"],
+                                "server_uuid": job_data["server_uuid"],
                                 "user_id": self.users_controller.get_id_by_name(
                                     "system"
                                 ),
@@ -388,7 +388,7 @@ class TasksManager:
                         id=str(sch_id),
                         args=[
                             {
-                                "server_id": job_data["server_id"],
+                                "server_uuid": job_data["server_uuid"],
                                 "user_id": self.users_controller.get_id_by_name(
                                     "system"
                                 ),
@@ -407,7 +407,7 @@ class TasksManager:
                         id=str(sch_id),
                         args=[
                             {
-                                "server_id": job_data["server_id"],
+                                "server_uuid": job_data["server_uuid"],
                                 "user_id": self.users_controller.get_id_by_name(
                                     "system"
                                 ),
@@ -429,8 +429,8 @@ class TasksManager:
                 logger.info(f"JOB: {item}")
             return task.schedule_id
 
-    def remove_all_server_tasks(self, server_id):
-        schedules = HelpersManagement.get_schedules_by_server(server_id)
+    def remove_all_server_tasks(self, server_uuid):
+        schedules = HelpersManagement.get_schedules_by_server(server_uuid)
         for schedule in schedules:
             if schedule.interval != "reaction":
                 self.remove_job(schedule.schedule_id)
@@ -471,7 +471,7 @@ class TasksManager:
 
             if job_data["enabled"] is True:
                 job_data = HelpersManagement.get_scheduled_task(sch_id)
-                job_data["server_id"] = job_data["server_id"]["server_id"]
+                job_data["server_uuid"] = job_data["server_uuid"]["server_uuid"]
             else:
                 job = HelpersManagement.get_scheduled_task(sch_id)
                 if job["interval_type"] != "reaction":
@@ -499,7 +499,7 @@ class TasksManager:
                         id=str(sch_id),
                         args=[
                             {
-                                "server_id": job_data["server_id"],
+                                "server_uuid": job_data["server_uuid"],
                                 "user_id": self.users_controller.get_id_by_name(
                                     "system"
                                 ),
@@ -522,7 +522,7 @@ class TasksManager:
                         id=str(sch_id),
                         args=[
                             {
-                                "server_id": job_data["server_id"],
+                                "server_uuid": job_data["server_uuid"],
                                 "user_id": self.users_controller.get_id_by_name(
                                     "system"
                                 ),
@@ -538,7 +538,7 @@ class TasksManager:
                         id=str(sch_id),
                         args=[
                             {
-                                "server_id": job_data["server_id"],
+                                "server_uuid": job_data["server_uuid"],
                                 "user_id": self.users_controller.get_id_by_name(
                                     "system"
                                 ),
@@ -557,7 +557,7 @@ class TasksManager:
                         id=str(sch_id),
                         args=[
                             {
-                                "server_id": job_data["server_id"],
+                                "server_uuid": job_data["server_uuid"],
                                 "user_id": self.users_controller.get_id_by_name(
                                     "system"
                                 ),
@@ -592,7 +592,7 @@ class TasksManager:
                 self.controller.management.add_to_audit_log_raw(
                     "system",
                     HelperUsers.get_user_id_by_name("system"),
-                    task.server_id,
+                    task.server_uuid,
                     f"Task with id {task.schedule_id} completed successfully",
                     "127.0.0.1",
                 )
@@ -613,7 +613,7 @@ class TasksManager:
                 # but this makes DB management a lot easier. One to one
                 # instead of one to many.
                 for schedule in HelpersManagement.get_child_schedules_by_server(
-                    task.schedule_id, task.server_id
+                    task.schedule_id, task.server_uuid
                 ):
                     # event job ID's are strings so we need to look at
                     # this as the same data type.
@@ -632,7 +632,7 @@ class TasksManager:
                                 id=str(schedule.schedule_id),
                                 args=[
                                     {
-                                        "server_id": schedule.server_id.server_id,
+                                        "server_uuid": schedule.server_uuid.server_uuid,
                                         "user_id": self.users_controller.get_id_by_name(
                                             "system"
                                         ),

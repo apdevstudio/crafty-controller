@@ -15,9 +15,9 @@
       <div class="page-header">
         <h4 class="page-title">
           {{ translate('serverDetails', 'serverDetails', data['lang']) }} - {{
-          data['server_stats']['server_id']['server_name'] }}
+          data['server_stats']['server_uuid']['server_name'] }}
           <br />
-          <small>UUID: {{ data['server_stats']['server_id']['server_uuid'] }}</small>
+          <small>UUID: {{ data['server_stats']['server_uuid']['server_uuid'] }}</small>
         </h4>
       </div>
     </div>
@@ -46,14 +46,9 @@
                 <div class="card-header header-sm d-flex justify-content-between align-items-center">
                   <h4 class="card-title"><i class="fa-regular fa-bell"></i> {{ translate('webhooks', 'webhooks', data['lang']) }} </h4>
                   {% if data['user_data']['hints'] %}
-                  <span class="too_small" title="{{ translate('serverSchedules', 'cannotSee', data['lang']) }}" ,
-                    data-content="{{ translate('serverSchedules', 'cannotSeeOnMobile', data['lang']) }}" ,
-                    data-placement="bottom"></span>
+                  <span class="too_small" title="{{ translate('serverSchedules', 'cannotSee', data['lang']) }}" , data-content="{{ translate('serverSchedules', 'cannotSeeOnMobile', data['lang']) }}" , data-placement="bottom"></span>
                   {% end %}
-                  <div><button
-                      onclick="location.href=`/panel/add_webhook?id={{ data['server_stats']['server_id']['server_id'] }}`"
-                      class="btn btn-info">{{ translate('webhooks', 'new', data['lang']) }}<i
-                        class="fas fa-pencil-alt"></i></button></div>
+                  <div><button onclick="location.href=`/panel/add_webhook?id={{ data['server_stats']['server_uuid']['server_uuid'] }}`" class="btn btn-info">{{ translate('webhooks', 'new', data['lang']) }}<i class="fas fa-pencil-alt"></i></button></div>
                 </div>
                 <div class="card-body">
                   <table class="table table-hover d-none d-lg-block responsive-table" aria-label="webhooks list" id="webhook_table" width="100%" style="table-layout:fixed;">
@@ -91,7 +86,7 @@
                           <input style="width: 10px !important;" type="checkbox" class="webhook-enabled-toggle" data-webhook-id="{{webhook.id}}" data-webhook-enabled="{{ 'true' if webhook.enabled else 'false' }}">
                         </td>
                         <td id="webhook_edit" class="action">
-                          <button onclick="window.location.href='/panel/webhook_edit?id={{ data['server_stats']['server_id']['server_id'] }}&webhook_id={{webhook.id}}'" class="btn btn-info">
+                          <button onclick="window.location.href='/panel/webhook_edit?id={{ data['server_stats']['server_uuid']['server_uuid'] }}&webhook_id={{webhook.id}}'" class="btn btn-info">
                             <i class="fas fa-pencil-alt"></i>
                           </button>
                           <br>
@@ -128,7 +123,7 @@
                           <input style="width: 10px !important;" type="checkbox" class="webhook-enabled-toggle" data-webhook-id="{{webhook.id}}" data-webhook-enabled="{{ 'true' if webhook.enabled else 'false' }}">
                         </td>
                         <td id="webhook_edit" class="action">
-                          <button onclick="window.location.href='/panel/webhook_edit?id={{ data['server_stats']['server_id']['server_id'] }}&webhook_id={{webhook.id}}'" class="btn btn-info">
+                          <button onclick="window.location.href='/panel/webhook_edit?id={{ data['server_stats']['server_uuid']['server_uuid'] }}&webhook_id={{webhook.id}}'" class="btn btn-info">
                             <i class="fas fa-pencil-alt"></i>
                           </button>
                           <br>
@@ -195,7 +190,7 @@
 
 {% block js %}
 <script>
-    $(document).ready(function () {
+  $(document).ready(function () {
     console.log('ready for JS!')
     $('#webhook_table').DataTable({
       'order': [4, 'asc'],
@@ -262,7 +257,7 @@
       const id = this.getAttribute('data-webhook-id');
       const enabled = this.checked;
 
-      fetch(`/api/v2/servers/{{data['server_id']}}/webhook/${id}`, {
+      fetch(`/api/v2/servers/{{data['server_uuid']}}/webhook/${id}`, {
         method: 'PATCH',
         body: JSON.stringify({ enabled }),
         headers: {
@@ -346,12 +341,12 @@
     let responseData = await res.json();
     if (responseData.status === "ok") {
       bootbox.alert("Webhook Sent!")
-    }else{
+    } else {
       console.log(responseData);
-        bootbox.alert({
-          title: responseData.status,
-          message: responseData.error
-          });
+      bootbox.alert({
+        title: responseData.status,
+        message: responseData.error
+      });
     }
   }
 
@@ -367,11 +362,11 @@
     let responseData = await res.json();
     if (responseData.status === "ok") {
       window.location.reload();
-    }else{
+    } else {
       bootbox.alert({
-          title: responseData.status,
-          message: responseData.error
-          });
+        title: responseData.status,
+        message: responseData.error
+      });
     }
   }
 

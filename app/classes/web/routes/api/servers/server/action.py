@@ -11,31 +11,31 @@ logger = logging.getLogger(__name__)
 
 
 class ApiServersServerActionHandler(BaseApiHandler):
-    def post(self, server_id: str, action: str):
+    def post(self, server_uuid: str, action: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.COMMANDS
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Commands permission, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if action == "clone_server":
-            return self._clone_server(server_id, auth_data[4]["user_id"])
+            return self._clone_server(server_uuid, auth_data[4]["user_id"])
         if action == "eula":
-            return self._agree_eula(server_id, auth_data[4]["user_id"])
+            return self._agree_eula(server_uuid, auth_data[4]["user_id"])
 
         self.controller.management.send_command(
-            auth_data[4]["user_id"], server_id, self.get_remote_ip(), action
+            auth_data[4]["user_id"], server_uuid, self.get_remote_ip(), action
         )
 
         self.finish_json(
@@ -43,16 +43,16 @@ class ApiServersServerActionHandler(BaseApiHandler):
             {"status": "ok"},
         )
 
-    def _agree_eula(self, server_id, user):
-        svr = self.controller.servers.get_server_instance_by_id(server_id)
+    def _agree_eula(self, server_uuid, user):
+        svr = self.controller.servers.get_server_instance_by_id(server_uuid)
         svr.agree_eula(user)
         return self.finish_json(200, {"status": "ok"})
 
-    def _clone_server(self, server_id, user_id):
+    def _clone_server(self, server_uuid, user_id):
         def is_name_used(name):
             return Servers.select().where(Servers.server_name == name).exists()
 
-        server_data = self.controller.servers.get_server_data_by_id(server_id)
+        server_data = self.controller.servers.get_server_data_by_id(server_uuid)
         new_server_name = server_data.get("server_name") + " (Copy)"
 
         name_counter = 1
@@ -67,8 +67,8 @@ class ApiServersServerActionHandler(BaseApiHandler):
 
         self.controller.management.add_to_audit_log(
             user_id,
-            f"is cloning server {server_id} named {server_data.get('server_name')}",
-            server_id,
+            f"is cloning server {server_uuid} named {server_data.get('server_name')}",
+            server_uuid,
             self.get_remote_ip(),
         )
 
@@ -81,7 +81,7 @@ class ApiServersServerActionHandler(BaseApiHandler):
             self.helper.get_os_understandable_path(server_data.get("log_path"))
         )
 
-        new_server_id = self.controller.servers.create_server(
+        new_server_uuid = self.controller.servers.create_server(
             new_server_name,
             new_server_uuid,
             new_server_path,
@@ -99,5 +99,5 @@ class ApiServersServerActionHandler(BaseApiHandler):
 
         self.finish_json(
             200,
-            {"status": "ok", "data": {"new_server_id": str(new_server_id)}},
+            {"status": "ok", "data": {"new_server_uuid": str(new_server_uuid)}},
         )

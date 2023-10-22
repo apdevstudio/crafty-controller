@@ -38,21 +38,21 @@ basic_backup_patch_schema = {
 
 
 class ApiServersServerBackupsIndexHandler(BaseApiHandler):
-    def get(self, server_id: str):
+    def get(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
         if (
             EnumPermissionsServer.BACKUP
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Schedule permission, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
-        self.finish_json(200, self.controller.management.get_backup_config(server_id))
+        self.finish_json(200, self.controller.management.get_backup_config(server_uuid))
 
-    def patch(self, server_id: str):
+    def patch(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
@@ -79,45 +79,49 @@ class ApiServersServerBackupsIndexHandler(BaseApiHandler):
                 },
             )
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.BACKUP
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Schedule permission, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         self.controller.management.set_backup_config(
-            server_id,
+            server_uuid,
             data.get(
                 "backup_path",
-                self.controller.management.get_backup_config(server_id)["backup_path"],
+                self.controller.management.get_backup_config(server_uuid)[
+                    "backup_path"
+                ],
             ),
             data.get(
                 "max_backups",
-                self.controller.management.get_backup_config(server_id)["max_backups"],
+                self.controller.management.get_backup_config(server_uuid)[
+                    "max_backups"
+                ],
             ),
             data.get("exclusions"),
             data.get(
                 "compress",
-                self.controller.management.get_backup_config(server_id)["compress"],
+                self.controller.management.get_backup_config(server_uuid)["compress"],
             ),
             data.get(
                 "shutdown",
-                self.controller.management.get_backup_config(server_id)["shutdown"],
+                self.controller.management.get_backup_config(server_uuid)["shutdown"],
             ),
             data.get(
                 "backup_before",
-                self.controller.management.get_backup_config(server_id)["before"],
+                self.controller.management.get_backup_config(server_uuid)["before"],
             ),
             data.get(
                 "backup_after",
-                self.controller.management.get_backup_config(server_id)["after"],
+                self.controller.management.get_backup_config(server_uuid)["after"],
             ),
         )
         return self.finish_json(200, {"status": "ok"})

@@ -94,7 +94,7 @@ class ApiUsersUserIndexHandler(BaseApiHandler):
         self.controller.management.add_to_audit_log(
             user["user_id"],
             f"deleted the user {user_id}",
-            server_id=0,
+            server_uuid=0,
             source_ip=self.get_remote_ip(),
         )
 
@@ -283,7 +283,7 @@ class ApiUsersUserIndexHandler(BaseApiHandler):
                 f"edited user {user_obj.username} (UID: {user_id})"
                 f"with roles {user_obj.roles}"
             ),
-            server_id=0,
+            server_uuid=0,
             source_ip=self.get_remote_ip(),
         )
 

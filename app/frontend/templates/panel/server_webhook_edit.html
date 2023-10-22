@@ -15,9 +15,9 @@
       <div class="page-header">
         <h4 class="page-title">
           {{ translate('serverDetails', 'serverDetails', data['lang']) }} - {{
-          data['server_stats']['server_id']['server_name'] }}
+          data['server_stats']['server_uuid']['server_name'] }}
           <br />
-          <small>UUID: {{ data['server_stats']['server_id']['server_uuid'] }}</small>
+          <small>UUID: {{ data['server_stats']['server_uuid']['server_uuid'] }}</small>
         </h4>
       </div>
     </div>
@@ -37,71 +37,63 @@
           <div class="row">
             <div class="col-md-8 col-sm-8">
               {% if data['new_webhook'] == True %}
-              <form class="forms-sample" method="post" id="new_webhook_form"
-                action="/panel/new_webhook?id={{ data['server_stats']['server_id']['server_id'] }}">
-              {% else %}
-              <form class="forms-sample" method="post" id="webhook_form"
-                action="/panel/edit_webhook?id={{ data['server_stats']['server_id']['server_id'] }}&sch_id={{ data['webhook']['id'] }}">
-              {% end %}
-                <select class="form-select form-control form-control-lg select-css" id="webhook_type" name="webhook_type">
-                <option value="{{data['webhook']['webhook_type']}}">{{data['webhook']['webhook_type']}}</option>
-                {% for type in data['providers'] %}
-                {% if type != data['webhook']['webhook_type'] %}
-                <option value="{{type}}">{{type}}</option>
-                {%end%}
-                {% end %}
-                </select>
-                <br>
-                <br>
-                <div class="form-group">
-                  <label for="name">{{ translate('webhooks', 'name' , data['lang']) }}</label>
-                  <input type="input" class="form-control" name="name" id="name_input"
-                    value="{{ data['webhook']['name']}}" maxlength="30" placeholder="Name" required>
-                </div>
-                <div class="form-group">
-                  <label for="url">{{ translate('webhooks', 'url', data['lang']) }}</label>
-                  <input type="input" class="form-control" name="url" id="url"
-                    value="{{ data['webhook']['url']}}" placeholder="https://webhooks.craftycontrol.com/fakeurl" required>
-                </div>
-                <div class="form-group">
-                  <label for="bot_name">{{ translate('webhooks', 'bot_name' , data['lang']) }}</label>
-                  <input type="input" class="form-control" name="bot_name" id="bot_name_input"
-                    value="{{ data['webhook']['bot_name']}}" maxlength="30" placeholder="Crafty Controller" required>
-                </div>
-                <div class="form-group">
-                  <label for="trigger">{{ translate('webhooks', 'trigger', data['lang']) }}</label>
-                  <select class="form-control selectpicker show-tick" name="trigger" id="trigger-select" data-icon-base="fas" data-tick-icon="fa-check" multiple data-style="custom-picker">
-                  {% for trigger in data['triggers'] %}
-                  {% if trigger in data["webhook"]["trigger"] %}
-                  <option value="{{trigger}}" selected>{{translate('webhooks', trigger , data['lang'])}}</option>
-                  {% else %}
-                  <option value="{{trigger}}">{{translate('webhooks', trigger , data['lang'])}}</option>
+              <form class="forms-sample" method="post" id="new_webhook_form" action="/panel/new_webhook?id={{ data['server_stats']['server_uuid']['server_uuid'] }}">
+                {% else %}
+                <form class="forms-sample" method="post" id="webhook_form" action="/panel/edit_webhook?id={{ data['server_stats']['server_uuid']['server_uuid'] }}&sch_id={{ data['webhook']['id'] }}">
                   {% end %}
-                  {% end %}
+                  <select class="form-select form-control form-control-lg select-css" id="webhook_type" name="webhook_type">
+                    <option value="{{data['webhook']['webhook_type']}}">{{data['webhook']['webhook_type']}}</option>
+                    {% for type in data['providers'] %}
+                    {% if type != data['webhook']['webhook_type'] %}
+                    <option value="{{type}}">{{type}}</option>
+                    {%end%}
+                    {% end %}
                   </select>
-                </div>
-                <div class="form-group">
-                  <label for="body">{{ translate('webhooks', 'webhook_body', data['lang']) }}</label>
+                  <br>
+                  <br>
+                  <div class="form-group">
+                    <label for="name">{{ translate('webhooks', 'name' , data['lang']) }}</label>
+                    <input type="input" class="form-control" name="name" id="name_input" value="{{ data['webhook']['name']}}" maxlength="30" placeholder="Name" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="url">{{ translate('webhooks', 'url', data['lang']) }}</label>
+                    <input type="input" class="form-control" name="url" id="url" value="{{ data['webhook']['url']}}" placeholder="https://webhooks.craftycontrol.com/fakeurl" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="bot_name">{{ translate('webhooks', 'bot_name' , data['lang']) }}</label>
+                    <input type="input" class="form-control" name="bot_name" id="bot_name_input" value="{{ data['webhook']['bot_name']}}" maxlength="30" placeholder="Crafty Controller" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="trigger">{{ translate('webhooks', 'trigger', data['lang']) }}</label>
+                    <select class="form-control selectpicker show-tick" name="trigger" id="trigger-select" data-icon-base="fas" data-tick-icon="fa-check" multiple data-style="custom-picker">
+                      {% for trigger in data['triggers'] %}
+                      {% if trigger in data["webhook"]["trigger"] %}
+                      <option value="{{trigger}}" selected>{{translate('webhooks', trigger , data['lang'])}}</option>
+                      {% else %}
+                      <option value="{{trigger}}">{{translate('webhooks', trigger , data['lang'])}}</option>
+                      {% end %}
+                      {% end %}
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="body">{{ translate('webhooks', 'webhook_body', data['lang']) }}</label>
                     <textarea id="body-input" name="body" rows="4" cols="50">
                       {{ data["webhook"]["body"] }}
                     </textarea>
-                </div>
-                <div class="form-group">
-                  <label for="bot_name">{{ translate('webhooks', 'color' , data['lang']) }}</label>
-                  <input type="color" class="form-control" name="color" id="color" value='{{data["webhook"]["color"]}}'>
-                </div>
-                <div class="form-group">
-                  <div class="custom-control custom-switch">
-                    <input type="checkbox" class="custom-control-input" id="enabled" name="enabled" {% if data['webhook']['enabled'] %}checked{%end%}
-                    value="1">
-                    <label for="enabled" class="custom-control-label">{{ translate('webhooks', 'enabled', data['lang']) }}</label>
                   </div>
-                </div>
+                  <div class="form-group">
+                    <label for="bot_name">{{ translate('webhooks', 'color' , data['lang']) }}</label>
+                    <input type="color" class="form-control" name="color" id="color" value='{{data["webhook"]["color"]}}'>
+                  </div>
+                  <div class="form-group">
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" class="custom-control-input" id="enabled" name="enabled" {% if data['webhook']['enabled'] %}checked{%end%} value="1">
+                      <label for="enabled" class="custom-control-label">{{ translate('webhooks', 'enabled', data['lang']) }}</label>
+                    </div>
+                  </div>
                   <button type="submit" class="btn btn-success mr-2"><i class="fas fa-save"></i> {{
                     translate('serverConfig', 'save', data['lang']) }}</button>
-                  <button type="reset"
-                    onclick="location.href=`/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=webhooks`"
-                    class="btn btn-light"><i class="fas fa-times"></i> {{ translate('serverConfig', 'cancel',
+                  <button type="reset" onclick="location.href=`/panel/server_detail?id={{ data['server_stats']['server_uuid']['server_uuid'] }}&subpage=webhooks`" class="btn btn-light"><i class="fas fa-times"></i> {{ translate('serverConfig', 'cancel',
                     data['lang']) }}</button>
                 </form>
             </div>
@@ -115,20 +107,21 @@
 
   </div>
   <style>
-      .custom-control-input:checked~.custom-control-label::before {
-    color: black !important;
-    background-color: blueviolet !important;
-    border-color: var(--outline) !important;
-  }
+    .custom-control-input:checked~.custom-control-label::before {
+      color: black !important;
+      background-color: blueviolet !important;
+      border-color: var(--outline) !important;
+    }
 
-  .custom-control-label::before {
-    background-color: white !important;
-    top: calc(-0.2rem);
-  }
+    .custom-control-label::before {
+      background-color: white !important;
+      top: calc(-0.2rem);
+    }
 
-  .custom-switch .custom-control-label::after {
-    top: calc(-0.125rem + 1px);
-  }
+    .custom-switch .custom-control-label::after {
+      top: calc(-0.125rem + 1px);
+    }
+
     #body-input {
       background-color: var(--card-banner-bg);
       outline-color: var(--outline);
@@ -142,12 +135,12 @@
 
   {% block js %}
   <script>
-  $(function () {
-    $('.form-check-input').bootstrapToggle({
-      on: '',
-      off: ''
-    });
-  })
+    $(function () {
+      $('.form-check-input').bootstrapToggle({
+        on: '',
+        off: ''
+      });
+    })
 
     //used to get cookies from browser - this is part of tornados xsrf protection - it's for extra security
     function getCookie(name) {
@@ -156,123 +149,123 @@
     }
 
     function replacer(key, value) {
-    if (key != "start_time" && key != "cron_string" && key != "interval_type") {
-      if (typeof value == "boolean") {
-        return value
-      } 
-      console.log(key)
-      if (key === "interval" && value === ""){
-        return 0;
-      }
-      if (key === "command" && typeof(value === "integer")){
-        return value.toString();
-      }else {
-        return (isNaN(value) ? value : +value);
-      }
-    } else {
-      if (value === "" && key == "start_time"){
-        return "00:00";
-      }else{
-        return value;
+      if (key != "start_time" && key != "cron_string" && key != "interval_type") {
+        if (typeof value == "boolean") {
+          return value
+        }
+        console.log(key)
+        if (key === "interval" && value === "") {
+          return 0;
+        }
+        if (key === "command" && typeof (value === "integer")) {
+          return value.toString();
+        } else {
+          return (isNaN(value) ? value : +value);
+        }
+      } else {
+        if (value === "" && key == "start_time") {
+          return "00:00";
+        } else {
+          return value;
+        }
       }
     }
-  }
 
     const serverId = new URLSearchParams(document.location.search).get('id');
     const webhookId = new URLSearchParams(document.location.search).get('webhook_id');
     $(document).ready(function () {
       console.log("ready!");
       console.log('ready for JS!');
-    $('.selectpicker').selectpicker("refresh");
+      $('.selectpicker').selectpicker("refresh");
       $("#new_webhook_form").on("submit", async function (e) {
-      e.preventDefault();
-      var token = getCookie("_xsrf")
-      let webhookForm = document.getElementById("new_webhook_form");
-      let select_val = JSON.stringify($('#trigger-select').val());
-      select_val = JSON.parse(select_val);
+        e.preventDefault();
+        var token = getCookie("_xsrf")
+        let webhookForm = document.getElementById("new_webhook_form");
+        let select_val = JSON.stringify($('#trigger-select').val());
+        select_val = JSON.parse(select_val);
 
-      let formData = new FormData(webhookForm);
-      //Create an object from the form data entries
-      let formDataObject = Object.fromEntries(formData.entries());
-      //We need to make sure these are sent regardless of whether or not they're checked
-      formDataObject.enabled = $("#enabled").prop('checked');
-      formDataObject.trigger = select_val;
+        let formData = new FormData(webhookForm);
+        //Create an object from the form data entries
+        let formDataObject = Object.fromEntries(formData.entries());
+        //We need to make sure these are sent regardless of whether or not they're checked
+        formDataObject.enabled = $("#enabled").prop('checked');
+        formDataObject.trigger = select_val;
 
-      console.log(formDataObject);
-      // Format the plain form data as JSON
-      let formDataJsonString = JSON.stringify(formDataObject, replacer);
+        console.log(formDataObject);
+        // Format the plain form data as JSON
+        let formDataJsonString = JSON.stringify(formDataObject, replacer);
 
-      let res = await fetch(`/api/v2/servers/${serverId}/webhook/`, {
-        method: 'POST',
-        headers: {
-          'X-XSRFToken': token,
-          "Content-Type": "application/json",
-        },
-        body: formDataJsonString,
-      });
-      let responseData = await res.json();
-      if (responseData.status === "ok") {
-        window.location.href = `/panel/server_detail?id=${serverId}&subpage=webhooks`;
-      } else {
+        let res = await fetch(`/api/v2/servers/${serverId}/webhook/`, {
+          method: 'POST',
+          headers: {
+            'X-XSRFToken': token,
+            "Content-Type": "application/json",
+          },
+          body: formDataJsonString,
+        });
+        let responseData = await res.json();
+        if (responseData.status === "ok") {
+          window.location.href = `/panel/server_detail?id=${serverId}&subpage=webhooks`;
+        } else {
 
-        bootbox.alert({
-          title: responseData.status,
-          message: responseData.error
+          bootbox.alert({
+            title: responseData.status,
+            message: responseData.error
           });
-      } 
-    });
-
-    $("#webhook_form").on("submit", async function (e) {
-      e.preventDefault();
-      var token = getCookie("_xsrf");
-      let webhookForm = document.getElementById("webhook_form");
-      let select_val = JSON.stringify($('#trigger-select').val());
-      select_val = JSON.parse(select_val);
-
-      let formData = new FormData(webhookForm);
-      //Create an object from the form data entries
-      let formDataObject = Object.fromEntries(formData.entries());
-      //We need to make sure these are sent regardless of whether or not they're checked
-      formDataObject.enabled = $("#enabled").prop('checked');
-      formDataObject.trigger = select_val;
-      if(formDataObject.webhook_type != "Discord"){
-        delete formDataObject.color
-      }
-
-      console.log(formDataObject);
-      // Format the plain form data as JSON
-      let formDataJsonString = JSON.stringify(formDataObject, replacer);
-
-      let res = await fetch(`/api/v2/servers/${serverId}/webhook/${webhookId}`, {
-        method: 'PATCH',
-        headers: {
-          'X-XSRFToken': token,
-          "Content-Type": "application/json", 
-        },
-        body: formDataJsonString,
+        }
       });
-      let responseData = await res.json();
-      if (responseData.status === "ok") {
-        window.location.href = `/panel/server_detail?id=${serverId}&subpage=webhooks`;
-      } else {
 
-        bootbox.alert({
-          title: responseData.status,
-          message: responseData.error
+      $("#webhook_form").on("submit", async function (e) {
+        e.preventDefault();
+        var token = getCookie("_xsrf");
+        let webhookForm = document.getElementById("webhook_form");
+        let select_val = JSON.stringify($('#trigger-select').val());
+        select_val = JSON.parse(select_val);
+
+        let formData = new FormData(webhookForm);
+        //Create an object from the form data entries
+        let formDataObject = Object.fromEntries(formData.entries());
+        //We need to make sure these are sent regardless of whether or not they're checked
+        formDataObject.enabled = $("#enabled").prop('checked');
+        formDataObject.trigger = select_val;
+        if (formDataObject.webhook_type != "Discord") {
+          delete formDataObject.color
+        }
+
+        console.log(formDataObject);
+        // Format the plain form data as JSON
+        let formDataJsonString = JSON.stringify(formDataObject, replacer);
+
+        let res = await fetch(`/api/v2/servers/${serverId}/webhook/${webhookId}`, {
+          method: 'PATCH',
+          headers: {
+            'X-XSRFToken': token,
+            "Content-Type": "application/json",
+          },
+          body: formDataJsonString,
+        });
+        let responseData = await res.json();
+        if (responseData.status === "ok") {
+          window.location.href = `/panel/server_detail?id=${serverId}&subpage=webhooks`;
+        } else {
+
+          bootbox.alert({
+            title: responseData.status,
+            message: responseData.error
           });
-      } 
-    });
+        }
+      });
 
     });
-    
-  function hexToDiscordInt(hexColor) {
-    // Remove the hash at the start if it's there
-    const sanitizedHex = hexColor.startsWith('#') ? hexColor.slice(1) : hexColor;
-    
-    // Convert the hex to an integer
-    return parseInt(sanitizedHex, 16);
-  }
+
+    function hexToDiscordInt(hexColor) {
+      // Remove the hash at the start if it's there
+      const sanitizedHex = hexColor.startsWith('#') ? hexColor.slice(1) : hexColor;
+
+      // Convert the hex to an integer
+      return parseInt(sanitizedHex, 16);
+    }
   </script>
-<script src="../../static/assets/vendors/js/bootstrap-select.min.js"></script>
+  <script src="../../static/assets/vendors/js/bootstrap-select.min.js"></script>
 
   {% end %}

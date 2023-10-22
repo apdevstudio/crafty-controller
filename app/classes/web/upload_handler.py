@@ -209,7 +209,7 @@ class UploadHandler(BaseHandler):
             # If max_body_size is not set, you cannot upload files > 100MB
             self.request.connection.set_max_body_size(max_streamed_size)
         else:
-            server_id = self.get_argument("server_id", None)
+            server_uuid = self.get_argument("server_uuid", None)
             superuser = exec_user["superuser"]
             if api_key is not None:
                 superuser = superuser and api_key.superuser
@@ -246,18 +246,18 @@ class UploadHandler(BaseHandler):
             elif api_key is not None:
                 exec_user_server_permissions = (
                     self.controller.server_perms.get_api_key_permissions_list(
-                        api_key, server_id
+                        api_key, server_uuid
                     )
                 )
             else:
                 exec_user_server_permissions = (
                     self.controller.server_perms.get_user_id_permissions_list(
-                        exec_user["user_id"], server_id
+                        exec_user["user_id"], server_uuid
                     )
                 )
 
-            server_id = self.request.headers.get("X-ServerId", None)
-            if server_id is None:
+            server_uuid = self.request.headers.get("X-ServerId", None)
+            if server_uuid is None:
                 logger.warning("Server ID not found in upload handler call")
                 Console.warning("Server ID not found in upload handler call")
                 self.do_upload = False
@@ -270,11 +270,11 @@ class UploadHandler(BaseHandler):
             if EnumPermissionsServer.FILES not in exec_user_server_permissions:
                 logger.warning(
                     f"User {user_id} tried to upload a file to "
-                    f"{server_id} without permissions!"
+                    f"{server_uuid} without permissions!"
                 )
                 Console.warning(
                     f"User {user_id} tried to upload a file to "
-                    f"{server_id} without permissions!"
+                    f"{server_uuid} without permissions!"
                 )
                 self.do_upload = False
 
@@ -285,15 +285,15 @@ class UploadHandler(BaseHandler):
             if not self.helper.is_subdir(
                 full_path,
                 Helpers.get_os_understandable_path(
-                    self.controller.servers.get_server_data_by_id(server_id)["path"]
+                    self.controller.servers.get_server_data_by_id(server_uuid)["path"]
                 ),
             ):
                 logger.warning(
-                    f"User {user_id} tried to upload a file to {server_id} "
+                    f"User {user_id} tried to upload a file to {server_uuid} "
                     f"but the path is not inside of the server!"
                 )
                 Console.warning(
-                    f"User {user_id} tried to upload a file to {server_id} "
+                    f"User {user_id} tried to upload a file to {server_uuid} "
                     f"but the path is not inside of the server!"
                 )
                 self.do_upload = False

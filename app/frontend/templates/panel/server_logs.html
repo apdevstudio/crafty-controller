@@ -15,9 +15,9 @@
       <div class="page-header">
         <h4 class="page-title">
           {{ translate('serverDetails', 'serverDetails', data['lang']) }} - {{
-          data['server_stats']['server_id']['server_name'] }}
+          data['server_stats']['server_uuid']['server_name'] }}
           <br />
-          <small>UUID: {{ data['server_stats']['server_id']['server_uuid'] }}</small>
+          <small>UUID: {{ data['server_stats']['server_uuid']['server_uuid'] }}</small>
         </h4>
       </div>
     </div>
@@ -41,8 +41,7 @@
 
           <div class="col-md-12">
             <div class="input-group">
-              <div id="virt_console" class=""
-                style="width: 100%; font-size: .8em; padding: 5px 10px; border: 1px solid var(--outline); background-color:var(--card-banner-bg);height:500px; overflow: scroll;">
+              <div id="virt_console" class="" style="width: 100%; font-size: .8em; padding: 5px 10px; border: 1px solid var(--outline); background-color:var(--card-banner-bg);height:500px; overflow: scroll;">
               </div>
             </div>
             <br />

@@ -15,7 +15,7 @@ modify_role_schema = {
             "items": {
                 "type": "object",
                 "properties": {
-                    "server_id": {
+                    "server_uuid": {
                         "type": "integer",
                         "minimum": 1,
                     },
@@ -24,7 +24,7 @@ modify_role_schema = {
                         "pattern": "^[01]{8}$",  # 8 bits, see EnumPermissionsServer
                     },
                 },
-                "required": ["server_id", "permissions"],
+                "required": ["server_uuid", "permissions"],
             },
         },
         "manager": {"type": ["integer", "null"]},
@@ -45,7 +45,7 @@ basic_modify_role_schema = {
             "items": {
                 "type": "object",
                 "properties": {
-                    "server_id": {
+                    "server_uuid": {
                         "type": "integer",
                         "minimum": 1,
                     },
@@ -54,7 +54,7 @@ basic_modify_role_schema = {
                         "pattern": "^[01]{8}$",  # 8 bits, see EnumPermissionsServer
                     },
                 },
-                "required": ["server_id", "permissions"],
+                "required": ["server_uuid", "permissions"],
             },
         },
     },
@@ -112,7 +112,7 @@ class ApiRolesRoleIndexHandler(BaseApiHandler):
         self.controller.management.add_to_audit_log(
             user["user_id"],
             f"deleted role with ID {role_id}",
-            server_id=0,
+            server_uuid=0,
             source_ip=self.get_remote_ip(),
         )
 
@@ -172,7 +172,7 @@ class ApiRolesRoleIndexHandler(BaseApiHandler):
         self.controller.management.add_to_audit_log(
             user["user_id"],
             f"modified role with ID {role_id}",
-            server_id=0,
+            server_uuid=0,
             source_ip=self.get_remote_ip(),
         )
 

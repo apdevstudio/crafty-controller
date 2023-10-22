@@ -67,7 +67,7 @@ class Import3:
         # If there is only one server to import json needs to call the data differently
         if isinstance(json_data, list):
             for server in json_data:
-                new_server_id = controller.import_jar_server(
+                new_server_uuid = controller.import_jar_server(
                     server_name=server["server_name"],
                     server_path=server["server_path"],
                     server_jar=server["server_jar"],
@@ -78,14 +78,14 @@ class Import3:
                 )
                 Console.info(
                     f"Imported server {server['server_name']}[{server['id']}] "
-                    f"from Crafty 3 to new server id {new_server_id}"
+                    f"from Crafty 3 to new server id {new_server_uuid}"
                 )
                 logger.info(
                     f"Imported server {server['server_name']}[{server['id']}] "
-                    f"from Crafty 3 to new server id {new_server_id}"
+                    f"from Crafty 3 to new server id {new_server_uuid}"
                 )
         else:
-            new_server_id = controller.import_jar_server(
+            new_server_uuid = controller.import_jar_server(
                 server_name=json_data["server_name"],
                 server_path=json_data["server_path"],
                 server_jar=json_data["server_jar"],
@@ -96,9 +96,9 @@ class Import3:
             )
             Console.info(
                 f"Imported server {json_data['server_name']}[{json_data['id']}] "
-                f"from Crafty 3 to new server id {new_server_id}"
+                f"from Crafty 3 to new server id {new_server_uuid}"
             )
             logger.info(
                 f"Imported server {json_data['server_name']}[{json_data['id']}] "
-                f"from Crafty 3 to new server id {new_server_id}"
+                f"from Crafty 3 to new server id {new_server_uuid}"
             )

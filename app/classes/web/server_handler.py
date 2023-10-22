@@ -60,28 +60,28 @@ class ServerHandler(BaseHandler):
         user_order = self.controller.users.get_user_by_id(exec_user["user_id"])
         user_order = user_order["server_order"].split(",")
         page_servers = []
-        server_ids = []
+        server_uuids = []
 
-        for server_id in user_order[:]:
+        for server_uuid in user_order[:]:
             for server in defined_servers[:]:
-                if str(server.server_id) == str(server_id):
+                if str(server.server_uuid) == str(server_uuid):
                     page_servers.append(
                         DatabaseShortcuts.get_data_obj(server.server_object)
                     )
-                    user_order.remove(server_id)
+                    user_order.remove(server_uuid)
                     defined_servers.remove(server)
 
         for server in defined_servers:
-            server_ids.append(str(server.server_id))
+            server_uuids.append(str(server.server_uuid))
             if server not in page_servers:
                 page_servers.append(
                     DatabaseShortcuts.get_data_obj(server.server_object)
                 )
 
-        for server_id in user_order[:]:
+        for server_uuid in user_order[:]:
             # remove IDs in list that user no longer has access to
-            if str(server_id) not in server_ids:
-                user_order.remove(server_id)
+            if str(server_uuid) not in server_uuids:
+                user_order.remove(server_uuid)
         defined_servers = page_servers
 
         template = "public/404.html"

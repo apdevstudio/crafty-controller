@@ -12,7 +12,7 @@ class ApiServersServerStatusHandler(BaseApiHandler):
             if server.get("server_data").get("show_status") is True:
                 servers_status.append(
                     {
-                        "id": server.get("server_data").get("server_id"),
+                        "id": server.get("server_data").get("server_uuid"),
                         "world_name": server.get("stats").get("world_name"),
                         "running": server.get("stats").get("running"),
                         "online": server.get("stats").get("online"),

@@ -50,28 +50,28 @@ task_patch_schema = {
 
 
 class ApiServersServerTasksTaskIndexHandler(BaseApiHandler):
-    def get(self, server_id: str, task_id: str):
+    def get(self, server_uuid: str, task_id: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
         if (
             EnumPermissionsServer.SCHEDULE
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Schedule permission, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
         self.finish_json(200, self.controller.management.get_scheduled_task(task_id))
 
-    def delete(self, server_id: str, task_id: str):
+    def delete(self, server_uuid: str, task_id: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
         if (
             EnumPermissionsServer.SCHEDULE
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Schedule permission, return an error
@@ -85,15 +85,15 @@ class ApiServersServerTasksTaskIndexHandler(BaseApiHandler):
             )
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],
-            f"Edited server {server_id}: removed schedule",
-            server_id,
+            f"Edited server {server_uuid}: removed schedule",
+            server_uuid,
             self.get_remote_ip(),
         )
         self.tasks_manager.reload_schedule_from_db()
 
         return self.finish_json(200, {"status": "ok"})
 
-    def patch(self, server_id: str, task_id: str):
+    def patch(self, server_uuid: str, task_id: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
@@ -117,14 +117,14 @@ class ApiServersServerTasksTaskIndexHandler(BaseApiHandler):
                 },
             )
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.SCHEDULE
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Schedule permission, return an error
@@ -135,7 +135,7 @@ class ApiServersServerTasksTaskIndexHandler(BaseApiHandler):
         if str(data.get("parent")) == str(task_id) and data.get("parent") is not None:
             data["parent"] = None
 
-        data["server_id"] = server_id
+        data["server_uuid"] = server_uuid
         if "cron_string" in data:
             if data["cron_string"] != "" and not croniter.is_valid(data["cron_string"]):
                 return self.finish_json(
@@ -155,8 +155,8 @@ class ApiServersServerTasksTaskIndexHandler(BaseApiHandler):
 
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],
-            f"Edited server {server_id}: updated schedule",
-            server_id,
+            f"Edited server {server_uuid}: updated schedule",
+            server_uuid,
             self.get_remote_ip(),
         )
         self.tasks_manager.reload_schedule_from_db()

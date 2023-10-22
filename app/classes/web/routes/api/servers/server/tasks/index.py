@@ -48,10 +48,10 @@ new_task_schema = {
 
 
 class ApiServersServerTasksIndexHandler(BaseApiHandler):
-    def get(self, server_id: str, task_id: str):
+    def get(self, server_uuid: str, task_id: str):
         pass
 
-    def post(self, server_id: str):
+    def post(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
@@ -75,19 +75,19 @@ class ApiServersServerTasksIndexHandler(BaseApiHandler):
                 },
             )
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.SCHEDULE
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Schedule permission, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
-        data["server_id"] = server_id
+        data["server_uuid"] = server_uuid
         if not data.get("start_time"):
             data["start_time"] = "00:00"
 
@@ -113,8 +113,8 @@ class ApiServersServerTasksIndexHandler(BaseApiHandler):
 
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],
-            f"Edited server {server_id}: added schedule",
-            server_id,
+            f"Edited server {server_uuid}: added schedule",
+            server_uuid,
             self.get_remote_ip(),
         )
         self.tasks_manager.reload_schedule_from_db()

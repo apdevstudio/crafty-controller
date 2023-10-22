@@ -35,21 +35,21 @@ webhook_patch_schema = {
 
 
 class ApiServersServerWebhooksManagementIndexHandler(BaseApiHandler):
-    def get(self, server_id: str, webhook_id: str):
+    def get(self, server_uuid: str, webhook_id: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
         if (
             EnumPermissionsServer.CONFIG
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Schedule permission, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
         if (
             not str(webhook_id)
-            in self.controller.management.get_webhooks_by_server(server_id).keys()
+            in self.controller.management.get_webhooks_by_server(server_uuid).keys()
         ):
             return self.finish_json(
                 400, {"status": "error", "error": "NO WEBHOOK FOUND"}
@@ -62,14 +62,14 @@ class ApiServersServerWebhooksManagementIndexHandler(BaseApiHandler):
             },
         )
 
-    def delete(self, server_id: str, webhook_id: str):
+    def delete(self, server_uuid: str, webhook_id: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
         if (
             EnumPermissionsServer.CONFIG
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Schedule permission, return an error
@@ -83,14 +83,14 @@ class ApiServersServerWebhooksManagementIndexHandler(BaseApiHandler):
             )
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],
-            f"Edited server {server_id}: removed webhook",
-            server_id,
+            f"Edited server {server_uuid}: removed webhook",
+            server_uuid,
             self.get_remote_ip(),
         )
 
         return self.finish_json(200, {"status": "ok"})
 
-    def patch(self, server_id: str, webhook_id: str):
+    def patch(self, server_uuid: str, webhook_id: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
@@ -114,20 +114,20 @@ class ApiServersServerWebhooksManagementIndexHandler(BaseApiHandler):
                 },
             )
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.CONFIG
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Schedule permission, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
-        data["server_id"] = server_id
+        data["server_uuid"] = server_uuid
         if "trigger" in data.keys():
             triggers = ""
             for item in data["trigger"]:
@@ -138,14 +138,14 @@ class ApiServersServerWebhooksManagementIndexHandler(BaseApiHandler):
 
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],
-            f"Edited server {server_id}: updated webhook",
-            server_id,
+            f"Edited server {server_uuid}: updated webhook",
+            server_uuid,
             self.get_remote_ip(),
         )
 
         self.finish_json(200, {"status": "ok"})
 
-    def post(self, server_id: str, webhook_id: str):
+    def post(self, server_uuid: str, webhook_id: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
@@ -153,17 +153,17 @@ class ApiServersServerWebhooksManagementIndexHandler(BaseApiHandler):
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],
             "Tested webhook",
-            server_id,
+            server_uuid,
             self.get_remote_ip(),
         )
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.CONFIG
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Schedule permission, return an error
@@ -172,7 +172,7 @@ class ApiServersServerWebhooksManagementIndexHandler(BaseApiHandler):
         try:
             webhook_provider = WebhookFactory.create_provider(webhook["webhook_type"])
             webhook_provider.send(
-                server_name=self.controller.servers.get_server_data_by_id(server_id)[
+                server_name=self.controller.servers.get_server_data_by_id(server_uuid)[
                     "server_name"
                 ],
                 title=f"Test Webhook: {webhook['name']}",
