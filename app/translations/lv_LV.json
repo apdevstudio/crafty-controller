@@ -500,10 +500,10 @@
         "every": "Katru",
         "interval": "Intervāls",
         "name": "Nosaukums",
-        "newShedule": "Jauns Grafiks",
+        "newSchedule": "Jauns Grafiks",
         "nextRun": "Nākamā Izpilde",
         "no": "Nē",
-        "no-shedule": "Pašlaik šim serverim nav grafiku. Lai sāktu, spied",
+        "no-schedule": "Pašlaik šim serverim nav grafiku. Lai sāktu, spied",
         "scheduledTasks": "Ieplānotie Notikumi",
         "yes": "Jā"
     },

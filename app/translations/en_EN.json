@@ -499,10 +499,10 @@
         "every": "Every",
         "interval": "Interval",
         "name": "Name",
-        "newShedule": "New Schedule",
+        "newSchedule": "New Schedule",
         "nextRun": "Next Run",
         "no": "No",
-        "no-shedule": "There are currently no shedules for this server. To get started, click",
+        "no-schedule": "There are currently no schedules for this server. To get started, click",
         "scheduledTasks": "Scheduled Tasks",
         "yes": "Yes"
     },

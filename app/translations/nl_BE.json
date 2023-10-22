@@ -499,10 +499,10 @@
         "every": "Elke",
         "interval": "Interval",
         "name": "Naam",
-        "newShedule": "Nieuw schema",
+        "newSchedule": "Nieuw schema",
         "nextRun": "Volgende uitvoering",
         "no": "Nee",
-        "no-shedule": "Er zijn momenteel geen schema's voor deze server. Klik om te beginnen op",
+        "no-schedule": "Er zijn momenteel geen schema's voor deze server. Klik om te beginnen op",
         "scheduledTasks": "Geplande taken",
         "yes": "Ja"
     },

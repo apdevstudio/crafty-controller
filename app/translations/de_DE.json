@@ -499,10 +499,10 @@
         "every": "Jede",
         "interval": "Intervall",
         "name": "Name",
-        "newShedule": "Neue Routine",
+        "newSchedule": "Neue Routine",
         "nextRun": "Nächster Durchlauf",
         "no": "Nein",
-        "no-shedule": "Derzeit gibt es keine Routinen für diesen Server. Hier kann eine angelegt werden",
+        "no-schedule": "Derzeit gibt es keine Routinen für diesen Server. Hier kann eine angelegt werden",
         "scheduledTasks": "Geplante Aufgaben",
         "yes": "Ja"
     },

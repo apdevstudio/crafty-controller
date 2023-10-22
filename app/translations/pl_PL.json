@@ -499,10 +499,10 @@
         "every": "Co",
         "interval": "Regularność",
         "name": "Nazwa",
-        "newShedule": "Nowe zadanie",
+        "newSchedule": "Nowe zadanie",
         "nextRun": "Następne uruchomienie",
         "no": "Nie",
-        "no-shedule": "Nie posiadasz aktualnie żadnych zadań dla tego serwera. Aby dodać zadanie kliknij na",
+        "no-schedule": "Nie posiadasz aktualnie żadnych zadań dla tego serwera. Aby dodać zadanie kliknij na",
         "scheduledTasks": "Zaplanowane zadania",
         "yes": "Tak"
     },

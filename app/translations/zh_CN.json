@@ -499,10 +499,10 @@
         "every": "每",
         "interval": "间隔",
         "name": "名称",
-        "newShedule": "新计划",
+        "newSchedule": "新计划",
         "nextRun": "下次运行",
         "no": "否",
-        "no-shedule": "此服务器当前没有计划。要开始使用计划，点击",
+        "no-schedule": "此服务器当前没有计划。要开始使用计划，点击",
         "scheduledTasks": "计划任务",
         "yes": "是"
     },
