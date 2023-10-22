@@ -3,11 +3,11 @@
 ### New features
 TBD
 ### Bug fixes
-TBD
+- Fix logic issue with `get_files` API permissions check ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/654))
 ### Tweaks
-TBD
+- Auto refresh Crafty Announcements on 30m interval ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/653))
 ### Lang
-TBD
+- Update zh_CN lang file ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/652))
 <br><br>
 
 ## --- [4.2.0] - 2023/10/18
