@@ -44,7 +44,7 @@ black:
 # Code Climate/Quality Checking [https://pylint.pycqa.org/en/latest/]
 pylint:
   stage: lint
-  image: registry.gitlab.com/pipeline-components/pylint:latest
+  image: registry.gitlab.com/pipeline-components/pylint:0.21.1
   tags:
     - docker
   rules:
