@@ -46,104 +46,107 @@
                 <div class="card-header header-sm d-flex justify-content-between align-items-center">
                   <h4 class="card-title"><i class="fa-regular fa-bell"></i> {{ translate('webhooks', 'webhooks', data['lang']) }} </h4>
                   {% if data['user_data']['hints'] %}
-                  <span class="too_small" title="{{ translate('serverSchedules', 'cannotSee', data['lang']) }}" ,
-                    data-content="{{ translate('serverSchedules', 'cannotSeeOnMobile', data['lang']) }}" ,
-                    data-placement="bottom"></span>
+                  <span class="too_small" title="{{ translate('serverSchedules', 'cannotSee', data['lang']) }}" , data-content="{{ translate('serverSchedules', 'cannotSeeOnMobile', data['lang']) }}" , data-placement="bottom"></span>
                   {% end %}
-                  <div><button
-                      onclick="location.href=`/panel/add_webhook?id={{ data['server_stats']['server_id']['server_id'] }}`"
-                      class="btn btn-info">{{ translate('webhooks', 'new', data['lang']) }}<i
-                        class="fas fa-pencil-alt"></i></button></div>
+                  <div><a class="btn btn-info" href="/panel/add_webhook?id={{ data['server_stats']['server_id']['server_id'] }}"><i class="fas fa-plus-circle"></i> {{ translate('webhooks', 'new', data['lang']) }}</a></div>
                 </div>
                 <div class="card-body">
-                  <table class="table table-hover d-none d-lg-block responsive-table" aria-label="webhooks list" id="webhook_table" width="100%" style="table-layout:fixed;">
-                    <thead>
-                      <tr class="rounded">
-                        <th style="width: 10%; min-width: 10px;">{{ translate('webhooks', 'name', data['lang']) }}
-                        </th>
-                        <th style="width: 20%; min-width: 50px;">{{ translate('webhooks', 'type', data['lang']) }}</th>
-                        <th style="width: 50%; min-width: 50px;">{{ translate('webhooks', 'trigger', data['lang']) }}</th>
-                        <th style="width: 10%; min-width: 50px;">{{ translate('webhooks', 'enabled',
-                          data['lang']) }}</th>
-                        <th style="width: 10%; min-width: 50px;">{{ translate('webhooks', 'edit', data['lang'])
-                          }}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for webhook in data['webhooks'] %}
-                      <tr>
-                        <td id="{{webhook.name}}" class="id">
-                          <p>{{webhook.name}}</p>
-                        </td>
-                        <td id="{{webhook.webhook_type}}" class="type">
-                          <p>{{webhook.webhook_type}}</p>
-                        </td>
-                        <td id="{{webhook.trigger}}" class="trigger" style="overflow: scroll; max-width: 30px;">
-                          <ul>
-                            {% for trigger in webhook.trigger.split(",") %}
-                            {% if trigger in data["triggers"] %}
-                            <li>{{translate('webhooks', trigger , data['lang'])}}</li>
-                            {%end%}
-                            {%end%}
-                          </ul>
-                        </td>
-                        <td id="{{webhook.enabled}}" class="enabled">
-                          <input style="width: 10px !important;" type="checkbox" class="webhook-enabled-toggle" data-webhook-id="{{webhook.id}}" data-webhook-enabled="{{ 'true' if webhook.enabled else 'false' }}">
-                        </td>
-                        <td id="webhook_edit" class="action">
-                          <button onclick="window.location.href='/panel/webhook_edit?id={{ data['server_stats']['server_id']['server_id'] }}&webhook_id={{webhook.id}}'" class="btn btn-info">
-                            <i class="fas fa-pencil-alt"></i>
-                          </button>
-                          <br>
-                          <br>
-                          <button data-webhook={{ webhook.id }} class="btn btn-danger del_button">
-                            <i class="fas fa-trash" aria-hidden="true"></i>
-                          </button>
-                          <button data-webhook={{ webhook.id }} data-toggle="tooltip" title="{{ translate('webhooks', 'run', data['lang']) }}" class="btn btn-outline-warning test-socket">
-                            <i class="fa-solid fa-vial"></i>
-                          </button>
-                        </td>
-                      </tr>
-                      {% end %}
-                    </tbody>
-                  </table>
-                  <table aria-label="webhooks list" class="table table-hover d-block d-lg-none responsive-table" id="webhook_table_mini" width="100%" style="table-layout:fixed;">
-                    <thead>
-                      <tr class="rounded">
-                        <th style="width: 33.33%; min-width: 10px;">Name
-                        </th>
-                        <th style="width: 33.33%; min-width: 50px;">{{ translate('webhooks', 'enabled',
-                          data['lang']) }}</th>
-                        <th style="width: 33.33%; min-width: 50px;">{{ translate('webhooks', 'edit', data['lang'])
-                          }}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for webhook in data['webhooks'] %}
-                      <tr>
-                        <td id="{{webhook.name}}" class="id">
-                          <p>{{webhook.name}}</p>
-                        </td>
-                        <td id="{{webhook.enabled}}" class="enabled">
-                          <input style="width: 10px !important;" type="checkbox" class="webhook-enabled-toggle" data-webhook-id="{{webhook.id}}" data-webhook-enabled="{{ 'true' if webhook.enabled else 'false' }}">
-                        </td>
-                        <td id="webhook_edit" class="action">
-                          <button onclick="window.location.href='/panel/webhook_edit?id={{ data['server_stats']['server_id']['server_id'] }}&webhook_id={{webhook.id}}'" class="btn btn-info">
-                            <i class="fas fa-pencil-alt"></i>
-                          </button>
-                          <br>
-                          <br>
-                          <button data-webhook={{ webhook.id }} class="btn btn-danger del_button">
-                            <i class="fas fa-trash" aria-hidden="true"></i>
-                          </button>
-                          <button data-webhook={{ webhook.id }} data-toggle="tooltip" title="{{ translate('webhooks', 'run', data['lang']) }}" class="btn btn-outline-warning test-socket">
-                            <i class="fa-solid fa-vial"></i>
-                          </button>
-                        </td>
-                      </tr>
-                      {% end %}
-                    </tbody>
-                  </table>
+                  {% if len(data['webhooks']) == 0 %}
+                  <div style="text-align: center; color: grey;">
+                    <h7>{{ translate('webhooks', 'no-webhook', data['lang']) }} <strong>{{ translate('webhooks', 'newWebhook',data['lang']) }}</strong>.</h7>
+                  </div>
+                  {% end %}
+                  {% if len(data['webhooks']) > 0 %}
+                  <div class="d-none d-lg-block">
+                    <table class="table table-hover responsive-table" aria-label="webhooks list" id="webhook_table" width="100%" style="table-layout:fixed;">
+                      <thead>
+                        <tr class="rounded">
+                          <th scope="col" style="width: 5%; min-width: 64px;">{{ translate('webhooks', 'enabled', data['lang']) }}</th>
+                          <th scope="col" style="width: 15%; min-width: 10px;">{{ translate('webhooks', 'name', data['lang']) }} </th>
+                          <th scope="col" style="width: 20%; min-width: 50px;">{{ translate('webhooks', 'type', data['lang']) }}</th>
+                          <th scope="col" style="width: 50%; min-width: 50px;">{{ translate('webhooks', 'trigger', data['lang']) }}</th>
+                          <th scope="col" style="width: 10%; min-width: 50px;">{{ translate('webhooks', 'edit', data['lang']) }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for webhook in data['webhooks'] %}
+                        <tr>
+                          <td id="{{webhook.enabled}}" class="enabled">
+                            <button type="button" class="btn btn-sm btn-info btn-toggle webhook-custom-toggle" id="webhook_{{webhook.id}}" name="webhook_{{webhook.id}}" data-webhook-id="{{webhook.id}}" data-webhook-enabled="{{ 'true' if webhook.enabled else 'false' }}" data-toggle="button" aria-pressed="true" autocomplete="off">
+                              <div class="handle"></div>
+                            </button>
+                          </td>
+                          <td id="{{webhook.name}}" class="id">
+                            <p>{{webhook.name}}</p>
+                          </td>
+                          <td id="{{webhook.webhook_type}}" class="type">
+                            <p>{{webhook.webhook_type}}</p>
+                          </td>
+                          <td id="{{webhook.trigger}}" class="trigger" style="overflow: scroll; max-width: 30px;">
+                            <ul>
+                              {% for trigger in webhook.trigger.split(",") %}
+                              {% if trigger in data["triggers"] %}
+                              <li>{{translate('webhooks', trigger , data['lang'])}}</li>
+                              {%end%}
+                              {%end%}
+                            </ul>
+                          </td>
+                          <td id="webhook_edit" class="action">
+                            <button onclick="window.location.href=`/panel/webhook_edit?id={{ data['server_stats']['server_id']['server_id'] }}&webhook_id={{webhook.id}}`" class="btn btn-info">
+                              <i class="fas fa-pencil-alt"></i>
+                            </button>
+                            <button data-webhook={{ webhook.id }} class="btn btn-danger del_button">
+                              <i class="fas fa-trash" aria-hidden="true"></i>
+                            </button>
+                            <button data-webhook={{ webhook.id }} data-toggle="tooltip" title="{{ translate('webhooks', 'run', data['lang']) }}" class="btn btn-outline-warning test-socket">
+                              <i class="fa-solid fa-vial"></i>
+                            </button>
+                          </td>
+                        </tr>
+                        {% end %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="d-block d-lg-none">
+                    <table aria-label="webhooks list" class="table table-hover responsive-table" id="webhook_table_mini" width="100%" style="table-layout:fixed;">
+                      <thead>
+                        <tr class="rounded">
+                          <th style="width: 20%; min-width: 64px;">{{ translate('webhooks', 'enabled',
+                            data['lang']) }}</th>
+                          <th style="width: 40%; min-width: 10px;">Name
+                          </th>
+                          <th style="width: 40%; min-width: 50px;">{{ translate('webhooks', 'edit', data['lang'])
+                            }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for webhook in data['webhooks'] %}
+                        <tr>
+                          <td id="{{webhook.enabled}}" class="enabled">
+                            <button type="button" class="btn btn-sm btn-info btn-toggle webhook-custom-toggle" id="webhook_{{webhook.id}}" name="webhook_{{webhook.id}}" data-webhook-id="{{webhook.id}}" data-webhook-enabled="{{ 'true' if webhook.enabled else 'false' }}" data-toggle="button" aria-pressed="true" autocomplete="off">
+                              <div class="handle"></div>
+                            </button>
+                          </td>
+                          <td id="{{webhook.name}}" class="id">
+                            <p>{{webhook.name}}</p>
+                          </td>
+                          <td id="webhook_edit" class="action">
+                            <button onclick="window.location.href=`/panel/webhook_edit?id={{ data['server_stats']['server_id']['server_id'] }}&webhook_id={{webhook.id}}`" class="btn btn-info">
+                              <i class="fas fa-pencil-alt"></i>
+                            </button>
+                            <button data-webhook={{ webhook.id }} class="btn btn-danger del_button">
+                              <i class="fas fa-trash" aria-hidden="true"></i>
+                            </button>
+                            <button data-webhook={{ webhook.id }} data-toggle="tooltip" title="{{ translate('webhooks', 'run', data['lang']) }}" class="btn btn-outline-warning test-socket">
+                              <i class="fa-solid fa-vial"></i>
+                            </button>
+                          </td>
+                        </tr>
+                        {% end %}
+                      </tbody>
+                    </table>
+                  </div>
+                  {% end %}
                 </div>
               </div>
             </div>
@@ -170,6 +173,16 @@
     .toggle {
       height: 0px !important;
     }
+
+    td.enabled {
+      vertical-align: middle;
+      border-collapse: collapse !important;
+    }
+
+    .enabled .toggle-group .btn {
+      vertical-align: middle;
+      cursor: pointer;
+    }
   </style>
 
 
@@ -195,16 +208,12 @@
 
 {% block js %}
 <script>
-    $(document).ready(function () {
+  $(document).ready(function () {
     console.log('ready for JS!')
     $('#webhook_table').DataTable({
       'order': [4, 'asc'],
     }
     );
-
-  });
-  $(document).ready(function () {
-    console.log('ready for JS!')
     $('#webhook_table_mini').DataTable({
       'order': [2, 'asc']
     }
@@ -247,20 +256,21 @@
     };
   }
 
-  $(() => {
-    $('.webhook-enabled-toggle').bootstrapToggle({
-      on: 'Yes',
-      off: 'No',
-      onstyle: 'success',
-      offstyle: 'danger',
-    })
-    $('.webhook-enabled-toggle').each(function () {
+  $(document).ready(function () {
+    $('.webhook-custom-toggle').each(function () {
       const enabled = JSON.parse(this.getAttribute('data-webhook-enabled'));
-      $(this).bootstrapToggle(enabled ? 'on' : 'off')
+      if (enabled) {
+        this.classList.add("active");
+      }
+      else {
+        this.classList.remove("active");
+      }
     })
-    $('.webhook-enabled-toggle').change(function () {
+  });
+  $(() => {
+    $('.webhook-custom-toggle').click(function () {
       const id = this.getAttribute('data-webhook-id');
-      const enabled = this.checked;
+      const enabled = !JSON.parse(this.getAttribute('data-webhook-enabled'));
 
       fetch(`/api/v2/servers/{{data['server_id']}}/webhook/${id}`, {
         method: 'PATCH',
@@ -296,12 +306,12 @@
       message: "{{ translate('webhooks', 'areYouSureDel', data['lang']) }}",
       buttons: {
         cancel: {
-          label: '<i class="fas fa-times"></i> {{ translate("serverSchedules", "cancel", data['lang']) }}'
-          },
+          label: '<i class="fas fa-times"></i> {{ translate("serverSchedules", "cancel", data["lang"]) }}'
+        },
         confirm: {
           className: 'btn-outline-danger',
-          label: '<i class="fas fa-check"></i> {{ translate("serverSchedules", "confirm", data['lang']) }}'
-          }
+          label: '<i class="fas fa-check"></i> {{ translate("serverSchedules", "confirm", data["lang"]) }}'
+        }
       },
       callback: function (result) {
         console.log(result);
@@ -319,12 +329,12 @@
       message: "{{ translate('webhooks', 'areYouSureRun', data['lang']) }}",
       buttons: {
         cancel: {
-          label: '<i class="fas fa-times"></i> {{ translate("serverSchedules", "cancel", data['lang']) }}'
-          },
+          label: '<i class="fas fa-times"></i> {{ translate("serverSchedules", "cancel", data["lang"]) }}'
+        },
         confirm: {
           className: 'btn-outline-danger',
-          label: '<i class="fas fa-check"></i> {{ translate("serverSchedules", "confirm", data['lang']) }}'
-          }
+          label: '<i class="fas fa-check"></i> {{ translate("serverSchedules", "confirm", data["lang"]) }}'
+        }
       },
       callback: function (result) {
         console.log(result);
@@ -346,12 +356,12 @@
     let responseData = await res.json();
     if (responseData.status === "ok") {
       bootbox.alert("Webhook Sent!")
-    }else{
+    } else {
       console.log(responseData);
-        bootbox.alert({
-          title: responseData.status,
-          message: responseData.error
-          });
+      bootbox.alert({
+        title: responseData.status,
+        message: responseData.error
+      });
     }
   }
 
@@ -367,11 +377,11 @@
     let responseData = await res.json();
     if (responseData.status === "ok") {
       window.location.reload();
-    }else{
+    } else {
       bootbox.alert({
-          title: responseData.status,
-          message: responseData.error
-          });
+        title: responseData.status,
+        message: responseData.error
+      });
     }
   }
 
