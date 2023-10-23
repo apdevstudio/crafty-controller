@@ -499,10 +499,10 @@
         "every": "Jede",
         "interval": "Intervall",
         "name": "Name",
-        "newShedule": "Neuer Zeitplan",
+        "newSchedule": "Neuer Zeitplan",
         "nextRun": "Nächster Durchlauf",
         "no": "Nein",
-        "no-shedule": "Derzeit gibt es keine Zeitpläne für diesen Server. Hier kann einer angelegt werden",
+        "no-schedule": "Derzeit gibt es keine Zeitpläne für diesen Server. Hier kann einer angelegt werden",
         "scheduledTasks": "Geplante Aufgaben",
         "yes": "Ja"
     },
