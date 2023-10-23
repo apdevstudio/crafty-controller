@@ -499,10 +499,10 @@
         "every": "Cada",
         "interval": "Intervalo",
         "name": "Nombre",
-        "newShedule": "Nueva Tarea programada",
+        "newSchedule": "Nueva Tarea programada",
         "nextRun": "Siguiente ejecución",
         "no": "No",
-        "no-shedule": "Actualmente no hay programaciones para este servidor. Para comenzar, haz clic en",
+        "no-schedule": "Actualmente no hay programaciones para este servidor. Para comenzar, haz clic en",
         "scheduledTasks": "Tareas programadas",
         "yes": "Sí"
     },
