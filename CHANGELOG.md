@@ -6,8 +6,12 @@ TBD
 - Fix logic issue with `get_files` API permissions check ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/654))
 ### Tweaks
 - Auto refresh Crafty Announcements on 30m interval ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/653))
+- Improve Crafty toggle buttons and Webhooks page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/656))
 ### Lang
-- Update zh_CN lang file ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/652))
+- Update `zh_CN` lang file ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/652))
+- Update `es_ES` lang file ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/655))
+- Clean up wording in `pl_PL` lang file ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/656))
+- Add `de_DE`, `fr_FR`, `lol_EN`, `lv_LV`, `nl_BE` `pl_PL` & `zh_CN` translations for !656 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/656))
 <br><br>
 
 ## --- [4.2.0] - 2023/10/18
