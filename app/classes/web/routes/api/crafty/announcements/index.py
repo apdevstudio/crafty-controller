@@ -29,6 +29,14 @@ class ApiAnnounceIndexHandler(BaseApiHandler):
         ) = auth_data
 
         data = self.helper.get_announcements()
+        if not data:
+            return self.finish_json(
+                418,
+                {
+                    "status": "error",
+                    "data": "Failed to get announcements",
+                },
+            )
         cleared = str(
             self.controller.users.get_user_by_id(auth_data[4]["user_id"])[
                 "cleared_notifs"
@@ -84,6 +92,14 @@ class ApiAnnounceIndexHandler(BaseApiHandler):
                 },
             )
         announcements = self.helper.get_announcements()
+        if not announcements:
+            return self.finish_json(
+                418,
+                {
+                    "status": "error",
+                    "data": "Failed to get current announcements",
+                },
+            )
         res = [d.get("id", None) for d in announcements]
         cleared_notifs = str(
             self.controller.users.get_user_by_id(auth_data[4]["user_id"])[
