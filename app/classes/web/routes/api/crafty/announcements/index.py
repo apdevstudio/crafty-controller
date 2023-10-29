@@ -31,7 +31,7 @@ class ApiAnnounceIndexHandler(BaseApiHandler):
         data = self.helper.get_announcements()
         if not data:
             return self.finish_json(
-                418,
+                424,
                 {
                     "status": "error",
                     "data": "Failed to get announcements",
@@ -94,7 +94,7 @@ class ApiAnnounceIndexHandler(BaseApiHandler):
         announcements = self.helper.get_announcements()
         if not announcements:
             return self.finish_json(
-                418,
+                424,
                 {
                     "status": "error",
                     "data": "Failed to get current announcements",
