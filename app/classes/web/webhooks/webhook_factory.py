@@ -21,7 +21,6 @@ class WebhookFactory:
         "Mattermost": MattermostWebhook,
         "Slack": SlackWebhook,
         "Teams": TeamsWebhook,
-        # "Custom",
     }
 
     @classmethod
