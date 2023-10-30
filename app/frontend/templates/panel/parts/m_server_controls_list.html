@@ -5,34 +5,34 @@
         </button>
         <div class="dropdown-menu col-md-12" aria-labelledby="dropdownMenuButton">
             {% if data['permissions']['Terminal'] in data['user_permissions'] %}
-            <a class="dropdown-item {% if data['active_link'] == 'term' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=term" role="tab" aria-selected="false"><i class="fa-solid fa-terminal"></i> {{ translate('serverDetails', 'terminal', data['lang']) }}</a>
+            <a class="dropdown-item {% if data['active_link'] == 'term' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_uuid']['server_uuid'] }}&subpage=term" role="tab" aria-selected="false"><i class="fa-solid fa-terminal"></i> {{ translate('serverDetails', 'terminal', data['lang']) }}</a>
             {% end %}
             <!--Bedrock servers don't have logs so we'll only show it if we know it's not a bedrock server.-->
             {% if data['permissions']['Logs'] in data['user_permissions'] and data['server_data']['type'] != 'minecraft-bedrock'%}
-            <a class="dropdown-item {% if data['active_link'] == 'logs' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=logs" role="tab" aria-selected="false"><i class="fa-solid fa-book-open-reader"></i> {{ translate('serverDetails', 'logs', data['lang']) }}</a>
+            <a class="dropdown-item {% if data['active_link'] == 'logs' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_uuid']['server_uuid'] }}&subpage=logs" role="tab" aria-selected="false"><i class="fa-solid fa-book-open-reader"></i> {{ translate('serverDetails', 'logs', data['lang']) }}</a>
             {% end %}
             {% if data['permissions']['Schedule'] in data['user_permissions'] %}
-            <a class="dropdown-item {% if data['active_link'] == 'schedules' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=schedules" role="tab" aria-selected="false"><i class="fa-solid fa-clock"></i> {{ translate('serverDetails', 'schedule', data['lang']) }}</a>
+            <a class="dropdown-item {% if data['active_link'] == 'schedules' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_uuid']['server_uuid'] }}&subpage=schedules" role="tab" aria-selected="false"><i class="fa-solid fa-clock"></i> {{ translate('serverDetails', 'schedule', data['lang']) }}</a>
             {% end %}
             {% if data['permissions']['Backup'] in data['user_permissions'] %}
             {% if data['backup_failed'] %}
-            <a style="color: red !important;" class="dropdown-item {% if data['active_link'] == 'backup' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=backup" role="tab" aria-selected="false"><i class="fas fa-save"></i> {{ translate('serverDetails', 'backup', data['lang']) }}&nbsp; <i class="fas fa-exclamation-triangle"> </i></a>
+            <a style="color: red !important;" class="dropdown-item {% if data['active_link'] == 'backup' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_uuid']['server_uuid'] }}&subpage=backup" role="tab" aria-selected="false"><i class="fas fa-save"></i> {{ translate('serverDetails', 'backup', data['lang']) }}&nbsp; <i class="fas fa-exclamation-triangle"> </i></a>
             {% else %}
-            <a class="dropdown-item {% if data['active_link'] == 'backup' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=backup" role="tab" aria-selected="false"><i class="fas fa-save"></i> {{ translate('serverDetails', 'backup', data['lang']) }}</a>
+            <a class="dropdown-item {% if data['active_link'] == 'backup' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_uuid']['server_uuid'] }}&subpage=backup" role="tab" aria-selected="false"><i class="fas fa-save"></i> {{ translate('serverDetails', 'backup', data['lang']) }}</a>
             {% end %}
             {% end %}
             {% if data['permissions']['Files'] in data['user_permissions'] %}
-            <a class="dropdown-item {% if data['active_link'] == 'files' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=files" role="tab" aria-selected="false"><i class="fas fa-folder-tree"></i> {{ translate('serverDetails', 'files', data['lang']) }}</a>
+            <a class="dropdown-item {% if data['active_link'] == 'files' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_uuid']['server_uuid'] }}&subpage=files" role="tab" aria-selected="false"><i class="fas fa-folder-tree"></i> {{ translate('serverDetails', 'files', data['lang']) }}</a>
             {% end %}
             {% if data['permissions']['Config'] in data['user_permissions'] %}
-            <a class="dropdown-item {% if data['active_link'] == 'config' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=config" role="tab" aria-selected="true"><i class="fas fa-cogs"></i> {{ translate('serverDetails', 'config', data['lang']) }}</a>
+            <a class="dropdown-item {% if data['active_link'] == 'config' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_uuid']['server_uuid'] }}&subpage=config" role="tab" aria-selected="true"><i class="fas fa-cogs"></i> {{ translate('serverDetails', 'config', data['lang']) }}</a>
             {% end %}
             {% if data['permissions']['Players'] in data['user_permissions'] and data['server_data']['type'] != 'minecraft-bedrock' %}
-            <a class="dropdown-item {% if data['active_link'] == 'admin_controls' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=admin_controls" role="tab" aria-selected="true"><i class="fas fa-users"></i> {{ translate('serverDetails', 'playerControls', data['lang']) }}</a>
+            <a class="dropdown-item {% if data['active_link'] == 'admin_controls' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_uuid']['server_uuid'] }}&subpage=admin_controls" role="tab" aria-selected="true"><i class="fas fa-users"></i> {{ translate('serverDetails', 'playerControls', data['lang']) }}</a>
             {% end %}
-            <a class="dropdown-item {% if data['active_link'] == 'metrics' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=metrics" role="tab" aria-selected="true"><i class="fa-solid fa-chart-line"></i> {{ translate('serverDetails', 'metrics', data['lang']) }}</a>
+            <a class="dropdown-item {% if data['active_link'] == 'metrics' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_uuid']['server_uuid'] }}&subpage=metrics" role="tab" aria-selected="true"><i class="fa-solid fa-chart-line"></i> {{ translate('serverDetails', 'metrics', data['lang']) }}</a>
             {% if data['permissions']['Config'] in data['user_permissions'] %}
-            <a class="dropdown-item {% if data['active_link'] == 'webhooks' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_id']['server_id'] }}&subpage=webhooks" role="tab" aria-selected="true"><i class="fa-regular fa-bell"></i>{{ translate('webhooks', 'webhooks', data['lang']) }}</a>
+            <a class="dropdown-item {% if data['active_link'] == 'webhooks' %}active{% end %}" href="/panel/server_detail?id={{ data['server_stats']['server_uuid']['server_uuid'] }}&subpage=webhooks" role="tab" aria-selected="true"><i class="fa-regular fa-bell"></i>{{ translate('webhooks', 'webhooks', data['lang']) }}</a>
             {% end %}
         </div>
     </div>

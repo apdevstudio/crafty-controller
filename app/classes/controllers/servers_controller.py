@@ -92,22 +92,22 @@ class ServersController(metaclass=Singleton):
         )
 
     @staticmethod
-    def get_server_obj(server_id):
-        return HelperServers.get_server_obj(server_id)
+    def get_server_obj(server_uuid):
+        return HelperServers.get_server_obj(server_uuid)
 
     @staticmethod
     def update_server(server_obj):
         ret = HelperServers.update_server(server_obj)
         server_instance: ServerInstance = ServersController().get_server_instance_by_id(
-            server_obj.server_id
+            server_obj.server_uuid
         )
         server_instance.update_server_instance()
 
         return ret
 
-    def get_history_stats(self, server_id, hours):
-        srv = ServersController().get_server_instance_by_id(server_id)
-        return srv.stats_helper.get_history_stats(server_id, hours)
+    def get_history_stats(self, server_uuid, hours):
+        srv = ServersController().get_server_instance_by_id(server_uuid)
+        return srv.stats_helper.get_history_stats(server_uuid, hours)
 
     @staticmethod
     def update_unloaded_server(server_obj):
@@ -115,13 +115,13 @@ class ServersController(metaclass=Singleton):
         return ret
 
     @staticmethod
-    def set_import(server_id):
-        srv = ServersController().get_server_instance_by_id(server_id)
+    def set_import(server_uuid):
+        srv = ServersController().get_server_instance_by_id(server_uuid)
         return srv.stats_helper.set_import()
 
     @staticmethod
-    def finish_import(server_id, forge=False):
-        srv = ServersController().get_server_instance_by_id(server_id)
+    def finish_import(server_uuid, forge=False):
+        srv = ServersController().get_server_instance_by_id(server_uuid)
         # This is where we start the forge installerr
         if forge:
             srv.run_threaded_server(
@@ -131,50 +131,52 @@ class ServersController(metaclass=Singleton):
             srv.stats_helper.finish_import()
 
     @staticmethod
-    def get_import_status(server_id):
-        server = ServersController().get_server_instance_by_id(server_id)
+    def get_import_status(server_uuid):
+        server = ServersController().get_server_instance_by_id(server_uuid)
         return server.stats_helper.get_import_status()
 
-    def remove_server(self, server_id):
-        roles_list = PermissionsServers.get_roles_from_server(server_id)
+    def remove_server(self, server_uuid):
+        roles_list = PermissionsServers.get_roles_from_server(server_uuid)
         for role in roles_list:
             role_id = role.role_id
             role_data = RolesController.get_role_with_servers(role_id)
-            role_data["servers"] = {server_id}
+            role_data["servers"] = {server_uuid}
             # Remove server id permissions from role
             PermissionsServers.delete_roles_permissions(role_id, role_data["servers"])
         # Remove roles from server
-        PermissionsServers.remove_roles_of_server(server_id)
+        PermissionsServers.remove_roles_of_server(server_uuid)
         # Remove backup configs tied to server
-        self.management_helper.remove_backup_config(server_id)
+        self.management_helper.remove_backup_config(server_uuid)
         # Finally remove server
-        self.servers_helper.remove_server(server_id)
+        self.servers_helper.remove_server(server_uuid)
 
     @staticmethod
-    def get_server_data_by_id(server_id):
-        return HelperServers.get_server_data_by_id(server_id)
+    def get_server_data_by_id(server_uuid):
+        return HelperServers.get_server_data_by_id(server_uuid)
 
     # **********************************************************************************
     #                                     Servers Methods
     # **********************************************************************************
 
-    def get_server_instance_by_id(self, server_id: t.Union[str, int]) -> ServerInstance:
+    def get_server_instance_by_id(
+        self, server_uuid: t.Union[str, int]
+    ) -> ServerInstance:
         for server in self.servers_list:
-            if int(server["server_id"]) == int(server_id):
+            if int(server["server_uuid"]) == int(server_uuid):
                 return server["server_obj"]
 
-        logger.warning(f"Unable to find server object for server id {server_id}")
-        raise ValueError(f"Unable to find server object for server id {server_id}")
+        logger.warning(f"Unable to find server object for server id {server_uuid}")
+        raise ValueError(f"Unable to find server object for server id {server_uuid}")
 
     def init_all_servers(self):
         servers = self.get_all_defined_servers()
         self.failed_servers = []
 
         for server in servers:
-            server_id = server.get("server_id")
+            server_uuid = server.get("server_uuid")
 
             # if we have already initialized this server, let's skip it.
-            if self.check_server_loaded(server_id):
+            if self.check_server_loaded(server_uuid):
                 continue
 
             # if this server path no longer exists - let's warn and bomb out
@@ -197,10 +199,10 @@ class ServersController(metaclass=Singleton):
                 continue
 
             temp_server_dict = {
-                "server_id": server.get("server_id"),
+                "server_uuid": server.get("server_uuid"),
                 "server_data_obj": server,
                 "server_obj": ServerInstance(
-                    server.get("server_id"),
+                    server.get("server_uuid"),
                     self.helper,
                     self.management_helper,
                     self.stats,
@@ -215,36 +217,36 @@ class ServersController(metaclass=Singleton):
             self.servers_list.append(temp_server_dict)
 
             if server["auto_start"]:
-                self.set_waiting_start(server["server_id"], True)
+                self.set_waiting_start(server["server_uuid"], True)
 
-            self.refresh_server_settings(server["server_id"])
+            self.refresh_server_settings(server["server_uuid"])
 
             Console.info(
-                f"Loaded Server: ID {server['server_id']}"
+                f"Loaded Server: ID {server['server_uuid']}"
                 f" | Name: {server['server_name']}"
                 f" | Autostart: {server['auto_start']}"
                 f" | Delay: {server['auto_start_delay']}"
             )
 
-    def check_server_loaded(self, server_id_to_check: int):
-        logger.info(f"Checking to see if we already registered {server_id_to_check}")
+    def check_server_loaded(self, server_uuid_to_check: int):
+        logger.info(f"Checking to see if we already registered {server_uuid_to_check}")
 
         for server in self.servers_list:
-            known_server = server.get("server_id")
+            known_server = server.get("server_uuid")
             if known_server is None:
                 return False
 
-            if known_server == server_id_to_check:
+            if known_server == server_uuid_to_check:
                 logger.info(
-                    f"skipping initialization of server {server_id_to_check} "
+                    f"skipping initialization of server {server_uuid_to_check} "
                     f"because it is already loaded"
                 )
                 return True
 
         return False
 
-    def refresh_server_settings(self, server_id: int):
-        server_obj = self.get_server_instance_by_id(server_id)
+    def refresh_server_settings(self, server_uuid: int):
+        server_obj = self.get_server_instance_by_id(server_uuid)
         server_obj.reload_server_settings()
 
     @staticmethod
@@ -253,7 +255,7 @@ class ServersController(metaclass=Singleton):
 
     @staticmethod
     def get_authorized_servers(user_id):
-        server_ids = []
+        server_uuids = []
         server_data: t.List[t.Dict[str, t.Any]] = []
         user_roles = HelperUsers.user_role_query(user_id)
         for user in user_roles:
@@ -261,20 +263,20 @@ class ServersController(metaclass=Singleton):
                 user.role_id
             )
             for role in role_servers:
-                if role.server_id.server_id not in server_ids:
-                    server_ids.append(role.server_id.server_id)
+                if role.server_uuid.server_uuid not in server_uuids:
+                    server_uuids.append(role.server_uuid.server_uuid)
                     server_data.append(
                         ServersController().get_server_instance_by_id(
-                            role.server_id.server_id
+                            role.server_uuid.server_uuid
                         )
                     )
 
         return server_data
 
     @staticmethod
-    def get_authorized_users(server_id: str):
+    def get_authorized_users(server_uuid: str):
         user_ids: t.Set[int] = set()
-        roles_list = PermissionsServers.get_roles_from_server(server_id)
+        roles_list = PermissionsServers.get_roles_from_server(server_uuid)
         for role in roles_list:
             role_users = HelperUsers.get_users_from_role(role.role_id)
             for user_role in role_users:
@@ -289,7 +291,7 @@ class ServersController(metaclass=Singleton):
         try:
             for server in self.servers_list:
                 srv: ServerInstance = ServersController().get_server_instance_by_id(
-                    server.get("server_id")
+                    server.get("server_uuid")
                 )
                 latest = srv.stats_helper.get_latest_server_stats()
                 server_data.append(
@@ -318,7 +320,7 @@ class ServersController(metaclass=Singleton):
             srv: ServerInstance = server
             latest = srv.stats_helper.get_latest_server_stats()
             key_permissions = PermissionsServers.get_api_key_permissions_list(
-                api_key, server.server_id
+                api_key, server.server_uuid
             )
             if EnumPermissionsServer.COMMANDS in key_permissions:
                 user_command_permission = True
@@ -343,7 +345,7 @@ class ServersController(metaclass=Singleton):
             latest = srv.stats_helper.get_latest_server_stats()
             # TODO
             user_permissions = PermissionsServers.get_user_id_permissions_list(
-                user_id, server.server_id
+                user_id, server.server_uuid
             )
             if EnumPermissionsServer.COMMANDS in user_permissions:
                 user_command_permission = True
@@ -360,11 +362,11 @@ class ServersController(metaclass=Singleton):
         return server_data
 
     @staticmethod
-    def get_server_friendly_name(server_id):
-        return HelperServers.get_server_friendly_name(server_id)
+    def get_server_friendly_name(server_uuid):
+        return HelperServers.get_server_friendly_name(server_uuid)
 
     def crash_detection(self, server_obj):
-        svr = self.get_server_instance_by_id(server_obj.server_id)
+        svr = self.get_server_instance_by_id(server_obj.server_uuid)
         # start or stop crash detection depending upon user preference
         # The below functions check to see if the server is running.
         # They only execute if it's running.
@@ -374,34 +376,34 @@ class ServersController(metaclass=Singleton):
             svr.stop_crash_detection()
 
     def get_server_obj_optional(
-        self, server_id: t.Union[str, int]
+        self, server_uuid: t.Union[str, int]
     ) -> t.Optional[ServerInstance]:
         for server in self.servers_list:
-            if str(server["server_id"]) == str(server_id):
+            if str(server["server_uuid"]) == str(server_uuid):
                 return server["server_obj"]
 
-        logger.warning(f"Unable to find server object for server id {server_id}")
+        logger.warning(f"Unable to find server object for server id {server_uuid}")
         return None
 
-    def get_server_data(self, server_id: str):
+    def get_server_data(self, server_uuid: str):
         for server in self.servers_list:
-            if str(server["server_id"]) == str(server_id):
+            if str(server["server_uuid"]) == str(server_uuid):
                 return server["server_data_obj"]
 
-        logger.warning(f"Unable to find server object for server id {server_id}")
+        logger.warning(f"Unable to find server object for server id {server_uuid}")
         return False
 
     def list_defined_servers(self):
         defined_servers = []
         for server in self.servers_list:
             defined_servers.append(
-                self.get_server_instance_by_id(server.get("server_id"))
+                self.get_server_instance_by_id(server.get("server_uuid"))
             )
         return defined_servers
 
     @staticmethod
-    def get_all_server_ids() -> t.List[int]:
-        return HelperServers.get_all_server_ids()
+    def get_all_server_uuids() -> t.List[int]:
+        return HelperServers.get_all_server_uuids()
 
     def list_running_servers(self):
         running_servers = []
@@ -413,7 +415,9 @@ class ServersController(metaclass=Singleton):
             running = srv_obj.check_running()
             # if so, let's add a dictionary to the list of running servers
             if running:
-                running_servers.append({"id": srv_obj.server_id, "name": srv_obj.name})
+                running_servers.append(
+                    {"id": srv_obj.server_uuid, "name": srv_obj.name}
+                )
 
         return running_servers
 
@@ -437,89 +441,91 @@ class ServersController(metaclass=Singleton):
         logger.info("All Servers Stopped")
         Console.info("All Servers Stopped")
 
-    def stop_server(self, server_id):
+    def stop_server(self, server_uuid):
         # issue the stop command
-        svr_obj = self.get_server_instance_by_id(server_id)
+        svr_obj = self.get_server_instance_by_id(server_uuid)
         svr_obj.stop_threaded_server()
 
     # **********************************************************************************
     #                                    Servers_Stats Methods
     # **********************************************************************************
     @staticmethod
-    def get_server_stats_by_id(server_id):
-        srv = ServersController().get_server_instance_by_id(server_id)
+    def get_server_stats_by_id(server_uuid):
+        srv = ServersController().get_server_instance_by_id(server_uuid)
         return srv.stats_helper.get_latest_server_stats()
 
     @staticmethod
-    def server_id_exists(server_id):
-        srv = ServersController().get_server_instance_by_id(server_id)
-        return srv.stats_helper.server_id_exists()
+    def server_uuid_exists(server_uuid):
+        srv = ServersController().get_server_instance_by_id(server_uuid)
+        return srv.stats_helper.server_uuid_exists()
 
     @staticmethod
-    def get_server_type_by_id(server_id):
-        return HelperServers.get_server_type_by_id(server_id)
+    def get_server_type_by_id(server_uuid):
+        return HelperServers.get_server_type_by_id(server_uuid)
 
     @staticmethod
-    def server_id_authorized(server_id_a, user_id):
+    def server_uuid_authorized(server_uuid_a, user_id):
         user_roles = HelperUsers.user_role_query(user_id)
         for role in user_roles:
-            for server_id_b in PermissionsServers.get_role_servers_from_role_id(
+            for server_uuid_b in PermissionsServers.get_role_servers_from_role_id(
                 role.role_id
             ):
-                if str(server_id_a) == str(server_id_b.server_id):
+                if str(server_uuid_a) == str(server_uuid_b.server_uuid):
                     return True
         return False
 
     @staticmethod
-    def is_crashed(server_id):
-        srv = ServersController().get_server_instance_by_id(server_id)
+    def is_crashed(server_uuid):
+        srv = ServersController().get_server_instance_by_id(server_uuid)
         return srv.stats_helper.is_crashed()
 
     @staticmethod
-    def server_id_authorized_api_key(server_id: str, api_key: ApiKeys) -> bool:
+    def server_uuid_authorized_api_key(server_uuid: str, api_key: ApiKeys) -> bool:
         # TODO
-        return ServersController.server_id_authorized(server_id, api_key.user.user_id)
+        return ServersController.server_uuid_authorized(
+            server_uuid, api_key.user.user_id
+        )
         # There is no view server permission
         # permission_helper.both_have_perm(api_key)
 
     @staticmethod
-    def set_update(server_id, value):
-        srv = ServersController().get_server_instance_by_id(server_id)
+    def set_update(server_uuid, value):
+        srv = ServersController().get_server_instance_by_id(server_uuid)
         return srv.stats_helper.set_update(value)
 
     @staticmethod
-    def get_ttl_without_player(server_id):
-        srv = ServersController().get_server_instance_by_id(server_id)
+    def get_ttl_without_player(server_uuid):
+        srv = ServersController().get_server_instance_by_id(server_uuid)
         return srv.stats_helper.get_ttl_without_player()
 
     @staticmethod
-    def can_stop_no_players(server_id, time_limit):
-        srv = ServersController().get_server_instance_by_id(server_id)
+    def can_stop_no_players(server_uuid, time_limit):
+        srv = ServersController().get_server_instance_by_id(server_uuid)
         return srv.stats_helper.can_stop_no_players(time_limit)
 
     @staticmethod
-    def set_waiting_start(server_id, value):
-        srv = ServersController().get_server_instance_by_id(server_id)
+    def set_waiting_start(server_uuid, value):
+        srv = ServersController().get_server_instance_by_id(server_uuid)
         srv.stats_helper.set_waiting_start(value)
 
     @staticmethod
-    def get_waiting_start(server_id):
-        srv = ServersController().get_server_instance_by_id(server_id)
+    def get_waiting_start(server_uuid):
+        srv = ServersController().get_server_instance_by_id(server_uuid)
         return srv.stats_helper.get_waiting_start()
 
     @staticmethod
-    def get_update_status(server_id):
-        srv = ServersController().get_server_instance_by_id(server_id)
+    def get_update_status(server_uuid):
+        srv = ServersController().get_server_instance_by_id(server_uuid)
         return srv.stats_helper.get_update_status()
 
     # **********************************************************************************
     #                                    Servers Helpers Methods
     # **********************************************************************************
     @staticmethod
-    def get_cached_players(server_id):
-        srv = ServersController().get_server_instance_by_id(server_id)
+    def get_cached_players(server_uuid):
+        srv = ServersController().get_server_instance_by_id(server_uuid)
         stats = srv.stats_helper.get_server_stats()
-        server_path = stats["server_id"]["path"]
+        server_path = stats["server_uuid"]["path"]
         path = os.path.join(server_path, "usercache.json")
 
         try:
@@ -535,10 +541,10 @@ class ServersController(metaclass=Singleton):
         return json.loads(content)
 
     @staticmethod
-    def get_banned_players(server_id):
-        srv = ServersController().get_server_instance_by_id(server_id)
+    def get_banned_players(server_uuid):
+        srv = ServersController().get_server_instance_by_id(server_uuid)
         stats = srv.stats_helper.get_server_stats()
-        server_path = stats["server_id"]["path"]
+        server_path = stats["server_uuid"]["path"]
         path = os.path.join(server_path, "banned-players.json")
 
         try:

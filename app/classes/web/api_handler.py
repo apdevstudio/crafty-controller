@@ -140,11 +140,11 @@ class SendCommand(ApiHandler):
         if user is None:
             self.access_denied("unknown")
             return
-        server_id = self.get_argument("id")
+        server_uuid = self.get_argument("id")
 
         if (
             not user_obj["user_id"]
-            in self.controller.server_perms.get_server_user_list(server_id)
+            in self.controller.server_perms.get_server_user_list(server_uuid)
             and not user_obj["superuser"]
         ):
             self.access_denied("unknown")
@@ -153,15 +153,15 @@ class SendCommand(ApiHandler):
         if not self.permissions[
             "Commands"
         ] in self.controller.server_perms.get_api_key_permissions_list(
-            self.controller.users.get_api_key_by_token(self.api_token), server_id
+            self.controller.users.get_api_key_by_token(self.api_token), server_uuid
         ):
             self.access_denied(user)
             return
 
         command = self.get_argument("command", default=None, strip=True)
-        server_id = self.get_argument("id")
+        server_uuid = self.get_argument("id")
         if command:
-            server = self.controller.servers.get_server_instance_by_id(server_id)
+            server = self.controller.servers.get_server_instance_by_id(server_uuid)
             if server.check_running:
                 server.send_command(command)
                 self.return_response(200, {"run": True})
@@ -180,11 +180,11 @@ class ServerBackup(ApiHandler):
         if user is None:
             self.access_denied("unknown")
             return
-        server_id = self.get_argument("id")
+        server_uuid = self.get_argument("id")
 
         if (
             not user_obj["user_id"]
-            in self.controller.server_perms.get_server_user_list(server_id)
+            in self.controller.server_perms.get_server_user_list(server_uuid)
             and not user_obj["superuser"]
         ):
             self.access_denied("unknown")
@@ -193,12 +193,12 @@ class ServerBackup(ApiHandler):
         if not self.permissions[
             "Backup"
         ] in self.controller.server_perms.get_api_key_permissions_list(
-            self.controller.users.get_api_key_by_token(self.api_token), server_id
+            self.controller.users.get_api_key_by_token(self.api_token), server_uuid
         ):
             self.access_denied(user)
             return
 
-        server = self.controller.servers.get_server_instance_by_id(server_id)
+        server = self.controller.servers.get_server_instance_by_id(server_uuid)
 
         server.backup_server()
 
@@ -215,11 +215,11 @@ class StartServer(ApiHandler):
         if user is None:
             self.access_denied("unknown")
             return
-        server_id = self.get_argument("id")
+        server_uuid = self.get_argument("id")
 
         if (
             not user_obj["user_id"]
-            in self.controller.server_perms.get_server_user_list(server_id)
+            in self.controller.server_perms.get_server_user_list(server_uuid)
             and not user_obj["superuser"]
         ):
             self.access_denied("unknown")
@@ -227,16 +227,16 @@ class StartServer(ApiHandler):
         if not self.permissions[
             "Commands"
         ] in self.controller.server_perms.get_api_key_permissions_list(
-            self.controller.users.get_api_key_by_token(self.api_token), server_id
+            self.controller.users.get_api_key_by_token(self.api_token), server_uuid
         ):
             self.access_denied("unknown")
             return
 
-        server = self.controller.servers.get_server_instance_by_id(server_id)
+        server = self.controller.servers.get_server_instance_by_id(server_uuid)
 
         if not server.check_running():
             self.controller.management.send_command(
-                user_obj["user_id"], server_id, remote_ip, "start_server"
+                user_obj["user_id"], server_uuid, remote_ip, "start_server"
             )
             self.return_response(200, {"code": "SER_START_CALLED"})
         else:
@@ -253,11 +253,11 @@ class StopServer(ApiHandler):
         if user is None:
             self.access_denied("unknown")
             return
-        server_id = self.get_argument("id")
+        server_uuid = self.get_argument("id")
 
         if (
             not user_obj["user_id"]
-            in self.controller.server_perms.get_server_user_list(server_id)
+            in self.controller.server_perms.get_server_user_list(server_uuid)
             and not user_obj["superuser"]
         ):
             self.access_denied("unknown")
@@ -265,16 +265,16 @@ class StopServer(ApiHandler):
         if not self.permissions[
             "Commands"
         ] in self.controller.server_perms.get_api_key_permissions_list(
-            self.controller.users.get_api_key_by_token(self.api_token), server_id
+            self.controller.users.get_api_key_by_token(self.api_token), server_uuid
         ):
             self.access_denied(user)
             return
 
-        server = self.controller.servers.get_server_instance_by_id(server_id)
+        server = self.controller.servers.get_server_instance_by_id(server_uuid)
 
         if server.check_running():
             self.controller.management.send_command(
-                user, server_id, remote_ip, "stop_server"
+                user, server_uuid, remote_ip, "stop_server"
             )
 
             self.return_response(200, {"code": "SER_STOP_CALLED"})
@@ -291,22 +291,22 @@ class RestartServer(ApiHandler):
         if user is None:
             self.access_denied("unknown")
             return
-        server_id = self.get_argument("id")
+        server_uuid = self.get_argument("id")
 
         if not user_obj["user_id"] in self.controller.server_perms.get_server_user_list(
-            server_id
+            server_uuid
         ):
             self.access_denied("unknown")
 
         if not self.permissions[
             "Commands"
         ] in self.controller.server_perms.get_api_key_permissions_list(
-            self.controller.users.get_api_key_by_token(self.api_token), server_id
+            self.controller.users.get_api_key_by_token(self.api_token), server_uuid
         ):
             self.access_denied(user)
 
         self.controller.management.send_command(
-            user, server_id, remote_ip, "restart_server"
+            user, server_uuid, remote_ip, "restart_server"
         )
         self.return_response(200, {"code": "SER_RESTART_CALLED"})
 

@@ -25,9 +25,7 @@
         <div class="card-header header-sm d-flex justify-content-between align-items-center">
           <h4 class="card-title"><i class="fas fa-history"></i> &nbsp;Audit Logs</h4>
           {% if data['user_data']['hints'] %}
-          <span class="too_small" title="{{ translate('dashboard', 'cannotSeeOnMobile', data['lang']) }}" ,
-            data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" ,
-            data-placement="top"></span>
+          <span class="too_small" title="{{ translate('dashboard', 'cannotSeeOnMobile', data['lang']) }}" , data-content="{{ translate('dashboard', 'cannotSeeOnMobile2', data['lang']) }}" , data-placement="top"></span>
           {% end %}
         </div>
         <div class="card-body">
@@ -51,7 +49,7 @@
                     {{ row['created'].strftime('%Y-%m-%d %H:%M:%S') }}
                   </td>
                   <td>{{ row['log_msg'] }}</td>
-                  <td>{{ row['server_id'] }}</td>
+                  <td>{{ row['server_uuid'] }}</td>
                   <td>{{ row['source_ip'] }}</td>
                 </tr>
                 {% end %}

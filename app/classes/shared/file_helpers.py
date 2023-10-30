@@ -139,7 +139,7 @@ class FileHelpers:
         return True
 
     def make_compressed_backup(
-        self, path_to_destination, path_to_zip, excluded_dirs, server_id, comment=""
+        self, path_to_destination, path_to_zip, excluded_dirs, server_uuid, comment=""
     ):
         # create a ZipFile object
         path_to_destination += ".zip"
@@ -152,7 +152,7 @@ class FileHelpers:
         }
         WebSocketManager().broadcast_page_params(
             "/panel/server_detail",
-            {"id": str(server_id)},
+            {"id": str(server_uuid)},
             "backup_status",
             results,
         )
@@ -197,7 +197,7 @@ class FileHelpers:
                     }
                     WebSocketManager().broadcast_page_params(
                         "/panel/server_detail",
-                        {"id": str(server_id)},
+                        {"id": str(server_uuid)},
                         "backup_status",
                         results,
                     )
@@ -205,7 +205,7 @@ class FileHelpers:
         return True
 
     def make_backup(
-        self, path_to_destination, path_to_zip, excluded_dirs, server_id, comment=""
+        self, path_to_destination, path_to_zip, excluded_dirs, server_uuid, comment=""
     ):
         # create a ZipFile object
         path_to_destination += ".zip"
@@ -218,7 +218,7 @@ class FileHelpers:
         }
         WebSocketManager().broadcast_page_params(
             "/panel/server_detail",
-            {"id": str(server_id)},
+            {"id": str(server_uuid)},
             "backup_status",
             results,
         )
@@ -277,7 +277,7 @@ class FileHelpers:
                     # send status results to page.
                     WebSocketManager().broadcast_page_params(
                         "/panel/server_detail",
-                        {"id": str(server_id)},
+                        {"id": str(server_uuid)},
                         "backup_status",
                         results,
                     )

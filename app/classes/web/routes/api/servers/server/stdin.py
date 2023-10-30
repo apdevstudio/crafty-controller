@@ -8,25 +8,25 @@ logger = logging.getLogger(__name__)
 
 
 class ApiServersServerStdinHandler(BaseApiHandler):
-    def post(self, server_id: str):
+    def post(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.COMMANDS
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Commands permission, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
-        svr = self.controller.servers.get_server_obj_optional(server_id)
+        svr = self.controller.servers.get_server_obj_optional(server_uuid)
         if svr is None:
             # It's in auth_data[0] but not as a Server object
             logger.critical(
@@ -39,7 +39,7 @@ class ApiServersServerStdinHandler(BaseApiHandler):
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],
             f"Sent command ({decoded}) to terminal",
-            server_id=0,
+            server_uuid=0,
             source_ip=self.get_remote_ip(),
         )
         if svr.send_command(self.request.body.decode("utf-8")):

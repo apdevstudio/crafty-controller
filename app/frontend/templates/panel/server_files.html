@@ -15,9 +15,9 @@
       <div class="page-header">
         <h4 class="page-title">
           {{ translate('serverDetails', 'serverDetails', data['lang']) }} - {{
-          data['server_stats']['server_id']['server_name'] }}
+          data['server_stats']['server_uuid']['server_name'] }}
           <br />
-          <small>UUID: {{ data['server_stats']['server_id']['server_uuid'] }}</small>
+          <small>UUID: {{ data['server_stats']['server_uuid']['server_uuid'] }}</small>
         </h4>
       </div>
     </div>
@@ -65,12 +65,10 @@
                     translate('serverFiles', 'unzip', data['lang']) }}</a>
                   <a onclick="downloadFileE(event)" href="javascript:void(0)" id="downloadFile" href="#">{{
                     translate('serverFiles', 'download', data['lang']) }}</a>
-                  <a onclick="deleteFileE(event)" href="javascript:void(0)" id="deleteFile" href="#"
-                    style="color: red">{{ translate('serverFiles', 'delete', data['lang']) }}</a>
+                  <a onclick="deleteFileE(event)" href="javascript:void(0)" id="deleteFile" href="#" style="color: red">{{ translate('serverFiles', 'delete', data['lang']) }}</a>
                   <a onclick="deleteFileE(event)" href="javascript:void(0)" id="deleteDir" href="#" style="color: red">{{
                     translate('serverFiles', 'delete', data['lang']) }}</a>
-                  <a href="javascript:void(0)" class="closebtn" style="color: var(--info);"
-                    onclick="document.getElementById('files-tree-nav').style.display = 'none';">{{
+                  <a href="javascript:void(0)" class="closebtn" style="color: var(--info);" onclick="document.getElementById('files-tree-nav').style.display = 'none';">{{
                     translate('serverFiles', 'close', data['lang']) }}</a>
                 </div>
 
@@ -156,16 +154,15 @@
                     right: 35px;
                   }
                 }
-                .tree-file:hover{
+
+                .tree-file:hover {
                   cursor: pointer;
                 }
               </style>
               <ul class="tree-view">
                 <li>
-                  <div id="root_dir" class="tree-ctx-item" data-path="{{ data['server_stats']['server_id']['path'] }}">
-                    <span id="{{ data['server_stats']['server_id']['path'] }}span"
-                      class="files-tree-title tree-caret-down root-dir"
-                      data-path="{{ data['server_stats']['server_id']['path'] }}" onclick="getToggleMain(event)">
+                  <div id="root_dir" class="tree-ctx-item" data-path="{{ data['server_stats']['server_uuid']['path'] }}">
+                    <span id="{{ data['server_stats']['server_uuid']['path'] }}span" class="files-tree-title tree-caret-down root-dir" data-path="{{ data['server_stats']['server_uuid']['path'] }}" onclick="getToggleMain(event)">
                       <i class="far fa-folder"></i>
                       <i class="far fa-folder-open"></i>
                       {{ translate('serverFiles', 'files', data['lang']) }}
@@ -245,12 +242,9 @@
                 <div class="btn-group" role="group">
                   <button onclick="setKeyboard(event.target)" class="btn btn-primary" data-handler-name="null">{{
                     translate('serverFiles', 'default', data['lang']) }}</button>
-                  <button onclick="setKeyboard(event.target)" class="btn btn-secondary"
-                    data-handler-name="ace/keyboard/vim">Vim</button>
-                  <button onclick="setKeyboard(event.target)" class="btn btn-secondary"
-                    data-handler-name="ace/keyboard/emacs">Emacs</button>
-                  <button onclick="setKeyboard(event.target)" class="btn btn-secondary"
-                    data-handler-name="ace/keyboard/sublime">Sublime</button>
+                  <button onclick="setKeyboard(event.target)" class="btn btn-secondary" data-handler-name="ace/keyboard/vim">Vim</button>
+                  <button onclick="setKeyboard(event.target)" class="btn btn-secondary" data-handler-name="ace/keyboard/emacs">Emacs</button>
+                  <button onclick="setKeyboard(event.target)" class="btn btn-secondary" data-handler-name="ace/keyboard/sublime">Sublime</button>
                   <span class="d-none d-md-block ">&nbsp;&nbsp;&nbsp;<button class="btn btn-info" id="screen-size">{{
                       translate('serverFiles',
                       'size', data['lang']) }}</button></span>
@@ -725,7 +719,7 @@
     let xmlHttpRequest = new XMLHttpRequest();
     let token = getCookie("_xsrf")
     let fileName = file.name
-    let target = '/upload?server_id=' + serverId
+    let target = '/upload?server_uuid=' + serverId
     let mimeType = file.type
     let size = file.size
 

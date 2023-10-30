@@ -7,12 +7,12 @@ logger = logging.getLogger(__name__)
 
 
 class ApiServersServerUsersHandler(BaseApiHandler):
-    def get(self, server_id: str):
+    def get(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
@@ -26,6 +26,6 @@ class ApiServersServerUsersHandler(BaseApiHandler):
             200,
             {
                 "status": "ok",
-                "data": list(self.controller.servers.get_authorized_users(server_id)),
+                "data": list(self.controller.servers.get_authorized_users(server_uuid)),
             },
         )

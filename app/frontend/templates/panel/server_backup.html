@@ -15,9 +15,9 @@
       <div class="page-header">
         <h4 class="page-title">
           {{ translate('serverDetails', 'serverDetails', data['lang']) }} - {{
-          data['server_stats']['server_id']['server_name'] }}
+          data['server_stats']['server_uuid']['server_name'] }}
           <br />
-          <small>UUID: {{ data['server_stats']['server_id']['server_uuid'] }}</small>
+          <small>UUID: {{ data['server_stats']['server_uuid']['server_uuid'] }}</small>
         </h4>
       </div>
     </div>
@@ -46,13 +46,10 @@
               <br>
               {% if data['backing_up'] %}
               <div class="progress" style="height: 15px;">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" id="backup_progress_bar"
-                  role="progressbar" style="width:{{data['backup_stats']['percent']}}%;"
-                  aria-valuenow="{{data['backup_stats']['percent']}}" aria-valuemin="0" aria-valuemax="100">{{
+                <div class="progress-bar progress-bar-striped progress-bar-animated" id="backup_progress_bar" role="progressbar" style="width:{{data['backup_stats']['percent']}}%;" aria-valuenow="{{data['backup_stats']['percent']}}" aria-valuemin="0" aria-valuemax="100">{{
                   data['backup_stats']['percent'] }}%</div>
               </div>
-              <p>Backing up <i class="fas fa-spin fa-spinner"></i> <span
-                  id="total_files">{{data['server_stats']['world_size']}}</span></p>
+              <p>Backing up <i class="fas fa-spin fa-spinner"></i> <span id="total_files">{{data['server_stats']['world_size']}}</span></p>
               {% end %}
 
               <br>
@@ -65,28 +62,21 @@
               <form id="backup-form" class="forms-sample">
                 <div class="form-group">
                   {% if data['super_user'] %}
-                  <label for="server_name">{{ translate('serverBackups', 'storageLocation', data['lang']) }} <small
-                      class="text-muted ml-1"> - {{ translate('serverBackups', 'storageLocationDesc', data['lang'])
+                  <label for="server_name">{{ translate('serverBackups', 'storageLocation', data['lang']) }} <small class="text-muted ml-1"> - {{ translate('serverBackups', 'storageLocationDesc', data['lang'])
                       }}</small> </label>
-                  <input type="text" class="form-control" name="backup_path" id="backup_path"
-                    value="{{ data['server_stats']['server_id']['backup_path']  }}"
-                    placeholder="{{ translate('serverBackups', 'storageLocation', data['lang']) }}">
+                  <input type="text" class="form-control" name="backup_path" id="backup_path" value="{{ data['server_stats']['server_uuid']['backup_path']  }}" placeholder="{{ translate('serverBackups', 'storageLocation', data['lang']) }}">
                   {% end %}
                 </div>
 
                 <div class="form-group">
-                  <label for="server_path">{{ translate('serverBackups', 'maxBackups', data['lang']) }} <small
-                      class="text-muted ml-1"> - {{ translate('serverBackups', 'maxBackupsDesc', data['lang'])
+                  <label for="server_path">{{ translate('serverBackups', 'maxBackups', data['lang']) }} <small class="text-muted ml-1"> - {{ translate('serverBackups', 'maxBackupsDesc', data['lang'])
                       }}</small> </label>
-                  <input type="text" class="form-control" name="max_backups" id="max_backups"
-                    value="{{ data['backup_config']['max_backups']  }}"
-                    placeholder="{{ translate('serverBackups', 'maxBackups', data['lang']) }}">
+                  <input type="text" class="form-control" name="max_backups" id="max_backups" value="{{ data['backup_config']['max_backups']  }}" placeholder="{{ translate('serverBackups', 'maxBackups', data['lang']) }}">
                 </div>
                 <div class="form-group">
                   <label for="compress" class="form-check-label ml-4 mb-4"></label>
                   {% if data['backup_config']['compress'] %}
-                  <input type="checkbox" class="form-check-input" id="compress" name="compress" checked=""
-                    value="True">{{ translate('serverBackups', 'compress', data['lang']) }}
+                  <input type="checkbox" class="form-check-input" id="compress" name="compress" checked="" value="True">{{ translate('serverBackups', 'compress', data['lang']) }}
                   {% else %}
                   <input type="checkbox" class="form-check-input" id="compress" name="compress" value="True">{{
                   translate('serverBackups', 'compress', data['lang']) }}
@@ -95,8 +85,7 @@
                 <div class="form-group">
                   <label for="shutdown" class="form-check-label ml-4 mb-4"></label>
                   {% if data['backup_config']['shutdown'] %}
-                  <input type="checkbox" class="form-check-input" id="shutdown" name="shutdown" checked=""
-                    value="True">{{ translate('serverBackups', 'shutdown', data['lang']) }}
+                  <input type="checkbox" class="form-check-input" id="shutdown" name="shutdown" checked="" value="True">{{ translate('serverBackups', 'shutdown', data['lang']) }}
                   {% else %}
                   <input type="checkbox" class="form-check-input" id="shutdown" name="shutdown" value="True">{{
                   translate('serverBackups', 'shutdown', data['lang']) }}
@@ -108,15 +97,12 @@
                   <input type="checkbox" class="form-check-input" id="before-check" name="before-check" checked>{{
                   translate('serverBackups', 'before', data['lang']) }}
                   <br>
-                  <input type="text" class="form-control" name="backup_before" id="backup_before"
-                    value="{{ data['backup_config']['before'] }}" placeholder="We enter the / for you"
-                    style="display: inline-block;">
+                  <input type="text" class="form-control" name="backup_before" id="backup_before" value="{{ data['backup_config']['before'] }}" placeholder="We enter the / for you" style="display: inline-block;">
                   {% else %}
                   <input type="checkbox" class="form-check-input" id="before-check" name="before-check">{{
                   translate('serverBackups', 'before', data['lang']) }}
                   <br>
-                  <input type="text" class="form-control" name="backup_before" id="backup_before" value=""
-                    placeholder="We enter the / for you." style="display: none;">
+                  <input type="text" class="form-control" name="backup_before" id="backup_before" value="" placeholder="We enter the / for you." style="display: none;">
                   {% end %}
                 </div>
                 <div class="form-group">
@@ -125,27 +111,22 @@
                   <input type="checkbox" class="form-check-input" id="after-check" name="after-check" checked>{{
                   translate('serverBackups', 'after', data['lang']) }}
                   <br>
-                  <input type="text" class="form-control" name="backup_after" id="backup_after"
-                    value="{{ data['backup_config']['after'] }}" placeholder="We enter the / for you"
-                    style="display: inline-block;">
+                  <input type="text" class="form-control" name="backup_after" id="backup_after" value="{{ data['backup_config']['after'] }}" placeholder="We enter the / for you" style="display: inline-block;">
                   {% else %}
                   <input type="checkbox" class="form-check-input" id="after-check" name="after-check">{{
                   translate('serverBackups', 'after', data['lang']) }}
                   <br>
-                  <input type="text" class="form-control" name="backup_after" id="backup_after" value=""
-                    placeholder="We enter the / for you." style="display: none;">
+                  <input type="text" class="form-control" name="backup_after" id="backup_after" value="" placeholder="We enter the / for you." style="display: none;">
                   {% end %}
                 </div>
                 <div class="form-group">
                   <label for="server">{{ translate('serverBackups', 'exclusionsTitle', data['lang']) }} <small> - {{
                       translate('serverBackups', 'excludedChoose', data['lang']) }}</small></label>
                   <br>
-                  <button class="btn btn-primary mr-2" id="root_files_button"
-                    data-server_path="{{ data['server_stats']['server_id']['path']}}" type="button">{{
+                  <button class="btn btn-primary mr-2" id="root_files_button" data-server_path="{{ data['server_stats']['server_uuid']['path']}}" type="button">{{
                     translate('serverBackups', 'clickExclude', data['lang']) }}</button>
                 </div>
-                <div class="modal fade" id="dir_select" tabindex="-1" role="dialog" aria-labelledby="dir_select"
-                  aria-hidden="true">
+                <div class="modal fade" id="dir_select" tabindex="-1" role="dialog" aria-labelledby="dir_select" aria-hidden="true">
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
                       <div class="modal-header">
@@ -156,8 +137,7 @@
                         </button>
                       </div>
                       <div class="modal-body">
-                        <div class="tree-ctx-item" id="main-tree-div" data-path=""
-                          style="overflow: scroll; max-height:75%;">
+                        <div class="tree-ctx-item" id="main-tree-div" data-path="" style="overflow: scroll; max-height:75%;">
                           <input type="checkbox" id="main-tree-input" name="root_path" value="" disabled>
                           <span id="main-tree" class="files-tree-title tree-caret-down root-dir" data-path="">
                             <i class="far fa-folder"></i>
@@ -198,15 +178,13 @@
                     {% for backup in data['backup_list'] %}
                     <tr>
                       <td>
-                        <a href="/panel/download_backup?file={{ backup['path'] }}&id={{ data['server_stats']['server_id']['server_id'] }}"
-                          class="btn btn-primary">
+                        <a href="/panel/download_backup?file={{ backup['path'] }}&id={{ data['server_stats']['server_uuid']['server_uuid'] }}" class="btn btn-primary">
                           <i class="fas fa-download" aria-hidden="true"></i>
                           {{ translate('serverBackups', 'download', data['lang']) }}
                         </a>
                         <br>
                         <br>
-                        <button data-file="{{ backup['path'] }}" data-backup_path="{{ data['backup_path'] }}"
-                          class="btn btn-danger del_button">
+                        <button data-file="{{ backup['path'] }}" data-backup_path="{{ data['backup_path'] }}" class="btn btn-danger del_button">
                           <i class="fas fa-trash" aria-hidden="true"></i>
                           {{ translate('serverBackups', 'delete', data['lang']) }}
                         </button>
@@ -298,7 +276,7 @@
 {% block js %}
 <script>
 
-  const server_id = new URLSearchParams(document.location.search).get('id')
+  const server_uuid = new URLSearchParams(document.location.search).get('id')
 
 
   //used to get cookies from browser - this is part of tornados xsrf protection - it's for extra security
@@ -309,16 +287,16 @@
 
   async function backup_started() {
     const token = getCookie("_xsrf")
-    let res = await fetch(`/api/v2/servers/${server_id}/action/backup_server`, {
-        method: 'POST',
-        headers: {
-          'X-XSRFToken': token
-        }
-      });
-      let responseData = await res.json();
-      if (responseData.status === "ok") {
-        console.log(responseData);
-        $("#backup_button").html(`<div class="progress" style="height: 15px;">
+    let res = await fetch(`/api/v2/servers/${server_uuid}/action/backup_server`, {
+      method: 'POST',
+      headers: {
+        'X-XSRFToken': token
+      }
+    });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      console.log(responseData);
+      $("#backup_button").html(`<div class="progress" style="height: 15px;">
                   <div class="progress-bar progress-bar-striped progress-bar-animated" id="backup_progress_bar"
                     role="progressbar" style="width:{{data['backup_stats']['percent']}}%;"
                     aria-valuenow="{{data['backup_stats']['percent']}}" aria-valuemin="0" aria-valuemax="100">{{
@@ -326,18 +304,18 @@
                 </div>
                 <p>Backing up <i class="fas fa-spin fa-spinner"></i> <span
                     id="total_files">{{data['server_stats']['world_size']}}</span></p>`);
-      } else {
+    } else {
 
-        bootbox.alert({
-          title: responseData.status,
-          message: responseData.error
-        });
-      }
+      bootbox.alert({
+        title: responseData.status,
+        message: responseData.error
+      });
+    }
     return;
   }
   async function del_backup(filename, id) {
     const token = getCookie("_xsrf")
-    let contents = JSON.stringify({"filename": filename})
+    let contents = JSON.stringify({ "filename": filename })
     let res = await fetch(`/api/v2/servers/${id}/backups/backup/`, {
       method: 'DELETE',
       headers: {
@@ -348,15 +326,17 @@
     let responseData = await res.json();
     if (responseData.status === "ok") {
       window.location.reload();
-    }else{
-      bootbox.alert({"title": responseData.status,
-                    "message": responseData.error})
+    } else {
+      bootbox.alert({
+        "title": responseData.status,
+        "message": responseData.error
+      })
     }
   }
 
   async function restore_backup(filename, id) {
     const token = getCookie("_xsrf")
-    let contents = JSON.stringify({"filename": filename})
+    let contents = JSON.stringify({ "filename": filename })
     var dialog = bootbox.dialog({
       message: "<i class='fa fa-spin fa-spinner'></i> {{ translate('serverBackups', 'restoring', data['lang']) }}",
       closeButton: false
@@ -371,9 +351,11 @@
     let responseData = await res.json();
     if (responseData.status === "ok") {
       window.location.href = "/panel/dashboard";
-    }else{
-      bootbox.alert({"title": responseData.status,
-                    "message": responseData.error})
+    } else {
+      bootbox.alert({
+        "title": responseData.status,
+        "message": responseData.error
+      })
     }
   }
 
@@ -425,7 +407,7 @@
       $('input.excluded:checkbox:checked').each(function () {
         excluded.push($(this).val());
       });
-      if ($("#root_files_button").hasClass("clicked")){
+      if ($("#root_files_button").hasClass("clicked")) {
         formDataObject.exclusions = excluded;
       }
       console.log(excluded);
@@ -435,7 +417,7 @@
 
       console.log(formDataJsonString);
 
-      let res = await fetch(`/api/v2/servers/${server_id}/backups/`, {
+      let res = await fetch(`/api/v2/servers/${server_uuid}/backups/`, {
         method: 'PATCH',
         headers: {
           'X-XSRFToken': token
@@ -453,7 +435,7 @@
         });
       }
     });
-  
+
     try {
       if ($('#backup_path').val() == '') {
         console.log('true')
@@ -515,7 +497,7 @@
           console.log(result);
           if (result == true) {
             var full_path = backup_path + '/' + file_to_del;
-            del_backup(file_to_del, server_id);
+            del_backup(file_to_del, server_uuid);
           }
         }
       });
@@ -540,7 +522,7 @@
         callback: function (result) {
           console.log(result);
           if (result == true) {
-            restore_backup(file_to_restore, server_id);
+            restore_backup(file_to_restore, server_uuid);
           }
         }
       });
@@ -606,52 +588,52 @@
     });
   }
 
-  function getDirView(event){
+  function getDirView(event) {
     let path = event.target.parentElement.getAttribute("data-path");
     if (document.getElementById(path).classList.contains('clicked')) {
       return;
-    }else{
+    } else {
       getTreeView(path);
     }
 
   }
-  async function getTreeView(path){
+  async function getTreeView(path) {
     console.log(path)
     const token = getCookie("_xsrf");
-    let res = await fetch(`/api/v2/servers/${server_id}/files`, {
-        method: 'POST',
-        headers: {
-          'X-XSRFToken': token
-        },
-        body: JSON.stringify({"page": "backups", "path": path}),
+    let res = await fetch(`/api/v2/servers/${server_uuid}/files`, {
+      method: 'POST',
+      headers: {
+        'X-XSRFToken': token
+      },
+      body: JSON.stringify({ "page": "backups", "path": path }),
+    });
+    let responseData = await res.json();
+    if (responseData.status === "ok") {
+      console.log(responseData);
+      process_tree_response(responseData);
+
+    } else {
+
+      bootbox.alert({
+        title: responseData.status,
+        message: responseData.error
       });
-      let responseData = await res.json();
-      if (responseData.status === "ok") {
-        console.log(responseData);
-        process_tree_response(responseData);
-
-      } else {
-
-        bootbox.alert({
-          title: responseData.status,
-          message: responseData.error
-        });
-      }
+    }
   }
 
   function process_tree_response(response) {
     let path = response.data.root_path.path;
     let text = `<ul class="tree-nested d-block" id="${path}ul">`;
-      Object.entries(response.data).forEach(([key, value]) => {
-        if (key === "root_path" || key === "db_stats"){
-          //continue is not valid in for each. Return acts as a continue.
-          return;
-        }
+    Object.entries(response.data).forEach(([key, value]) => {
+      if (key === "root_path" || key === "db_stats") {
+        //continue is not valid in for each. Return acts as a continue.
+        return;
+      }
       let checked = ""
       let dpath = value.path;
       let filename = key;
-      if (value.dir){
-        if (value.excluded){
+      if (value.dir) {
+        if (value.excluded) {
           checked = "checked"
         }
         text += `<li class="tree-item" data-path="${dpath}">
@@ -663,7 +645,7 @@
                             <strong>${filename}</strong>
                             </span>
                             </input></div><li>`
-      }else{
+      } else {
         text += `<li
                         class="d-block tree-ctx-item tree-file"
                         data-path="${dpath}"
@@ -673,30 +655,30 @@
       }
     });
     text += `</ul>`;
-    if(response.data.root_path.top){
+    if (response.data.root_path.top) {
       try {
-          document.getElementById('main-tree-div').innerHTML += text;
-          document.getElementById('main-tree').parentElement.classList.add("clicked");
-        } catch {
-          document.getElementById('files-tree').innerHTML = text;
-        }
-    }else{
+        document.getElementById('main-tree-div').innerHTML += text;
+        document.getElementById('main-tree').parentElement.classList.add("clicked");
+      } catch {
+        document.getElementById('files-tree').innerHTML = text;
+      }
+    } else {
       try {
-            document.getElementById(path + "span").classList.add('tree-caret-down');
-            document.getElementById(path).innerHTML += text;
-            document.getElementById(path).classList.add("clicked");
-          } catch {
-            console.log("Bad")
-          }
+        document.getElementById(path + "span").classList.add('tree-caret-down');
+        document.getElementById(path).innerHTML += text;
+        document.getElementById(path).classList.add("clicked");
+      } catch {
+        console.log("Bad")
+      }
 
-          var toggler = document.getElementById(path + "span");
+      var toggler = document.getElementById(path + "span");
 
-          if (toggler.classList.contains('files-tree-title')) {
-            document.getElementById(path + "span").addEventListener("click", function caretListener() {
-              document.getElementById(path + "ul").classList.toggle("d-block");
-              document.getElementById(path + "span").classList.toggle("tree-caret-down");
-            });
-          }
+      if (toggler.classList.contains('files-tree-title')) {
+        document.getElementById(path + "span").addEventListener("click", function caretListener() {
+          document.getElementById(path + "ul").classList.toggle("d-block");
+          document.getElementById(path + "span").classList.toggle("tree-caret-down");
+        });
+      }
     }
   }
 

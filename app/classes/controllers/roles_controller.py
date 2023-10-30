@@ -68,22 +68,22 @@ class RolesController:
         return HelperRoles.add_role(role_name, manager)
 
     class RoleServerJsonType(t.TypedDict):
-        server_id: t.Union[str, int]
+        server_uuid: t.Union[str, int]
         permissions: str
 
     @staticmethod
-    def get_server_ids_and_perms_from_role(
+    def get_server_uuids_and_perms_from_role(
         role_id: t.Union[str, int]
     ) -> t.List[RoleServerJsonType]:
         # FIXME: somehow retrieve only the server ids, not the whole servers
         return [
             {
-                "server_id": role_servers.server_id.server_id,
+                "server_uuid": role_servers.server_uuid.server_uuid,
                 "permissions": role_servers.permissions,
             }
             for role_servers in (
                 RoleServers.select(
-                    RoleServers.server_id, RoleServers.permissions
+                    RoleServers.server_uuid, RoleServers.permissions
                 ).where(RoleServers.role_id == role_id)
             )
         ]
@@ -106,7 +106,7 @@ class RolesController:
         role_id: t.Final[int] = HelperRoles.add_role(name, manager)
         for server in servers:
             PermissionsServers.get_or_create(
-                role_id, server["server_id"], server["permissions"]
+                role_id, server["server_uuid"], server["permissions"]
             )
         return role_id
 
@@ -129,26 +129,26 @@ class RolesController:
         if servers is not None:
             base_data = RolesController.get_role_with_servers(role_id)
 
-            server_ids = {server["server_id"] for server in servers}
+            server_uuids = {server["server_uuid"] for server in servers}
             server_permissions_map = {
-                server["server_id"]: server["permissions"] for server in servers
+                server["server_uuid"]: server["permissions"] for server in servers
             }
 
-            added_servers = server_ids.difference(set(base_data["servers"]))
-            removed_servers = set(base_data["servers"]).difference(server_ids)
-            same_servers = server_ids.intersection(set(base_data["servers"]))
+            added_servers = server_uuids.difference(set(base_data["servers"]))
+            removed_servers = set(base_data["servers"]).difference(server_uuids)
+            same_servers = server_uuids.intersection(set(base_data["servers"]))
             logger.debug(
                 f"role: {role_id} +server:{added_servers} -server{removed_servers}"
             )
-            for server_id in added_servers:
+            for server_uuid in added_servers:
                 PermissionsServers.get_or_create(
-                    role_id, server_id, server_permissions_map[server_id]
+                    role_id, server_uuid, server_permissions_map[server_uuid]
                 )
             if len(removed_servers) != 0:
                 PermissionsServers.delete_roles_permissions(role_id, removed_servers)
-            for server_id in same_servers:
+            for server_uuid in same_servers:
                 PermissionsServers.update_role_permission(
-                    role_id, server_id, server_permissions_map[server_id]
+                    role_id, server_uuid, server_permissions_map[server_uuid]
                 )
         if role_name is not None:
             up_data = {
@@ -174,8 +174,8 @@ class RolesController:
         role = HelperRoles.get_role(role_id)
 
         if role:
-            server_ids = PermissionsServers.get_server_ids_from_role(role_id)
-            role["servers"] = server_ids
+            server_uuids = PermissionsServers.get_server_uuids_from_role(role_id)
+            role["servers"] = server_uuids
             # logger.debug("role: ({}) {}".format(role_id, role))
             return role
         # logger.debug("role: ({}) {}".format(role_id, {}))

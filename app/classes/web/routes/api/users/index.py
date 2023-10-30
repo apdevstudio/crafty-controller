@@ -177,7 +177,7 @@ class ApiUsersIndexHandler(BaseApiHandler):
         self.controller.management.add_to_audit_log(
             user["user_id"],
             f"added user {username} (UID:{user_id}) with roles {roles}",
-            server_id=0,
+            server_uuid=0,
             source_ip=self.get_remote_ip(),
         )
 

@@ -72,23 +72,23 @@ file_delete_schema = {
 
 
 class ApiServersServerFilesIndexHandler(BaseApiHandler):
-    def post(self, server_id: str):
+    def post(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.FILES
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
             and EnumPermissionsServer.BACKUP
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Files or Backup permission, return an error
@@ -112,7 +112,7 @@ class ApiServersServerFilesIndexHandler(BaseApiHandler):
                 },
             )
         if not Helpers.validate_traversal(
-            self.controller.servers.get_server_data_by_id(server_id)["path"],
+            self.controller.servers.get_server_data_by_id(server_uuid)["path"],
             data["path"],
         ):
             return self.finish_json(
@@ -130,7 +130,9 @@ class ApiServersServerFilesIndexHandler(BaseApiHandler):
                 "root_path": {
                     "path": folder,
                     "top": data["path"]
-                    == self.controller.servers.get_server_data_by_id(server_id)["path"],
+                    == self.controller.servers.get_server_data_by_id(server_uuid)[
+                        "path"
+                    ],
                 }
             }
 
@@ -150,7 +152,7 @@ class ApiServersServerFilesIndexHandler(BaseApiHandler):
                 rel = os.path.join(folder, raw_filename)
                 dpath = os.path.join(folder, filename)
                 if str(dpath) in self.controller.management.get_excluded_backup_dirs(
-                    server_id
+                    server_uuid
                 ):
                     if os.path.isdir(rel):
                         return_json[filename] = {
@@ -189,19 +191,19 @@ class ApiServersServerFilesIndexHandler(BaseApiHandler):
                 )
             self.finish_json(200, {"status": "ok", "data": file_contents})
 
-    def delete(self, server_id: str):
+    def delete(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.FILES
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Files permission, return an error
@@ -224,7 +226,7 @@ class ApiServersServerFilesIndexHandler(BaseApiHandler):
                 },
             )
         if not Helpers.validate_traversal(
-            self.controller.servers.get_server_data_by_id(server_id)["path"],
+            self.controller.servers.get_server_data_by_id(server_uuid)["path"],
             data["filename"],
         ):
             return self.finish_json(
@@ -242,19 +244,19 @@ class ApiServersServerFilesIndexHandler(BaseApiHandler):
             FileHelpers.del_file(data["filename"])
         return self.finish_json(200, {"status": "ok"})
 
-    def patch(self, server_id: str):
+    def patch(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.FILES
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Files permission, return an error
@@ -277,7 +279,7 @@ class ApiServersServerFilesIndexHandler(BaseApiHandler):
                 },
             )
         if not Helpers.validate_traversal(
-            self.controller.servers.get_server_data_by_id(server_id)["path"],
+            self.controller.servers.get_server_data_by_id(server_uuid)["path"],
             data["path"],
         ):
             return self.finish_json(
@@ -295,19 +297,19 @@ class ApiServersServerFilesIndexHandler(BaseApiHandler):
             file_object.write(file_contents)
         return self.finish_json(200, {"status": "ok"})
 
-    def put(self, server_id: str):
+    def put(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.FILES
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Files permission, return an error
@@ -331,7 +333,7 @@ class ApiServersServerFilesIndexHandler(BaseApiHandler):
             )
         path = os.path.join(data["parent"], data["name"])
         if not Helpers.validate_traversal(
-            self.controller.servers.get_server_data_by_id(server_id)["path"],
+            self.controller.servers.get_server_data_by_id(server_uuid)["path"],
             path,
         ):
             return self.finish_json(
@@ -361,19 +363,19 @@ class ApiServersServerFilesIndexHandler(BaseApiHandler):
 
 
 class ApiServersServerFilesCreateHandler(BaseApiHandler):
-    def patch(self, server_id: str):
+    def patch(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.FILES
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Files permission, return an error
@@ -399,10 +401,10 @@ class ApiServersServerFilesCreateHandler(BaseApiHandler):
         new_item_name = data["new_name"]
         new_item_path = os.path.join(os.path.split(path)[0], new_item_name)
         if not Helpers.validate_traversal(
-            self.controller.servers.get_server_data_by_id(server_id)["path"],
+            self.controller.servers.get_server_data_by_id(server_uuid)["path"],
             path,
         ) or not Helpers.validate_traversal(
-            self.controller.servers.get_server_data_by_id(server_id)["path"],
+            self.controller.servers.get_server_data_by_id(server_uuid)["path"],
             new_item_path,
         ):
             return self.finish_json(
@@ -426,19 +428,19 @@ class ApiServersServerFilesCreateHandler(BaseApiHandler):
         os.rename(path, new_item_path)
         return self.finish_json(200, {"status": "ok"})
 
-    def put(self, server_id: str):
+    def put(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.FILES
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Files permission, return an error
@@ -462,7 +464,7 @@ class ApiServersServerFilesCreateHandler(BaseApiHandler):
             )
         path = os.path.join(data["parent"], data["name"])
         if not Helpers.validate_traversal(
-            self.controller.servers.get_server_data_by_id(server_id)["path"],
+            self.controller.servers.get_server_data_by_id(server_uuid)["path"],
             path,
         ):
             return self.finish_json(
@@ -492,19 +494,19 @@ class ApiServersServerFilesCreateHandler(BaseApiHandler):
 
 
 class ApiServersServerFilesZipHandler(BaseApiHandler):
-    def post(self, server_id: str):
+    def post(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.FILES
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Files permission, return an error
@@ -529,7 +531,7 @@ class ApiServersServerFilesZipHandler(BaseApiHandler):
         folder = data["folder"]
         user_id = auth_data[4]["user_id"]
         if not Helpers.validate_traversal(
-            self.controller.servers.get_server_data_by_id(server_id)["path"],
+            self.controller.servers.get_server_data_by_id(server_uuid)["path"],
             folder,
         ):
             return self.finish_json(

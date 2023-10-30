@@ -15,9 +15,9 @@
       <div class="page-header">
         <h4 class="page-title">
           {{ translate('serverDetails', 'serverDetails', data['lang']) }} - {{
-          data['server_stats']['server_id']['server_name'] }}
+          data['server_stats']['server_uuid']['server_name'] }}
           <br />
-          <small>UUID: {{ data['server_stats']['server_id']['server_uuid'] }}</small>
+          <small>UUID: {{ data['server_stats']['server_uuid']['server_uuid'] }}</small>
         </h4>
       </div>
     </div>
@@ -48,12 +48,10 @@
               </select>
             </div>
           </div>
-          <button style="float: right; visibility: hidden;" class="btn btn-outline-success reset-button"
-            id="reset-button"><i class="fas fa-undo"></i>&nbsp;{{ translate('serverMetrics', 'resetZoom', data['lang'])
+          <button style="float: right; visibility: hidden;" class="btn btn-outline-success reset-button" id="reset-button"><i class="fas fa-undo"></i>&nbsp;{{ translate('serverMetrics', 'resetZoom', data['lang'])
             }}</button>
           {% if data['user_data']['hints'] %}
-          <span data-html="true" class="hints text-center" title="<i class='fa fa-info-circle'></i> " ,
-            data-content="{{
+          <span data-html="true" class="hints text-center" title="<i class='fa fa-info-circle'></i> " , data-content="{{
             translate('serverMetrics', 'zoomHint1' , data['lang'])}} <br> <br> {{ translate('serverMetrics', 'zoomHint2', data['lang'])}}" , data-placement="top"></span>
           {% end %}
           <div class="chart-wrapper">

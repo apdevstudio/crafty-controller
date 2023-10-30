@@ -159,26 +159,26 @@ class ServerJars:
             del response["bedrock"]
         return response
 
-    def download_jar(self, jar, server, version, path, server_id):
+    def download_jar(self, jar, server, version, path, server_uuid):
         update_thread = threading.Thread(
-            name=f"server_download-{server_id}-{server}-{version}",
+            name=f"server_download-{server_uuid}-{server}-{version}",
             target=self.a_download_jar,
             daemon=True,
-            args=(jar, server, version, path, server_id),
+            args=(jar, server, version, path, server_uuid),
         )
         update_thread.start()
 
-    def a_download_jar(self, jar, server, version, path, server_id):
+    def a_download_jar(self, jar, server, version, path, server_uuid):
         # delaying download for server register to finish
         time.sleep(3)
         fetch_url = f"{self.base_url}/api/fetchJar/{jar}/{server}/{version}"
-        server_users = PermissionsServers.get_server_user_list(server_id)
+        server_users = PermissionsServers.get_server_user_list(server_uuid)
 
         # We need to make sure the server is registered before
         # we submit a db update for it's stats.
         while True:
             try:
-                ServersController.set_import(server_id)
+                ServersController.set_import(server_uuid)
                 for user in server_users:
                     WebSocketManager().broadcast_user(user, "send_start_reload", {})
 
@@ -194,15 +194,15 @@ class ServerJars:
                     shutil.copyfileobj(r.raw, output)
                     # If this is the newer forge version we will run the installer
                     if server == "forge":
-                        ServersController.finish_import(server_id, True)
+                        ServersController.finish_import(server_uuid, True)
                     else:
-                        ServersController.finish_import(server_id)
+                        ServersController.finish_import(server_uuid)
 
                     success = True
             except Exception as e:
                 logger.error(f"Unable to save jar to {path} due to error:{e}")
-                ServersController.finish_import(server_id)
-                server_users = PermissionsServers.get_server_user_list(server_id)
+                ServersController.finish_import(server_uuid)
+                server_users = PermissionsServers.get_server_user_list(server_uuid)
 
             for user in server_users:
                 WebSocketManager().broadcast_user(

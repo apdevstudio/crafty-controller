@@ -13,7 +13,7 @@ ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 
 
 class ApiServersServerLogsHandler(BaseApiHandler):
-    def get(self, server_id: str):
+    def get(self, server_uuid: str):
         auth_data = self.authenticate_user()
         if not auth_data:
             return
@@ -27,20 +27,20 @@ class ApiServersServerLogsHandler(BaseApiHandler):
         # GET /api/v2/servers/server/logs?html=true
         use_html = self.get_query_argument("html", None) == "true"
 
-        if server_id not in [str(x["server_id"]) for x in auth_data[0]]:
+        if server_uuid not in [str(x["server_uuid"]) for x in auth_data[0]]:
             # if the user doesn't have access to the server, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
         if (
             EnumPermissionsServer.LOGS
             not in self.controller.server_perms.get_user_id_permissions_list(
-                auth_data[4]["user_id"], server_id
+                auth_data[4]["user_id"], server_uuid
             )
         ):
             # if the user doesn't have Logs permission, return an error
             return self.finish_json(400, {"status": "error", "error": "NOT_AUTHORIZED"})
 
-        server_data = self.controller.servers.get_server_data_by_id(server_id)
+        server_data = self.controller.servers.get_server_data_by_id(server_uuid)
 
         if read_log_file:
             log_lines = self.helper.get_setting("max_log_lines")
@@ -54,7 +54,7 @@ class ApiServersServerLogsHandler(BaseApiHandler):
             # Remove newline characters from the end of the lines
             raw_lines = [line.rstrip("\r\n") for line in raw_lines]
         else:
-            raw_lines = ServerOutBuf.lines.get(server_id, [])
+            raw_lines = ServerOutBuf.lines.get(server_uuid, [])
 
         lines = []
 

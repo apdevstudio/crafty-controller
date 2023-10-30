@@ -25,8 +25,10 @@ class ApiRolesRoleServersHandler(BaseApiHandler):
             200,
             {
                 "status": "ok",
-                "data": PermissionsServers.get_server_ids_from_role(role_id)
+                "data": PermissionsServers.get_server_uuids_from_role(role_id)
                 if get_only_ids
-                else self.controller.roles.get_server_ids_and_perms_from_role(role_id),
+                else self.controller.roles.get_server_uuids_and_perms_from_role(
+                    role_id
+                ),
             },
         )

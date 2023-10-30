@@ -18,9 +18,9 @@ class StatusHandler(BaseHandler):
             if srv["stats"]["running"]:
                 running += 1
             server_data = srv.get("server_data", False)
-            server_id = server_data.get("server_id", False)
+            server_uuid = server_data.get("server_uuid", False)
             srv["raw_ping_result"] = self.controller.servers.get_server_stats_by_id(
-                server_id
+                server_uuid
             )
             if "icon" not in srv["raw_ping_result"]:
                 srv["raw_ping_result"]["icon"] = False
@@ -40,9 +40,9 @@ class StatusHandler(BaseHandler):
         page_data["servers"] = self.controller.servers.get_all_servers_stats()
         for srv in page_data["servers"]:
             server_data = srv.get("server_data", False)
-            server_id = server_data.get("server_id", False)
+            server_uuid = server_data.get("server_uuid", False)
             srv["raw_ping_result"] = self.controller.servers.get_server_stats_by_id(
-                server_id
+                server_uuid
             )
         template = "public/status.html"
 

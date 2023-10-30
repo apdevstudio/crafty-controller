@@ -371,7 +371,7 @@
           document.getElementById('logs_progress_bar').style.width = logs.percent + '%';
         }
       });
-      webSocket.on('send_logs_bootbox', function (server_id) {
+      webSocket.on('send_logs_bootbox', function (server_uuid) {
         var x = document.querySelector('.bootbox');
         if (x) {
           x.remove()
@@ -395,7 +395,7 @@
           }
         });
       });
-      webSocket.on('send_eula_bootbox', function (server_id) {
+      webSocket.on('send_eula_bootbox', function (server_uuid) {
         var x = document.querySelector('.bootbox');
         if (x) {
           x.remove()
@@ -419,7 +419,7 @@
           },
           callback: function (result) {
             if (result == true) {
-              eulaAgree(server_id.id)
+              eulaAgree(server_uuid.id)
             }
             else {
               location.reload()
@@ -429,11 +429,11 @@
       });
     }
 
-    async function eulaAgree(server_id, command) {
+    async function eulaAgree(server_uuid, command) {
       //< !--this getCookie function is in base.html-- >
       const token = getCookie("_xsrf");
 
-      let res = await fetch(`/api/v2/servers/${server_id}/action/eula/`, {
+      let res = await fetch(`/api/v2/servers/${server_uuid}/action/eula/`, {
         method: 'POST',
         headers: {
           'X-XSRFToken': token

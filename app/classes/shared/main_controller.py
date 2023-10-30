@@ -160,7 +160,7 @@ class Controller:
                 if (
                     EnumPermissionsServer.LOGS
                     in self.server_perms.get_user_id_permissions_list(
-                        exec_user["user_id"], server["server_id"]
+                        exec_user["user_id"], server["server_uuid"]
                     )
                 ):
                     auth_servers.append(server)
@@ -484,7 +484,7 @@ class Controller:
             monitoring_host = "127.0.0.1"
             monitoring_type = "minecraft-java"
 
-        new_server_id = self.register_server(
+        new_server_uuid = self.register_server(
             name=data["name"],
             server_uuid=server_fs_uuid,
             server_dir=new_server_path,
@@ -502,7 +502,7 @@ class Controller:
             if root_create_data["create_type"] == "download_jar":
                 # modded update urls from server jars will only update the installer
                 if create_data["category"] != "modded":
-                    server_obj = self.servers.get_server_obj(new_server_id)
+                    server_obj = self.servers.get_server_obj(new_server_uuid)
                     url = (
                         f"https://serverjars.com/api/fetchJar/{create_data['category']}"
                         f"/{create_data['type']}/{create_data['version']}"
@@ -514,44 +514,44 @@ class Controller:
                     create_data["type"],
                     create_data["version"],
                     full_jar_path,
-                    new_server_id,
+                    new_server_uuid,
                 )
             elif root_create_data["create_type"] == "import_server":
-                ServersController.set_import(new_server_id)
+                ServersController.set_import(new_server_uuid)
                 self.import_helper.import_jar_server(
                     create_data["existing_server_path"],
                     new_server_path,
                     monitoring_port,
-                    new_server_id,
+                    new_server_uuid,
                 )
             elif root_create_data["create_type"] == "import_zip":
-                ServersController.set_import(new_server_id)
+                ServersController.set_import(new_server_uuid)
 
         elif data["create_type"] == "minecraft_bedrock":
             if root_create_data["create_type"] == "download_exe":
-                ServersController.set_import(new_server_id)
+                ServersController.set_import(new_server_uuid)
                 self.import_helper.download_bedrock_server(
-                    new_server_path, new_server_id
+                    new_server_path, new_server_uuid
                 )
             elif root_create_data["create_type"] == "import_server":
-                ServersController.set_import(new_server_id)
+                ServersController.set_import(new_server_uuid)
                 full_exe_path = os.path.join(new_server_path, create_data["executable"])
                 self.import_helper.import_bedrock_server(
                     create_data["existing_server_path"],
                     new_server_path,
                     monitoring_port,
                     full_exe_path,
-                    new_server_id,
+                    new_server_uuid,
                 )
             elif root_create_data["create_type"] == "import_zip":
-                ServersController.set_import(new_server_id)
+                ServersController.set_import(new_server_uuid)
                 full_exe_path = os.path.join(new_server_path, create_data["executable"])
                 self.import_helper.import_bedrock_zip_server(
                     create_data["zip_path"],
                     new_server_path,
                     os.path.join(create_data["zip_root"], create_data["executable"]),
                     monitoring_port,
-                    new_server_id,
+                    new_server_uuid,
                 )
 
         exec_user = self.users.get_user_by_id(int(user_id))
@@ -560,22 +560,22 @@ class Controller:
         # and add the user to it if he's not a superuser
         if len(captured_roles) == 0:
             if not exec_user["superuser"]:
-                new_server_uuid = self.servers.get_server_data_by_id(new_server_id).get(
-                    "server_uuid"
-                )
+                new_server_uuid = self.servers.get_server_data_by_id(
+                    new_server_uuid
+                ).get("server_uuid")
                 role_id = self.roles.add_role(
                     f"Creator of Server with uuid={new_server_uuid}",
                     exec_user["user_id"],
                 )
-                self.server_perms.add_role_server(new_server_id, role_id, "11111111")
+                self.server_perms.add_role_server(new_server_uuid, role_id, "11111111")
                 self.users.add_role_to_user(exec_user["user_id"], role_id)
 
         else:
             for role in captured_roles:
                 role_id = role
-                self.server_perms.add_role_server(new_server_id, role_id, "11111111")
+                self.server_perms.add_role_server(new_server_uuid, role_id, "11111111")
 
-        return new_server_id, server_fs_uuid
+        return new_server_uuid, server_fs_uuid
 
     @staticmethod
     def verify_jar_server(server_path: str, server_jar: str):
@@ -604,9 +604,9 @@ class Controller:
         port: int,
         user_id: int,
     ):
-        server_id = Helpers.create_uuid()
-        new_server_dir = os.path.join(self.helper.servers_dir, server_id)
-        backup_path = os.path.join(self.helper.backup_path, server_id)
+        server_uuid = Helpers.create_uuid()
+        new_server_dir = os.path.join(self.helper.servers_dir, server_uuid)
+        backup_path = os.path.join(self.helper.backup_path, server_uuid)
         if Helpers.is_os_windows():
             new_server_dir = Helpers.wtol_path(new_server_dir)
             backup_path = Helpers.wtol_path(backup_path)
@@ -637,7 +637,7 @@ class Controller:
 
         new_id = self.register_server(
             server_name,
-            server_id,
+            server_uuid,
             new_server_dir,
             backup_path,
             server_command,
@@ -666,9 +666,9 @@ class Controller:
         port: int,
         user_id: int,
     ):
-        server_id = Helpers.create_uuid()
-        new_server_dir = os.path.join(self.helper.servers_dir, server_id)
-        backup_path = os.path.join(self.helper.backup_path, server_id)
+        server_uuid = Helpers.create_uuid()
+        new_server_dir = os.path.join(self.helper.servers_dir, server_uuid)
+        backup_path = os.path.join(self.helper.backup_path, server_uuid)
         if Helpers.is_os_windows():
             new_server_dir = Helpers.wtol_path(new_server_dir)
             backup_path = Helpers.wtol_path(backup_path)
@@ -691,7 +691,7 @@ class Controller:
 
         new_id = self.register_server(
             server_name,
-            server_id,
+            server_uuid,
             new_server_dir,
             backup_path,
             server_command,
@@ -709,9 +709,9 @@ class Controller:
         return new_id
 
     def create_bedrock_server(self, server_name, user_id):
-        server_id = Helpers.create_uuid()
-        new_server_dir = os.path.join(self.helper.servers_dir, server_id)
-        backup_path = os.path.join(self.helper.backup_path, server_id)
+        server_uuid = Helpers.create_uuid()
+        new_server_dir = os.path.join(self.helper.servers_dir, server_uuid)
+        backup_path = os.path.join(self.helper.backup_path, server_uuid)
         server_exe = "bedrock_server"
         if Helpers.is_os_windows():
             # if this is windows we will override the linux bedrock server name.
@@ -736,7 +736,7 @@ class Controller:
 
         new_id = self.register_server(
             server_name,
-            server_id,
+            server_uuid,
             new_server_dir,
             backup_path,
             server_command,
@@ -759,9 +759,9 @@ class Controller:
         port: int,
         user_id: int,
     ):
-        server_id = Helpers.create_uuid()
-        new_server_dir = os.path.join(self.helper.servers_dir, server_id)
-        backup_path = os.path.join(self.helper.backup_path, server_id)
+        server_uuid = Helpers.create_uuid()
+        new_server_dir = os.path.join(self.helper.servers_dir, server_uuid)
+        backup_path = os.path.join(self.helper.backup_path, server_uuid)
         if Helpers.is_os_windows():
             new_server_dir = Helpers.wtol_path(new_server_dir)
             backup_path = Helpers.wtol_path(backup_path)
@@ -784,7 +784,7 @@ class Controller:
 
         new_id = self.register_server(
             server_name,
-            server_id,
+            server_uuid,
             new_server_dir,
             backup_path,
             server_command,
@@ -809,11 +809,11 @@ class Controller:
     #                                   BEDROCK IMPORTS END
     # **********************************************************************************
 
-    def rename_backup_dir(self, old_server_id, new_server_id, new_uuid):
-        server_data = self.servers.get_server_data_by_id(old_server_id)
-        server_obj = self.servers.get_server_obj(new_server_id)
+    def rename_backup_dir(self, old_server_uuid, new_server_uuid, new_uuid):
+        server_data = self.servers.get_server_data_by_id(old_server_uuid)
+        server_obj = self.servers.get_server_obj(new_server_uuid)
         old_bu_path = server_data["backup_path"]
-        ServerPermsController.backup_role_swap(old_server_id, new_server_id)
+        ServerPermsController.backup_role_swap(old_server_uuid, new_server_uuid)
         backup_path = old_bu_path
         backup_path = Path(backup_path)
         backup_path_components = list(backup_path.parts)
@@ -883,16 +883,18 @@ class Controller:
 
         return new_id
 
-    def remove_server(self, server_id, files):
+    def remove_server(self, server_uuid, files):
         counter = 0
         for server in self.servers.servers_list:
             # if this is the droid... im mean server we are looking for...
-            if str(server["server_id"]) == str(server_id):
-                server_data = self.servers.get_server_data(server_id)
+            if str(server["server_uuid"]) == str(server_uuid):
+                server_data = self.servers.get_server_data(server_uuid)
                 server_name = server_data["server_name"]
 
-                logger.info(f"Deleting Server: ID {server_id} | Name: {server_name} ")
-                Console.info(f"Deleting Server: ID {server_id} | Name: {server_name} ")
+                logger.info(f"Deleting Server: ID {server_uuid} | Name: {server_name} ")
+                Console.info(
+                    f"Deleting Server: ID {server_uuid} | Name: {server_name} "
+                )
 
                 srv_obj = server["server_obj"]
                 srv_obj.server_scheduler.shutdown()
@@ -900,25 +902,25 @@ class Controller:
                 running = srv_obj.check_running()
 
                 if running:
-                    self.servers.stop_server(server_id)
+                    self.servers.stop_server(server_uuid)
                 if files:
                     try:
                         FileHelpers.del_dirs(
                             Helpers.get_os_understandable_path(
-                                self.servers.get_server_data_by_id(server_id)["path"]
+                                self.servers.get_server_data_by_id(server_uuid)["path"]
                             )
                         )
                     except Exception as e:
                         logger.error(
                             f"Unable to delete server files for server with ID: "
-                            f"{server_id} with error logged: {e}"
+                            f"{server_uuid} with error logged: {e}"
                         )
                     if Helpers.check_path_exists(
-                        self.servers.get_server_data_by_id(server_id)["backup_path"]
+                        self.servers.get_server_data_by_id(server_uuid)["backup_path"]
                     ):
                         FileHelpers.del_dirs(
                             Helpers.get_os_understandable_path(
-                                self.servers.get_server_data_by_id(server_id)[
+                                self.servers.get_server_data_by_id(server_uuid)[
                                     "backup_path"
                                 ]
                             )
@@ -926,24 +928,24 @@ class Controller:
 
                 # Cleanup scheduled tasks
                 try:
-                    HelpersManagement.delete_scheduled_task_by_server(server_id)
+                    HelpersManagement.delete_scheduled_task_by_server(server_uuid)
                 except DoesNotExist:
                     logger.info("No scheduled jobs exist. Continuing.")
                 # remove the server from the DB
-                self.servers.remove_server(server_id)
+                self.servers.remove_server(server_uuid)
 
                 # remove the server from servers list
                 self.servers.servers_list.pop(counter)
 
             counter += 1
 
-    def remove_unloaded_server(self, server_id):
+    def remove_unloaded_server(self, server_uuid):
         try:
-            HelpersManagement.delete_scheduled_task_by_server(server_id)
+            HelpersManagement.delete_scheduled_task_by_server(server_uuid)
         except DoesNotExist:
             logger.info("No scheduled jobs exist. Continuing.")
         # remove the server from the DB
-        self.servers.remove_server(server_id)
+        self.servers.remove_server(server_uuid)
 
     @staticmethod
     def clear_support_status():
@@ -1039,7 +1041,7 @@ class Controller:
                 except FileExistsError as e:
                     logger.error(f"Failed to move server with error: {e}")
 
-            server_obj = self.servers.get_server_obj(server.get("server_id"))
+            server_obj = self.servers.get_server_obj(server.get("server_uuid"))
 
             # reset executable path
             if current_master in server["executable"]:
@@ -1059,7 +1061,7 @@ class Controller:
             server_obj.path = new_local_server_path
             failed = False
             for s in self.servers.failed_servers:
-                if int(s["server_id"]) == int(server.get("server_id")):
+                if int(s["server_uuid"]) == int(server.get("server_uuid")):
                     failed = True
             if not failed:
                 self.servers.update_server(server_obj)

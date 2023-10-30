@@ -16,7 +16,7 @@ create_role_schema = {
             "items": {
                 "type": "object",
                 "properties": {
-                    "server_id": {
+                    "server_uuid": {
                         "type": "integer",
                         "minimum": 1,
                     },
@@ -25,7 +25,7 @@ create_role_schema = {
                         "pattern": "^[01]{8}$",  # 8 bits, see EnumPermissionsServer
                     },
                 },
-                "required": ["server_id", "permissions"],
+                "required": ["server_uuid", "permissions"],
             },
         },
         "manager": {"type": ["integer", "null"]},
@@ -46,7 +46,7 @@ basic_create_role_schema = {
             "items": {
                 "type": "object",
                 "properties": {
-                    "server_id": {
+                    "server_uuid": {
                         "type": "integer",
                         "minimum": 1,
                     },
@@ -55,7 +55,7 @@ basic_create_role_schema = {
                         "pattern": "^[01]{8}$",  # 8 bits, see EnumPermissionsServer
                     },
                 },
-                "required": ["server_id", "permissions"],
+                "required": ["server_uuid", "permissions"],
             },
         },
     },
@@ -136,16 +136,18 @@ class ApiRolesIndexHandler(BaseApiHandler):
             manager = None
 
         # Get the servers
-        servers_dict = {server["server_id"]: server for server in data["servers"]}
-        server_ids = (
+        servers_dict = {server["server_uuid"]: server for server in data["servers"]}
+        server_uuids = (
             (
-                {server["server_id"] for server in data["servers"]}
-                & set(self.controller.servers.get_all_server_ids())
+                {server["server_uuid"] for server in data["servers"]}
+                & set(self.controller.servers.get_all_server_uuids())
             )  # Only allow existing servers
             if "servers" in data
             else set()
         )
-        servers: t.List[dict] = [servers_dict[server_id] for server_id in server_ids]
+        servers: t.List[dict] = [
+            servers_dict[server_uuid] for server_uuid in server_uuids
+        ]
 
         if self.controller.roles.get_roleid_by_name(role_name) is not None:
             return self.finish_json(
@@ -157,7 +159,7 @@ class ApiRolesIndexHandler(BaseApiHandler):
         self.controller.management.add_to_audit_log(
             user["user_id"],
             f"created role {role_name} (RID:{role_id})",
-            server_id=0,
+            server_uuid=0,
             source_ip=self.get_remote_ip(),
         )
 

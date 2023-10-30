@@ -33,44 +33,44 @@
           {% for server in data['servers'] %}
           {% if server['server_data']['show_status'] %}
           <tr>
-            <td id="server_name_{{ server['stats']['server_id']['server_id'] }}">
+            <td id="server_name_{{ server['stats']['server_uuid']['server_uuid'] }}">
               <i class="fas fa-server"></i>
               {{ server['server_data']['server_name'] }}
             </td>
             {% if server['stats']['int_ping_results'] != 'False' %}
-            <td id="server_players_{{ server['stats']['server_id']['server_id'] }}">
+            <td id="server_players_{{ server['stats']['server_uuid']['server_uuid'] }}">
               {{ server['stats']['online'] }} / {{ server['stats']['max'] }} {{ translate('dashboard', 'max',
               data['lang']) }}<br />
             </td>
-            <td id="server_motd_{{ server['stats']['server_id']['server_id'] }}">
+            <td id="server_motd_{{ server['stats']['server_uuid']['server_uuid'] }}">
               {% if server['stats']['desc'] != 'False' %}
               <div class="row">
                 <div class="col-auto">
                   <img src="/static/assets/images/pack.png" alt="icon" style="-webkit-filter:grayscale(100%); filter:grayscale(100%)" />
                 </div>
                 <div class="col-auto">
-                  <span id="input_motd_{{ server['stats']['server_id']['server_id'] }}" class="input_motd">{{ server['stats']['desc'] }}</span>
+                  <span id="input_motd_{{ server['stats']['server_uuid']['server_uuid'] }}" class="input_motd">{{ server['stats']['desc'] }}</span>
                 </div>
               </div>
               {% end %}
             </td>
-            <td id="server_version_{{ server['stats']['server_id']['server_id'] }}">
+            <td id="server_version_{{ server['stats']['server_uuid']['server_uuid'] }}">
               {% if server['stats']['version'] != 'False' %}
               {{ server['stats']['version'] }}
               {% end %}
             </td>
             {% else %}
-            <td id="server_players_{{ server['stats']['server_id']['server_id'] }}">
+            <td id="server_players_{{ server['stats']['server_uuid']['server_uuid'] }}">
               <span class="text-warning"><i class="fas fa-exclamation-triangle"></i></span>
             </td>
-            <td id="server_motd_{{ server['stats']['server_id']['server_id'] }}">
+            <td id="server_motd_{{ server['stats']['server_uuid']['server_uuid'] }}">
               <span class="text-warning">Crafty can't get infos from this Server </span>
             </td>
-            <td id="server_version_{{ server['stats']['server_id']['server_id'] }}">
+            <td id="server_version_{{ server['stats']['server_uuid']['server_uuid'] }}">
               <span class="text-warning"><i class="fas fa-question"></i></i></span>
             </td>
             {% end %}
-            <td id="server_online_status_{{ server['stats']['server_id']['server_id'] }}">
+            <td id="server_online_status_{{ server['stats']['server_uuid']['server_uuid'] }}">
               {% if server['stats']['running'] %}
               <span class="text-success"><i class="fas fa-signal"></i> {{ translate('dashboard', 'online', data['lang'])
                 }}</span>
@@ -97,19 +97,19 @@
       {% for server in data['servers'] %}
       {% if server['server_data']['show_status'] %}
       <div class="card mb-0">
-        <div class="card-header" id="heading-{{server['server_data']['server_id']}}">
+        <div class="card-header" id="heading-{{server['server_data']['server_uuid']}}">
           <h2 class="mb-0 container overflow-hidden">
             <div class="row">
               <div class="col-8 mx-0 px-0">
-                <a id="m_server_name_{{ server['stats']['server_id']['server_id'] }}" class="btn btn-link d-flex justify-content-center" type="button" data-toggle="collapse" data-target="#collapse-{{server['server_data']['server_id']}}" aria-expanded="false" aria-controls="collapse-{{server['server_data']['server_id']}}">
+                <a id="m_server_name_{{ server['stats']['server_uuid']['server_uuid'] }}" class="btn btn-link d-flex justify-content-center" type="button" data-toggle="collapse" data-target="#collapse-{{server['server_data']['server_uuid']}}" aria-expanded="false" aria-controls="collapse-{{server['server_data']['server_uuid']}}">
                   <i class="fas fa-server"></i>
                   {{ server['server_data']['server_name'] }}
                 </a>
               </div>
               <div class="col-4 mx-0 px-0">
-                <a id="m_server_online_status_{{ server['stats']['server_id']['server_id'] }}" class="btn btn-link d-flex justify-content-center" type="button">
+                <a id="m_server_online_status_{{ server['stats']['server_uuid']['server_uuid'] }}" class="btn btn-link d-flex justify-content-center" type="button">
                   {% if server['stats']['running'] %}
-                  <div id="m_server_players_{{ server['stats']['server_id']['server_id'] }}">
+                  <div id="m_server_players_{{ server['stats']['server_uuid']['server_uuid'] }}">
                     <span class="text-success"><i class="fas fa-signal"></i> {{ server['stats']['online'] }} / {{
                       server['stats']['max'] }}</span>
                   </div>
@@ -123,24 +123,24 @@
           </h2>
         </div>
 
-        <div id="collapse-{{server['server_data']['server_id']}}" class="collapse" aria-labelledby="heading-{{server['server_data']['server_id']}}" data-parent="#accordionServers">
+        <div id="collapse-{{server['server_data']['server_uuid']}}" class="collapse" aria-labelledby="heading-{{server['server_data']['server_uuid']}}" data-parent="#accordionServers">
           <div class="card-body">
             {% if server['stats']['int_ping_results'] != 'False' %}
-            <div id="m_server_motd_{{ server['stats']['server_id']['server_id'] }}" class="media">
+            <div id="m_server_motd_{{ server['stats']['server_uuid']['server_uuid'] }}" class="media">
               {% if server['stats']['desc'] != 'False' %}
               <img src="/static/assets/images/pack.png" class="w-25 mr-3" alt="icon" style="-webkit-filter:grayscale(100%); filter:grayscale(100%);" />
               {% end %}
               <div class="media-body">
                 {% if server['stats']['desc'] != 'False' %}
-                <div id="m_server_motd_{{ server['stats']['server_id']['server_id'] }}">
-                  <span id="m_input_motd_{{ server['stats']['server_id']['server_id'] }}" class="input_motd">{{
+                <div id="m_server_motd_{{ server['stats']['server_uuid']['server_uuid'] }}">
+                  <span id="m_input_motd_{{ server['stats']['server_uuid']['server_uuid'] }}" class="input_motd">{{
                     server['stats']['desc'] }}</span> <br />
                 </div>
                 {% end %}
               </div>
             </div>
             <br />
-            <div id="m_server_version_{{ server['stats']['server_id']['server_id'] }}">
+            <div id="m_server_version_{{ server['stats']['server_uuid']['server_uuid'] }}">
               {% if server['stats']['version'] != 'False' %}
               {{ server['stats']['version'] }}
               {% end %}
@@ -148,11 +148,11 @@
             {% else %}
             <div class="row">
               <div class="col-12">
-                <div id="m_server_motd_{{ server['stats']['server_id']['server_id'] }}">
+                <div id="m_server_motd_{{ server['stats']['server_uuid']['server_uuid'] }}">
                   <span class="text-warning"><i class="fas fa-exclamation-triangle"></i> Crafty can't get infos from
                     this Server </span>
                 </div>
-                <div id="m_server_version_{{ server['stats']['server_id']['server_id'] }}"></div>
+                <div id="m_server_version_{{ server['stats']['server_uuid']['server_uuid'] }}"></div>
               </div>
             </div>
             {% end %}

@@ -105,7 +105,7 @@ class ApiCraftyConfigServerDirHandler(BaseApiHandler):
         self.controller.management.add_to_audit_log(
             auth_data[4]["user_id"],
             f"updated master servers dir to {new_dir}/servers",
-            server_id=0,
+            server_uuid=0,
             source_ip=self.get_remote_ip(),
         )
 

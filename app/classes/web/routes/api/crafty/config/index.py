@@ -125,7 +125,7 @@ class ApiCraftyConfigIndexHandler(BaseApiHandler):
         self.controller.management.add_to_audit_log(
             user["user_id"],
             "edited config.json",
-            server_id=0,
+            server_uuid=0,
             source_ip=self.get_remote_ip(),
         )
 
@@ -218,7 +218,7 @@ class ApiCraftyCustomizeIndexHandler(BaseApiHandler):
         self.controller.management.add_to_audit_log(
             user["user_id"],
             f"customized login photo: {data['photo']}/{data['opacity']}",
-            server_id=0,
+            server_uuid=0,
             source_ip=self.get_remote_ip(),
         )
         self.controller.management.set_login_opacity(int(data["opacity"]))
