@@ -22,12 +22,12 @@ logger = logging.getLogger(__name__)
 # **********************************************************************************
 class RoleServers(BaseModel):
     role_id = ForeignKeyField(Roles, backref="role_server")
-    server_uuid = ForeignKeyField(Servers, backref="role_server")
+    server_id = ForeignKeyField(Servers, backref="role_server")
     permissions = CharField(default="00000000")
 
     class Meta:
         table_name = "role_servers"
-        primary_key = CompositeKey("role_id", "server_uuid")
+        primary_key = CompositeKey("role_id", "server_id")
 
 
 # **********************************************************************************
@@ -48,7 +48,7 @@ class PermissionsServers:
     @staticmethod
     def get_or_create(role_id, server, permissions_mask):
         return RoleServers.get_or_create(
-            role_id=role_id, server_uuid=server, permissions=permissions_mask
+            role_id=role_id, server_id=server, permissions=permissions_mask
         )
 
     @staticmethod
@@ -106,30 +106,30 @@ class PermissionsServers:
         )
 
     @staticmethod
-    def get_server_uuids_from_role(role_id: t.Union[str, int]) -> t.List[int]:
+    def get_server_ids_from_role(role_id: t.Union[str, int]) -> t.List[int]:
         # FIXME: somehow retrieve only the server ids, not the whole servers
         return [
-            role_servers.server_uuid.server_uuid
+            role_servers.server_id.server_id
             for role_servers in (
-                RoleServers.select(RoleServers.server_uuid).where(
+                RoleServers.select(RoleServers.server_id).where(
                     RoleServers.role_id == role_id
                 )
             )
         ]
 
     @staticmethod
-    def get_roles_from_server(server_uuid):
+    def get_roles_from_server(server_id):
         return (
             RoleServers.select()
             .join(Roles, JOIN.INNER)
-            .where(RoleServers.server_uuid == server_uuid)
+            .where(RoleServers.server_id == server_id)
         )
 
     @staticmethod
-    def add_role_server(server_uuid, role_id, rs_permissions="00000000"):
+    def add_role_server(server_id, role_id, rs_permissions="00000000"):
         servers = RoleServers.insert(
             {
-                RoleServers.server_uuid: server_uuid,
+                RoleServers.server_id: server_id,
                 RoleServers.role_id: role_id,
                 RoleServers.permissions: rs_permissions,
             }
@@ -137,23 +137,21 @@ class PermissionsServers:
         return servers
 
     @staticmethod
-    def get_permissions_mask(role_id, server_uuid):
+    def get_permissions_mask(role_id, server_id):
         permissions_mask = ""
         role_server = (
             RoleServers.select()
             .where(RoleServers.role_id == role_id)
-            .where(RoleServers.server_uuid == server_uuid)
+            .where(RoleServers.server_id == server_id)
             .get()
         )
         permissions_mask = role_server.permissions
         return permissions_mask
 
     @staticmethod
-    def get_server_roles(server_uuid):
+    def get_server_roles(server_id):
         role_list = []
-        roles = (
-            RoleServers.select().where(RoleServers.server_uuid == server_uuid).execute()
-        )
+        roles = RoleServers.select().where(RoleServers.server_id == server_id).execute()
         for role in roles:
             role_list.append(role.role_id)
         return role_list
@@ -171,18 +169,18 @@ class PermissionsServers:
     def get_role_permissions_dict(role_id):
         permissions_dict: t.Dict[str, t.List[EnumPermissionsServer]] = {}
         role_servers = RoleServers.select(
-            RoleServers.server_uuid, RoleServers.permissions
+            RoleServers.server_id, RoleServers.permissions
         ).where(RoleServers.role_id == role_id)
         for role_server in role_servers:
             permissions_dict[
-                role_server.server_uuid
+                role_server.server_id_id
             ] = PermissionsServers.get_permissions(role_server.permissions)
         return permissions_dict
 
     @staticmethod
-    def update_role_permission(role_id, server_uuid, permissions_mask):
+    def update_role_permission(role_id, server_id, permissions_mask):
         RoleServers.update(permissions=permissions_mask).where(
-            RoleServers.role_id == role_id, RoleServers.server_uuid == server_uuid
+            RoleServers.role_id == role_id, RoleServers.server_id == server_id
         ).execute()
 
     @staticmethod
@@ -192,23 +190,21 @@ class PermissionsServers:
         return (
             RoleServers.delete()
             .where(RoleServers.role_id == role_id)
-            .where(RoleServers.server_uuid.in_(removed_servers))
+            .where(RoleServers.server_id.in_(removed_servers))
             .execute()
         )
 
     @staticmethod
-    def remove_roles_of_server(server_uuid):
-        return (
-            RoleServers.delete().where(RoleServers.server_uuid == server_uuid).execute()
-        )
+    def remove_roles_of_server(server_id):
+        return RoleServers.delete().where(RoleServers.server_id == server_id).execute()
 
     @staticmethod
-    def get_user_id_permissions_mask(user_id, server_uuid: str):
+    def get_user_id_permissions_mask(user_id, server_id: str):
         user = HelperUsers.get_user_model(user_id)
-        return PermissionsServers.get_user_permissions_mask(user, server_uuid)
+        return PermissionsServers.get_user_permissions_mask(user, server_id)
 
     @staticmethod
-    def get_user_permissions_mask(user: Users, server_uuid: str):
+    def get_user_permissions_mask(user: Users, server_id: str):
         if user.superuser:
             permissions_mask = "1" * len(EnumPermissionsServer)
         else:
@@ -216,7 +212,7 @@ class PermissionsServers:
             role_server = (
                 RoleServers.select()
                 .where(RoleServers.role_id.in_(roles_list))
-                .where(RoleServers.server_uuid == server_uuid)
+                .where(RoleServers.server_id == server_id)
                 .execute()
             )
             try:
@@ -226,11 +222,9 @@ class PermissionsServers:
         return permissions_mask
 
     @staticmethod
-    def get_server_user_list(server_uuid):
+    def get_server_user_list(server_id):
         final_users = []
-        server_roles = RoleServers.select().where(
-            RoleServers.server_uuid == server_uuid
-        )
+        server_roles = RoleServers.select().where(RoleServers.server_id == server_id)
         super_users = Users.select(Users.user_id).where(
             Users.superuser == True  # pylint: disable=singleton-comparison
         )
@@ -247,28 +241,28 @@ class PermissionsServers:
         return final_users
 
     @staticmethod
-    def get_user_id_permissions_list(user_id, server_uuid: str):
+    def get_user_id_permissions_list(user_id, server_id: str):
         user = HelperUsers.get_user_model(user_id)
-        return PermissionsServers.get_user_permissions_list(user, server_uuid)
+        return PermissionsServers.get_user_permissions_list(user, server_id)
 
     @staticmethod
-    def get_user_permissions_list(user: Users, server_uuid: str):
+    def get_user_permissions_list(user: Users, server_id: str):
         if user.superuser:
             permissions_list = PermissionsServers.get_permissions_list()
         else:
             permissions_mask = PermissionsServers.get_user_permissions_mask(
-                user, server_uuid
+                user, server_id
             )
             permissions_list = PermissionsServers.get_permissions(permissions_mask)
         return permissions_list
 
     @staticmethod
-    def get_api_key_id_permissions_list(key_id, server_uuid: str):
+    def get_api_key_id_permissions_list(key_id, server_id: str):
         key = ApiKeys.get(ApiKeys.token_id == key_id)
-        return PermissionsServers.get_api_key_permissions_list(key, server_uuid)
+        return PermissionsServers.get_api_key_permissions_list(key, server_id)
 
     @staticmethod
-    def get_api_key_permissions_list(key: ApiKeys, server_uuid: str):
+    def get_api_key_permissions_list(key: ApiKeys, server_id: str):
         user = HelperUsers.get_user(key.user_id)
         if user["superuser"] and key.superuser:
             return PermissionsServers.get_permissions_list()
@@ -276,7 +270,7 @@ class PermissionsServers:
         role_server = (
             RoleServers.select()
             .where(RoleServers.role_id.in_(roles_list))
-            .where(RoleServers.server_uuid == server_uuid)
+            .where(RoleServers.server_id == server_id)
             .execute()
         )
         try:
