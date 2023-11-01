@@ -578,16 +578,19 @@ class Helpers:
         return version_data
 
     def get_announcements(self):
-        data = []
         try:
+            data = []
             response = requests.get("https://craftycontrol.com/notify", timeout=2)
             data = json.loads(response.content)
+            if self.update_available:
+                data.append(self.update_available)
+            return data
         except Exception as e:
             logger.error(f"Failed to fetch notifications with error: {e}")
-
-        if self.update_available:
-            data.append(self.update_available)
-        return data
+            if self.update_available:
+                data = [self.update_available]
+            else:
+                return False
 
     def get_version_string(self):
         version_data = self.get_version()
