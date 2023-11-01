@@ -145,7 +145,7 @@ class ApiServersServerBackupsBackupIndexHandler(BaseApiHandler):
                 new_server_id = new_server
                 new_server = self.controller.servers.get_server_data(new_server)
                 self.controller.rename_backup_dir(
-                    server_id, new_server_id, new_server["server_uuid"]
+                    server_id, new_server_id, new_server["server_id"]
                 )
                 # preserve current schedules
                 for schedule in self.controller.management.get_schedules_by_server(

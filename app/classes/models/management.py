@@ -31,9 +31,9 @@ class AuditLog(BaseModel):
     user_name = CharField(default="")
     user_id = IntegerField(default=0, index=True)
     source_ip = CharField(default="127.0.0.1")
-    server_id = IntegerField(
-        default=None, index=True
-    )  # When auditing global events, use server ID 0
+    server_id = ForeignKeyField(
+        Servers, backref="audit_server", null=True
+    )  # When auditing global events, use server ID null
     log_msg = TextField(default="")
 
     class Meta:
@@ -79,7 +79,7 @@ class HostStats(BaseModel):
 # **********************************************************************************
 class Webhooks(BaseModel):
     id = AutoField()
-    server_id = IntegerField(null=True)
+    server_id = ForeignKeyField(Servers, backref="webhook_server", null=True)
     name = CharField(default="Custom Webhook", max_length=64)
     url = CharField(default="")
     webhook_type = CharField(default="Custom")
@@ -337,7 +337,7 @@ class HelpersManagement:
 
     @staticmethod
     def delete_scheduled_task_by_server(server_id):
-        Schedules.delete().where(Schedules.server_id == int(server_id)).execute()
+        Schedules.delete().where(Schedules.server_id == server_id).execute()
 
     @staticmethod
     def get_scheduled_task(schedule_id):

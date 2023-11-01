@@ -174,7 +174,7 @@ class ApiServersServerIndexHandler(BaseApiHandler):
         self.tasks_manager.remove_all_server_tasks(server_id)
         failed = False
         for item in self.controller.servers.failed_servers[:]:
-            if item["server_id"] == int(server_id):
+            if item["server_id"] == server_id:
                 self.controller.servers.failed_servers.remove(item)
                 failed = True
 

@@ -71,7 +71,7 @@ class HelperServerStats:
     database = None
 
     def __init__(self, server_id):
-        self.server_id = int(server_id)
+        self.server_id = server_id
         self.init_database(self.server_id)
 
     def init_database(self, server_id):

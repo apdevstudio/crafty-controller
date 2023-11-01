@@ -17,7 +17,7 @@ def metrics_handlers(handler_args):
             handler_args,
         ),
         (
-            r"/metrics/servers/([0-9]+)/?",
+            r"/metrics/servers/([a-z0-9-]+)/?",
             ApiOpenMetricsServersHandler,
             handler_args,
         ),

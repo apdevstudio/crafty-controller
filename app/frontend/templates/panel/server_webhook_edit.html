@@ -17,7 +17,7 @@
           {{ translate('serverDetails', 'serverDetails', data['lang']) }} - {{
           data['server_stats']['server_id']['server_name'] }}
           <br />
-          <small>UUID: {{ data['server_stats']['server_id']['server_uuid'] }}</small>
+          <small>UUID: {{ data['server_stats']['server_id']['server_id'] }}</small>
         </h4>
       </div>
     </div>
@@ -159,7 +159,7 @@
     if (key != "start_time" && key != "cron_string" && key != "interval_type") {
       if (typeof value == "boolean") {
         return value
-      } 
+      }
       console.log(key)
       if (key === "interval" && value === ""){
         return 0;
@@ -219,7 +219,7 @@
           title: responseData.status,
           message: responseData.error
           });
-      } 
+      }
     });
 
     $("#webhook_form").on("submit", async function (e) {
@@ -247,7 +247,7 @@
         method: 'PATCH',
         headers: {
           'X-XSRFToken': token,
-          "Content-Type": "application/json", 
+          "Content-Type": "application/json",
         },
         body: formDataJsonString,
       });
@@ -260,15 +260,15 @@
           title: responseData.status,
           message: responseData.error
           });
-      } 
+      }
     });
 
     });
-    
+
   function hexToDiscordInt(hexColor) {
     // Remove the hash at the start if it's there
     const sanitizedHex = hexColor.startsWith('#') ? hexColor.slice(1) : hexColor;
-    
+
     // Convert the hex to an integer
     return parseInt(sanitizedHex, 16);
   }

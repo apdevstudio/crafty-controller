@@ -17,7 +17,7 @@
           {{ translate('serverDetails', 'serverDetails', data['lang']) }} - {{
           data['server_stats']['server_id']['server_name'] }}
           <br />
-          <small>UUID: {{ data['server_stats']['server_id']['server_uuid'] }}</small>
+          <small>UUID: {{ data['server_stats']['server_id']['server_id'] }}</small>
         </h4>
       </div>
     </div>
@@ -453,7 +453,7 @@
         });
       }
     });
-  
+
     try {
       if ($('#backup_path').val() == '') {
         console.log('true')

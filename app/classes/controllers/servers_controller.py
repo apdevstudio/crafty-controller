@@ -77,8 +77,8 @@ class ServersController(metaclass=Singleton):
             PeeweeException: If the server already exists
         """
         return HelperServers.create_server(
-            name,
             server_uuid,
+            name,
             server_dir,
             backup_path,
             server_command,
@@ -158,9 +158,9 @@ class ServersController(metaclass=Singleton):
     #                                     Servers Methods
     # **********************************************************************************
 
-    def get_server_instance_by_id(self, server_id: t.Union[str, int]) -> ServerInstance:
+    def get_server_instance_by_id(self, server_id: t.Union[str, str]) -> ServerInstance:
         for server in self.servers_list:
-            if int(server["server_id"]) == int(server_id):
+            if server["server_id"] == server_id:
                 return server["server_obj"]
 
         logger.warning(f"Unable to find server object for server id {server_id}")

@@ -201,6 +201,21 @@ class Migrator(object):
         return model
 
     @get_model
+    def alter_column_type(
+        self,
+        model: peewee.Model,
+        column_name: str,
+        field: peewee.Field,
+    ) -> peewee.Model:
+        """
+        Alter field data type in database.
+        """
+        self.operations.append(
+            self.migrator.alter_column_type(model._meta.table_name, column_name, field)
+        )
+        return model
+
+    @get_model
     def rename_table(self, model: peewee.Model, new_name: str) -> peewee.Model:
         """
         Renames table in database.
