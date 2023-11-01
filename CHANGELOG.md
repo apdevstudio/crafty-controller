@@ -1,7 +1,5 @@
 # Changelog
-## --- [4.2.1] - 2023/TBD
-### New features
-TBD
+## --- [4.2.1] - 2023/11/01
 ### Bug fixes
 - Fix logic issue with `get_files` API permissions check ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/654))
 - Fix notifications not showing up/being reset #298 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/660))
@@ -15,6 +13,9 @@ TBD
 - Update `es_ES` lang file ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/655))
 - Clean up wording in `pl_PL` lang file ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/656))
 - Add `de_DE`, `es_ES` `fr_FR`, `lol_EN`, `lv_LV`, `nl_BE` `pl_PL` & `zh_CN` translations for !656 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/656))
+### Docs
+- [(New) Server Webhook Documentation](https://docs.craftycontrol.com/pages/user-guide/webhooks/)
+- [(Edit) Image Context in Windows Service - Install steps, with slight wording improvement](https://docs.craftycontrol.com/pages/getting-started/installation/windows/#install-steps)
 <br><br>
 
 ## --- [4.2.0] - 2023/10/18
