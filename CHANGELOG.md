@@ -1,4 +1,15 @@
 # Changelog
+## --- [4.2.2] - 2023/TBD
+### New features
+TBD
+### Bug fixes
+TBD
+### Tweaks
+TBD
+### Lang
+TBD
+<br><br>
+
 ## --- [4.2.1] - 2023/11/01
 ### Bug fixes
 - Fix logic issue with `get_files` API permissions check ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/654))
