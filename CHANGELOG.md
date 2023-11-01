@@ -1,4 +1,23 @@
 # Changelog
+## --- [4.2.1] - 2023/11/01
+### Bug fixes
+- Fix logic issue with `get_files` API permissions check ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/654))
+- Fix notifications not showing up/being reset #298 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/660))
+- Fix users not being able to be deleted since the prompt fails to display ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/661))
+- Fix duplicate function naming on dashboard ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/662))
+### Tweaks
+- Auto refresh Crafty Announcements on 30m interval ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/653))
+- Improve Crafty toggle buttons and Webhooks page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/656))
+### Lang
+- Update `zh_CN` lang file ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/652))
+- Update `es_ES` lang file ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/655))
+- Clean up wording in `pl_PL` lang file ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/656))
+- Add `de_DE`, `es_ES` `fr_FR`, `lol_EN`, `lv_LV`, `nl_BE` `pl_PL` & `zh_CN` translations for !656 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/656))
+### Docs
+- [(New) Server Webhook Documentation](https://docs.craftycontrol.com/pages/user-guide/webhooks/)
+- [(Edit) Image Context in Windows Service - Install steps, with slight wording improvement](https://docs.craftycontrol.com/pages/getting-started/installation/windows/#install-steps)
+<br><br>
+
 ## --- [4.2.0] - 2023/10/18
 ### New features
 - Finish and Activate Arcadia notification backend ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/621) | [Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/626) | [Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/632))

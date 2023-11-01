@@ -93,7 +93,7 @@
     return true;
   }
   function updateAnnouncements(data) {
-    console.log(data)
+    console.log(data);
     let text = "";
     for (let value of data) {
       text += `<li class="card-header header-sm justify-content-between align-items-center" id="${value.id}"><p style="float: right;"><i data-id="${value.id}"class="clear-button fa-regular fa-x"></i></p><a style="color: var(--purple);" href=${value.link} target="_blank"><h6>${value.title}</h6><small><p>${value.date}</p></small><p>${value.desc}</p></li></a>`
@@ -136,10 +136,14 @@
     });
     let responseData = await res.json();
     console.log(responseData);
+    setTimeout(function() {
+      getAnnouncements();
+    }, 1800000); //Wait 30 minutes in miliseconds
+    console.log("Registered annoucement fetch event in 30 minutes.")
     if (responseData.status === "ok") {
       updateAnnouncements(responseData.data)
     } else {
-      updateAnnouncements("<li><p>Trouble Getting Annoucements</p></li>")
+      updateAnnouncements([])
     }
   }
   async function send_clear(uuid) {
