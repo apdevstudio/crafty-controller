@@ -363,6 +363,7 @@ data['lang']) }}{% end %}
 
 {% block js %}
 <script>
+  const userId = new URLSearchParams(document.location.search).get('id');
   function submit_user(event) {
     if (!validateForm()) {
       event.preventDefault();
@@ -399,8 +400,6 @@ data['lang']) }}{% end %}
       }
   }
   $("#user_form").on("submit", async function (e) {
-    const userId = new URLSearchParams(document.location.search).get('id');
-    console.log(userId)
       e.preventDefault();
       let password = null;
       if(!userId){
