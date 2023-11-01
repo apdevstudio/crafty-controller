@@ -6,6 +6,7 @@ TBD
 - Fix logic issue with `get_files` API permissions check ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/654))
 - Fix notifications not showing up/being reset #298 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/660))
 - Fix users not being able to be deleted since the prompt fails to display ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/661))
+- Fix duplicate function naming on dashboard ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/662))
 ### Tweaks
 - Auto refresh Crafty Announcements on 30m interval ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/653))
 - Improve Crafty toggle buttons and Webhooks page ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/656))

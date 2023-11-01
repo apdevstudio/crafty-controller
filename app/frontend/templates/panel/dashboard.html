@@ -615,7 +615,7 @@
   }
 
 
-  function warn(message, link = null, className = null) {
+  function warnServer(message, link = null, className = null) {
     var closeEl = document.createElement('span');
     var strongEL = document.createElement('strong');
     var msgEl = document.createElement('div');
@@ -799,7 +799,7 @@
       setTimeout(finishTimeout, 60000);
     });
     function finishTimeout() {
-      warn("It seems this is taking a while...it's possible you're using UBlock or a similar ad blocker and it's causing some of our connections to not make it to the server. Try disabling your ad blocker.",
+      warnServer("It seems this is taking a while...it's possible you're using UBlock or a similar ad blocker and it's causing some of our connections to not make it to the server. Try disabling your ad blocker.",
         null, 'wssError');
     }
     $(".stop_button").click(function () {
