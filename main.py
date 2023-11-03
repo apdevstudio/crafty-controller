@@ -109,11 +109,12 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-
     helper.ensure_logging_setup()
-
+    helper.crafty_starting = True
+    # Init WebSocket Manager Here
+    ws = WebSocketManager()
+    ws.broadcast("update", {"message": "Setting Up Logging"})
     setup_logging(debug=args.verbose)
-
     if args.verbose:
         Console.level = "debug"
 
@@ -126,15 +127,18 @@ if __name__ == "__main__":
     # print our pretty start message
     do_intro()
 
+    ws.broadcast("update", {"message": "Securing Session For Process"})
     # our session file, helps prevent multiple controller agents on the same machine.
     helper.create_session_file(ignore=args.ignore)
 
+    ws.broadcast("update", {"message": "Initializing Database"})
     # start the database
     database = peewee.SqliteDatabase(
         helper.db_path, pragmas={"journal_mode": "wal", "cache_size": -1024 * 10}
     )
     database_proxy.initialize(database)
 
+    ws.broadcast("update", {"message": "Checking For Database Migrations"})
     migration_manager = MigrationManager(database, helper)
     migration_manager.up()  # Automatically runs migrations
 
@@ -165,8 +169,6 @@ if __name__ == "__main__":
         Console.info("No flag found. Secrets are staying")
     file_helper = FileHelpers(helper)
     import_helper = ImportHelpers(helper, file_helper)
-    # Init WebSocket Manager Here
-    WebSocketManager()
     # now the tables are created, we can load the tasks_manager and server controller
     controller = Controller(database, helper, file_helper, import_helper)
     Console.info("Checking for remote changes to config.json")
@@ -174,6 +176,7 @@ if __name__ == "__main__":
     Console.info("Remote change complete.")
 
     import3 = Import3(helper, controller)
+    ws.broadcast("update", {"message": "Starting Task Scheduler"})
     tasks_manager = TasksManager(helper, controller, file_helper)
     tasks_manager.start_webserver()
 
@@ -225,6 +228,7 @@ if __name__ == "__main__":
                 "the server may be limited."
             )
 
+    ws.broadcast("update", {"message": "Checking For Internet"})
     internet_check_thread = Thread(target=internet_check, name="internet_check")
 
     def controller_setup():
@@ -272,7 +276,7 @@ if __name__ == "__main__":
             time.sleep(0.01)  # Wait for the daemon info message
 
         Console.info("Setting up Crafty's internal components...")
-
+        ws.broadcast("update", {"message": "Final checks and launching"})
         # Start the setup threads
         tasks_starter_thread.start()
         internet_check_thread.start()
@@ -282,8 +286,9 @@ if __name__ == "__main__":
         tasks_starter_thread.join()
         internet_check_thread.join()
         controller_setup_thread.join()
-
+        ws.broadcast("send_start_reload", "")
         Console.info("Crafty has fully started and is now ready for use!")
+        helper.crafty_starting = False
 
         # Check if new version available
         remote_ver = helper.check_remote_version()
