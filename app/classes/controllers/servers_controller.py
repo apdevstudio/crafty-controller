@@ -173,7 +173,7 @@ class ServersController(metaclass=Singleton):
         self.failed_servers = []
 
         for server in servers:
-            self.ws.broadcast(
+            self.ws.broadcast_to_admins(
                 "update", {"message": f"Initializing {server['server_name']}."}
             )
             server_id = server.get("server_id")

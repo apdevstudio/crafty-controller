@@ -195,6 +195,7 @@ if __name__ == "__main__":
     # init servers
     logger.info("Initializing all servers defined")
     Console.info("Initializing all servers defined")
+    ws.broadcast("update", {"message": "Initializing Servers"})
     controller.servers.init_all_servers()
 
     def tasks_starter():
