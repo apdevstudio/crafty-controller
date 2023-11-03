@@ -22,6 +22,7 @@ from app.classes.models.server_permissions import (
     PermissionsServers,
     EnumPermissionsServer,
 )
+from app.classes.shared.websocket_manager import WebSocketManager
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +37,7 @@ class ServersController(metaclass=Singleton):
         self.management_helper = management_helper
         self.servers_list = []
         self.stats = Stats(self.helper, self)
+        self.ws = WebSocketManager()
 
     # **********************************************************************************
     #                                   Generic Servers Methods
@@ -171,6 +173,9 @@ class ServersController(metaclass=Singleton):
         self.failed_servers = []
 
         for server in servers:
+            self.ws.broadcast(
+                "update", {"message": f"Initializing {server['server_name']}."}
+            )
             server_id = server.get("server_id")
 
             # if we have already initialized this server, let's skip it.

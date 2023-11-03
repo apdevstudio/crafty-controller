@@ -1609,7 +1609,8 @@ class PanelHandler(BaseHandler):
             logs_thread.start()
             self.redirect("/panel/dashboard")
             return
-
+        if self.helper.crafty_starting:
+            template = "panel/loading.html"
         self.render(
             template,
             data=page_data,

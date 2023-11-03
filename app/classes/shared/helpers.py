@@ -80,6 +80,7 @@ class Helpers:
         self.translation = Translation(self)
         self.update_available = False
         self.ignored_names = ["crafty_managed.txt", "db_stats"]
+        self.crafty_starting = False
 
     @staticmethod
     def auto_installer_fix(ex):

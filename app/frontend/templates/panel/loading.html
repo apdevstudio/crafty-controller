@@ -1,0 +1,64 @@
+{% extends ../base.html %}
+
+{% block meta %}
+{% end %}
+
+{% block title %}Crafty Controller Starting{% end %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="card-header justify-content-between align-items-center">
+        <div id="image-div" style="width: 100%;">
+            <img class="img-center" id="logo-animate" src="../static/assets/images/crafty-logo-square-1024.png"
+                width="20%" style="clear: both;">
+        </div>
+        <br>
+        </br>
+        <div id="text-div" style="width: 100%; text-align: center;">
+            <h2 id="status" style="display: block;">Crafty Is Starting</h2>
+        </div>
+
+    </div>
+</div>
+<style>
+    .img-center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+<script>
+    function rotateImage(degree) {
+        $('#logo-animate').animate({ transform: degree }, {
+            step: function (now, fx) {
+                $(this).css({
+                    '-webkit-transform': 'rotate(' + now + 'deg)',
+                    '-moz-transform': 'rotate(' + now + 'deg)',
+                    'transform': 'rotate(' + now + 'deg)'
+                });
+            }
+        });
+        setTimeout(function () {
+            rotateImage(360);
+        }, 2000);
+    }
+    $(document).ready(function () {
+        setTimeout(function () {
+            rotateImage(360);
+        }, 2000);
+        if (webSocket) {
+            webSocket.on('update', function (data) {
+                console.log("got status")
+                $("#status").html(data.message);
+            });
+            webSocket.on('send_start_reload', function () {
+                setTimeout(function () {
+                    location.href = '/panel/dashboard'
+                }, 5000);
+
+            });
+        }
+    });
+
+</script>
+{% end %}
