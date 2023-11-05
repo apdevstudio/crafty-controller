@@ -287,9 +287,9 @@ if __name__ == "__main__":
         tasks_starter_thread.join()
         internet_check_thread.join()
         controller_setup_thread.join()
+        helper.crafty_starting = False
         ws.broadcast("send_start_reload", "")
         Console.info("Crafty has fully started and is now ready for use!")
-        helper.crafty_starting = False
 
         # Check if new version available
         remote_ver = helper.check_remote_version()
