@@ -93,9 +93,16 @@ class Controller:
         if remote:
             remote["names"].append(username)
             remote["attempts"] += 1
+            remote["times"].append(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
             self.auth_tracker[str(remote_ip)] = remote
         else:
-            self.auth_tracker[str(remote_ip)] = {"names": [username], "attempts": 1}
+            self.auth_tracker[str(remote_ip)] = {
+                "names": [username],
+                "attempts": 1,
+                "times": [datetime.now().strftime("%d/%m/%Y %H:%M:%S")],
+            }
+
+    def write_auth_tracker(self):
         with open(
             os.path.join(os.path.curdir, "logs", "auth_tracker.log"),
             "w",
