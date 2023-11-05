@@ -248,12 +248,38 @@
         $("#player-body").html(text);
 
   }
-
+  //used to get cookies from browser - this is part of tornados xsrf protection - it's for extra security
+  function getCookie(name) {
+    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+    return r ? r[1] : undefined;
+  }
+  const token = getCookie("_xsrf")
   $(window).ready(function () {
     console.log("ready!");
 
     //if (webSocket) {
     webSocket.on('update_server_details', update_server_details);
+    add_server_name();
     //}
   });
+  async function add_server_name(){
+    let res = await fetch(`/api/v2/servers/${serverId}`, {
+        method: 'GET',
+        headers: {
+          'X-XSRFToken': token
+        },
+      });
+      let responseData = await res.json();
+      if (responseData.status === "ok") {
+        console.log(responseData)
+        $("#server-name-nav").html(`${responseData.data['server_name']}`)
+        $("#server-name-nav").show();
+      } else {
+
+        bootbox.alert({
+          title: responseData.error,
+          message: responseData.error_data
+        });
+      }
+  }
 </script>
