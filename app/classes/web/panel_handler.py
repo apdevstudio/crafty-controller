@@ -481,6 +481,12 @@ class PanelHandler(BaseHandler):
             subpage = nh3.clean(self.get_argument("subpage", ""))
 
             server_id = self.check_server_id()
+            # load page the user was on last
+            server_subpage = self.controller.servers.server_subpage.get(server_id, "")
+            if subpage == "" and server_subpage != "":
+                subpage = self.controller.servers.server_subpage.get(server_id, "")
+            else:
+                self.controller.servers.server_subpage[server_id] = subpage
             if server_id is None:
                 return
             if not self.failed_server:
