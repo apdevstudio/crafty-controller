@@ -723,9 +723,7 @@ class ApiServersIndexHandler(BaseApiHandler):
                 405, {"status": "error", "error": "DATA CONSTRAINT FAILED"}
             )
             return
-        new_server_id, new_server_uuid = self.controller.create_api_server(
-            data, user["user_id"]
-        )
+        new_server_id = self.controller.create_api_server(data, user["user_id"])
 
         self.controller.servers.stats.record_stats()
 

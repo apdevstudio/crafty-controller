@@ -575,7 +575,7 @@ class Controller:
                 role_id = role
                 self.server_perms.add_role_server(new_server_id, role_id, "11111111")
 
-        return new_server_id, server_fs_uuid
+        return new_server_id
 
     @staticmethod
     def verify_jar_server(server_path: str, server_jar: str):

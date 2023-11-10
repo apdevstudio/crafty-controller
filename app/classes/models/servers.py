@@ -3,17 +3,16 @@ import datetime
 import typing as t
 from peewee import (
     CharField,
-    # AutoField,
     DateTimeField,
     BooleanField,
     IntegerField,
-    ForeignKeyField,
 )
 from playhouse.shortcuts import model_to_dict
 
 from app.classes.shared.main_models import DatabaseShortcuts
 from app.classes.models.base_model import BaseModel
-from app.classes.models.users import Users
+
+# from app.classes.models.users import Users
 from app.classes.shared.helpers import Helpers
 
 logger = logging.getLogger(__name__)
