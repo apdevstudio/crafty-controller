@@ -170,8 +170,10 @@ if __name__ == "__main__":
             os.path.join(app_path, "app", "config", "default-creds.txt"),
             "w",
             encoding="utf-8",
-        ) as f:
-            f.write(json.dumps({"username": "admin", "password": password}, indent=4))
+        ) as cred_file:
+            cred_file.write(
+                json.dumps({"username": "admin", "password": password}, indent=4)
+            )
         os.chmod(os.path.join(app_path, "app", "config", "default-creds.txt"), 0o600)
     else:
         Console.debug("Existing install detected")

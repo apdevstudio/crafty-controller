@@ -394,7 +394,7 @@ class Helpers:
         # set of characters, we fill the rest of
         # the password length by selecting randomly from the combined
         # list of character above.
-        for x in range(max_len - 4):
+        for char in range(max_len - 4):
             temp_pass = temp_pass + random.choice(combo)
 
             # convert temporary password into array and shuffle to
@@ -406,8 +406,8 @@ class Helpers:
         # traverse the temporary password array and append the chars
         # to form the password
         password = ""
-        for x in temp_pass_list:
-            password = password + x
+        for char in temp_pass_list:
+            password = password + char
 
         # print out password
         return password
