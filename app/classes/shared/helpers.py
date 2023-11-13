@@ -367,7 +367,7 @@ class Helpers:
         # maximum length of password needed
         max_len = 25
 
-        # declare arrays of the character that we need in out password
+        # declare string of the character that we need in out password
         # Represented as chars to enable easy string concatenation
         digits = string.digits
         locase = string.ascii_lowercase
@@ -376,7 +376,7 @@ class Helpers:
 
         symbols = string.punctuation
 
-        # combines all the character arrays above to form one array
+        # combines all the character strings above to form one array
         combo = digits + upcase + locase + symbols
 
         # randomly select at least one character from each character set above
