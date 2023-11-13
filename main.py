@@ -144,6 +144,18 @@ if __name__ == "__main__":
     installer = DatabaseBuilder(database, helper, user_helper, management_helper)
     FRESH_INSTALL = installer.is_fresh_install()
 
+    if getattr(sys, "frozen", False):
+        app_path = os.path.dirname(sys.executable)
+        RUN_MODE = "Frozen/executable"
+    else:
+        try:
+            app_full_path = os.path.realpath(__file__)
+            app_path = os.path.dirname(app_full_path)
+            RUN_MODE = "Non-interactive (e.g. 'python main.py')"
+        except NameError:
+            app_path = os.getcwd()
+            RUN_MODE = "Interactive"
+
     if FRESH_INSTALL:
         Console.debug("Fresh install detected")
         Console.warning(
@@ -152,7 +164,14 @@ if __name__ == "__main__":
             f"through your router/firewall if you would like to be able "
             f"to access Crafty remotely."
         )
-        installer.default_settings()
+        password = helper.create_pass()
+        installer.default_settings(password)
+        with open(
+            os.path.join(app_path, "app", "config", "default-creds.txt"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            f.write(json.dumps({"username": "admin", "password": password}, indent=4))
     else:
         Console.debug("Existing install detected")
     Console.info("Checking for reset secret flag")
@@ -227,21 +246,9 @@ if __name__ == "__main__":
 
     internet_check_thread = Thread(target=internet_check, name="internet_check")
 
-    def controller_setup():
+    def controller_setup(application_path, running_mode):
         if not controller.check_system_user():
             controller.add_system_user()
-
-        if getattr(sys, "frozen", False):
-            application_path = os.path.dirname(sys.executable)
-            running_mode = "Frozen/executable"
-        else:
-            try:
-                app_full_path = os.path.realpath(__file__)
-                application_path = os.path.dirname(app_full_path)
-                running_mode = "Non-interactive (e.g. 'python main.py')"
-            except NameError:
-                application_path = os.getcwd()
-                running_mode = "Interactive"
 
         controller.set_project_root(application_path)
         master_server_dir = controller.management.get_master_server_dir()
@@ -262,7 +269,11 @@ if __name__ == "__main__":
         helper, tasks_manager, migration_manager, controller, import3
     )
 
-    controller_setup_thread = Thread(target=controller_setup, name="controller_setup")
+    controller_setup_thread = Thread(
+        target=controller_setup,
+        name="controller_setup",
+        args=[RUN_MODE, app_path],
+    )
 
     def setup_starter():
         if not args.daemon:

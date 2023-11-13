@@ -14,13 +14,13 @@ class DatabaseBuilder:
         self.management_helper = management_helper
         self.users_helper = users_helper
 
-    def default_settings(self):
+    def default_settings(self, password="crafty"):
         logger.info("Fresh Install Detected - Creating Default Settings")
         Console.info("Fresh Install Detected - Creating Default Settings")
         default_data = self.helper.find_default_password()
 
         username = default_data.get("username", "admin")
-        password = default_data.get("password", "crafty")
+        password = default_data.get("password", password)
 
         self.users_helper.add_user(
             username=username,
