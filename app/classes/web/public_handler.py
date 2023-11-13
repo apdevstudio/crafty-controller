@@ -101,7 +101,7 @@ class PublicHandler(BaseHandler):
                 next_page = "/login?" + self.request.query
 
             entered_username = nh3.clean(self.get_argument("username"))
-            entered_password = nh3.clean(self.get_argument("password"))
+            entered_password = self.get_argument("password")
 
             # pylint: disable=no-member
             try:
