@@ -45,8 +45,7 @@ class UsersController:
             },
             "password": {
                 "type": "string",
-                "maxLength": 20,
-                "minLength": 6,
+                "minLength": 8,
                 "examples": ["crafty"],
                 "title": "Password",
             },

@@ -201,6 +201,13 @@ class TasksManager:
             id="update_watcher",
             start_date=datetime.datetime.now(),
         )
+        self.scheduler.add_job(
+            self.controller.write_auth_tracker,
+            "interval",
+            minutes=5,
+            id="auth_tracker_write",
+            start_date=datetime.datetime.now(),
+        )
         # self.scheduler.add_job(
         #    self.scheduler.print_jobs, "interval", seconds=10, id="-1"
         # )
