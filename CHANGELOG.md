@@ -13,6 +13,7 @@ TBD
 - Setup logging for panel authentication attempts ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/669))
 - Update minimum password length from 6 to 8, and unrestrict maximum password length ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/669))
 - Fix Unban button failing to pardon users ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/671))
+- Fix stack in API error handling ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/674))
 ### Lang
 TBD
 <br><br>
