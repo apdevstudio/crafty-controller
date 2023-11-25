@@ -363,53 +363,41 @@ class Helpers:
 
         return result_of_check == 0
 
+class PasswordGenerator:
     def create_pass(self):
-        # maximum length of password needed
+        # Maximum length of password needed
         max_len = 25
 
-        # declare string of the character that we need in out password
-        # Represented as chars to enable easy string concatenation
+        # Declare string of the character that we need in our password
         digits = string.digits
         locase = string.ascii_lowercase
-
         upcase = string.ascii_uppercase
-
         symbols = string.punctuation
 
-        # combines all the character strings above to form one array
+        # Combine all the character strings above to form one string
         combo = digits + upcase + locase + symbols
 
-        # randomly select at least one character from each character set above
-        rand_digit = random.choice(digits)
-        rand_upper = random.choice(upcase)
-        rand_lower = random.choice(locase)
-        rand_symbol = random.choice(symbols)
+        # Randomly select at least one character from each character set above
+        rand_digit = secrets.choice(digits)
+        rand_upper = secrets.choice(upcase)
+        rand_lower = secrets.choice(locase)
+        rand_symbol = secrets.choice(symbols)
 
-        # combine the character randomly selected above
-        # at this stage, the password contains only 4 characters but
-        # we want a 12-character password
+        # Combine the character randomly selected above
         temp_pass = rand_digit + rand_upper + rand_lower + rand_symbol
 
-        # now that we are sure we have at least one character from each
-        # set of characters, we fill the rest of
-        # the password length by selecting randomly from the combined
-        # list of character above.
-        for char in range(max_len - 4):
-            temp_pass = temp_pass + random.choice(combo)
+        # Fill the rest of the password length by selecting randomly char list
+        for _ in range(max_len - 4):
+            temp_pass += secrets.choice(combo)
 
-            # convert temporary password into array and shuffle to
-            # prevent it from having a consistent pattern
-            # where the beginning of the password is predictable
-            temp_pass_list = array.array("u", temp_pass)
-            random.shuffle(temp_pass_list)
+        # Shuffle the temporary password to prevent predictable patterns
+        temp_pass_list = list(temp_pass)
+        secrets.SystemRandom().shuffle(temp_pass_list)
 
-        # traverse the temporary password array and append the chars
-        # to form the password
-        password = ""
-        for char in temp_pass_list:
-            password = password + char
+        # Form the password by concatenating the characters
+        password = ''.join(temp_pass_list)
 
-        # print out password
+        # Return completed password
         return password
 
     @staticmethod
