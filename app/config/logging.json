@@ -10,16 +10,17 @@
     },
     "schedule": {
       "format": "%(asctime)s - [Schedules] - %(levelname)s - %(message)s"
+    },
+    "auth": {
+      "format": "%(asctime)s - [AUTH] - %(levelname)s - %(message)s"
     }
   },
-
   "handlers": {
     "console": {
       "class": "logging.StreamHandler",
       "formatter": "commander",
       "stream": "ext://sys.stdout"
     },
-
     "main_file_handler": {
       "class": "logging.handlers.RotatingFileHandler",
       "formatter": "commander",
@@ -50,23 +51,44 @@
       "maxBytes": 10485760,
       "backupCount": 20,
       "encoding": "utf8"
+    },
+    "auth_file_handler": {
+      "class": "logging.handlers.RotatingFileHandler",
+      "formatter": "auth",
+      "filename": "logs/auth.log",
+      "maxBytes": 10485760,
+      "backupCount": 20,
+      "encoding": "utf8"
     }
   },
-
   "loggers": {
     "": {
       "level": "INFO",
-      "handlers": ["main_file_handler", "session_file_handler"],
+      "handlers": [
+        "main_file_handler",
+        "session_file_handler"
+      ],
       "propagate": false
     },
     "tornado.access": {
       "level": "INFO",
-      "handlers": ["tornado_access_file_handler"],
+      "handlers": [
+        "tornado_access_file_handler"
+      ],
       "propagate": false
     },
     "apscheduler": {
       "level": "INFO",
-      "handlers": ["schedule_file_handler"],
+      "handlers": [
+        "schedule_file_handler"
+      ],
+      "propagate": false
+    },
+    "auth": {
+      "level": "INFO",
+      "handlers": [
+        "auth_file_handler"
+      ],
       "propagate": false
     }
   }
