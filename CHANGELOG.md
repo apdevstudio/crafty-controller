@@ -8,6 +8,7 @@ TBD
 - Homogenize Panel logos/branding ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/666))
 - Retain previous tab when revisiting server details page (#272)([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/667))
 - Add server name tag in panel header (#272)([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/667))
+- Setup logging for panel authentication attempts ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/669))
 ### Lang
 TBD
 <br><br>
