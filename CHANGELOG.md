@@ -15,7 +15,7 @@ TBD
 - Fix Unban button failing to pardon users ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/671))
 - Fix stack in API error handling ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/674))
 ### Lang
-TBD
+- pl_PL Minor fixes ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/675))
 <br><br>
 
 ## --- [4.2.1] - 2023/11/01
