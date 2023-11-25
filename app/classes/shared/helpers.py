@@ -363,6 +363,7 @@ class Helpers:
 
         return result_of_check == 0
 
+
 class PasswordGenerator:
     def create_pass(self):
         # Maximum length of password needed
@@ -395,7 +396,7 @@ class PasswordGenerator:
         secrets.SystemRandom().shuffle(temp_pass_list)
 
         # Form the password by concatenating the characters
-        password = ''.join(temp_pass_list)
+        password = "".join(temp_pass_list)
 
         # Return completed password
         return password
