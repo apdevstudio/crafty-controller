@@ -6,6 +6,7 @@ from app.classes.models.users import HelperUsers
 from app.classes.web.base_handler import BaseHandler
 
 logger = logging.getLogger(__name__)
+auth_log = logging.getLogger("auth")
 
 
 class PublicHandler(BaseHandler):
@@ -96,6 +97,9 @@ class PublicHandler(BaseHandler):
             page_data["query"] = self.request.query
 
         if page == "login":
+            auth_log.info(
+                f"User attempting to authenticate from {self.get_remote_ip()}"
+            )
             next_page = "/login"
             if self.request.query:
                 next_page = "/login?" + self.request.query
@@ -108,6 +112,12 @@ class PublicHandler(BaseHandler):
                 user_id = HelperUsers.get_user_id_by_name(entered_username.lower())
                 user_data = HelperUsers.get_user_model(user_id)
             except:
+                self.controller.log_attempt(self.get_remote_ip(), entered_username)
+                auth_log.error(
+                    f"User attempted to log into {entered_username}."
+                    f" Authentication failed from remote IP {self.get_remote_ip()}"
+                    " Users does not exist."
+                )
                 error_msg = "Incorrect username or password. Please try again."
                 # self.clear_cookie("user")
                 # self.clear_cookie("user_data")
@@ -120,6 +130,12 @@ class PublicHandler(BaseHandler):
 
             # if we don't have a user
             if not user_data:
+                auth_log.error(
+                    f"User attempted to log into {entered_username}. Authentication"
+                    f" failed from remote IP {self.get_remote_ip()}"
+                    " User does not exist."
+                )
+                self.controller.log_attempt(self.get_remote_ip(), entered_username)
                 error_msg = "Incorrect username or password. Please try again."
                 # self.clear_cookie("user")
                 # self.clear_cookie("user_data")
@@ -132,6 +148,12 @@ class PublicHandler(BaseHandler):
 
             # if they are disabled
             if not user_data.enabled:
+                auth_log.error(
+                    f"User attempted to log into {entered_username}. "
+                    f"Authentication failed from remote IP {self.get_remote_ip()}."
+                    " User account disabled"
+                )
+                self.controller.log_attempt(self.get_remote_ip(), entered_username)
                 error_msg = (
                     "User account disabled. Please contact "
                     "your system administrator for more info."
@@ -159,7 +181,11 @@ class PublicHandler(BaseHandler):
                 user_data.last_ip = self.get_remote_ip()
                 user_data.last_login = Helpers.get_time_as_string()
                 user_data.save()
-
+                auth_log.info(
+                    f"{entered_username} successfully"
+                    " authenticated and logged"
+                    f" into panel from remote IP {self.get_remote_ip()}"
+                )
                 # log this login
                 self.controller.management.add_to_audit_log(
                     user_data.user_id, "Logged in", 0, self.get_remote_ip()
@@ -172,6 +198,11 @@ class PublicHandler(BaseHandler):
 
                 self.redirect(next_page)
             else:
+                auth_log.error(
+                    f"User attempted to log into {entered_username}."
+                    f" Authentication failed from remote IP {self.get_remote_ip()}"
+                )
+                self.controller.log_attempt(self.get_remote_ip(), entered_username)
                 # self.clear_cookie("user")
                 # self.clear_cookie("user_data")
                 self.clear_cookie("token")

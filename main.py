@@ -73,6 +73,14 @@ def do_intro():
 
 def setup_logging(debug=True):
     logging_config_file = os.path.join(os.path.curdir, "app", "config", "logging.json")
+    if not helper.check_file_exists(
+        os.path.join(os.path.curdir, "logs", "auth_tracker.log")
+    ):
+        open(
+            os.path.join(os.path.curdir, "logs", "auth_tracker.log"),
+            "a",
+            encoding="utf-8",
+        ).close()
 
     if os.path.exists(logging_config_file):
         # open our logging config file

@@ -78,6 +78,37 @@ class Controller:
         self.first_login = False
         self.cached_login = self.management.get_login_image()
         self.support_scheduler.start()
+        try:
+            with open(
+                os.path.join(os.path.curdir, "logs", "auth_tracker.log"),
+                "r",
+                encoding="utf-8",
+            ) as f:
+                self.auth_tracker = json.load(f)
+        except:
+            self.auth_tracker = {}
+
+    def log_attempt(self, remote_ip, username):
+        remote = self.auth_tracker.get(str(remote_ip), None)
+        if remote:
+            remote["names"].append(username)
+            remote["attempts"] += 1
+            remote["times"].append(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+            self.auth_tracker[str(remote_ip)] = remote
+        else:
+            self.auth_tracker[str(remote_ip)] = {
+                "names": [username],
+                "attempts": 1,
+                "times": [datetime.now().strftime("%d/%m/%Y %H:%M:%S")],
+            }
+
+    def write_auth_tracker(self):
+        with open(
+            os.path.join(os.path.curdir, "logs", "auth_tracker.log"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            json.dump(self.auth_tracker, f, indent=4)
 
     @staticmethod
     def check_system_user():
