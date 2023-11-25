@@ -36,6 +36,7 @@ class ServersController(metaclass=Singleton):
         self.management_helper = management_helper
         self.servers_list = []
         self.stats = Stats(self.helper, self)
+        self.server_subpage = {}
 
     # **********************************************************************************
     #                                   Generic Servers Methods
