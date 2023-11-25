@@ -3,9 +3,9 @@
 ### New features
 TBD
 ### Bug fixes
-TBD
+- Remove webhook `custom` option from webook provider list as it's not currently an option ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/664))
 ### Tweaks
-TBD
+- Homogenize Panel logos/branding ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/666))
 ### Lang
 TBD
 <br><br>
