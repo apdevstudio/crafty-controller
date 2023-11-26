@@ -363,8 +363,6 @@ class Helpers:
 
         return result_of_check == 0
 
-
-class PasswordGenerator:
     def create_pass(self):
         # Maximum length of password needed
         max_len = 25
