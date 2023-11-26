@@ -6,8 +6,6 @@ import json
 import tempfile
 import time
 import uuid
-import random
-import array
 import string
 import base64
 import socket
