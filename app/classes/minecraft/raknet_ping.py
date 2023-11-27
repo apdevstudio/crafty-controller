@@ -106,19 +106,36 @@ class RaknetPing:
             if sliced[3] != RaknetPing.magic:
                 raise ValueError(f"Incorrect magic received ({sliced[3]})")
             ret["server_guid"] = sliced[2]
-            ret["server_string_raw"] = sliced[4]
-            server_info = sliced[4].split(";")
-            ret["server_edition"] = server_info[0]
-            ret["server_motd"] = (server_info[1], server_info[7])
-            ret["server_protocol_version"] = server_info[2]
-            ret["server_version_name"] = server_info[3]
-            ret["server_player_count"] = server_info[4]
-            ret["server_player_max"] = server_info[5]
-            ret["server_uuid"] = server_info[6]
-            ret["server_game_mode"] = server_info[8]
-            ret["server_game_mode_num"] = server_info[9]
-            ret["server_port_ipv4"] = server_info[10]
-            ret["server_port_ipv6"] = server_info[11]
+            try:
+                if len(sliced) >= 5:
+                    ret["server_string_raw"] = sliced[4]
+                    server_info = sliced[4].split(";")
+                    ret["server_edition"] = server_info[0]
+                    ret["server_motd"] = (server_info[1], server_info[7])
+                    ret["server_protocol_version"] = server_info[2]
+                    ret["server_version_name"] = server_info[3]
+                    ret["server_player_count"] = server_info[4]
+                    ret["server_player_max"] = server_info[5]
+                    ret["server_uuid"] = server_info[6]
+                    ret["server_game_mode"] = server_info[8]
+                    ret["server_game_mode_num"] = server_info[9]
+                    ret["server_port_ipv4"] = server_info[10]
+                    ret["server_port_ipv6"] = server_info[11]
+                else:
+                    ret["server_string_raw"] = ""
+                    ret["server_edition"] = "Generic Raknet"
+                    ret["server_motd"] = (None, None)
+                    ret["server_protocol_version"] = None
+                    ret["server_version_name"] = "Generic Raknet"
+                    ret["server_player_count"] = -1
+                    ret["server_player_max"] = -1
+                    ret["server_uuid"] = None
+                    ret["server_game_mode"] = None
+                    ret["server_game_mode_num"] = 0
+                    ret["server_port_ipv4"] = ""
+                    ret["server_port_ipv6"] = ""
+            except:
+                raise ValueError(f"Received unexpected Raknet response: {sliced}")
             return ret
         raise ValueError(f"Incorrect packet type ({data[0]} detected")
 

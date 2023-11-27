@@ -470,7 +470,47 @@ class ServerInstance:
         #               STEAM SERVERS
         # ***********************************************
         # ***********************************************
-        elif HelperServers.get_server_type_by_id(self.server_id) == "steam":
+        elif HelperServers.get_server_type_by_id(self.server_id) == "raknet":
+            my_env = os.environ
+            env_mod = False
+            with open(
+                self.server_path + "/env.json",
+            ) as env_file:
+                env_file_data = json.load(env_file)
+                for key, value in env_file_data.items():
+                    if "path" in key.lower():
+                        items_validated = []
+                        for item in value["contents"]:
+                            try:
+                                p = Helpers.validate_traversal(self.server_path, item)
+                            except ValueError:
+                                logger.warning(
+                                    "Path traversal detected on server {self.server_id} for env {k} value {i}, skipping"
+                                )
+                            p = str(p).replace(":", "\:")
+                            items_validated.append(p)
+                        if my_env.get(key, None):
+                            if value["mode"] == "append":
+                                items_validated.insert(0, my_env[key])
+                            elif value["mode"] == "prepend":
+                                items_validated.append(my_env[key])
+                        my_env[key] = ":".join(items_validated)
+                    else:
+                        items = value["contents"]
+                        if value["mode"] == "append":
+                            items.insert(0, my_env[key])
+                        elif value["mode"] == "prepend":
+                            items.append(my_env[key])
+                        my_env[key] = ",".join(items)
+                env_mod = True
+            if env_mod:
+                logger.debug(
+                    f"Launching process for server {self.server_id} with modified environment {my_env}"
+                )
+            else:
+                logger.debug(
+                    f"Launching process for server {self.server_id} with un-modified environment"
+                )
             try:
                 self.process = subprocess.Popen(
                     self.server_command,
@@ -478,6 +518,7 @@ class ServerInstance:
                     stdin=subprocess.PIPE,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
+                    env=my_env,
                 )
             except Exception as ex:
                 logger.error(
@@ -496,6 +537,9 @@ class ServerInstance:
                     return
 
         else:
+            logger.debug(
+                f"Starting server {self.server_id} with unknown type {HelperServers.get_server_type_by_id(self.server_id)}"
+            )
             try:
                 self.process = subprocess.Popen(
                     self.server_command,
@@ -1595,7 +1639,10 @@ class ServerInstance:
         server_name = server.get("server_name", f"ID#{server_id}")
 
         logger.debug(f"Pinging server '{server}' on {internal_ip}:{server_port}")
-        if HelperServers.get_server_type_by_id(server_id) == "minecraft-bedrock":
+        if (
+            HelperServers.get_server_type_by_id(server_id) == "minecraft-bedrock"
+            or HelperServers.get_server_type_by_id(server_id) == "raknet"
+        ):
             int_mc_ping = ping_raknet(internal_ip, int(server_port))
         else:
             try:
@@ -1609,10 +1656,10 @@ class ServerInstance:
         # if we got a good ping return, let's parse it
         if int_mc_ping:
             int_data = True
-            if HelperServers.get_server_type_by_id(
-                server["server_id"]
-            ) == "minecraft-bedrock" or HelperServers.get_server_type_by_id(
-                server["server_id"] == "steam"
+            if (
+                HelperServers.get_server_type_by_id(server["server_id"])
+                == "minecraft-bedrock"
+                or HelperServers.get_server_type_by_id(server["server_id"]) == "raknet"
             ):
                 ping_data = Stats.parse_server_raknet_ping(int_mc_ping)
             else:
@@ -1722,7 +1769,10 @@ class ServerInstance:
         server_port = server_dt["server_port"]
 
         logger.debug(f"Pinging server '{self.name}' on {internal_ip}:{server_port}")
-        if HelperServers.get_server_type_by_id(server_id) == "minecraft-bedrock":
+        if (
+            HelperServers.get_server_type_by_id(server_id) == "minecraft-bedrock"
+            or HelperServers.get_server_type_by_id(server_id) == "raknet"
+        ):
             int_mc_ping = ping_raknet(internal_ip, int(server_port))
         else:
             int_mc_ping = ping(internal_ip, int(server_port))
