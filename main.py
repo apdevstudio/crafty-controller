@@ -172,15 +172,15 @@ if __name__ == "__main__":
             f"through your router/firewall if you would like to be able "
             f"to access Crafty remotely."
         )
-        password = helper.create_pass()
-        installer.default_settings(password)
+        PASSWORD = helper.create_pass()
+        installer.default_settings(PASSWORD)
         with open(
             os.path.join(app_path, "app", "config", "default-creds.txt"),
             "w",
             encoding="utf-8",
         ) as cred_file:
             cred_file.write(
-                json.dumps({"username": "admin", "password": password}, indent=4)
+                json.dumps({"username": "admin", "password": PASSWORD}, indent=4)
             )
         os.chmod(os.path.join(app_path, "app", "config", "default-creds.txt"), 0o600)
     else:
