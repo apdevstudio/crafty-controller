@@ -39,6 +39,20 @@ if not (sys.version_info.major == 3 and sys.version_info.minor >= 9):
     time.sleep(3)
     Console.info("Crafty stopped. Exiting...")
     sys.exit(0)
+
+# Determine the environment we're running in and set path accordingly
+if getattr(sys, "frozen", False):
+    app_path = os.path.dirname(sys.executable)
+    RUN_MODE = "Frozen/executable"
+else:
+    try:
+        app_full_path = os.path.realpath(__file__)
+        app_path = os.path.dirname(app_full_path)
+        RUN_MODE = "Non-interactive (e.g. 'python main.py')"
+    except NameError:
+        app_path = os.getcwd()
+        RUN_MODE = "Interactive"
+
 # pylint: disable=wrong-import-position
 try:
     from app.classes.models.base_model import database_proxy
@@ -72,12 +86,12 @@ def do_intro():
 
 
 def setup_logging(debug=True):
-    logging_config_file = os.path.join(os.path.curdir, "app", "config", "logging.json")
+    logging_config_file = os.path.join(app_path, "app", "config", "logging.json")
     if not helper.check_file_exists(
-        os.path.join(os.path.curdir, "logs", "auth_tracker.log")
+        os.path.join(app_path, "logs", "auth_tracker.log")
     ):
         open(
-            os.path.join(os.path.curdir, "logs", "auth_tracker.log"),
+            os.path.join(app_path, "logs", "auth_tracker.log"),
             "a",
             encoding="utf-8",
         ).close()
@@ -151,18 +165,6 @@ if __name__ == "__main__":
     management_helper = HelpersManagement(database, helper)
     installer = DatabaseBuilder(database, helper, user_helper, management_helper)
     FRESH_INSTALL = installer.is_fresh_install()
-
-    if getattr(sys, "frozen", False):
-        app_path = os.path.dirname(sys.executable)
-        RUN_MODE = "Frozen/executable"
-    else:
-        try:
-            app_full_path = os.path.realpath(__file__)
-            app_path = os.path.dirname(app_full_path)
-            RUN_MODE = "Non-interactive (e.g. 'python main.py')"
-        except NameError:
-            app_path = os.getcwd()
-            RUN_MODE = "Interactive"
 
     if FRESH_INSTALL:
         Console.debug("Fresh install detected")
@@ -271,8 +273,10 @@ if __name__ == "__main__":
         else:
             helper.servers_dir = master_server_dir
 
-        Console.debug(f"Execution Mode: {running_mode}")
-        Console.debug(f"Application path  : '{application_path}'")
+        logger.info(f"Execution Mode: {running_mode}")
+        logger.info(f"Application path: '{application_path}'")
+        Console.info(f"Execution Mode: {running_mode}")
+        Console.info(f"Application path: '{application_path}'")
 
         controller.clear_support_status()
 
@@ -283,7 +287,7 @@ if __name__ == "__main__":
     controller_setup_thread = Thread(
         target=controller_setup,
         name="controller_setup",
-        args=[RUN_MODE, app_path],
+        args=[app_path, RUN_MODE],
     )
 
     def setup_starter():
