@@ -51,7 +51,179 @@ except ModuleNotFoundError as err:
     helper.auto_installer_fix(err)
 
 
+def internet_check():
+    """
+    This checks to see if the Crafty host is connected to the
+    internet. This will show a warning in the console if no interwebs.
+    """
+    print()
+    logger.info("Checking Internet. This may take a minute.")
+    Console.info("Checking Internet. This may take a minute.")
+
+    if not helper.check_internet():
+        logger.warning(
+            "We have detected the machine running Crafty has no "
+            "connection to the internet. Client connections to "
+            "the server may be limited."
+        )
+        Console.warning(
+            "We have detected the machine running Crafty has no "
+            "connection to the internet. Client connections to "
+            "the server may be limited."
+        )
+
+
+def controller_setup():
+    """
+    Method sets up the software controllers.
+    This also sets the application path as well as the
+    master server dir (if not set).
+
+    This also clears the support logs status.
+    """
+    if not controller.check_system_user():
+        controller.add_system_user()
+
+    if getattr(sys, "frozen", False):
+        application_path = os.path.dirname(sys.executable)
+        running_mode = "Frozen/executable"
+    else:
+        try:
+            app_full_path = os.path.realpath(__file__)
+            application_path = os.path.dirname(app_full_path)
+            running_mode = "Non-interactive (e.g. 'python main.py')"
+        except NameError:
+            application_path = os.getcwd()
+            running_mode = "Interactive"
+
+    controller.set_project_root(application_path)
+    master_server_dir = controller.management.get_master_server_dir()
+    if master_server_dir == "":
+        logger.debug("Could not find master server path. Setting default")
+        controller.set_master_server_dir(
+            os.path.join(controller.project_root, "servers")
+        )
+    else:
+        helper.servers_dir = master_server_dir
+
+    Console.debug(f"Execution Mode: {running_mode}")
+    Console.debug(f"Application path  : '{application_path}'")
+
+    controller.clear_support_status()
+
+
+def tasks_starter():
+    """
+    Method starts stats recording, app scheduler, and
+    serverjars/steamCMD cache refreshers
+    """
+    # start stats logging
+    tasks_manager.start_stats_recording()
+
+    # once the controller is up and stats are logging, we can kick off
+    # the scheduler officially
+    tasks_manager.start_scheduler()
+
+    # refresh our cache and schedule for every 12 hoursour cache refresh
+    # for serverjars.com
+    tasks_manager.serverjar_cache_refresher()
+
+
+def signal_handler(signum, _frame):
+    """
+    Method handles sigterm and shuts the app down.
+    """
+    if not args.daemon:
+        print()  # for newline after prompt
+    signame = signal.Signals(signum).name
+    logger.info(f"Recieved signal {signame} [{signum}], stopping Crafty...")
+    Console.info(f"Recieved signal {signame} [{signum}], stopping Crafty...")
+    tasks_manager._main_graceful_exit()
+    crafty_prompt.universal_exit()
+
+
+def do_cleanup():
+    """
+    Checks Crafty's temporary directory and clears it out on boot.
+    """
+    try:
+        logger.info("Removing old temp dirs")
+        FileHelpers.del_dirs(os.path.join(controller.project_root, "temp"))
+    except:
+        logger.info("Did not find old temp dir.")
+    os.mkdir(os.path.join(controller.project_root, "temp"))
+
+
+def do_version_check():
+    """
+    Checks for remote version differences.
+
+    Prints in terminal with differences if true.
+
+    Also sets helper variable to update available when pages
+    are served.
+    """
+
+    # Check if new version available
+    remote_ver = helper.check_remote_version()
+    if remote_ver:
+        notice = f"""
+            A new version of Crafty is available!
+            {'/' * 37}
+            New version available: {remote_ver}
+            Current version: {pkg_version.parse(helper.get_version_string())}
+            {'/' * 37}
+            """
+        Console.yellow(notice)
+
+    crafty_prompt.prompt = f"Crafty Controller v{helper.get_version_string()} > "
+
+
+def setup_starter():
+    """
+    This method starts our setup threads.
+    (tasks scheduler, internet checks, controller setups)
+
+    Once our threads complete we will set our startup
+    variable to false and send a reload to any clients waiting.
+
+
+    """
+    if not args.daemon:
+        time.sleep(0.01)  # Wait for the prompt to start
+        print()  # Make a newline after the prompt so logs are on an empty line
+    else:
+        time.sleep(0.01)  # Wait for the daemon info message
+
+    Console.info("Setting up Crafty's internal components...")
+    ws.broadcast("update", {"message": "Final checks and launching"})
+    # Start the setup threads
+    tasks_starter_thread.start()
+    internet_check_thread.start()
+    controller_setup_thread.start()
+
+    # Wait for the setup threads to finish
+    tasks_starter_thread.join()
+    internet_check_thread.join()
+    controller_setup_thread.join()
+    helper.crafty_starting = False
+    ws.broadcast("send_start_reload", "")
+    do_version_check()
+    Console.info("Crafty has fully started and is now ready for use!")
+
+    do_cleanup()
+
+    if not args.daemon:
+        # Put the prompt under the cursor
+        crafty_prompt.print_prompt()
+
+
 def do_intro():
+    """
+    Runs the Crafty Controller Terminal Intro with information about the software
+    This method checks for a "settings file" or config.json. If it does not find
+    one it will create one.
+    """
     logger.info("***** Crafty Controller Started *****")
 
     version = helper.get_version_string()
@@ -72,6 +244,11 @@ def do_intro():
 
 
 def setup_logging(debug=True):
+    """
+    This method sets up our logging for Crafty. It takes
+    one optional (defaulted to True) parameter which
+    determines whether or not the logging level is "debug" or verbose.
+    """
     logging_config_file = os.path.join(os.path.curdir, "app", "config", "logging.json")
 
     if os.path.exists(logging_config_file):
@@ -142,10 +319,16 @@ if __name__ == "__main__":
     migration_manager = MigrationManager(database, helper)
     migration_manager.up()  # Automatically runs migrations
 
-    # do our installer stuff
+    # init classes
+    # now the tables are created, we can load the tasks_manager and server controller
     user_helper = HelperUsers(database, helper)
     management_helper = HelpersManagement(database, helper)
     installer = DatabaseBuilder(database, helper, user_helper, management_helper)
+    file_helper = FileHelpers(helper)
+    import_helper = ImportHelpers(helper, file_helper)
+    controller = Controller(database, helper, file_helper, import_helper)
+    tasks_manager = TasksManager(helper, controller, file_helper)
+    import3 = Import3(helper, controller)
     FRESH_INSTALL = installer.is_fresh_install()
 
     if FRESH_INSTALL:
@@ -167,27 +350,16 @@ if __name__ == "__main__":
         helper.set_setting("reset_secrets_on_next_boot", False)
     else:
         Console.info("No flag found. Secrets are staying")
-    file_helper = FileHelpers(helper)
-    import_helper = ImportHelpers(helper, file_helper)
-    # now the tables are created, we can load the tasks_manager and server controller
-    controller = Controller(database, helper, file_helper, import_helper)
+
+    # Check to see if client config.json version is different than the
+    # Master config.json in helpers.py
     Console.info("Checking for remote changes to config.json")
     controller.get_config_diff()
     Console.info("Remote change complete.")
 
-    import3 = Import3(helper, controller)
-    ws.broadcast("update", {"message": "Starting Task Scheduler"})
-    tasks_manager = TasksManager(helper, controller, file_helper)
+    # startup the web server
+    ws.broadcast("update", {"message": "Starting Tornado Webserver"})
     tasks_manager.start_webserver()
-
-    def signal_handler(signum, _frame):
-        if not args.daemon:
-            print()  # for newline after prompt
-        signame = signal.Signals(signum).name
-        logger.info(f"Recieved signal {signame} [{signum}], stopping Crafty...")
-        Console.info(f"Recieved signal {signame} [{signum}], stopping Crafty...")
-        tasks_manager._main_graceful_exit()
-        crafty_prompt.universal_exit()
 
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGINT, signal_handler)
@@ -198,124 +370,24 @@ if __name__ == "__main__":
     ws.broadcast("update", {"message": "Initializing Servers"})
     controller.servers.init_all_servers()
 
-    def tasks_starter():
-        # start stats logging
-        tasks_manager.start_stats_recording()
-
-        # once the controller is up and stats are logging, we can kick off
-        # the scheduler officially
-        tasks_manager.start_scheduler()
-
-        # refresh our cache and schedule for every 12 hoursour cache refresh
-        # for serverjars.com
-        tasks_manager.serverjar_cache_refresher()
-
+    # start up our tasks handler in tasks.py
     tasks_starter_thread = Thread(target=tasks_starter, name="tasks_starter")
 
-    def internet_check():
-        print()
-        logger.info("Checking Internet. This may take a minute.")
-        Console.info("Checking Internet. This may take a minute.")
-
-        if not helper.check_internet():
-            logger.warning(
-                "We have detected the machine running Crafty has no "
-                "connection to the internet. Client connections to "
-                "the server may be limited."
-            )
-            Console.warning(
-                "We have detected the machine running Crafty has no "
-                "connection to the internet. Client connections to "
-                "the server may be limited."
-            )
-
+    # check to see if instance has internet
     ws.broadcast("update", {"message": "Checking For Internet"})
     internet_check_thread = Thread(target=internet_check, name="internet_check")
 
-    def controller_setup():
-        if not controller.check_system_user():
-            controller.add_system_user()
-
-        if getattr(sys, "frozen", False):
-            application_path = os.path.dirname(sys.executable)
-            running_mode = "Frozen/executable"
-        else:
-            try:
-                app_full_path = os.path.realpath(__file__)
-                application_path = os.path.dirname(app_full_path)
-                running_mode = "Non-interactive (e.g. 'python main.py')"
-            except NameError:
-                application_path = os.getcwd()
-                running_mode = "Interactive"
-
-        controller.set_project_root(application_path)
-        master_server_dir = controller.management.get_master_server_dir()
-        if master_server_dir == "":
-            logger.debug("Could not find master server path. Setting default")
-            controller.set_master_server_dir(
-                os.path.join(controller.project_root, "servers")
-            )
-        else:
-            helper.servers_dir = master_server_dir
-
-        Console.debug(f"Execution Mode: {running_mode}")
-        Console.debug(f"Application path  : '{application_path}'")
-
-        controller.clear_support_status()
-
+    # start the Crafty console.
     crafty_prompt = MainPrompt(
         helper, tasks_manager, migration_manager, controller, import3
     )
 
+    # set up all controllers
     controller_setup_thread = Thread(target=controller_setup, name="controller_setup")
 
-    def setup_starter():
-        if not args.daemon:
-            time.sleep(0.01)  # Wait for the prompt to start
-            print()  # Make a newline after the prompt so logs are on an empty line
-        else:
-            time.sleep(0.01)  # Wait for the daemon info message
+    setup_starter_thread = Thread(target=setup_starter, name="setup_starter")
 
-        Console.info("Setting up Crafty's internal components...")
-        ws.broadcast("update", {"message": "Final checks and launching"})
-        # Start the setup threads
-        tasks_starter_thread.start()
-        internet_check_thread.start()
-        controller_setup_thread.start()
-
-        # Wait for the setup threads to finish
-        tasks_starter_thread.join()
-        internet_check_thread.join()
-        controller_setup_thread.join()
-        helper.crafty_starting = False
-        ws.broadcast("send_start_reload", "")
-        Console.info("Crafty has fully started and is now ready for use!")
-
-        # Check if new version available
-        remote_ver = helper.check_remote_version()
-        if remote_ver:
-            notice = f"""
-                A new version of Crafty is available!
-                {'/' * 37}
-                New version available: {remote_ver}
-                Current version: {pkg_version.parse(helper.get_version_string())}
-                {'/' * 37}
-                """
-            Console.yellow(notice)
-
-        crafty_prompt.prompt = f"Crafty Controller v{helper.get_version_string()} > "
-        try:
-            logger.info("Removing old temp dirs")
-            FileHelpers.del_dirs(os.path.join(controller.project_root, "temp"))
-        except:
-            logger.info("Did not find old temp dir.")
-        os.mkdir(os.path.join(controller.project_root, "temp"))
-
-        if not args.daemon:
-            # Put the prompt under the cursor
-            crafty_prompt.print_prompt()
-
-    Thread(target=setup_starter, name="setup_starter").start()
+    setup_starter_thread.start()
 
     if not args.daemon:
         # Start the Crafty prompt
