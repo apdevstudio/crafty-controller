@@ -102,8 +102,11 @@
             <div class="col-12 mt-4">
               <div class="d-flex">
                 <div class="wrapper" style="width: 100%;">
-                  <h5 class="mb-1 font-weight-medium text-primary">Storage
+                  {% if len(data["monitored"]) > 0 %}
+                  <h5 class="mb-1 font-weight-medium text-primary">{{ translate('dashboard', 'storage',
+                    data['lang']) }}
                   </h5>
+                  {% end %}
                   <div id="storage_data">
                     <div class="row">
                       {% for item in data['hosts_data']['disk_json'] %}

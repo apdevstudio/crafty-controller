@@ -111,6 +111,7 @@
         "starting": "Delayed-Start",
         "status": "Status",
         "stop": "Stop",
+        "storage": "Storage",
         "version": "Version",
         "welcome": "Welcome to Crafty Controller"
     },
