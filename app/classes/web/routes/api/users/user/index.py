@@ -215,7 +215,7 @@ class ApiUsersUserIndexHandler(BaseApiHandler):
 
         user_obj = HelperUsers.get_user_model(user_id)
         if "password" in data and str(user["user_id"]) != str(user_id):
-            if str(user["user_id"]) != str(user_obj.manager):
+            if str(user["user_id"]) != str(user_obj.manager) and not user["superuser"]:
                 # TODO: edit your own password
                 return self.finish_json(
                     400, {"status": "error", "error": "INVALID_PASSWORD_MODIFY"}
