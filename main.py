@@ -16,13 +16,10 @@ from app.classes.shared.helpers import Helpers
 from app.classes.models.users import HelperUsers
 from app.classes.models.management import HelpersManagement
 from app.classes.shared.import_helper import ImportHelpers
-from app.classes.shared.translation import Translation
 from app.classes.shared.websocket_manager import WebSocketManager
 
 console = Console()
 helper = Helpers()
-translation = Translation(helper)
-HOST_LANG = helper.get_setting("language")
 # Get the path our application is running on.
 if getattr(sys, "frozen", False):
     APPLICATION_PATH = os.path.dirname(sys.executable)
@@ -199,19 +196,15 @@ def setup_starter():
 
     Console.info("Setting up Crafty's internal components...")
     # Start the setup threads
-    web_sock.broadcast(
-        "update", {"message": translation.translate("startup", "tasks", HOST_LANG)}
-    )
+    web_sock.broadcast("update", {"section": "tasks"})
     time.sleep(2)
     tasks_starter_thread.start()
-    web_sock.broadcast(
-        "update", {"message": translation.translate("startup", "internet", HOST_LANG)}
-    )
+    web_sock.broadcast("update", {"section": "internet"})
     time.sleep(2)
     internet_check_thread.start()
     web_sock.broadcast(
         "update",
-        {"message": translation.translate("startup", "internals", HOST_LANG)},
+        {"section": "internals"},
     )
     time.sleep(2)
     controller_setup_thread.start()
@@ -219,7 +212,7 @@ def setup_starter():
     # Wait for the setup threads to finish
     web_sock.broadcast(
         "update",
-        {"message": translation.translate("startup", "almost", HOST_LANG)},
+        {"section": "almost"},
     )
     tasks_starter_thread.join()
     internet_check_thread.join()
@@ -388,7 +381,7 @@ if __name__ == "__main__":
     Console.info("Initializing all servers defined")
     web_sock.broadcast(
         "update",
-        {"message": translation.translate("startup", "serverInit", HOST_LANG)},
+        {"section": "serverInit"},
     )
     controller.servers.init_all_servers()
 

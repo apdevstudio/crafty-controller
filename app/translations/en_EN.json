@@ -591,6 +591,7 @@
         "servers": "Servers"
     },
     "startup": {
+        "starting": "Crafty Is Starting...",
         "serverInit": "Initializing Servers",
         "server": "Initializing ",
         "internet": "Checking for internet connection",

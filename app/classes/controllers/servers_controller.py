@@ -13,7 +13,6 @@ from app.classes.shared.server import ServerInstance
 from app.classes.shared.console import Console
 from app.classes.shared.helpers import Helpers
 from app.classes.shared.main_models import DatabaseShortcuts
-from app.classes.shared.translation import Translation
 
 from app.classes.minecraft.stats import Stats
 
@@ -40,7 +39,6 @@ class ServersController(metaclass=Singleton):
         self.stats = Stats(self.helper, self)
         self.ws = WebSocketManager()
         self.server_subpage = {}
-        self.translation = Translation(self.helper)
 
     # **********************************************************************************
     #                                   Generic Servers Methods
@@ -174,13 +172,14 @@ class ServersController(metaclass=Singleton):
     def init_all_servers(self):
         servers = self.get_all_defined_servers()
         self.failed_servers = []
-        init_trans = self.translation.translate(
-            "startup", "server", self.helper.get_setting("language")
-        )
         for server in servers:
             self.ws.broadcast_to_admins(
                 "update",
-                {"message": f"{init_trans}{server['server_name']}."},
+                {"section": "server", "server": server["server_name"]},
+            )
+            self.ws.broadcast_to_non_admins(
+                "update",
+                {"section": "init"},
             )
             server_id = server.get("server_id")
 

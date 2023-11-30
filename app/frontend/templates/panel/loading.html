@@ -15,7 +15,13 @@
         <br>
         </br>
         <div id="text-div" style="width: 100%; text-align: center;">
-            <h2 id="status" style="display: block;">Crafty Is Starting</h2>
+            <h2 id="status" style="display: block;" data-init="{{ translate('startup', 'serverInit', data['lang']) }}"
+                data-server="{{ translate('startup', 'server', data['lang']) }}"
+                data-internet="{{ translate('startup', 'internet', data['lang']) }}"
+                data-tasks="{{ translate('startup', 'tasks', data['lang']) }}"
+                data-internals="{{ translate('startup', 'internals', data['lang']) }}"
+                data-almost="{{ translate('startup', 'almost', data['lang']) }}">
+                {{ translate('startup', 'starting', data['lang']) }}</h2>
         </div>
 
     </div>
@@ -48,8 +54,11 @@
         }, 2000);
         if (webSocket) {
             webSocket.on('update', function (data) {
-                console.log("got status")
-                $("#status").html(data.message);
+                if ("server" in data) {
+                    $("#status").html(`${$("#status").data(data.section)} ${data.server}...`);
+                } else {
+                    $("#status").html($("#status").data(data.section));
+                }
             });
             webSocket.on('send_start_reload', function () {
                 setTimeout(function () {
