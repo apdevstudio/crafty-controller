@@ -16,10 +16,13 @@ from app.classes.shared.helpers import Helpers
 from app.classes.models.users import HelperUsers
 from app.classes.models.management import HelpersManagement
 from app.classes.shared.import_helper import ImportHelpers
+from app.classes.shared.translation import Translation
 from app.classes.shared.websocket_manager import WebSocketManager
 
 console = Console()
 helper = Helpers()
+translation = Translation(helper)
+HOST_LANG = helper.get_setting("language")
 # Get the path our application is running on.
 if getattr(sys, "frozen", False):
     APPLICATION_PATH = os.path.dirname(sys.executable)
@@ -96,7 +99,6 @@ def controller_setup():
     if not controller.check_system_user():
         controller.add_system_user()
 
-    controller.set_project_root(APPLICATION_PATH)
     master_server_dir = controller.management.get_master_server_dir()
     if master_server_dir == "":
         logger.debug("Could not find master server path. Setting default")
@@ -196,18 +198,34 @@ def setup_starter():
         time.sleep(0.01)  # Wait for the daemon info message
 
     Console.info("Setting up Crafty's internal components...")
-    ws.broadcast("update", {"message": "Final checks and launching"})
     # Start the setup threads
+    web_sock.broadcast(
+        "update", {"message": translation.translate("startup", "tasks", HOST_LANG)}
+    )
+    time.sleep(2)
     tasks_starter_thread.start()
+    web_sock.broadcast(
+        "update", {"message": translation.translate("startup", "internet", HOST_LANG)}
+    )
+    time.sleep(2)
     internet_check_thread.start()
+    web_sock.broadcast(
+        "update",
+        {"message": translation.translate("startup", "internals", HOST_LANG)},
+    )
+    time.sleep(2)
     controller_setup_thread.start()
 
     # Wait for the setup threads to finish
+    web_sock.broadcast(
+        "update",
+        {"message": translation.translate("startup", "almost", HOST_LANG)},
+    )
     tasks_starter_thread.join()
     internet_check_thread.join()
     controller_setup_thread.join()
     helper.crafty_starting = False
-    ws.broadcast("send_start_reload", "")
+    web_sock.broadcast("send_start_reload", "")
     do_version_check()
     Console.info("Crafty has fully started and is now ready for use!")
 
@@ -297,8 +315,7 @@ if __name__ == "__main__":
     helper.ensure_logging_setup()
     helper.crafty_starting = True
     # Init WebSocket Manager Here
-    ws = WebSocketManager()
-    ws.broadcast("update", {"message": "Setting Up Logging"})
+    web_sock = WebSocketManager()
     setup_logging(debug=args.verbose)
     if args.verbose:
         Console.level = "debug"
@@ -311,19 +328,13 @@ if __name__ == "__main__":
 
     # print our pretty start message
     do_intro()
-
-    ws.broadcast("update", {"message": "Securing Session For Process"})
     # our session file, helps prevent multiple controller agents on the same machine.
     helper.create_session_file(ignore=args.ignore)
-
-    ws.broadcast("update", {"message": "Initializing Database"})
     # start the database
     database = peewee.SqliteDatabase(
         helper.db_path, pragmas={"journal_mode": "wal", "cache_size": -1024 * 10}
     )
     database_proxy.initialize(database)
-
-    ws.broadcast("update", {"message": "Checking For Database Migrations"})
     migration_manager = MigrationManager(database, helper)
     migration_manager.up()  # Automatically runs migrations
 
@@ -335,6 +346,7 @@ if __name__ == "__main__":
     file_helper = FileHelpers(helper)
     import_helper = ImportHelpers(helper, file_helper)
     controller = Controller(database, helper, file_helper, import_helper)
+    controller.set_project_root(APPLICATION_PATH)
     tasks_manager = TasksManager(helper, controller, file_helper)
     import3 = Import3(helper, controller)
     FRESH_INSTALL = installer.is_fresh_install()
@@ -366,7 +378,6 @@ if __name__ == "__main__":
     Console.info("Remote change complete.")
 
     # startup the web server
-    ws.broadcast("update", {"message": "Starting Tornado Webserver"})
     tasks_manager.start_webserver()
 
     signal.signal(signal.SIGTERM, signal_handler)
@@ -375,14 +386,16 @@ if __name__ == "__main__":
     # init servers
     logger.info("Initializing all servers defined")
     Console.info("Initializing all servers defined")
-    ws.broadcast("update", {"message": "Initializing Servers"})
+    web_sock.broadcast(
+        "update",
+        {"message": translation.translate("startup", "serverInit", HOST_LANG)},
+    )
     controller.servers.init_all_servers()
 
     # start up our tasks handler in tasks.py
     tasks_starter_thread = Thread(target=tasks_starter, name="tasks_starter")
 
     # check to see if instance has internet
-    ws.broadcast("update", {"message": "Checking For Internet"})
     internet_check_thread = Thread(target=internet_check, name="internet_check")
 
     # start the Crafty console.
