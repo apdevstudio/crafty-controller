@@ -590,6 +590,14 @@
         "newServer": "Create New Server",
         "servers": "Servers"
     },
+    "startup": {
+        "serverInit": "Initializing Servers",
+        "server": "Initializing ",
+        "internet": "Checking for internet connection",
+        "tasks": "Starting Tasks Scheduler",
+        "internals": "Configuring and starting Crafty's internal componenets",
+        "almost": "Finishing up. Hang on tight..."
+    },
     "userConfig": {
         "apiKey": "API Keys",
         "auth": "Authorized? ",
