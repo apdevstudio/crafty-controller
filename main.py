@@ -20,6 +20,18 @@ from app.classes.shared.websocket_manager import WebSocketManager
 
 console = Console()
 helper = Helpers()
+# Get the path our application is running on.
+if getattr(sys, "frozen", False):
+    APPLICATION_PATH = os.path.dirname(sys.executable)
+    RUNNING_MODE = "Frozen/executable"
+else:
+    try:
+        app_full_path = os.path.realpath(__file__)
+        APPLICATION_PATH = os.path.dirname(app_full_path)
+        RUNNING_MODE = "Non-interactive (e.g. 'python main.py')"
+    except NameError:
+        APPLICATION_PATH = os.getcwd()
+        RUNNING_MODE = "Interactive"
 if helper.check_root():
     Console.critical(
         "Root detected. Root/Admin access denied. "
@@ -84,19 +96,7 @@ def controller_setup():
     if not controller.check_system_user():
         controller.add_system_user()
 
-    if getattr(sys, "frozen", False):
-        application_path = os.path.dirname(sys.executable)
-        running_mode = "Frozen/executable"
-    else:
-        try:
-            app_full_path = os.path.realpath(__file__)
-            application_path = os.path.dirname(app_full_path)
-            running_mode = "Non-interactive (e.g. 'python main.py')"
-        except NameError:
-            application_path = os.getcwd()
-            running_mode = "Interactive"
-
-    controller.set_project_root(application_path)
+    controller.set_project_root(APPLICATION_PATH)
     master_server_dir = controller.management.get_master_server_dir()
     if master_server_dir == "":
         logger.debug("Could not find master server path. Setting default")
@@ -106,8 +106,8 @@ def controller_setup():
     else:
         helper.servers_dir = master_server_dir
 
-    Console.debug(f"Execution Mode: {running_mode}")
-    Console.debug(f"Application path  : '{application_path}'")
+    Console.debug(f"Execution Mode: {RUNNING_MODE}")
+    Console.debug(f"Application path  : '{APPLICATION_PATH}'")
 
     controller.clear_support_status()
 
