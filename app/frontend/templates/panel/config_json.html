@@ -170,7 +170,7 @@
 {% block js %}
 <script>
   function replacer(key, value) {
-    if (key == "disabled_language_files") {
+    if (key == "disabled_language_files" || key == "monitored_mounts") {
       if (value == 0) {
         return []
       } else {
