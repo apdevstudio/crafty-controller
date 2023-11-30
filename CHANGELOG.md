@@ -2,10 +2,18 @@
 ## --- [4.2.2] - 2023/TBD
 ### New features
 TBD
+### Refactor
+- Remove deprecated API V1 ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/670))
 ### Bug fixes
-TBD
+- Remove webhook `custom` option from webook provider list as it's not currently an option ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/664))
 ### Tweaks
-TBD
+- Homogenize Panel logos/branding ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/666))
+- Retain previous tab when revisiting server details page (#272)([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/667))
+- Add server name tag in panel header (#272)([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/667))
+- Setup logging for panel authentication attempts ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/669))
+- Update minimum password length from 6 to 8, and unrestrict maximum password length ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/669))
+- Fix Unban button failing to pardon users ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/671))
+- Fix stack in API error handling ([Merge Request](https://gitlab.com/crafty-controller/crafty-4/-/merge_requests/674))
 ### Lang
 TBD
 <br><br>

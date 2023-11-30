@@ -38,6 +38,7 @@ class ServersController(metaclass=Singleton):
         self.servers_list = []
         self.stats = Stats(self.helper, self)
         self.ws = WebSocketManager()
+        self.server_subpage = {}
 
     # **********************************************************************************
     #                                   Generic Servers Methods

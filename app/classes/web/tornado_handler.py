@@ -22,18 +22,6 @@ from app.classes.web.default_handler import DefaultHandler
 from app.classes.web.routes.api.api_handlers import api_handlers
 from app.classes.web.routes.metrics.metrics_handlers import metrics_handlers
 from app.classes.web.server_handler import ServerHandler
-from app.classes.web.api_handler import (
-    ServersStats,
-    NodeStats,
-    ServerBackup,
-    StartServer,
-    StopServer,
-    RestartServer,
-    CreateUser,
-    DeleteUser,
-    ListServers,
-    SendCommand,
-)
 from app.classes.web.websocket_handler import WebSocketHandler
 from app.classes.web.static_handler import CustomStaticHandler
 from app.classes.web.upload_handler import UploadHandler
@@ -162,17 +150,6 @@ class Webserver:
             (r"/ws", WebSocketHandler, handler_args),
             (r"/upload", UploadHandler, handler_args),
             (r"/status", StatusHandler, handler_args),
-            # API Routes V1
-            (r"/api/v1/stats/servers", ServersStats, handler_args),
-            (r"/api/v1/stats/node", NodeStats, handler_args),
-            (r"/api/v1/server/send_command", SendCommand, handler_args),
-            (r"/api/v1/server/backup", ServerBackup, handler_args),
-            (r"/api/v1/server/start", StartServer, handler_args),
-            (r"/api/v1/server/stop", StopServer, handler_args),
-            (r"/api/v1/server/restart", RestartServer, handler_args),
-            (r"/api/v1/list_servers", ListServers, handler_args),
-            (r"/api/v1/users/create_user", CreateUser, handler_args),
-            (r"/api/v1/users/delete_user", DeleteUser, handler_args),
             # API Routes V2
             *api_handlers(handler_args),
             # API Routes OpenMetrics
