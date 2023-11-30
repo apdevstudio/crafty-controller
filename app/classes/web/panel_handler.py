@@ -210,6 +210,8 @@ class PanelHandler(BaseHandler):
         error = self.get_argument("error", "WTF Error!")
 
         template = "panel/denied.html"
+        if self.helper.crafty_starting:
+            page = "loading"
 
         now = time.time()
         formatted_time = str(
@@ -243,9 +245,13 @@ class PanelHandler(BaseHandler):
             for r in exec_user["roles"]:
                 role = self.controller.roles.get_role(r)
                 exec_user_role.add(role["role_name"])
-            defined_servers = self.controller.servers.get_authorized_servers(
-                exec_user["user_id"]
-            )
+            # get_auth_servers will throw an exception if run while Crafty is starting
+            if not self.helper.crafty_starting:
+                defined_servers = self.controller.servers.get_authorized_servers(
+                    exec_user["user_id"]
+                )
+            else:
+                defined_servers = []
 
         user_order = self.controller.users.get_user_by_id(exec_user["user_id"])
         user_order = user_order["server_order"].split(",")
