@@ -37,7 +37,7 @@ class ServersController(metaclass=Singleton):
         self.management_helper = management_helper
         self.servers_list = []
         self.stats = Stats(self.helper, self)
-        self.ws = WebSocketManager()
+        self.web_sock = WebSocketManager()
         self.server_subpage = {}
 
     # **********************************************************************************
@@ -173,11 +173,11 @@ class ServersController(metaclass=Singleton):
         servers = self.get_all_defined_servers()
         self.failed_servers = []
         for server in servers:
-            self.ws.broadcast_to_admins(
+            self.web_sock.broadcast_to_admins(
                 "update",
                 {"section": "server", "server": server["server_name"]},
             )
-            self.ws.broadcast_to_non_admins(
+            self.web_sock.broadcast_to_non_admins(
                 "update",
                 {"section": "init"},
             )
