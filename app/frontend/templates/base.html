@@ -384,18 +384,21 @@
         if (x) {
           x.remove()
         }
-        bootbox.alert({
+        bootbox.confirm({
           title: "{{ translate('notify', 'downloadLogs', data['lang']) }}",
           message: "{{ translate('notify', 'finishedPreparing', data['lang']) }}",
           buttons: {
-            ok: {
+            confirm: {
               label: 'Download',
               className: 'btn-info'
             }
           },
-          callback: function () {
-            console.log("in callback")
-            location.href = "/panel/download_support_package";
+          callback: function (result) {
+            if (result){
+              location.href = "/panel/download_support_package";
+            }else {
+              bootbox.close;
+            }
           }
         });
       });
